@@ -1,0 +1,41 @@
+module Statements
+
+imports
+  
+  Common
+
+// Statement
+
+// Empty statements
+
+// Labeled statements
+
+// Expression statements
+
+// Send statements
+
+// IncDec statements
+
+// Assignments
+
+// If statements
+
+// Switch statements
+
+// For statements
+
+// Go statements
+
+// Select statements
+
+// Return statements
+
+// Break statements
+
+// Continue statements
+
+// Goto statements
+
+// Fallthrough statements
+
+// Defer statements

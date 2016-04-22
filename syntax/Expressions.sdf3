@@ -1,0 +1,41 @@
+module Expressions
+
+imports
+  
+  Common
+
+// Operands
+
+// Qualified identifiers
+
+// Composite literals
+
+// Function literals
+
+// Primary expressions
+
+// Selectors
+
+// Method expressions
+
+// Index expressions
+
+// Slice expressions
+
+// Calls
+
+// Operators
+
+// Arithmetic operators
+
+// Comparison operators
+
+// Logical operators
+
+// Address operators
+
+// Receive operator
+
+// Conversions
+
+// Constant expressions

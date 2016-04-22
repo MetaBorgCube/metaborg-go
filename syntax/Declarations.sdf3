@@ -1,0 +1,19 @@
+module Declarations
+
+imports
+  
+  Common
+
+// Constant declarations
+
+// Iota
+
+// Type declarations
+
+// Variable declarations
+
+// Short variable declarations
+
+// Function declarations
+
+// Method declarations

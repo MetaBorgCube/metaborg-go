@@ -1,0 +1,11 @@
+module Packages
+
+imports
+  
+  Common
+
+// Source file organization
+
+// Package clause
+
+// Import declarations
