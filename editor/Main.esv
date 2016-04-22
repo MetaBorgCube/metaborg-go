@@ -5,7 +5,11 @@ imports
   Syntax
   Analysis
 
-language
+language General properties
+
+  name:          Go
+  id:            Go
+  extends:       Root
 
   extensions : go
 
