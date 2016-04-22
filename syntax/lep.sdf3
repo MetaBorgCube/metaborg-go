@@ -10,4 +10,6 @@ context-free start-symbols
 
 context-free syntax
   
-  Start.Empty = <>
+  Start.Empty = <<Word> <Word>>
+  Word.Hello = <hello>
+  Word.World = <world>
