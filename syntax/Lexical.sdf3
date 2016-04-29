@@ -4,21 +4,26 @@ imports
   
   Common
   Representation
+  
+lexical start-symbols
 
-// Comments
+	Identifier
+	StringLit
+	
 lexical syntax
 
-// Keywords
-
-// Operators and Delimiters
-
-// Integer literals
+	// Keywords
 	
-// Floating-point literals
+	// Operators and Delimiters
+	
+	// Integer literals
+		
+	// Floating-point literals
+	
+	// Imaginary literals
+	
+	// Rune literals
 
-// Imaginary literals
-
-// Rune literals
 	// Identifiers
 	LetterUnicodeDigit = Letter
 	LetterUnicodeDigit = UnicodeDigit

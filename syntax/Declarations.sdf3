@@ -7,9 +7,12 @@ imports
 
 context-free start-symbols
   
+  TopLevelDecl
   FuncDecl
 
 context-free syntax
+
+	TopLevelDecl = FuncDecl
 
 // Constant declarations
 

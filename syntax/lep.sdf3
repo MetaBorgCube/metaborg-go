@@ -3,16 +3,8 @@ module lep
 imports
   
   Common
-  Lexical
-  Declarations
+  Packages
 
 context-free start-symbols
   
-  Start
-
-context-free syntax
-  
-  Start.Empty = <<Word> <Word>>
-  Start.Decl = <<FuncDecl>>
-  Word.Hello = <hello>
-  Word.World = <world>
+  SourceFile
