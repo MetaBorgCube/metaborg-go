@@ -4,6 +4,17 @@ imports
   
   Common
 
+lexical syntax
+
+  Type =
+  TypeName =
+  TypeLit = 
+/*
+Type      = TypeName | TypeLit | "(" Type ")" .
+TypeName  = identifier | QualifiedIdent .
+TypeLit   = ArrayType | StructType | PointerType | FunctionType | InterfaceType | SliceType | MapType | ChannelType .
+*/
+
 // Method sets
 
 // Boolean types

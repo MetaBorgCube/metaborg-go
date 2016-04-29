@@ -38,3 +38,4 @@ FunctionName.Identifier = <<ID>>
 Signature.Sig = <()>
 
 // Method declarations
+MethodName =
