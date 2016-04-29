@@ -13,7 +13,6 @@ context-free start-symbols
 context-free syntax
   
   Start.Empty = <<Word> <Word>>
-  Start.IntLit = <<Integer>>
   Start.Decl = <<FuncDecl>>
   Word.Hello = <hello>
   Word.World = <world>
