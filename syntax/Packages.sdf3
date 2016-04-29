@@ -3,9 +3,38 @@ module Packages
 imports
   
   Common
+  Lexical
+  Declarations
 
-// Source file organization
+sorts
 
-// Package clause
+  SourceFile
+  PackageClause
+  PackageName
+  ImportDecl
+  ImportSpec
 
-// Import declarations
+context-free start-symbols
+
+  SourceFile
+
+context-free syntax
+
+/*
+SourceFile       = PackageClause ";" { ImportDecl ";" } { TopLevelDecl ";" } .
+PackageClause    = "package" PackageName .
+PackageName      = identifier .
+ImportDecl       = "import" ( ImportSpec | "(" { ImportSpec ";" } ")" ) .
+ImportSpec       = [ "." | PackageName ] ImportPath .
+ImportPath       = string_lit .
+*/
+
+  SourceFile      = <<PackageClause>;<{ImportDecl ";"}*>;<{TopLevelDecl ";"}*>;>
+  PackageClause   = <package <PackageName>>
+  PackageName     = Identifier
+  ImportDecl      = <import <ImportSpec>>
+  ImportDecl      = <import (<{ImportSpec ";"}*>)>
+  ImportSpec      = <<PackageSelector> <ImportPath>>
+  PackageSelector = PackageName
+  PackageSelector = "."
+  ImportPath	  = StringLit

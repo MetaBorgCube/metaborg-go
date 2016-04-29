@@ -2,7 +2,15 @@ module Declarations
 
 imports
   
-  Common
+	Common
+
+sorts
+
+	TopLevelDecl
+
+context-free syntax
+
+	TopLevelDecl =
 
 // Constant declarations
 

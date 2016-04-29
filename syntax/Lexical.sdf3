@@ -3,27 +3,63 @@ module Lexical
 imports
   
   Common
+  Representation
 
-// Comments
+lexical syntax
 
-// Tokens
+	// Comments
 
-// Semicolons
+	// Tokens
 
-// Identifiers
+	// Semicolons
 
-// Keywords
+	// Identifiers
+	LetterUnicodeDigit = Letter
+	LetterUnicodeDigit = UnicodeDigit
+  
+	Identifier = Letter LetterUnicodeDigit*
 
-// Operators and Delimiters
+	// Keywords
+	Identifier = "break" {reject}
+	Identifier = "default" {reject}
+	Identifier = "func" {reject}
+	Identifier = "interface" {reject}
+	Identifier = "select" {reject}
+	Identifier = "case" {reject}
+	Identifier = "defer" {reject}
+	Identifier = "go" {reject}
+	Identifier = "map" {reject}
+	Identifier = "struct" {reject}
+	Identifier = "chan" {reject}
+	Identifier = "else" {reject}
+	Identifier = "goto" {reject}
+	Identifier = "package" {reject}
+	Identifier = "switch" {reject}
+	Identifier = "const" {reject}
+	Identifier = "fallthrough" {reject}
+	Identifier = "if" {reject}
+	Identifier = "range" {reject}
+	Identifier = "type" {reject}
+	Identifier = "continue" {reject}
+	Identifier = "for" {reject}
+	Identifier = "import" {reject}
+	Identifier = "return" {reject}
+	Identifier = "var" {reject}
 
-// Integer literals
-
-// Floating-point literals
-
-// Imaginary literals
-
-// Rune literals
-
-// String literals
-
-// Constants
+	// Operators and Delimiters
+	
+	// Integer literals
+	
+	// Floating-point literals
+	
+	// Imaginary literals
+	
+	// Rune literals
+	
+	// String literals
+	StringLit	         = RawStringLit
+	StringLit	         = InterpretedStringLit
+	RawStringLit         = "\"" UnicodeChar* "\"" // TODO: not correct, should be "`" { unicode_char | newline } "`" .
+	InterpretedStringLit = "\"" UnicodeChar* "\"" // TODO: not correct, should be `"` { unicode_value | byte_value } `"` .
+	
+	// Constants
