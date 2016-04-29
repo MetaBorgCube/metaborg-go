@@ -60,6 +60,20 @@ lexical syntax
 	// Operators and Delimiters
 	
 	// Integer literals
+	/*
+	int_lit     = decimal_lit | octal_lit | hex_lit .
+	decimal_lit = ( "1" … "9" ) { decimal_digit } .
+	octal_lit   = "0" { octal_digit } .
+	hex_lit     = "0" ( "x" | "X" ) hex_digit { hex_digit } .
+	*/
+	IntLit.Dec	= DecimalLit
+	IntLit.Oct	= OctalLit
+	IntLit.Hex	= HexLit
+	DecimalLit	= [1-9] DecimalDigit*
+	OctalLit	= "0" OctalDigit*
+	HexX	 	= "x" 
+	HexX	 	= "X" 
+	HexLit		= "0" HexX HexDigit+
 	
 	// Floating-point literals
 	
