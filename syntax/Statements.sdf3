@@ -4,7 +4,13 @@ imports
   
   Common
 
+context-free syntax
+
 // Statement
+Block.Block = < { <StatementList> } >
+StatementList.List = < <StatementLine*> >
+StatementLine.Line = <<Statement> ; >
+Statement.Test = <println()>
 
 // Empty statements
 

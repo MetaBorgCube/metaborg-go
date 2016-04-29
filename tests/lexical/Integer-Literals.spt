@@ -2,10 +2,6 @@ module Tests
 
 language lep
 
-start symbol Start
-
-
-
 test Add [[
-	1 + 2
+	0
 ]] parse succeeds

@@ -3,6 +3,13 @@ module Declarations
 imports
   
   Common
+  Statements
+
+context-free start-symbols
+  
+  FuncDecl
+  
+context-free syntax
 
 // Constant declarations
 
@@ -15,5 +22,16 @@ imports
 // Short variable declarations
 
 // Function declarations
+FuncDecl.Decl = <func <FunctionName> <FuncSig> >
+FuncSig.Sig =  <<Function>>
+FuncSig.Func =  <<Signature>>
+Function.Function = <<Signature> <FunctionBody>>
+FunctionBody = <<Block>>
+FunctionName.Identifier = <<ID>>
+
+
+//Signature
+//TODO: Implement Parameters
+Signature.Sig = <()>
 
 // Method declarations
