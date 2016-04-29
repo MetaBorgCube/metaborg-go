@@ -6,14 +6,6 @@ imports
   Lexical
   Declarations
 
-sorts
-
-  SourceFile
-  PackageClause
-  PackageName
-  ImportDecl
-  ImportSpec
-
 context-free start-symbols
 
   SourceFile
@@ -29,13 +21,26 @@ ImportSpec       = [ "." | PackageName ] ImportPath .
 ImportPath       = string_lit .
 */
 
-  SourceFile      = <<PackageClause>;<{ImportDecl ";"}*>;<{TopLevelDecl ";"}*>;>
-  PackageClause   = <package <PackageName>>
-  PackageName     = Identifier
-  ImportDecl      = <import <ImportSpec>>
-  ImportDecl      = <import (<{ImportSpec ";"}*>)>
-  ImportSpec      = <<PackageSelector> <ImportPath>>
-  PackageSelector = PackageName
-  PackageSelector = "."
   ImportPath	  = StringLit
   TopLevelDecl = 
+  SourceFile.SourceFile      =
+<
+<PackageClause>
+
+<ImportDecl*>
+
+<TopLevelDecl*>
+>
+  
+  PackageClause.PackageClause = <package <PackageName>>
+
+  PackageName                 = Identifier
+  
+  ImportDecl.SingleImportDecl = <import <ImportSpec>>
+  ImportDecl.MultiImportDecl  = <import (<{ImportSpec ";"}*>)>
+  
+  ImportSpec.ImportSpec       = <<PackageSelector> <ImportPath>>
+  PackageSelector.PackageName = PackageName
+  PackageSelector.PackageAll  = "."
+  
+  ImportPath	              = StringLit

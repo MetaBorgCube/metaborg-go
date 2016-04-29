@@ -3,12 +3,8 @@ module lep
 imports
   
   Common
-  Lexical
+  Packages
   Declarations
-
-context-free start-symbols
-  
-  Start
 
 context-free syntax
   
