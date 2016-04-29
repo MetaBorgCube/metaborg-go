@@ -23,8 +23,8 @@ context-free syntax
 
 // Function declarations
 FuncDecl.Decl = <func <FunctionName> <FuncSig> >
-FuncSig.Sig =  <<Function>>
-FuncSig.Func =  <<Signature>>
+FuncSig.Func =  <<Function>>
+FuncSig.Sig =  <<Signature>>
 Function.Function = <<Signature> <FunctionBody>>
 FunctionBody = <<Block>>
 FunctionName.Identifier = <<ID>>

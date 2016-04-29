@@ -38,3 +38,4 @@ ImportPath       = string_lit .
   PackageSelector = PackageName
   PackageSelector = "."
   ImportPath	  = StringLit
+  TopLevelDecl = 

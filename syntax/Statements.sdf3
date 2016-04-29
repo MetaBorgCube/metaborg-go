@@ -8,8 +8,8 @@ context-free syntax
 
 // Statement
 Block.Block = < { <StatementList> } >
-StatementList.List = < <StatementLine*> >
-StatementLine.Line = <<Statement> ; >
+StatementList.StmtList = < <StatementLine*> >
+StatementLine.Stmt = <<Statement> ; >
 Statement.Test = <println()>
 
 // Empty statements
