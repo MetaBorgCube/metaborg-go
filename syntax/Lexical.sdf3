@@ -81,10 +81,15 @@ lexical syntax
 	
 	// Rune literals
 	
-	// String literals
-	StringLit	         = RawStringLit
-	StringLit	         = InterpretedStringLit
-	RawStringLit         = "\"" UnicodeChar* "\"" // TODO: not correct, should be "`" { unicode_char | newline } "`" .
-	InterpretedStringLit = "\"" UnicodeChar* "\"" // TODO: not correct, should be `"` { unicode_value | byte_value } `"` .
+	// String literals 
+	StringLit.StringLit	= "\"" UnicodeChar* "\""
+	
+	/*
+	Above implementation is a shortcut, correct implementation:
+		StringLit.RawStringLit			= RawStringLit
+		StringLit.InterpretedStringLit	= InterpretedStringLit
+		RawStringLit					= "\"" UnicodeChar* "\"" // TODO: not correct, should be "`" { unicode_char | newline } "`" .
+		InterpretedStringLit			= "\"" UnicodeChar* "\"" // TODO: not correct, should be `"` { unicode_value | byte_value } `"` .
+	*/
 	
 	// Constants
