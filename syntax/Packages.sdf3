@@ -2,28 +2,24 @@ module Packages
 
 imports
   
-  Common
-  Lexical
-  Declarations
-
-context-free start-symbols
-
-  SourceFile
+	Lexical
+	Declarations
 
 context-free syntax
 
 /*
-SourceFile       = PackageClause ";" { ImportDecl ";" } { TopLevelDecl ";" } .
-PackageClause    = "package" PackageName .
-PackageName      = identifier .
-ImportDecl       = "import" ( ImportSpec | "(" { ImportSpec ";" } ")" ) .
-ImportSpec       = [ "." | PackageName ] ImportPath .
-ImportPath       = string_lit .
+	From Go language spec:
+
+	SourceFile       = PackageClause ";" { ImportDecl ";" } { TopLevelDecl ";" } .
+	PackageClause    = "package" PackageName .
+	PackageName      = identifier .
+	ImportDecl       = "import" ( ImportSpec | "(" { ImportSpec ";" } ")" ) .
+	ImportSpec       = [ "." | PackageName ] ImportPath .
+	ImportPath       = string_lit .
 */
 
-  ImportPath	  = StringLit
-  TopLevelDecl = 
-  SourceFile.SourceFile      =
+	// Source file organisation 
+	SourceFile.SourceFile	=
 <
 <PackageClause>
 
@@ -32,15 +28,16 @@ ImportPath       = string_lit .
 <TopLevelDecl*>
 >
   
-  PackageClause.PackageClause = <package <PackageName>>
+	// Packages
+	PackageClause.PackageClause	= <package <PackageName>>
+	PackageName.PackageName		= Identifier
 
-  PackageName                 = Identifier
-  
-  ImportDecl.SingleImportDecl = <import <ImportSpec>>
-  ImportDecl.MultiImportDecl  = <import (<{ImportSpec ";"}*>)>
-  
-  ImportSpec.ImportSpec       = <<PackageSelector> <ImportPath>>
-  PackageSelector.PackageName = PackageName
-  PackageSelector.PackageAll  = "."
-  
-  ImportPath	              = StringLit
+	// Imports
+	ImportDecl.SingleImportDecl = <import <ImportSpec>>
+	ImportDecl.MultiImportDecl  = <import (<{ImportSpec ";"}*>)>
+	  
+	ImportSpec.ImportSpec       = <<PackageSelector> <ImportPath>>
+	PackageSelector.SubSet		= Identifier
+	PackageSelector.All 		= "."
+	  
+	ImportPath.ImportPath		= StringLit

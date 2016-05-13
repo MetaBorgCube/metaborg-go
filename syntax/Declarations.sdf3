@@ -1,41 +1,37 @@
 module Declarations
 
 imports
-  
-  Common
-  Statements
 
-context-free start-symbols
-  
-  TopLevelDecl
-  FuncDecl
+	Common
+	Statements
 
 context-free syntax
 
+	// TODO: currently only functions as top level declarations
 	TopLevelDecl = FuncDecl
 
-// Constant declarations
+	// Constant declarations
 
-// Iota
+	// Iota
 
-// Type declarations
+	// Type declarations
 
-// Variable declarations
+	// Variable declarations
 
-// Short variable declarations
+	// Short variable declarations
 
-// Function declarations
-FuncDecl.Decl = <func <FunctionName> <FuncSig> >
-FuncSig.Func =  <<Function>>
-FuncSig.Sig =  <<Signature>>
-Function.Function = <<Signature> <FunctionBody>>
-FunctionBody = <<Block>>
-FunctionName.Identifier = <<ID>>
+	// Function declarations
+	FuncDecl.Decl			= <func <FunctionName> <FuncSig>>
+	FuncSig.Func			= Function
+	FuncSig.Sig				= Signature
+	Function.Function		= <<Signature> <FunctionBody>>
+	FunctionBody			= Block
+	FunctionName.Identifier	= ID
 
 
-//Signature
-//TODO: Implement Parameters
-Signature.Sig = <()>
+	//Signature
+	//TODO: Implement Parameters
+	Signature.Sig = <()>
 
-// Method declarations
-MethodName =
+	// Method declarations
+	MethodName =
