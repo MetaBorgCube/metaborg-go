@@ -4,34 +4,53 @@ imports
 
 	Common
 	Statements
+	Types
 
 context-free syntax
 
-	// TODO: currently only functions as top level declarations
-	TopLevelDecl = FuncDecl
+	/*
+	Declaration   = ConstDecl | TypeDecl | VarDecl .
+	TopLevelDecl  = Declaration | FunctionDecl | MethodDecl .
+	*/
 
-	// Constant declarations
+	Declaration				= ConstDecl
+	Declaration				= TypeDecl
+	Declaration				= VarDecl
+	
+	TopLevelDecl			= Declaration
+	TopLevelDecl			= FunctionDecl
+	TopLevelDecl			= MethodDecl
 
-	// Iota
+	// TODO: Constant declarations
+	ConstDecl.ConstDecl		= <const>
+	
+	IdentifierList.IdentifierList = <{ID ","}*>
+	ExpressionList.ExpressionList = <{Expression ","}*>
 
-	// Type declarations
+	// TODO: Iota
 
-	// Variable declarations
+	// TODO: Type declarations
+	TypeDecl.TypeDecl		= <type>
 
-	// Short variable declarations
+	// TODO: Variable declarations
+	VarDecl.VarDecl			= <var>
+
+	// TODO: Short variable declarations
 
 	// Function declarations
-	FuncDecl.Decl			= <func <FunctionName> <FuncSig>>
-	FuncSig.Func			= Function
-	FuncSig.Sig				= Signature
-	Function.Function		= <<Signature> <FunctionBody>>
-	FunctionBody			= Block
-	FunctionName.Identifier	= ID
-
-
-	//Signature
-	//TODO: Implement Parameters
-	Signature.Sig = <()>
+	/*
+	FunctionDecl = "func" FunctionName ( Function | Signature ) .
+	FunctionName = identifier .
+	Function     = Signature FunctionBody .
+	FunctionBody = Block .
+	*/
+	
+	FunctionDecl.FunctionDecl	= <func <FunctionName> <FunOrSig>>
+	FunctionName.FunctionName	= ID
+	FunOrSig.Function			= <<Signature> <FunctionBody>>
+	FunOrSig.FunctionSignature	= Signature 
+	FunctionBody.FunctionBody	= Block
 
 	// Method declarations
-	MethodName =
+	MethodDecl.MethodDecl		= <methoddecl>
+	MethodName.MethodName		= <methodname>

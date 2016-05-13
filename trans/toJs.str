@@ -19,7 +19,7 @@ rules // top-level code generation function
 
 	gen-js : Program(x) -> <gen-js> x
 	
-	gen-js : Decl(name, func) -> $[
+	/*gen-js : Decl(name, func) -> $[
 		function [<debug(!"Yolo"); gen-js> name] [<debug(!"Yolo"); gen-js> func]
 	]
 	
@@ -33,7 +33,7 @@ rules // top-level code generation function
 		}
 	]
 	
-	gen-js : Sig() -> $[()]
+	gen-js : Sig() -> $[()]*/
 	
 	gen-js : StmtList(stmts) -> $[
 		[<debug(!"Haai"); mapsep(gen-js|"/n")> stmts]
