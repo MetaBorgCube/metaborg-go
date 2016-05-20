@@ -40,6 +40,24 @@ rules
 		where
 			statements := <statements-from-list> statementList;
 			js := <mapsep(gen-js-string|";\n")> statements
+			
+	gen-js-string:
+		ExpressionStmt(
+			UnaryExpr(
+				PrimaryExpr(
+					PrimaryExprArguments(
+						Operand(OperandName("println")),
+						Arguments(
+							ExpressionList(arguments)
+						)
+					)
+				)
+			)
+		) -> $[console.log([arguments-string])]
+		where
+			arguments-js := <mapsep(gen-js-string|",")> arguments;
+			arguments-string := <concat-strings> arguments-js
 	
-	gen-js-string : PrintLn() -> "console.log()"
+	gen-js-string:
+		UnaryExpr(PrimaryExpr(Operand(Literal(StringLit(output))))) -> output
 	
