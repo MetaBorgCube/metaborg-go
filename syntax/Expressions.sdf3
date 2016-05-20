@@ -50,139 +50,139 @@ lexical syntax
 
 context-free syntax
 
-// Operands
-/*
-Operand     = Literal | OperandName | MethodExpr | "(" Expression ")" .
-Literal     = BasicLit | CompositeLit | FunctionLit .
-BasicLit    = int_lit | float_lit | imaginary_lit | rune_lit | string_lit .
-OperandName = identifier | QualifiedIdent.
-*/
-
-Operand.Literal				= Literal
-Operand.OperandName			= OperandName
-Operand.MethodExpr			= MethodExpr
-Operand.GroupedExpression	= <(<Expression>)>
-
-Literal     = BasicLit
-//Literal     = CompositeLit
-//Literal     = FunctionLit
-
-BasicLit    = IntLit
-/*BasicLit    = float_lit
-BasicLit    = imaginary_lit
-BasicLit    = rune_lit
-BasicLit    = string_lit*/
-
-OperandName = Identifier
-OperandName = QualifiedIdent
-
-// Composite literals
-/*
-CompositeLit  = LiteralType LiteralValue .
-LiteralType   = StructType | ArrayType | "[" "..." "]" ElementType | SliceType | MapType | TypeName .
-LiteralValue  = "{" [ ElementList [ "," ] ] "}" .
-ElementList   = KeyedElement { "," KeyedElement } .
-KeyedElement  = [ Key ":" ] Element .
-Key           = FieldName | Expression | LiteralValue .
-FieldName     = identifier .
-Element       = Expression | LiteralValue .
-*/
-
-
-// Function literals
-/*
-FunctionLit = "func" Function .
-*/
-
-//FunctionLit = <func <Function>>
-
-// Primary expressions
-/*
-PrimaryExpr =
-	Operand |
-	Conversion |
-	PrimaryExpr Selector |
-	PrimaryExpr Index |
-	PrimaryExpr Slice |
-	PrimaryExpr TypeAssertion |
-	PrimaryExpr Arguments .
-
-Selector       = "." identifier .
-Index          = "[" Expression "]" .
-Slice          = "[" ( [ Expression ] ":" [ Expression ] ) |
-                     ( [ Expression ] ":" Expression ":" Expression )
-                 "]" .
-TypeAssertion  = "." "(" Type ")" .
-Arguments      = "(" [ ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ] ] ")" .
-*/
-
-PrimaryExpr = Operand
-PrimaryExpr = Conversion
-/*PrimaryExpr = PrimaryExpr Selector
-PrimaryExpr = PrimaryExpr Index
-PrimaryExpr = PrimaryExpr Slice
-PrimaryExpr = PrimaryExpr TypeAssertion
-PrimaryExpr = PrimaryExpr Arguments
-
-Selector       = <.<Identifier>>
-Index          = <[ <Expression> ]>
-Slice          = <[ <Expression] : <Expression> ]>
-Slice          = <[ <Expression> : <Expression> : <Expression> ]>
-TypeAssertion  = <.(<Type>)>
-Arguments      = <( <( <ExpressionList> | Type [ "," ExpressionList ] ) <...?> [ "," ] ?> )>*/
-
-// Selectors
-
-// Method expressions
-/*
-MethodExpr    = ReceiverType "." MethodName .
-ReceiverType  = TypeName | "(" "*" TypeName ")" | "(" ReceiverType ")" .
-*/
-
-MethodExpr.MethodExpr	= <<ReceiverType>.<MethodName>>
-ReceiverType.TypeName	= TypeName
-ReceiverType.Asterisk	= <(*<TypeName>)>
-ReceiverType.Brackets	= <(<ReceiverType>)>
-
-// Index expressions
-
-// Slice expressions
-
-// Calls
-
-// Operators
-/*
-Expression = UnaryExpr | Expression binary_op Expression .
-UnaryExpr  = PrimaryExpr | unary_op UnaryExpr .
-
-binary_op  = "||" | "&&" | rel_op | add_op | mul_op .
-rel_op     = "==" | "!=" | "<" | "<=" | ">" | ">=" .
-add_op     = "+" | "-" | "|" | "^" .
-mul_op     = "*" | "/" | "%" | "<<" | ">>" | "&" | "&^" .
-
-unary_op   = "+" | "-" | "!" | "^" | "*" | "&" | "<-" .
-*/
-
-Expression.UnaryExpr = UnaryExpr
-Expression.BinaryExpr = <<Expression> <BinaryOp> <Expression>>
-UnaryExpr.PrimaryExpr  = PrimaryExpr
-UnaryExpr.UnaryExpr  = <<UnaryOp> <UnaryExpr>>
-
-// Arithmetic operators
-
-// Comparison operators
-
-// Logical operators
-
-// Address operators
-
-// Receive operator
-
-// Conversions
-/*
-Conversion = Type "(" Expression [ "," ] ")" .
-*/
-
-Conversion.Conversion = <<Type>(<Expression>)>
-
-// Constant expressions
+	// Operands
+	/*
+	Operand     = Literal | OperandName | MethodExpr | "(" Expression ")" .
+	Literal     = BasicLit | CompositeLit | FunctionLit .
+	BasicLit    = int_lit | float_lit | imaginary_lit | rune_lit | string_lit .
+	OperandName = identifier | QualifiedIdent.
+	*/
+	
+	Operand.Literal				= Literal
+	Operand.OperandName			= OperandName
+	Operand.MethodExpr			= MethodExpr
+	Operand.GroupedExpression	= <(<Expression>)>
+	
+	Literal     = BasicLit
+	//Literal     = CompositeLit
+	//Literal     = FunctionLit
+	
+	BasicLit    = IntLit
+	/*BasicLit    = float_lit
+	BasicLit    = imaginary_lit
+	BasicLit    = rune_lit
+	BasicLit    = string_lit*/
+	
+	OperandName = Identifier
+	OperandName = QualifiedIdent
+	
+	// Composite literals
+	/*
+	CompositeLit  = LiteralType LiteralValue .
+	LiteralType   = StructType | ArrayType | "[" "..." "]" ElementType | SliceType | MapType | TypeName .
+	LiteralValue  = "{" [ ElementList [ "," ] ] "}" .
+	ElementList   = KeyedElement { "," KeyedElement } .
+	KeyedElement  = [ Key ":" ] Element .
+	Key           = FieldName | Expression | LiteralValue .
+	FieldName     = identifier .
+	Element       = Expression | LiteralValue .
+	*/
+	
+	
+	// Function literals
+	/*
+	FunctionLit = "func" Function .
+	*/
+	
+	//FunctionLit = <func <Function>>
+	
+	// Primary expressions
+	/*
+	PrimaryExpr =
+		Operand |
+		Conversion |
+		PrimaryExpr Selector |
+		PrimaryExpr Index |
+		PrimaryExpr Slice |
+		PrimaryExpr TypeAssertion |
+		PrimaryExpr Arguments .
+	
+	Selector       = "." identifier .
+	Index          = "[" Expression "]" .
+	Slice          = "[" ( [ Expression ] ":" [ Expression ] ) |
+	                     ( [ Expression ] ":" Expression ":" Expression )
+	                 "]" .
+	TypeAssertion  = "." "(" Type ")" .
+	Arguments      = "(" [ ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ] ] ")" .
+	*/
+	
+	PrimaryExpr = Operand
+	PrimaryExpr = Conversion
+	/*PrimaryExpr = PrimaryExpr Selector
+	PrimaryExpr = PrimaryExpr Index
+	PrimaryExpr = PrimaryExpr Slice
+	PrimaryExpr = PrimaryExpr TypeAssertion
+	PrimaryExpr = PrimaryExpr Arguments
+	
+	Selector       = <.<Identifier>>
+	Index          = <[ <Expression> ]>
+	Slice          = <[ <Expression] : <Expression> ]>
+	Slice          = <[ <Expression> : <Expression> : <Expression> ]>
+	TypeAssertion  = <.(<Type>)>
+	Arguments      = <( <( <ExpressionList> | Type [ "," ExpressionList ] ) <...?> [ "," ] ?> )>*/
+	
+	// Selectors
+	
+	// Method expressions
+	/*
+	MethodExpr    = ReceiverType "." MethodName .
+	ReceiverType  = TypeName | "(" "*" TypeName ")" | "(" ReceiverType ")" .
+	*/
+	
+	MethodExpr.MethodExpr	= <<ReceiverType>.<MethodName>>
+	ReceiverType.TypeName	= TypeName
+	ReceiverType.Asterisk	= <(*<TypeName>)>
+	ReceiverType.Brackets	= <(<ReceiverType>)>
+	
+	// Index expressions
+	
+	// Slice expressions
+	
+	// Calls
+	
+	// Operators
+	/*
+	Expression = UnaryExpr | Expression binary_op Expression .
+	UnaryExpr  = PrimaryExpr | unary_op UnaryExpr .
+	
+	binary_op  = "||" | "&&" | rel_op | add_op | mul_op .
+	rel_op     = "==" | "!=" | "<" | "<=" | ">" | ">=" .
+	add_op     = "+" | "-" | "|" | "^" .
+	mul_op     = "*" | "/" | "%" | "<<" | ">>" | "&" | "&^" .
+	
+	unary_op   = "+" | "-" | "!" | "^" | "*" | "&" | "<-" .
+	*/
+	
+	Expression.UnaryExpr = UnaryExpr
+	Expression.BinaryExpr = <<Expression> <BinaryOp> <Expression>>
+	UnaryExpr.PrimaryExpr  = PrimaryExpr
+	UnaryExpr.UnaryExpr  = <<UnaryOp> <UnaryExpr>>
+	
+	// Arithmetic operators
+	
+	// Comparison operators
+	
+	// Logical operators
+	
+	// Address operators
+	
+	// Receive operator
+	
+	// Conversions
+	/*
+	Conversion = Type "(" Expression [ "," ] ")" .
+	*/
+	
+	Conversion.Conversion = <<Type>(<Expression>)>
+	
+	// Constant expressions

@@ -2,6 +2,10 @@ package test
 
 import . "test"
 
-func hello(x int, y int) int {
+func a(x int) int {
+	println();
+}
+
+func b(y int) int {
 	println();
 }

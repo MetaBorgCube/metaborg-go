@@ -9,39 +9,43 @@ rules // top-level code generation function
 		(selected, position, ast, path, project-path) -> (filename, result)
 		with
 			filename := <guarantee-extension(|"js")> path;
-			result	 := <debug(!"Yolo"); gen-js> ast
-
-	//generate-js : x  -> <debug(!"JS")> x
+			debug(!"Starting compilation...");
+			result	 := <gen-js> ast;
+			debug(!"Compilation finished!")
 
 	//Thx bufferC :P
 	mapsep(f | sep) =
 		map(f); separate-by(|sep)
 
-	gen-js : Program(x) -> <gen-js> x
+	gen-js : SourceFile(packageClause, imports, topLevelDecls) -> js
+		where
+			packageName := <package-name> packageClause;
+			debug(!<concat-strings> ["Found source file for package '", packageName, "'"]);
+			js := <concat-strings> <mapsep(gen-js|"\n")> topLevelDecls
+			
+	package-name : PackageClause(PackageName(name)) -> name
 	
-	/*gen-js : Decl(name, func) -> $[
-		function [<debug(!"Yolo"); gen-js> name] [<debug(!"Yolo"); gen-js> func]
-	]
+	gen-js : FunctionDecl(
+		FunctionName(name),
+		Function(
+			Signature(parameters, returnType),
+			FunctionBody(block)
+		)
+	) -> $[function [name] {[js]}]
+		where
+			debug(!<concat-strings> ["Found function ", name]);
+			js := <gen-js> block
+			
+	gen-js : Block(statementList) -> js
+		where
+			statements := <statements-from-list> statementList;
+			js := <mapsep(gen-js|"\n")> statements
 	
-	gen-js : Identifier(x) -> x
+	statements-from-list: StatementList(wrappedStatements) -> statements
+		where
+			statements := <map(unwrap-statement)> wrappedStatements
 	
-	gen-js : Func(x) -> <debug(!"Yolo"); gen-js> x
+	unwrap-statement: StatementLine(statement) -> statement
 	
-	gen-js : Function(sig, body) -> $[
-		[<debug(!"Yolo"); gen-js> sig] {
-			[<debug(!"Yolo"); gen-js> body]
-		}
-	]
-	
-	gen-js : Sig() -> $[()]*/
-	
-	gen-js : StmtList(stmts) -> $[
-		[<debug(!"Haai"); mapsep(gen-js|"/n")> stmts]
-	]
-	
-	gen-js : Block(x) -> <gen-js> x
-	
-	gen-js : Stmt(x) -> <debug(!"Yolo"); gen-js> x
-	
-	gen-js : Test() -> $[console.log("Hello World")]
+	gen-js : PrintLn() -> "console.log()"
 	
