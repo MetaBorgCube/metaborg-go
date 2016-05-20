@@ -21,7 +21,7 @@ rules
 	gen-js-string : SourceFile(packageClause, imports, topLevelDecls) -> js
 		where
 			packageName := <package-name> packageClause;
-			js := <concat-strings> <mapsep(gen-js-string|"\n")> topLevelDecls
+			js := <concat-strings> <mapsep(gen-js-string|"\n\n")> topLevelDecls
 	
 	gen-js-string : FunctionDecl(
 		FunctionName(name),
@@ -29,7 +29,9 @@ rules
 			Signature(parameters, returnType),
 			FunctionBody(block)
 		)
-	) -> $[function [name] {[js]}]
+	) -> $[function [name] {
+	[js]
+	}]
 		where
 			debug(!<concat-strings> ["Found function ", name]);
 			js := <gen-js-string> block
@@ -37,7 +39,7 @@ rules
 	gen-js-string : Block(statementList) -> js
 		where
 			statements := <statements-from-list> statementList;
-			js := <mapsep(gen-js-string|"\n")> statements
+			js := <mapsep(gen-js-string|";\n")> statements
 	
 	gen-js-string : PrintLn() -> "console.log()"
 	
