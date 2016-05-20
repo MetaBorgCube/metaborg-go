@@ -2,50 +2,14 @@ module toJs
 
 imports 
 	src-gen/signatures/-
+	helpers
 		
-rules // top-level code generation function
-
-	generate-js :
-		(selected, position, ast, path, project-path) -> (filename, result)
-		with
-			filename := <guarantee-extension(|"js")> path;
-			debug(!"Starting compilation...");
-			result	 := <gen-js> ast;
-			debug(!"Compilation finished!")
-
-	//Thx bufferC :P
-	mapsep(f | sep) =
-		map(f); separate-by(|sep)
-
-	gen-js : SourceFile(packageClause, imports, topLevelDecls) -> js
-		where
-			packageName := <package-name> packageClause;
-			debug(!<concat-strings> ["Found source file for package '", packageName, "'"]);
-			js := <concat-strings> <mapsep(gen-js|"\n")> topLevelDecls
-			
-	package-name : PackageClause(PackageName(name)) -> name
+rules
 	
-	gen-js : FunctionDecl(
-		FunctionName(name),
-		Function(
-			Signature(parameters, returnType),
-			FunctionBody(block)
-		)
-	) -> $[function [name] {[js]}]
-		where
-			debug(!<concat-strings> ["Found function ", name]);
-			js := <gen-js> block
-			
-	gen-js : Block(statementList) -> js
-		where
-			statements := <statements-from-list> statementList;
-			js := <mapsep(gen-js|"\n")> statements
+	/*
+	We currently have two code generations:
+	 - generate-js-string	:	transform Go AST to Javascript string
+	 - generate-js-ast		:	transform Go AST to Javascript AST
 	
-	statements-from-list: StatementList(wrappedStatements) -> statements
-		where
-			statements := <map(unwrap-statement)> wrappedStatements
-	
-	unwrap-statement: StatementLine(statement) -> statement
-	
-	gen-js : PrintLn() -> "console.log()"
-	
+	This file contains shared stragegies for both code generations.
+	*/
