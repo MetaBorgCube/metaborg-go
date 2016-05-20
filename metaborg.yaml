@@ -10,6 +10,7 @@ dependencies:
   - org.metaborg:org.metaborg.meta.lang.ts:${metaborgVersion}
   source:
   - org.metaborg:org.metaborg.meta.lib.analysis:${metaborgVersion}
+  - org.example:spoofaxJS:0.1.0-SNAPSHOT
 pardonedLanguages:
 - EditorService
 - Stratego-Sugar

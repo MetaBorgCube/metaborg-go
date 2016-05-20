@@ -6,6 +6,8 @@ imports
   runtime/refactoring/-
   pp/lep-parenthesize
   pp/lep-pp
+  pp/spoofaxJS-parenthesize
+  pp/spoofaxJS-pp
 
 rules
 
@@ -37,6 +39,11 @@ rules
     <+ <bottomup(try(not(is-string); not(is-list); not(pp-lep-string); debug(!"cannot pp ")))> ast
     ;  result := ""
 
+ pp-js =
+    parenthesize-spoofaxJS
+    ; prettyprint-spoofaxJS-start-symbols
+    ; !V([], <id>)
+    ; box2text-string(|120)
 rules
   
   construct-textual-change = construct-textual-change(pp-partial-lep-string, parenthesize, override-reconstruction, resugar)

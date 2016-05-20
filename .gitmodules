@@ -1,0 +1,3 @@
+[submodule "lib/metaborg-js"]
+	path = lib/metaborg-js
+	url = git@github.com:MetaBorgCube/metaborg-js.git
