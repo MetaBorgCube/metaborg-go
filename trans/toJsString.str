@@ -15,16 +15,15 @@ rules
 		with
 			filename := <guarantee-extension(|"js")> path;
 			debug(!"Starting compilation to string...");
-			result	 := <gen-js> ast;
+			result	 := <gen-js-string> ast;
 			debug(!"Compilation to string finished!")
 
-	gen-js : SourceFile(packageClause, imports, topLevelDecls) -> js
+	gen-js-string : SourceFile(packageClause, imports, topLevelDecls) -> js
 		where
 			packageName := <package-name> packageClause;
-			debug(!<concat-strings> ["Found source file for package '", packageName, "'"]);
-			js := <concat-strings> <mapsep(gen-js|"\n")> topLevelDecls
+			js := <concat-strings> <mapsep(gen-js-string|"\n")> topLevelDecls
 	
-	gen-js : FunctionDecl(
+	gen-js-string : FunctionDecl(
 		FunctionName(name),
 		Function(
 			Signature(parameters, returnType),
@@ -33,12 +32,12 @@ rules
 	) -> $[function [name] {[js]}]
 		where
 			debug(!<concat-strings> ["Found function ", name]);
-			js := <gen-js> block
+			js := <gen-js-string> block
 			
-	gen-js : Block(statementList) -> js
+	gen-js-string : Block(statementList) -> js
 		where
 			statements := <statements-from-list> statementList;
-			js := <mapsep(gen-js|"\n")> statements
+			js := <mapsep(gen-js-string|"\n")> statements
 	
-	gen-js : PrintLn() -> "console.log()"
+	gen-js-string : PrintLn() -> "console.log()"
 	

@@ -11,6 +11,8 @@ rules
 	
 	// Packages
 	package-name : PackageClause(PackageName(name)) -> name
+		where
+			debug(!<concat-strings> ["Found source file for package '", name, "'"])
 	
 	// Statements
 	statements-from-list: StatementList(wrappedStatements) -> statements
