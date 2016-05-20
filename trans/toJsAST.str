@@ -1,0 +1,19 @@
+module toJsAST
+
+imports 
+	src-gen/signatures/-
+	helpers
+		
+rules
+
+	/*
+	Strategies that transform Go AST to a Javascript AST.
+	*/
+
+	generate-js-ast :
+		(selected, position, ast, path, project-path) -> (filename, result)
+		with
+			filename := <guarantee-extension(|"js")> path;
+			debug(!"Starting compilation via AST...");
+			result	 := <write-to-string> ast;
+			debug(!"Compilation via AST finished!")

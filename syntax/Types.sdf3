@@ -2,39 +2,84 @@ module Types
 
 imports
   
-  Common
+	Common
+	Declarations
 
-lexical syntax
+context-free syntax
 
-  Type =
-  TypeName =
-  TypeLit = 
-/*
-Type      = TypeName | TypeLit | "(" Type ")" .
-TypeName  = identifier | QualifiedIdent .
-TypeLit   = ArrayType | StructType | PointerType | FunctionType | InterfaceType | SliceType | MapType | ChannelType .
-*/
+	/*
+	Type      = TypeName | TypeLit | "(" Type ")" .
+	TypeName  = identifier | QualifiedIdent .
+	TypeLit   = ArrayType | StructType | PointerType | FunctionType | InterfaceType | SliceType | MapType | ChannelType .
+	*/
+	
+	Type				= TypeLit		{prefer}
+	Type				= TypeName
+	Type				= TypeGrouped
+	
+	TypeName.TypeName	= ID
+	
+	TypeLit				= BooleanType
+	TypeLit				= NumericType
+	
+	TypeLit				= ArrayType
+	TypeLit				= StructType
+	TypeLit				= PointerType
+	TypeLit				= FunctionType
+	TypeLit				= InterfaceType
+	TypeLit				= SliceType
+	TypeLit				= MapType
+	TypeLit				= ChannelType
 
-// Method sets
+	TypeGrouped.TypeGrouped	= <(<Type>)>
 
-// Boolean types
+	// TODO: Method sets
+	
+	// TODO: Boolean types
+	BooleanType.BooleanType	= <bool>
+	
+	// TODO: Numeric types
+	NumericType.IntType		= <int>
+	
+	// TODO: String types
+	
+	
+	// TODO: Array types
+	ArrayType.ArrayType		= <arraytype>
+	
+	// TODO: Slice types
+	SliceType.SliceType		= <slicetype>
+	
+	// TODO: Struct types
+	StructType.StructType	= <structtype>
+	
+	// TODO: Pointer types
+	PointerType.PointerType	= <pointertype>
 
-// Numeric types
+	// Function types
+	
+	/*
+	FunctionType   = "func" Signature .
+	Signature      = Parameters [ Result ] .
+	Result         = Parameters | Type .
+	Parameters     = "(" [ ParameterList [ "," ] ] ")" .
+	ParameterList  = ParameterDecl { "," ParameterDecl } .
+	ParameterDecl  = [ IdentifierList ] [ "..." ] Type .
+	*/
+	
+	FunctionType.FunctionType   = <func <Signature>>
+	
+	Signature.Signature			= <<Parameters> <Result?>>
+	Result						= Parameters
+	Result						= Type
+	Parameters.Parameters		= <(<{ParameterDecl ","}*>)>
+	ParameterDecl.ParameterDecl	= <<ID> <Type>>   // TODO: with dots: ParameterDecl.ParameterDecl	= <<IdentifierList?> <"..."?> <Type>>
 
-// String types
-
-// Array types
-
-// Slice types
-
-// Struct types
-
-// Pointer types
-
-// Function types
-
-// Interface types
-
-// Map types
-
-// Channel types
+	// TODO: Interface types
+	InterfaceType.InterfaceType	= <interfacetype>
+	
+	// TODO: Map types
+	MapType.MapType				= <maptype>
+	
+	// TODO: Channel types
+	ChannelType.ChannelType		= <channeltype>

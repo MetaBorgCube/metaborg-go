@@ -13,7 +13,8 @@ references
 menus
   
   menu: "Generate" (openeditor) (realtime)
-  	action: "Generate JS" = generate-js 
+  	action: "Generate JS String" = generate-js-string
+  	action: "Generate JS AST" = generate-js-ast
   
   menu: "Analysis" (openeditor)
 

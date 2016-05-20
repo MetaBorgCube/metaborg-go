@@ -7,6 +7,8 @@ imports
   outline
   analysis
   toJs
+  toJsString
+  toJsAST
 
 rules // Debugging
   
