@@ -3,6 +3,11 @@ module toJsAST
 imports 
 	signatures/-
 	signatures/spoofaxJS-sig
+	signatures/MethodDecl-sig
+	signatures/Parameter-sig
+	signatures/Statement-sig
+	signatures/Expression-sig
+	signatures/Common-sig
 	trans/pp
 	helpers
 		
@@ -16,34 +21,53 @@ rules
 		(selected, position, ast, path, project-path) -> (filename, pp)
 		with
 			filename := <guarantee-extension(|"js")> path;
-			result	 := <gen-js> ast;
-			pp 		 := <pp-js> result
+			debug(!"Starting compilation pretty printed JS AST...");
+			result	 := <gen-js-ast> ast;
+			debug(!"Compilation to JS AST finsished!");
+			pp 		 := <pp-js> result;
+			debug(!"Pretty printing of JS AST finished!")
 
-	//generate-js : x  -> <debug(!"JS")> x
-
-	//Thx bufferC  :P
-	mapsep(f | sep) =
-		map(f); separate-by(|sep)
-
-	gen-js : SourceFile(_, _, x) -> Program(<map(gen-js)> x) 
+	gen-js-ast : SourceFile(packageClause, _, topLevelDecls) -> Program(js)
+		where
+			packageName := <package-name> packageClause;
+			debug(!<concat-strings> ["Ignoring package identifier (", packageName, ") and imports"]);
+			js := <map(gen-js-ast)> topLevelDecls
 	
-	//FunDecl(i, s, b)
-	gen-js : FunctionDecl(i, Function(s, b)) -> Decl(FunDecl(<gen-js> i, <gen-js> s, <gen-js>b))
+	gen-js-ast : FunctionDecl(
+		FunctionName(name),
+		Function(
+			Signature(Parameters(params), returnType),
+			FunctionBody(block)
+		)
+	) -> method(name, paramsJs, bodyJs)
+		where
+			debug(!<concat-strings> ["Found function ", name, " with parameters ", <write-to-string> params]);
+			paramsJs := <map(gen-js-ast)> params;
+			bodyJs := <gen-js-ast> block
 	
+	gen-js-ast : ParameterDecl(name, _) -> parameter(name)
 	
-	gen-js : FunctionName(x) -> x
+	gen-js-ast : Block(statementList) -> js
+		where
+			statements := <statements-from-list> statementList;
+			js := <map(gen-js-ast)> statements
 	
-	gen-js : [] -> []
-
-	gen-js : Signature(p, r) -> ParList([])
+	gen-js-ast:
+		ExpressionStmt(
+			UnaryExpr(
+				PrimaryExpr(
+					PrimaryExprArguments(
+						Operand(OperandName("println")),
+						Arguments(
+							ExpressionList(args)
+						)
+					)
+				)
+			)
+		) -> expStmt(MethodCall(Identifier("console"), "log", argsJs))
+		where
+			argsJs := <map(gen-js-ast)> args
 	
-	gen-js : StatementList(stmts) -> <map(gen-js)> stmts 
-	
-	gen-js : FunctionBody(x) -> <gen-js> x
-	
-	gen-js : Block(x) -> <gen-js> x
-	
-	gen-js : StatementLine(x) -> <gen-js> x
-	
-	gen-js : PrintLn(a) -> Print(a)
+	gen-js-ast:
+		UnaryExpr(PrimaryExpr(Operand(Literal(StringLit(output))))) -> String(output)
 			

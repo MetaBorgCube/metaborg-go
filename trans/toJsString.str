@@ -18,7 +18,7 @@ rules
 			result	 := <gen-js-string> ast;
 			debug(!"Compilation to string finished!")
 
-	gen-js-string : SourceFile(packageClause, imports, topLevelDecls) -> js
+	gen-js-string : SourceFile(packageClause, _, topLevelDecls) -> js
 		where
 			packageName := <package-name> packageClause;
 			debug(!<concat-strings> ["Ignoring package identifier (", packageName, ") and imports"]);
