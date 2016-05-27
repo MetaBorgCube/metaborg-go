@@ -19,17 +19,4 @@ rules
 			js := <map(gen-js-ast)> statements
 	
 	gen-js-ast:
-		ExpressionStmt(
-			UnaryExpr(
-				PrimaryExpr(
-					PrimaryExprArguments(
-						Operand(OperandName("println")),
-						Arguments(
-							ExpressionList(args)
-						)
-					)
-				)
-			)
-		) -> expStmt(MethodCall(Identifier("console"), "log", argsJs))
-		where
-			argsJs := <map(gen-js-ast)> args
+		ExpressionStmt(expression) -> <gen-js-ast> expression

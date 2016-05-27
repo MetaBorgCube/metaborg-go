@@ -12,6 +12,31 @@ imports
 	helpers
 		
 rules
+	
+	gen-js-ast:
+		UnaryExpr(unaryExpression) -> <gen-js-ast> unaryExpression
+	
+	gen-js-ast:
+		PrimaryExpr(primaryExpression) -> <gen-js-ast> primaryExpression
+	
+	gen-js-ast:
+		PrimaryExprArguments(
+			Operand(OperandName("println")),
+			Arguments(
+				ExpressionList(args)
+			)
+		) -> expStmt(MethodCall(Identifier("console"), "log", argsJs))
+		where
+			argsJs := <map(gen-js-ast)> args
 
 	gen-js-ast:
-		UnaryExpr(PrimaryExpr(Operand(Literal(StringLit(output))))) -> String(output)
+		Operand(operand) -> <gen-js-ast> operand
+
+	gen-js-ast:
+		OperandName(name) -> Identifier(name)
+
+	gen-js-ast:
+		Literal(literal) -> <gen-js-ast> literal
+
+	gen-js-ast: IntLit(int) -> String(int)
+	gen-js-ast: StringLit(string) -> String(string)
