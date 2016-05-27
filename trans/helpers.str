@@ -15,6 +15,10 @@ rules
 			debug(!<concat-strings> ["Found source file for package '", name, "'"])
 	
 	// Statements
+	statements-from-block: Block(statementList) -> statements
+		where
+			statements := <statements-from-list> statementList
+	
 	statements-from-list: StatementList(wrappedStatements) -> statements
 		where
 			statements := <map(unwrap-statement)> wrappedStatements

@@ -4,6 +4,7 @@ imports
 
 	Common
 	Statements
+	Expressions
 	Types
 
 context-free syntax
@@ -24,8 +25,8 @@ context-free syntax
 	// TODO: Constant declarations
 	ConstDecl.ConstDecl		= <const>
 	
-	IdentifierList.IdentifierList = <{ID ","}*>
-	ExpressionList.ExpressionList = <{Expression ","}*>
+	IdentifierList.IdentifierList = <<{ID ","}*>>
+	ExpressionList.ExpressionList = <<{Expression ","}*>>
 
 	// TODO: Iota
 
@@ -36,6 +37,7 @@ context-free syntax
 	VarDecl.VarDecl			= <var>
 
 	// TODO: Short variable declarations
+	ShortVarDecl.ShortVarDecl = <shortvar>
 
 	// Function declarations
 	/*
@@ -47,9 +49,11 @@ context-free syntax
 	
 	FunctionDecl.FunctionDecl	= <func <FunctionName> <FunOrSig>>
 	FunctionName.FunctionName	= ID
-	FunOrSig.Function			= <<Signature> <FunctionBody>>
-	FunOrSig.FunctionSignature	= Signature 
-	FunctionBody.FunctionBody	= Block
+	FunOrSig					= Function
+	FunOrSig					= FunctionSignature
+	Function.Function					= <<Signature> <FunctionBody>>
+	FunctionSignature.FunctionSignature	= Signature
+	FunctionBody.FunctionBody			= Block
 
 	// Method declarations
 	MethodDecl.MethodDecl		= <methoddecl>

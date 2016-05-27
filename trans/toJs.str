@@ -2,7 +2,6 @@ module toJs
 
 imports 
 	signatures/-
-	signatures/spoofaxJS-sig
 	trans/pp
 	helpers
 	
@@ -17,5 +16,5 @@ rules
 	 - generate-js-string	:	transform Go AST to Javascript string
 	 - generate-js-ast		:	transform Go AST to Javascript AST
 	
-	This file contains shared stragegies for both code generations.
+	This file contains shared strategies for both code generation methods.
 	*/

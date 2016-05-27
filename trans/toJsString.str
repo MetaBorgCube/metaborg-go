@@ -21,25 +21,48 @@ rules
 	gen-js-string : SourceFile(packageClause, imports, topLevelDecls) -> js
 		where
 			packageName := <package-name> packageClause;
+			debug(!<concat-strings> ["Ignoring package identifier (", packageName, ") and imports"]);
 			js := <concat-strings> <mapsep(gen-js-string|"\n\n")> topLevelDecls
 	
 	gen-js-string : FunctionDecl(
 		FunctionName(name),
 		Function(
-			Signature(parameters, returnType),
+			Signature(Parameters(params), returnType),
 			FunctionBody(block)
 		)
-	) -> $[function [name] {
-	[js]
+	) -> $[function [name]([paramsJs]) {
+	[bodyJs]
 	}]
 		where
-			debug(!<concat-strings> ["Found function ", name]);
-			js := <gen-js-string> block
+			debug(!<concat-strings> ["Found function ", name, " with parameters ", <write-to-string> params]);
+			paramsJs := <mapsep(gen-js-string|",")> params;
+			bodyJs := <gen-js-string> block
 			
+	gen-js-string : ParameterDecl(name, _) -> name
+	
 	gen-js-string : Block(statementList) -> js
 		where
 			statements := <statements-from-list> statementList;
 			js := <mapsep(gen-js-string|";\n")> statements
+			
+	gen-js-string:
+		ExpressionStmt(
+			UnaryExpr(
+				PrimaryExpr(
+					PrimaryExprArguments(
+						Operand(OperandName("println")),
+						Arguments(
+							ExpressionList(arguments)
+						)
+					)
+				)
+			)
+		) -> $[console.log([arguments-string])]
+		where
+			arguments-js := <mapsep(gen-js-string|",")> arguments;
+			arguments-string := <concat-strings> arguments-js
 	
-	gen-js-string : PrintLn(x) -> $[console.log([x])]
+	gen-js-string:
+		UnaryExpr(PrimaryExpr(Operand(Literal(StringLit(output))))) -> output
+		
 	
