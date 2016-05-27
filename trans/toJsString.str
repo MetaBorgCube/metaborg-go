@@ -27,16 +27,19 @@ rules
 	gen-js-string : FunctionDecl(
 		FunctionName(name),
 		Function(
-			Signature(parameters, returnType),
+			Signature(Parameters(params), returnType),
 			FunctionBody(block)
 		)
-	) -> $[function [name] {
-	[js]
+	) -> $[function [name]([paramsJs]) {
+	[bodyJs]
 	}]
 		where
-			debug(!<concat-strings> ["Found function ", name]);
-			js := <gen-js-string> block
+			debug(!<concat-strings> ["Found function ", name, " with parameters ", <write-to-string> params]);
+			paramsJs := <mapsep(gen-js-string|",")> params;
+			bodyJs := <gen-js-string> block
 			
+	gen-js-string : ParameterDecl(name, _) -> name
+	
 	gen-js-string : Block(statementList) -> js
 		where
 			statements := <statements-from-list> statementList;

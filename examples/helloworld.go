@@ -7,5 +7,9 @@ func a(x int) int {
 }
 
 func b(y int) int {
-	println("test");
+	println("test b");
+}
+
+func c() int {
+	println("test c");
 }
