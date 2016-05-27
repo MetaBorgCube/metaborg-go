@@ -20,3 +20,15 @@ rules
 	
 	gen-js-ast:
 		ExpressionStmt(expression) -> expStmt(<gen-js-ast> expression)
+			
+	gen-js-ast:
+		GoStmt(exp) ->  expStmt(MethodCall(Identifier(GOROUTINE_LIBNAME), GOROURTINE_GOMETHOD, [
+			AnonFunction([], [expStmt(expJs)])]
+		))
+		where
+			expJs := <gen-js-ast> exp		
+
+overlays 
+	
+	GOROUTINE_LIBNAME = "routine"
+	GOROURTINE_GOMETHOD = "go"

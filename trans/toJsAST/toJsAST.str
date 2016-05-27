@@ -34,5 +34,12 @@ rules
 		where
 			packageName := <package-name> packageClause;
 			debug(!<concat-strings> ["Ignoring package identifier (", packageName, ") and imports"]);
-			js := <map(gen-js-ast)> topLevelDecls
-			
+			jsdecl := <map(gen-js-ast)> topLevelDecls;
+			js := <conc> (IMPORTLIST, jsdecl)
+overlays
+	
+	IMPORTLIST = [
+		varDecl(GOROUTINE_LIBNAME, FunctionCall("require", [String("\"\"routine\"\"")]))
+	]
+	
+	

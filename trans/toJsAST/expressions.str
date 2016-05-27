@@ -39,8 +39,6 @@ rules
 			argsJs := <gen-js-ast> args
 	
 	// If the target is a primary expression, make a JS method call
-	/*
-	UNTESTED:
 	
 	gen-js-ast:
 		PrimaryExprArguments(
@@ -53,7 +51,7 @@ rules
 			args
 		) -> MethodCall(Identifier(receiver), methodName, argsJs)
 		where
-			argsJs := <gen-js-ast> args*/
+			argsJs := <gen-js-ast> args
 
 	gen-js-ast:
 		Arguments(

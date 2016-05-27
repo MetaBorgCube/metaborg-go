@@ -1,5 +1,5 @@
-var goroutine = require('./goroutine')
+var routine = require('./goroutine')
 
-goroutine.go(function(){
+routine.go(function(){
 	console.log("Hoi")
 })
