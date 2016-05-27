@@ -1,6 +1,5 @@
-function __go(func)
-{
-	func()
+module.exports = {
+	go: go,
 }
 
 //TODO: Main Go Routine Handling
