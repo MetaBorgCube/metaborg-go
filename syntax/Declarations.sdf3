@@ -25,8 +25,8 @@ context-free syntax
 	// TODO: Constant declarations
 	ConstDecl.ConstDecl		= <const>
 	
-	IdentifierList.IdentifierList = <<{ID ","}*>>
-	ExpressionList.ExpressionList = <<{Expression ","}*>>
+	IdentifierList.IdentifierList = <<{ID ","}+>>
+	ExpressionList.ExpressionList = <<{Expression ","}+>>
 
 	// TODO: Iota
 
@@ -34,7 +34,15 @@ context-free syntax
 	TypeDecl.TypeDecl		= <type>
 
 	// TODO: Variable declarations
-	VarDecl.VarDecl			= <var>
+	/*
+	VarDecl     = "var" ( VarSpec | "(" { VarSpec ";" } ")" ) .
+	VarSpec     = IdentifierList ( Type [ "=" ExpressionList ] | "=" ExpressionList ) .
+	*/
+	
+	VarDecl.VarDecl				= <var <VarSpec>>
+	VarSpec.VarSpecTyped		= <<IdentifierList> <Type> <VarDeclAssign?>>
+	VarSpec.VarSpec				= <<IdentifierList> <VarDeclAssign>>
+	VarDeclAssign.VarDeclAssign = <= <ExpressionList>>
 
 	// TODO: Short variable declarations
 	ShortVarDecl.ShortVarDecl = <shortvar>

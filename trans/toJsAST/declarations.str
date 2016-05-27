@@ -26,3 +26,22 @@ rules
 			bodyJs := <gen-js-ast> block
 	
 	gen-js-ast : ParameterDecl(name, _) -> parameter(name)
+	
+	gen-js-ast : VarDecl(varDecl) -> <gen-js-ast> varDecl
+	
+	gen-js-ast : VarSpecTyped(IdentifierList(identifierList), _, None()) -> declsJs
+		where
+			// Ignore type
+			declsJs := <map(to-js-id)> identifierList
+	
+	to-js-id : identifier -> varDecl(identifier, Null())
+	
+	gen-js-ast : VarSpec(IdentifierList(targets), VarDeclAssign(ExpressionList(values))) -> declarationsJs
+		with
+			debug(!<concat-strings> ["Targets ", <write-to-string> targets]);
+			debug(!<concat-strings> ["Values ", <write-to-string> values]);
+			declarationsJs := <zip(to-js-ids)> (targets, values)
+	
+	to-js-ids: (target, value) -> varDecl(target, valueJs)
+		with
+			valueJs := <gen-js-ast> value
