@@ -1,7 +1,7 @@
 module toJsString
 
 imports 
-	src-gen/signatures/-
+	signatures/-
 	helpers
 		
 rules
@@ -41,5 +41,5 @@ rules
 			statements := <statements-from-list> statementList;
 			js := <mapsep(gen-js-string|";\n")> statements
 	
-	gen-js-string : PrintLn() -> "console.log()"
+	gen-js-string : PrintLn(x) -> $[console.log([x])]
 	
