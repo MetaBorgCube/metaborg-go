@@ -8,7 +8,7 @@ imports
   analysis
   toJs
   toJsString
-  toJsAST
+  toJsAST/toJsAST
 
 rules // Debugging
   
