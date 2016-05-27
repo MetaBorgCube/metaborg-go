@@ -1,0 +1,17 @@
+module toJsAST/expressions
+
+imports 
+	signatures/-
+	signatures/spoofaxJS-sig
+	signatures/MethodDecl-sig
+	signatures/Parameter-sig
+	signatures/Statement-sig
+	signatures/Expression-sig
+	signatures/Common-sig
+	trans/pp
+	helpers
+		
+rules
+
+	gen-js-ast:
+		UnaryExpr(PrimaryExpr(Operand(Literal(StringLit(output))))) -> String(output)

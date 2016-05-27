@@ -1,0 +1,28 @@
+module toJsAST/declarations
+
+imports 
+	signatures/-
+	signatures/spoofaxJS-sig
+	signatures/MethodDecl-sig
+	signatures/Parameter-sig
+	signatures/Statement-sig
+	signatures/Expression-sig
+	signatures/Common-sig
+	trans/pp
+	helpers
+		
+rules
+	
+	gen-js-ast : FunctionDecl(
+		FunctionName(name),
+		Function(
+			Signature(Parameters(params), returnType),
+			FunctionBody(block)
+		)
+	) -> method(name, paramsJs, bodyJs)
+		where
+			debug(!<concat-strings> ["Found function ", name, " with parameters ", <write-to-string> params]);
+			paramsJs := <map(gen-js-ast)> params;
+			bodyJs := <gen-js-ast> block
+	
+	gen-js-ast : ParameterDecl(name, _) -> parameter(name)

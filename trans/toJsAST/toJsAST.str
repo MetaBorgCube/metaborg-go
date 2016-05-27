@@ -10,6 +10,9 @@ imports
 	signatures/Common-sig
 	trans/pp
 	helpers
+	toJsAST/declarations
+	toJsAST/statements
+	toJsAST/expressions
 		
 rules
 
@@ -32,42 +35,4 @@ rules
 			packageName := <package-name> packageClause;
 			debug(!<concat-strings> ["Ignoring package identifier (", packageName, ") and imports"]);
 			js := <map(gen-js-ast)> topLevelDecls
-	
-	gen-js-ast : FunctionDecl(
-		FunctionName(name),
-		Function(
-			Signature(Parameters(params), returnType),
-			FunctionBody(block)
-		)
-	) -> method(name, paramsJs, bodyJs)
-		where
-			debug(!<concat-strings> ["Found function ", name, " with parameters ", <write-to-string> params]);
-			paramsJs := <map(gen-js-ast)> params;
-			bodyJs := <gen-js-ast> block
-	
-	gen-js-ast : ParameterDecl(name, _) -> parameter(name)
-	
-	gen-js-ast : Block(statementList) -> js
-		where
-			statements := <statements-from-list> statementList;
-			js := <map(gen-js-ast)> statements
-	
-	gen-js-ast:
-		ExpressionStmt(
-			UnaryExpr(
-				PrimaryExpr(
-					PrimaryExprArguments(
-						Operand(OperandName("println")),
-						Arguments(
-							ExpressionList(args)
-						)
-					)
-				)
-			)
-		) -> expStmt(MethodCall(Identifier("console"), "log", argsJs))
-		where
-			argsJs := <map(gen-js-ast)> args
-	
-	gen-js-ast:
-		UnaryExpr(PrimaryExpr(Operand(Literal(StringLit(output))))) -> String(output)
 			

@@ -1,0 +1,35 @@
+module toJsAST/statements
+
+imports 
+	signatures/-
+	signatures/spoofaxJS-sig
+	signatures/MethodDecl-sig
+	signatures/Parameter-sig
+	signatures/Statement-sig
+	signatures/Expression-sig
+	signatures/Common-sig
+	trans/pp
+	helpers
+		
+rules
+	
+	gen-js-ast : Block(statementList) -> js
+		where
+			statements := <statements-from-list> statementList;
+			js := <map(gen-js-ast)> statements
+	
+	gen-js-ast:
+		ExpressionStmt(
+			UnaryExpr(
+				PrimaryExpr(
+					PrimaryExprArguments(
+						Operand(OperandName("println")),
+						Arguments(
+							ExpressionList(args)
+						)
+					)
+				)
+			)
+		) -> expStmt(MethodCall(Identifier("console"), "log", argsJs))
+		where
+			argsJs := <map(gen-js-ast)> args
