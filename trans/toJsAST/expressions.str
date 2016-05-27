@@ -22,12 +22,43 @@ rules
 	gen-js-ast:
 		PrimaryExprArguments(
 			Operand(OperandName("println")),
-			Arguments(
-				ExpressionList(args)
-			)
-		) -> expStmt(MethodCall(Identifier("console"), "log", argsJs))
+			args
+		) -> MethodCall(Identifier("console"), "log", argsJs)
 		where
-			argsJs := <map(gen-js-ast)> args
+			argsJs := <gen-js-ast> args
+	
+	// If the target is an operand, make a JS function call
+	gen-js-ast:
+		PrimaryExprArguments(
+			Operand(
+				OperandName(target)
+			),
+			args
+		) -> FunctionCall(target, argsJs)
+		where
+			argsJs := <gen-js-ast> args
+	
+	// If the target is a primary expression, make a JS method call
+	/*
+	UNTESTED:
+	
+	gen-js-ast:
+		PrimaryExprArguments(
+			Operand(
+				MethodExpr(
+					TypeName(receiver),
+					methodName
+				)
+			),
+			args
+		) -> MethodCall(Identifier(receiver), methodName, argsJs)
+		where
+			argsJs := <gen-js-ast> args*/
+
+	gen-js-ast:
+		Arguments(
+			ExpressionList(args)
+		) -> <map(gen-js-ast)> args
 
 	gen-js-ast:
 		Operand(operand) -> <gen-js-ast> operand

@@ -19,4 +19,4 @@ rules
 			js := <map(gen-js-ast)> statements
 	
 	gen-js-ast:
-		ExpressionStmt(expression) -> <gen-js-ast> expression
+		ExpressionStmt(expression) -> expStmt(<gen-js-ast> expression)
