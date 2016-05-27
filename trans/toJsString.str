@@ -21,6 +21,7 @@ rules
 	gen-js-string : SourceFile(packageClause, imports, topLevelDecls) -> js
 		where
 			packageName := <package-name> packageClause;
+			debug(!<concat-strings> ["Ignoring package identifier (", packageName, ") and imports"]);
 			js := <concat-strings> <mapsep(gen-js-string|"\n\n")> topLevelDecls
 	
 	gen-js-string : FunctionDecl(
