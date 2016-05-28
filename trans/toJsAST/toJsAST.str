@@ -39,7 +39,7 @@ rules
 overlays
 	
 	IMPORTLIST = [
-		varDecl(GOROUTINE_LIBNAME, FunctionCall("require", [String("\"\"routine\"\"")]))
+		varDecl(GOROUTINE_LIBNAME, Call(Identifier("require"), [String("\"\"routine\"\"")]))
 	]
 	
 	

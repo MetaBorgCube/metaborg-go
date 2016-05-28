@@ -23,7 +23,7 @@ rules
 		PrimaryExprArguments(
 			Operand(OperandName("println")),
 			args
-		) -> MethodCall(Identifier("console"), "log", argsJs)
+		) -> Call(Property(Identifier("console"), "log"), argsJs)
 		where
 			argsJs := <gen-js-ast> args
 	
@@ -34,7 +34,7 @@ rules
 				OperandName(target)
 			),
 			args
-		) -> FunctionCall(target, argsJs)
+		) -> Call(target, argsJs)
 		where
 			argsJs := <gen-js-ast> args
 	
@@ -49,7 +49,7 @@ rules
 				)
 			),
 			args
-		) -> MethodCall(Identifier(receiver), methodName, argsJs)
+		) -> Call(Property(Identifier(receiver), methodName), argsJs)
 		where
 			argsJs := <gen-js-ast> args
 
