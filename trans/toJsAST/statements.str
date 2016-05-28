@@ -16,10 +16,10 @@ rules
 	gen-js-ast : Block(statementList) -> js
 		where
 			statements := <statements-from-list> statementList;
-			js := <map(gen-js-ast)> statements
+			js := <mapconcat(gen-js-ast)> statements
 	
 	gen-js-ast:
-		ExpressionStmt(expression) -> expStmt(<gen-js-ast> expression)
+		ExpressionStmt(expression) -> [expStmt(<gen-js-ast> expression)]
 			
 	gen-js-ast:
 		GoStmt(exp) ->  expStmt(Call(Property(Identifier(GOROUTINE_LIBNAME), GOROURTINE_GOMETHOD), [

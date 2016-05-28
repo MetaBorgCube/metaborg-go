@@ -3,7 +3,10 @@ package test
 import . "test"
 
 func a(x int) int {
-	println();
+	var i int;
+	var x = 1;
+	var y = 2;
+	println("a");
 }
 
 func b(y int) int {
