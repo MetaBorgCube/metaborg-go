@@ -76,7 +76,7 @@ context-free syntax
 		/*
 		OperandName = identifier | QualifiedIdent.
 		*/
-		OperandName = ID
+		OperandName = Identifier
 		OperandName = QualifiedIdent
 	
 	// TODO: Composite literals
@@ -186,3 +186,7 @@ context-free syntax
 	Conversion.Conversion = <<Type>(<Expression>)>
 	
 	// Constant expressions
+	
+
+	
+	

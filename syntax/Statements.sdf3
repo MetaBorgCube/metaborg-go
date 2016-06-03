@@ -98,8 +98,10 @@ context-free syntax
 		assign_op = [ add_op | mul_op ] "=" .
 		*/
 		Assignment.Assignment = <<ExpressionList><AssignOp><ExpressionList>>
+		
 		AssignOp.AssignAddOp = <<AddOp>=>
 		AssignOp.AssignMulOp = <<MulOp>=>
+		AssignOp.AssignEquals = <=>
 	
 	// If statements
 	
@@ -223,3 +225,8 @@ context-free syntax
 		DeferStmt = "defer" Expression .
 		*/
 		DeferStmt.DeferStmt = <defer <Expression>>
+		
+context-free priorities
+	
+	{SendStmt.SendStmt} > {ExpressionStmt.ExpressionStmt}
+		
