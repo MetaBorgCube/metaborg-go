@@ -11,6 +11,7 @@ imports
 	trans/pp
 	helpers
 	toJsAST/statements
+	toJsAST/declarations
 	toJsAST/channelhelper
 		
 rules
@@ -99,5 +100,14 @@ rules
 	gen-js-ast: IntLit(int) -> String(int)
 	gen-js-ast: StringLit(string) -> String(string)
 
-		
-	
+	gen-js-ast: FunctionLit(function) -> <gen-js-ast> function
+
+	gen-js-ast:
+		Function(
+			Signature(Parameters(params), returnType),
+			FunctionBody(block)
+		) -> AnonFunction(paramsJs, bodyJs)
+		where
+			<debug(!"Found anonymous function with parameters ")> <write-to-string> params;
+			paramsJs := <map(gen-js-ast)> params;
+			bodyJs := <gen-js-ast> block

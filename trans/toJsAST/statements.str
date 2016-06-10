@@ -9,6 +9,7 @@ imports
 	signatures/Expression-sig
 	signatures/Common-sig
 	toJsAST/channelhelper
+	toJsAST/expressions
 	trans/pp
 	helpers
 	
@@ -83,7 +84,16 @@ rules
 			AnonFunction([], [expStmt(expJs)])]
 		))
 		where
-			expJs := <gen-js-ast> exp		
+			expJs := <gen-js-ast> exp
+			
+	gen-js-ast:
+		ReturnStmt(None()) -> [return(Undefined())]
+			
+	// TODO: support multiple return values
+	gen-js-ast:
+		ReturnStmt(Some(ExpressionList([exp | _]))) -> [return(expJs)]
+		where
+			expJs := <gen-js-ast> exp
 
 overlays 
 	
