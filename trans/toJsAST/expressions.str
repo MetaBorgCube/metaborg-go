@@ -86,7 +86,7 @@ rules
 				Literal(functionLit)
 			),
 			args
-		) -> Call(functionJs, argsJs)
+		) -> Call(Parenthesised(functionJs), argsJs)
 		where
 			functionJs := <gen-js-ast> functionLit;
 			argsJs := <gen-js-ast> args
