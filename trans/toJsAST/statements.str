@@ -80,9 +80,9 @@ rules
 			rhsJs := <gen-js-ast> rhs
 			
 	gen-js-ast:
-		GoStmt(exp) ->  expStmt(Call(Property(Identifier(GOROUTINE_LIBNAME), GOROURTINE_GOMETHOD), [
-			AnonFunction([], [expStmt(expJs)])]
-		))
+		GoStmt(exp) -> [expStmt(Call(Property(Identifier(GOROUTINE_LIBNAME), GOROURTINE_GOMETHOD),
+			[AnonFunction([], [expStmt(expJs)])]
+		))]
 		where
 			expJs := <gen-js-ast> exp
 			
