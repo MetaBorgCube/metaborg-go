@@ -43,3 +43,15 @@ func x(y int) int {
 	println("Function x called");
 	return 1;
 }
+
+func channels() {
+	var messages = make(chan string);
+	
+	go func() {
+		messages <- "ping";
+	}();
+	
+	var msg = <-messages;
+	
+	println(msg);
+}
