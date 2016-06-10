@@ -38,7 +38,7 @@ rules
             )
 		) -> Call(Property(Identifier(GOROUTINE_LIBNAME), GOROUTINE_MAKECHANNELMETHOD), argsJs)
 		where
-			argsJs := <gen-js-ast> Arguments(args)
+			argsJs := <gen-js-ast> Arguments(Some(args))
 			
 			
 	gen-js-ast:
@@ -93,8 +93,13 @@ rules
 
 	gen-js-ast:
 		Arguments(
-			ExpressionList(args)
+			Some(ExpressionList(args))
 		) -> <map(gen-js-ast)> args
+	
+	gen-js-ast:
+		Arguments(
+			None()
+		) -> []
 
 	gen-js-ast:
 		Operand(operand) -> <gen-js-ast> operand
