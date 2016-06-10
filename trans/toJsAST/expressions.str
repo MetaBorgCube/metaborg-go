@@ -79,6 +79,17 @@ rules
 		) -> Call(Property(Identifier(receiver), methodName), argsJs)
 		where
 			argsJs := <gen-js-ast> args
+	
+	gen-js-ast:
+		PrimaryExprArguments(
+			Operand(
+				Literal(functionLit)
+			),
+			args
+		) -> Call(functionJs, argsJs)
+		where
+			functionJs := <gen-js-ast> functionLit;
+			argsJs := <gen-js-ast> args
 
 	gen-js-ast:
 		Arguments(
