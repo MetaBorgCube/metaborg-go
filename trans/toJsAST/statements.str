@@ -63,6 +63,20 @@ rules
 	
 	gen-js-ast:
 		ExpressionStmt(expression) -> [expStmt(<gen-js-ast> expression)]
+	
+	gen-js-ast:
+		Assignment(
+			ExpressionList(targetExpressions),
+			AssignEquals(),
+			ExpressionList(valueExpressions)
+		) -> js
+	      where
+			js := <zip(to-js-equals-assign)> (targetExpressions, valueExpressions)
+			
+	to-js-equals-assign: (lhs, rhs) -> assignment(lhsJs, rhsJs)
+		where
+			lhsJs := <gen-js-ast> lhs;
+			rhsJs := <gen-js-ast> rhs
 			
 	gen-js-ast:
 		GoStmt(exp) ->  expStmt(Call(Property(Identifier(GOROUTINE_LIBNAME), GOROURTINE_GOMETHOD), [

@@ -6,6 +6,7 @@ func a(x int) int {
 	var i int;
 	var x = 1;
 	var y = 2;
+	y = 3;
 	println("a");
 }
 
