@@ -8,15 +8,58 @@ imports
 	signatures/Statement-sig
 	signatures/Expression-sig
 	signatures/Common-sig
+	toJsAST/channelhelper
 	trans/pp
 	helpers
+	
 		
 rules
 	
 	gen-js-ast : Block(statementList) -> js
 		where
 			statements := <statements-from-list> statementList;
-			js := <mapconcat(gen-js-ast)> statements
+			js := <stmt-iter> statements
+	
+	
+	//Send Statement, Generate Callback
+	stmt-iter: [SendStmt(channel, exp) | xs] ->[
+		expStmt(
+			Call(
+				Property(chanjs, "send"),[ 
+				expjs, 
+				AnonFunction([], remaining)
+               ]
+            )
+        )]
+		where
+			chanjs := <gen-js-ast> channel;
+			expjs := <gen-js-ast> exp;
+			remaining := <stmt-iter> xs
+	
+	//Receive Expressions in Expression
+	//Untangle the receive expressions, generate extra statements
+	//and then execute this statement
+	stmt-iter: [stmt | tail] -> stmtJs
+		where
+			blockingStmts := <collect-om(?SubstitutedExp(_, _, _)); debug(!"Blocking Set: ")>  stmt;
+			<not-empty> blockingStmts;
+			extraStatements := <mapconcat(extract-stmtlist)> blockingStmts;
+			stmtJs := <generate-receive(|stmt, tail)> extraStatements 
+
+	//Normal  non-blocking statement
+	stmt-iter: [stmt | tail] -> <conc> (xjs, xsjs)
+		where
+			blockingStmts := <collect-om(?SubstitutedExp(_, _, _)); debug(!"Empty Blocking Set: ")>  stmt;
+			<equal>(blockingStmts, []);
+			xjs := <gen-js-ast> stmt;
+			xsjs := <stmt-iter> tail
+	
+	//Empty 
+	stmt-iter: [] -> []
+	
+	not-empty: [x | xs] -> []
+	
+	
 	
 	gen-js-ast:
 		ExpressionStmt(expression) -> [expStmt(<gen-js-ast> expression)]
@@ -32,3 +75,4 @@ overlays
 	
 	GOROUTINE_LIBNAME = "routine"
 	GOROURTINE_GOMETHOD = "go"
+	GOROUTINE_MAKECHANNELMETHOD = "newChannel"

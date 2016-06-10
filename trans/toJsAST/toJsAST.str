@@ -13,6 +13,7 @@ imports
 	toJsAST/declarations
 	toJsAST/statements
 	toJsAST/expressions
+	toJsAST/channelhelper
 		
 rules
 
@@ -24,22 +25,32 @@ rules
 		(selected, position, ast, path, project-path) -> (filename, pp)
 		with
 			filename := <guarantee-extension(|"js")> path;
+			debug(!"Analyzing Channel Usage");
+			analyzedAst := <debug(!"Pre:"); subAllChannels; debug(!"Post:")> ast;
 			debug(!"Starting compilation pretty printed JS AST...");
-			result	 := <gen-js-ast> ast;
+			result	 := <gen-js-ast> analyzedAst;
 			debug(!"Compilation to JS AST finsished!");
 			pp 		 := <pp-js> result;
 			debug(!"Pretty printing of JS AST finished!")
+
+	sub-go :
+		(selected, position, ast, path, project-path) -> (filename, pp)
+		with
+			filename := <guarantee-extension(|"aterm")> path;
+			debug(!"Analyzing Channel Usage");
+			analyzedAst := <debug(!"Pre:"); subAllChannels; debug(!"Post:")> ast;
+			pp 		 := <pp-lep-string> analyzedAst
 
 	gen-js-ast : SourceFile(packageClause, _, topLevelDecls) -> Program(js)
 		where
 			packageName := <package-name> packageClause;
 			debug(!<concat-strings> ["Ignoring package identifier (", packageName, ") and imports"]);
 			jsdecl := <map(gen-js-ast)> topLevelDecls;
-			js := <conc> (IMPORTLIST, jsdecl)
+			js := <concat> [IMPORTLIST, jsdecl, [expStmt(Call(Identifier("main"), []))]]
 overlays
 	
 	IMPORTLIST = [
-		varDecl(GOROUTINE_LIBNAME, Call(Identifier("require"), [String("\"\"routine\"\"")]))
+		varDecl(GOROUTINE_LIBNAME, Call(Identifier("require"), [String("\"\"./goroutine.js\"\"")]))
 	]
 	
 	

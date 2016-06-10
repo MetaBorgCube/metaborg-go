@@ -45,7 +45,7 @@ context-free syntax
 	
 	SimpleStmt = EmptyStmt
 	SimpleStmt = ExpressionStmt
-	SimpleStmt = SendStmt
+	SimpleStmt = SendStmt {prefer}
 	SimpleStmt = IncDecStmt
 	SimpleStmt = Assignment
 	SimpleStmt = ShortVarDecl
@@ -228,5 +228,5 @@ context-free syntax
 		
 context-free priorities
 	
-	{SendStmt.SendStmt} > {ExpressionStmt.ExpressionStmt}
+	 {ExpressionStmt.ExpressionStmt} > {SendStmt.SendStmt}
 		

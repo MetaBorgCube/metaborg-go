@@ -130,7 +130,9 @@ context-free syntax
 		Arguments      = "(" [ ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ] ] ")" .
 		*/
 		Arguments.Arguments = <(<ExpressionList>)>
-	
+		Arguments.TypeArg = <(<TypeLit>)>
+		Arguments.TypeArgWithList = <(<TypeLit>, <ExpressionList>)>
+		
 	// Selectors
 	
 	// Method expressions

@@ -10,9 +10,11 @@ imports
 	signatures/Common-sig
 	trans/pp
 	helpers
+	toJsAST/statements
+	toJsAST/channelhelper
 		
 rules
-	
+	//ExpressionList([UnaryExpr(PrimaryExpr(Operand(Literal(IntLit("10")))))])
 	gen-js-ast:
 		UnaryExpr(unaryExpression) -> <gen-js-ast> unaryExpression
 	
@@ -26,6 +28,23 @@ rules
 		) -> Call(Property(Identifier("console"), "log"), argsJs)
 		where
 			argsJs := <gen-js-ast> args
+
+	gen-js-ast:
+		PrimaryExprArguments(
+			Operand(OperandName("make")),
+			TypeArgWithList(Channel(_), 
+				args
+            )
+		) -> Call(Property(Identifier(GOROUTINE_LIBNAME), GOROUTINE_MAKECHANNELMETHOD), argsJs)
+		where
+			argsJs := <gen-js-ast> Arguments(args)
+			
+			
+	gen-js-ast:
+		PrimaryExprArguments(
+			Operand(OperandName("make")),
+			TypeArg(Channel(_))
+		) -> Call(Property(Identifier(GOROUTINE_LIBNAME), GOROUTINE_MAKECHANNELMETHOD), [IntegerLiteral("0")])
 	
 	// If the target is an operand, make a JS function call
 	gen-js-ast:
@@ -39,6 +58,13 @@ rules
 			argsJs := <gen-js-ast> args
 	
 	// If the target is a primary expression, make a JS method call
+	
+	gen-js-ast:
+		Channel(
+			UnaryExpr(
+				x
+			)
+		) -> <gen-js-ast> x
 	
 	gen-js-ast:
 		PrimaryExprArguments(
@@ -61,11 +87,17 @@ rules
 	gen-js-ast:
 		Operand(operand) -> <gen-js-ast> operand
 
+
+	gen-js-ast: SubstitutedExp(exp, stmtlist, lastvar) -> <gen-js-ast> exp
+	
 	gen-js-ast:
 		OperandName(name) -> Identifier(name)
 
 	gen-js-ast:
-		Literal(literal) -> <gen-js-ast> literal
+		Literal(literal) -> <debug(!"LIT"); gen-js-ast> literal
 
 	gen-js-ast: IntLit(int) -> String(int)
 	gen-js-ast: StringLit(string) -> String(string)
+
+		
+	

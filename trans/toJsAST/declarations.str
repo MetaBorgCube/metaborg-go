@@ -27,6 +27,7 @@ rules
 	
 	gen-js-ast : ParameterDecl(name, _) -> parameter(name)
 	
+	
 	gen-js-ast : VarDecl(varDecl) -> <gen-js-ast> varDecl
 	
 	gen-js-ast : VarSpecTyped(IdentifierList(identifierList), _, None()) -> declsJs
@@ -41,6 +42,7 @@ rules
 			debug(!<concat-strings> ["Targets ", <write-to-string> targets]);
 			debug(!<concat-strings> ["Values ", <write-to-string> values]);
 			declarationsJs := <zip(to-js-ids)> (targets, values)
+	
 	
 	to-js-ids: (target, value) -> varDecl(target, valueJs)
 		with

@@ -4,6 +4,7 @@ imports
   
 	Common
 	Declarations
+	Expressions
 
 context-free syntax
 
@@ -82,4 +83,7 @@ context-free syntax
 	MapType.MapType				= <maptype>
 	
 	// TODO: Channel types
-	ChannelType.ChannelType		= <channeltype>
+	ChannelType.Channel	= <chan <Type>>
+	ChannelType.ReceivingChannel = <chan <UnaryOp> <Type>>
+	ChannelType.SendingChannel = <<UnaryOp> chan <Type>>
+	
