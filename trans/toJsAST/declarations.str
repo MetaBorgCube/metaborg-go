@@ -27,23 +27,32 @@ rules
 	
 	gen-js-ast : ParameterDecl(name, _) -> parameter(name)
 	
-	
+	gen-js-ast : ConstDecl(constDecl) -> <gen-js-ast> constDecl
 	gen-js-ast : VarDecl(varDecl) -> <gen-js-ast> varDecl
 	
-	gen-js-ast : VarSpecTyped(IdentifierList(identifierList), _, None()) -> declsJs
-		where
-			// Ignore type
-			declsJs := <map(to-js-id)> identifierList
+	// Ignore type
+	gen-js-ast : VarSpecTyped(IdentifierList(identifierList), _, None()) -> <map(to-js-var)> identifierList
+	gen-js-ast : ConstSpecTyped(IdentifierList(identifierList), _, None()) -> <map(to-js-const)> identifierList
 	
-	to-js-id : identifier -> varDecl(identifier, Null())
+	to-js-var : identifier -> varDecl(identifier, Null())
+	to-js-const : identifier -> constDecl(identifier, Null())
 	
 	gen-js-ast : VarSpec(IdentifierList(targets), VarDeclAssign(ExpressionList(values))) -> declarationsJs
 		with
 			debug(!<concat-strings> ["Targets ", <write-to-string> targets]);
 			debug(!<concat-strings> ["Values ", <write-to-string> values]);
-			declarationsJs := <zip(to-js-ids)> (targets, values)
+			declarationsJs := <zip(to-js-vars)> (targets, values)
 	
+	gen-js-ast : ConstSpec(IdentifierList(targets), ConstDeclAssign(ExpressionList(values))) -> declarationsJs
+		with
+			debug(!<concat-strings> ["Targets ", <write-to-string> targets]);
+			debug(!<concat-strings> ["Values ", <write-to-string> values]);
+			declarationsJs := <zip(to-js-consts)> (targets, values)
 	
-	to-js-ids: (target, value) -> varDecl(target, valueJs)
+	to-js-vars: (target, value) -> varDecl(target, valueJs)
+		with
+			valueJs := <gen-js-ast> value
+	
+	to-js-consts: (target, value) -> constDecl(target, valueJs)
 		with
 			valueJs := <gen-js-ast> value

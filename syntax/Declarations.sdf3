@@ -22,8 +22,16 @@ context-free syntax
 	TopLevelDecl			= FunctionDecl
 	TopLevelDecl			= MethodDecl
 
-	// TODO: Constant declarations
-	ConstDecl.ConstDecl		= <const>
+	// Constant declarations
+	/*
+	ConstDecl      = "const" ( ConstSpec | "(" { ConstSpec ";" } ")" ) .
+	ConstSpec      = IdentifierList [ [ Type ] "=" ExpressionList ] .
+	*/
+
+	ConstDecl.ConstDecl				= <const <ConstSpec>>
+	ConstSpec.ConstSpecTyped		= <<IdentifierList> <Type> <ConstDeclAssign?>>
+	ConstSpec.ConstSpec				= <<IdentifierList> <ConstDeclAssign>>
+	ConstDeclAssign.ConstDeclAssign = <= <ExpressionList>>
 	
 	IdentifierList.IdentifierList = <<{ID ","}+>>
 	ExpressionList.ExpressionList = <<{Expression ","}+>>
@@ -33,7 +41,7 @@ context-free syntax
 	// TODO: Type declarations
 	TypeDecl.TypeDecl		= <type>
 
-	// TODO: Variable declarations
+	// Variable declarations
 	/*
 	VarDecl     = "var" ( VarSpec | "(" { VarSpec ";" } ")" ) .
 	VarSpec     = IdentifierList ( Type [ "=" ExpressionList ] | "=" ExpressionList ) .

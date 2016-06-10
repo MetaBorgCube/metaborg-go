@@ -7,6 +7,7 @@ func a(x int) int {
 	var x = 1;
 	var y = 2;
 	y = 3;
+	const d int;
 	println("a");
 }
 
