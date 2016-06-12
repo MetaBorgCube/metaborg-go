@@ -93,6 +93,11 @@ rules
 
 	gen-js-ast:
 		Arguments(
+			ExpressionList(args)
+		) -> <map(gen-js-ast)> args
+
+	gen-js-ast:
+		Arguments(
 			Some(ExpressionList(args))
 		) -> <map(gen-js-ast)> args
 	
