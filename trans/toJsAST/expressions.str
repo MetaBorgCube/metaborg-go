@@ -11,6 +11,7 @@ imports
 	trans/pp
 	helpers
 	toJsAST/statements
+	toJsAST/declarations
 	toJsAST/channelhelper
 		
 rules
@@ -37,7 +38,7 @@ rules
             )
 		) -> Call(Property(Identifier(GOROUTINE_LIBNAME), GOROUTINE_MAKECHANNELMETHOD), argsJs)
 		where
-			argsJs := <gen-js-ast> Arguments(args)
+			argsJs := <gen-js-ast> Arguments(Some(args))
 			
 			
 	gen-js-ast:
@@ -78,11 +79,27 @@ rules
 		) -> Call(Property(Identifier(receiver), methodName), argsJs)
 		where
 			argsJs := <gen-js-ast> args
+	
+	gen-js-ast:
+		PrimaryExprArguments(
+			Operand(
+				Literal(functionLit)
+			),
+			args
+		) -> Call(Parenthesised(functionJs), argsJs)
+		where
+			functionJs := <gen-js-ast> functionLit;
+			argsJs := <gen-js-ast> args
 
 	gen-js-ast:
 		Arguments(
-			ExpressionList(args)
+			Some(ExpressionList(args))
 		) -> <map(gen-js-ast)> args
+	
+	gen-js-ast:
+		Arguments(
+			None()
+		) -> []
 
 	gen-js-ast:
 		Operand(operand) -> <gen-js-ast> operand
@@ -99,5 +116,14 @@ rules
 	gen-js-ast: IntLit(int) -> String(int)
 	gen-js-ast: StringLit(string) -> String(string)
 
-		
-	
+	gen-js-ast: FunctionLit(function) -> <gen-js-ast> function
+
+	gen-js-ast:
+		Function(
+			Signature(Parameters(params), returnType),
+			FunctionBody(block)
+		) -> AnonFunction(paramsJs, bodyJs)
+		where
+			<debug(!"Found anonymous function with parameters ")> <write-to-string> params;
+			paramsJs := <map(gen-js-ast)> params;
+			bodyJs := <gen-js-ast> block
