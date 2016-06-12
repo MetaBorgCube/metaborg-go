@@ -15,51 +15,83 @@ imports
 		
 rules
 	
+	func-block : Block(statementList) -> [try(
+		<conc> ([deferStackDecl], statementsJs), 
+		catch(Identifier("e"), [executeDeferred], empty())
+	)
+	]
+		where
+			deferstackname := <debug(!"HOOI"); newname> "___deferstack___";
+			deferStackDecl := varDecl(deferstackname, Call(Property(Identifier(GOROUTINE_LIBNAME), GODEFER_NEWDEFERMETHOD), []));
+			statements := <debug(!"HAAI"); statements-from-list> statementList;
+			executeDeferred := expStmt(Call(Property(Identifier(deferstackname), GODEFER_EXECECUTEMETHOD), []));
+			statementsWithAddedJs := <conc; debug(!"Concat")> (statements, [AddedJsStmt(executeDeferred)]);
+			statementsJs := <debug(!"Block"); stmt-iter(|deferstackname); debug(!"Finished STMT Iter")> statementsWithAddedJs	
+			//TODO: Add Cleanup on return
+	
 	gen-js-ast : Block(statementList) -> js
 		where
 			statements := <statements-from-list> statementList;
-			js := <stmt-iter> statements
+			js := <stmt-iter(|"")> statements 
 	
 	
 	//Send Statement, Generate Callback
-	stmt-iter: [SendStmt(channel, exp) | xs] ->[
+	stmt-iter(|defername): [SendStmt(channel, exp) | xs] ->[
 		expStmt(
 			Call(
 				Property(chanjs, "send"),[ 
 				expjs, 
-				AnonFunction([], remaining)
+				AnonFunction([], [try(remaining, catch(Identifier("e"), [executeDeferred], empty()))])
                ]
             )
         )]
 		where
 			chanjs := <gen-js-ast> channel;
 			expjs := <gen-js-ast> exp;
-			remaining := <stmt-iter> xs
+			remaining := <stmt-iter(|defername)> xs;
+			executeDeferred := expStmt(Call(Property(Identifier(defername), GODEFER_EXECECUTEMETHOD), []))
+	
+	
+	//Call(Property(Identifier("console"),"log"),[String("\"test\"")])
+	//To simlify it only (anonymous) functions are allowed;
+	stmt-iter(|defername): [DeferStmt(exp) | tail] -> <concat> [[addStmt], paramStmt, <stmt-iter(|defername)> tail]
+		where
+			expJs := <gen-js-ast; debug(!"ExpInJS")> exp;
+			addStmt := expStmt(Call(Property(Identifier(defername), "add"), [<debug(!"FuncNamePre"); funcname; debug(!"FuncNamePost")> expJs]));
+			paramStmt :=  <debug(!"ParPre"); params; map(gen-addparamstmt(|defername))> expJs
+			 
+	funcname: Call(Property(ident, p), params) -> Property(ident, p)
+	funcname: Call(x, params) -> Identifier(x)
+	
+	params: Call(funcname, params) -> params
+	gen-addparamstmt(|defername): x -> expStmt(Call(Property(Identifier(defername), GODEFER_ADDPARAMMETHOD), [x]))
 	
 	//Receive Expressions in Expression
 	//Untangle the receive expressions, generate extra statements
 	//and then execute this statement
-	stmt-iter: [stmt | tail] -> stmtJs
+	stmt-iter(|defername): [stmt | tail] -> stmtJs
 		where
 			blockingStmts := <collect-om(?SubstitutedExp(_, _, _)); debug(!"Blocking Set: ")>  stmt;
 			<not-empty> blockingStmts;
 			extraStatements := <mapconcat(extract-stmtlist)> blockingStmts;
-			stmtJs := <generate-receive(|stmt, tail)> extraStatements 
+			stmtJs := <generate-receive(|stmt, tail, defername)> extraStatements 
 
 	//Normal  non-blocking statement
-	stmt-iter: [stmt | tail] -> <conc> (xjs, xsjs)
+	stmt-iter(|defername): [stmt | tail] -> <conc> (xjs, xsjs)
 		where
 			blockingStmts := <collect-om(?SubstitutedExp(_, _, _)); debug(!"Empty Blocking Set: ")>  stmt;
 			<equal>(blockingStmts, []);
 			xjs := <gen-js-ast> stmt;
-			xsjs := <stmt-iter> tail
+			xsjs := <stmt-iter(|defername)> tail
 	
 	//Empty 
-	stmt-iter: [] -> []
+	stmt-iter(|defername): [] -> []
 	
 	not-empty: [x | xs] -> []
 	
-	
+	gen-js-ast: AddedJsStmt(stmt) -> [stmt]
+		with
+			<debug(!"Mathced")> stmt
 	
 	gen-js-ast:
 		ExpressionStmt(expression) -> [expStmt(<gen-js-ast> expression)]
@@ -90,3 +122,9 @@ overlays
 	GOROUTINE_LIBNAME = "routine"
 	GOROURTINE_GOMETHOD = "go"
 	GOROUTINE_MAKECHANNELMETHOD = "newChannel"
+	GODEFER_NEWDEFERMETHOD = "newDeferList"
+	GODEFER_ADDPARAMMETHOD = "addParam"
+	GODEFER_ADDDEFERMETHOD = "add"
+	GODEFER_EXECECUTEMETHOD = "cleanUp"
+	
+	 

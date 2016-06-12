@@ -4,15 +4,17 @@ module.exports = {
 	{
 		return new Channel(size);
 	},
+	newDeferList: function(deferList)
+	{
+		return new DeferList();
+	},
 	end: function()
 	{
 		__scheduler.unregister();
 	}
 }
 
-//TODO: Main Go Routine Handling 
 //TODO: Registration
-//TODO: Deadlock Detection
 //TODO: Stack Fixing
 //TODO: Work stealing?
 //TODO: Think about panic
@@ -178,6 +180,49 @@ function Channel(size)
 
 
 } 
+
+function DeferList(){
+
+	var defers = []
+
+	this.add = function(func)
+	{	
+		defers.push(new Defer(func));
+	}
+
+	// Adds param to last added defer;
+	this.addParam = function(param)
+	{
+		defers[defers.length-1].addParam(param)
+	}
+
+	this.cleanUp = function()
+	{
+		var d;
+
+		while((d = defers.pop()) !== undefined)
+		{
+			//TODO: Schedule?
+			d.execute()
+		}
+	}
+
+}
+
+function Defer(func){
+	var parList = [];
+
+	this.addParam = function(x)
+	{
+		parList.push(x);
+	}
+
+	this.execute = function()
+	{
+		func.apply(this, parList);
+	}
+}
+
 
 function go(func)
 {

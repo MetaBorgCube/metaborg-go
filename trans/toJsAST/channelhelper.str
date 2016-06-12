@@ -12,7 +12,8 @@ signature
 		
 	constructors
 		ReceiveStmt: Operand * Operand -> Statement
-		SubstitutedExp: Operand * List(Statement) * StringLit -> UnaryExpr	
+		SubstitutedExp: Operand * List(Statement) * StringLit -> UnaryExpr
+		AddedJsStmt: Statement -> Statement	
 		
 rules
 	
@@ -34,13 +35,13 @@ rules
 
 	substitute-channels: PrimaryExpr(Operand(GroupedExpression(UnaryExpr(x)))) -> <substitute-channels> x
 
-	generate-receive(|parent, rest): [ReceiveStmt(varname, channelExp) | []] -> [
+	generate-receive(|parent, rest, dstack): [ReceiveStmt(varname, channelExp) | []] -> [
 			expStmt(
                 Call(
                   Property(channelExpJs, "receive")
                 , [ AnonFunction(
                       [parameter(varnameJs)]
-                    , <conc> (parentJs, tailJs)
+                    , [try(<conc> (parentJs, tailJs), catch(Identifier("e"), [executeDeferred], empty()))]
                     )
                   ]
                 )
@@ -49,10 +50,11 @@ rules
 			channelExpJs := <gen-js-ast> channelExp;
 			varnameJs := < extract-varname> varname;
 			parentJs := <gen-js-ast> parent;
-			tailJs := <debug(!"RestToJS"); stmt-iter> rest
+			tailJs := <debug(!"RestToJS"); stmt-iter(|dstack)> rest;
+			executeDeferred := expStmt(Call(Property(Identifier(dstack), GODEFER_EXECECUTEMETHOD), []))
 			
 			
-	generate-receive(|parent, rest): [ReceiveStmt(varname, channelExp) | tail] -> [
+	generate-receive(|parent, rest, dstack): [ReceiveStmt(varname, channelExp) | tail] -> [
 			expStmt(
                 Call(
                   Property(channelExpJs, "receive")
@@ -66,7 +68,7 @@ rules
 		where
 			channelExpJs := <gen-js-ast> channelExp;
 			varnameJs := <extract-varname> varname;
-			nextReceive := <debug(!"Blockingnonlast"); generate-receive(|parent, rest)> tail
+			nextReceive := <debug(!"Blockingnonlast"); generate-receive(|parent, rest, dstack)> tail
 
 
 	lastVar : SubstitutedExp(_, _, varname) -> varname

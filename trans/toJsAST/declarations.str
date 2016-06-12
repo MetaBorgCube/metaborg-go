@@ -9,6 +9,7 @@ imports
 	signatures/Expression-sig
 	signatures/Common-sig
 	trans/pp
+	toJsAST/statements
 	helpers
 		
 rules
@@ -23,7 +24,7 @@ rules
 		where
 			debug(!<concat-strings> ["Found function ", name, " with parameters ", <write-to-string> params]);
 			paramsJs := <map(gen-js-ast)> params;
-			bodyJs := <gen-js-ast> block
+			bodyJs := <func-block> block
 	
 	gen-js-ast : ParameterDecl(name, _) -> parameter(name)
 	
