@@ -50,7 +50,8 @@ rules
 overlays
 	
 	IMPORTLIST = [
-		varDecl(GOROUTINE_LIBNAME, Call(Identifier("require"), [String("\"\"../js/goroutine.js\"\"")]))
+		varDecl(GOROUTINE_LIBNAME, Call(Identifier("require"), [String("\"\"../js/goroutine.js\"\"")])),
+		varDecl(ARRAYLIB_NAME, Call(Identifier("require"), [String("\"\"../js/go-array.js\"\"")]))
 	]
 	
 	

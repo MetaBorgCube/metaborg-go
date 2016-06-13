@@ -58,6 +58,15 @@ rules
 		where
 			argsJs := <gen-js-ast> args
 	
+	gen-js-ast:
+		PrimaryExprIndex(
+			idExp,
+			Index(indexExp)
+		) ->  Array(Call(Property(idExpjs, ARRAYLIB_LOOKUPMETHOD), [indexExpJs]), [indexExpJs])
+		with
+			idExpjs := <gen-js-ast> idExp;
+			indexExpJs := <gen-js-ast> indexExp
+	
 	// If the target is a primary expression, make a JS method call
 	
 	gen-js-ast:
@@ -121,7 +130,25 @@ rules
 	gen-js-ast: IntLit(int) -> String(int)
 	gen-js-ast: StringLit(string) -> String(string)
 
+	gen-js-ast: CompositeLit(ArrayType(sizeExp, type), arrayLit) -> 
+				Call(Property(Identifier(ARRAYLIB_NAME), ARRAYLIB_NEWARRAYMETHOD), [ 
+						  arrayLitJs
+	            		, sizeExpJs
+	            		, String(typeJs)
+            		]
+          		)
+		with
+			sizeExpJs := <gen-js-ast> sizeExp;
+			//TODO: Type to JS
+			typeJs := "''";
+			arrayLitJs := <array-to-js> arrayLit
+	
+	array-to-js: LiteralValue(Some(ElementList(x))) -> ArrayLiteral(<map(gen-js-ast)> x)	
+	array-to-js: LiteralValue(None()) -> ArrayLiteral([]) 	
+
 	gen-js-ast: FunctionLit(function) -> <gen-js-ast> function
+	gen-js-ast: SingleElem(exp) -> <gen-js-ast> exp
+
 
 	gen-js-ast:
 		Function(
@@ -131,4 +158,4 @@ rules
 		where
 			<debug(!"Found anonymous function with parameters ")> <write-to-string> params;
 			paramsJs := <map(gen-js-ast)> params;
-			bodyJs := <func-block> block
+			bodyJs := <func-block> block		
