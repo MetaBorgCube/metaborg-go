@@ -108,6 +108,17 @@ rules
 	gen-js-ast:
 		ExpressionStmt(expression) -> [expStmt(<gen-js-ast> expression)]
 	
+	// Matches on functions returning (possible) multiple values
+	gen-js-ast:
+		Assignment(
+			ExpressionList(targetExpressions),
+			AssignEquals(),
+			ExpressionList([singleValueExpression])
+		) -> js
+	      where
+			valuesArray := <gen-js-ast> singleValueExpression;
+			js := <gen-js-ast-multiple-assignment> (valuesArray, targetExpressions)
+	
 	gen-js-ast:
 		Assignment(
 			ExpressionList(targetExpressions),
@@ -116,11 +127,23 @@ rules
 		) -> js
 	      where
 			js := <zip(to-js-equals-assign)> (targetExpressions, valueExpressions)
+	
+	gen-js-ast-multiple-assignment:
+		(valuesArray, targetExps) -> <flatten-list> [[valuesArrayJs], assignmentsJs]
+		where
+			tmpIdentifier := <strcat> ("tmp_assign_", <int-to-string> <abs> <next-random>);
+			valuesArrayJs := varDecl(tmpIdentifier, valuesArray);
+			assignmentsJs := <map(gen-js-ast-indexed-assign(|tmpIdentifier))> <add-indices> targetExps
 			
-	to-js-equals-assign: (lhs, rhs) -> assignment(lhsJs, rhsJs)
+	to-js-equals-assign:
+		(lhs, rhs) -> assignment(lhsJs, rhsJs)
 		where
 			lhsJs := <gen-js-ast> lhs;
 			rhsJs := <gen-js-ast> rhs
+			
+	gen-js-ast-indexed-assign(|tmpIdentifier): (index, lhs) -> assignment(lhsJs, Array(Identifier(tmpIdentifier), IntegerLiteral(<int-to-string> <int-dec> index)))
+		where
+			lhsJs := <gen-js-ast> lhs
 			
 	gen-js-ast:
 		GoStmt(exp) -> [expStmt(Call(Property(Identifier(GOROUTINE_LIBNAME), GOROURTINE_GOMETHOD),
@@ -131,12 +154,16 @@ rules
 			
 	gen-js-ast:
 		ReturnStmt(None()) -> [return(Undefined())]
-			
-	// TODO: support multiple return values
+	
 	gen-js-ast:
-		ReturnStmt(Some(ExpressionList([exp | _]))) -> [return(expJs)]
+		ReturnStmt(Some(expList)) -> [return(arrayJs)]
 		where
-			expJs := <gen-js-ast> exp
+			arrayJs := <exps-list-to-js-array> expList
+	
+	exps-list-to-js-array:
+		ExpressionList(exps) -> ArrayLiteral(expsJs)
+		where
+			expsJs := <map(gen-js-ast)> exps
 
 overlays 
 	
