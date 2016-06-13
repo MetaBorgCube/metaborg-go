@@ -32,7 +32,7 @@ context-free syntax
 	TypeLit				= MapType
 	TypeLit				= ChannelType
 
-	TypeGrouped.TypeGrouped	= <(<Type>)>
+	TypeGrouped.TypeGrouped	= <(<{Type ","}*>)>
 
 	// TODO: Method sets
 	
