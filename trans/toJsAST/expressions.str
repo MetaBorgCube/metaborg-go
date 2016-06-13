@@ -131,4 +131,4 @@ rules
 		where
 			<debug(!"Found anonymous function with parameters ")> <write-to-string> params;
 			paramsJs := <map(gen-js-ast)> params;
-			bodyJs := <gen-js-ast> block
+			bodyJs := <func-block> block

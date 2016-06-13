@@ -51,7 +51,7 @@ rules
 			varnameJs := < extract-varname> varname;
 			parentJs := <gen-js-ast> parent;
 			tailJs := <debug(!"RestToJS"); stmt-iter(|dstack)> rest;
-			executeDeferred := expStmt(Call(Property(Identifier(dstack), GODEFER_EXECECUTEMETHOD), []))
+			executeDeferred := <get-deferstmt(|dstack)> []
 			
 			
 	generate-receive(|parent, rest, dstack): [ReceiveStmt(varname, channelExp) | tail] -> [

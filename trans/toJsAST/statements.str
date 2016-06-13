@@ -25,7 +25,7 @@ rules
 			deferstackname := <debug(!"HOOI"); newname> "___deferstack___";
 			deferStackDecl := varDecl(deferstackname, Call(Property(Identifier(GOROUTINE_LIBNAME), GODEFER_NEWDEFERMETHOD), []));
 			statements := <debug(!"HAAI"); statements-from-list> statementList;
-			executeDeferred := expStmt(Call(Property(Identifier(deferstackname), GODEFER_EXECECUTEMETHOD), []));
+			executeDeferred := <get-deferstmt(|deferstackname)> [];
 			statementsWithAddedJs := <conc; debug(!"Concat")> (statements, [AddedJsStmt(executeDeferred)]);
 			statementsJs := <debug(!"Block"); stmt-iter(|deferstackname); debug(!"Finished STMT Iter")> statementsWithAddedJs	
 			//TODO: Add Cleanup on return
@@ -42,7 +42,7 @@ rules
 			Call(
 				Property(chanjs, "send"),[ 
 				expjs, 
-				AnonFunction([], [try(remaining, catch(Identifier("e"), [executeDeferred], None()))])
+				AnonFunction([], [try(remaining, catch(Identifier("e"), executeDeferred, None()))])
                ]
             )
         )]
@@ -50,7 +50,7 @@ rules
 			chanjs := <gen-js-ast> channel;
 			expjs := <gen-js-ast> exp;
 			remaining := <stmt-iter(|defername)> xs;
-			executeDeferred := expStmt(Call(Property(Identifier(defername), GODEFER_EXECECUTEMETHOD), []))
+			executeDeferred := [<get-deferstmt(|defername)> []]
 	
 	
 	//Call(Property(Identifier("console"),"log"),[String("\"test\"")])
@@ -86,8 +86,15 @@ rules
 			allStmtJs := <conc> (<cleanup-stmts(|defername)> stmt, xjs);
 			xsjs := <stmt-iter(|defername)> tail
 	
-	cleanup-stmts(|deferstackname): ReturnStmt(_) -> [expStmt(Call(Property(Identifier(deferstackname), GODEFER_EXECECUTEMETHOD), []))]
+	
+	cleanup-stmts(|deferstackname): ReturnStmt(_) -> [<get-deferstmt(|deferstackname)> ""]
 	cleanup-stmts(|deferstackname): x -> []
+	
+	get-deferstmt(|name): x -> []
+		where
+			<equal>(name, "")
+	
+	get-deferstmt(|defername): x -> expStmt(Call(Property(Identifier(defername), GODEFER_EXECECUTEMETHOD), []))		
 	
 	//Empty 
 	stmt-iter(|defername): [] -> []
