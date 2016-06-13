@@ -44,9 +44,7 @@ context-free syntax
 	
 	// TODO: String types
 	
-	
-	// TODO: Array types
-	ArrayType.ArrayType		= <arraytype>
+	ArrayType.ArrayType		= <[<Expression>] <Type>>
 	
 	// TODO: Slice types
 	SliceType.SliceType		= <slicetype>
