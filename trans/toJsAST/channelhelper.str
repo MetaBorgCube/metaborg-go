@@ -41,7 +41,7 @@ rules
                   Property(channelExpJs, "receive")
                 , [ AnonFunction(
                       [parameter(varnameJs)]
-                    , [try(<conc> (parentJs, tailJs), catch(Identifier("e"), [executeDeferred], empty()))]
+                    , [try(<conc> (parentJs, tailJs), catch(Identifier("e"), [executeDeferred], None()))]
                     )
                   ]
                 )

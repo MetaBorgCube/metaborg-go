@@ -18,7 +18,7 @@ rules
 	
 	func-block : Block(statementList) -> [try(
 		<conc> ([deferStackDecl], statementsJs), 
-		catch(Identifier("e"), [executeDeferred], empty())
+		catch(Identifier("e"), [executeDeferred], None())
 	)
 	]
 		where
@@ -42,7 +42,7 @@ rules
 			Call(
 				Property(chanjs, "send"),[ 
 				expjs, 
-				AnonFunction([], [try(remaining, catch(Identifier("e"), [executeDeferred], empty()))])
+				AnonFunction([], [try(remaining, catch(Identifier("e"), [executeDeferred], None()))])
                ]
             )
         )]
@@ -78,12 +78,16 @@ rules
 			stmtJs := <generate-receive(|stmt, tail, defername)> extraStatements 
 
 	//Normal  non-blocking statement
-	stmt-iter(|defername): [stmt | tail] -> <conc> (xjs, xsjs)
+	stmt-iter(|defername): [stmt | tail] -> <conc> (allStmtJs, xsjs)
 		where
 			blockingStmts := <collect-om(?SubstitutedExp(_, _, _)); debug(!"Empty Blocking Set: ")>  stmt;
 			<equal>(blockingStmts, []);
 			xjs := <gen-js-ast> stmt;
+			allStmtJs := <conc> (<cleanup-stmts(|defername)> stmt, xjs);
 			xsjs := <stmt-iter(|defername)> tail
+	
+	cleanup-stmts(|deferstackname): ReturnStmt(_) -> [expStmt(Call(Property(Identifier(deferstackname), GODEFER_EXECECUTEMETHOD), []))]
+	cleanup-stmts(|deferstackname): x -> []
 	
 	//Empty 
 	stmt-iter(|defername): [] -> []
