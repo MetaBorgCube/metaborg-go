@@ -126,6 +126,7 @@ context-free syntax
 		*/
 		PrimaryExpr.PrimaryExprArguments = <<PrimaryExpr><Arguments>>
 		PrimaryExpr.PrimaryExprIndex= <<PrimaryExpr><Index>>
+		PrimaryExpr.PrimaryExprSlice= <<PrimaryExpr><Slice>>
 		PrimaryExpr.Operand = Operand
 		
 		/*
@@ -137,6 +138,8 @@ context-free syntax
 		TypeAssertion  = "." "(" Type ")" .
 		*/
 		Index.Index = <[<Expression>]>
+		//TODO: Max
+		Slice.Slice = <[<Expression?> : <Expression?>]>
 		
 		/*
 		Arguments      = "(" [ ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ] ] ")" .

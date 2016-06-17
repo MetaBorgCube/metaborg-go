@@ -15,8 +15,8 @@ imports
 	toJsAST/channelhelper
 		
 rules
-	//ExpressionList([UnaryExpr(PrimaryExpr(Operand(Literal(IntLit("10")))))])
 	gen-js-ast:
+	//ExpressionList([UnaryExpr(PrimaryExpr(Operand(Literal(IntLit("10")))))])
 		UnaryExpr(unaryExpression) -> <gen-js-ast> unaryExpression
 	
 	gen-js-ast:
@@ -58,14 +58,35 @@ rules
 		where
 			argsJs := <gen-js-ast> args
 	
+	//The Addition is added to support slicing.
 	gen-js-ast:
 		PrimaryExprIndex(
 			idExp,
 			Index(indexExp)
-		) ->  Array(Call(Property(idExpjs, ARRAYLIB_LOOKUPMETHOD), [indexExpJs]), [indexExpJs])
+		) ->  Array(Call(Property(idExpjs, ARRAYLIB_LOOKUPMETHOD), [indexExpJs]), [addition])
 		with
 			idExpjs := <gen-js-ast> idExp;
-			indexExpJs := <gen-js-ast> indexExp
+			indexExpJs := <gen-js-ast> indexExp;
+			addition := Addition(indexExpJs, Call(Property(idExpjs, ARRAYLIB_GETSTARTPOSTMETHOD), [indexExpJs]))
+
+	gen-js-ast:
+		PrimaryExprSlice(
+			idExp,
+			slice
+		) ->  Call(Property(idExpjs, ARRAYLIB_CREATESLICEMETHOD), sliceJs)
+		with
+			idExpjs := <gen-js-ast> idExp;
+			sliceJs := <gen-js-ast> slice
+	
+	gen-js-ast:
+		Slice(exp1, exp2) 
+		-> [exp1Js, exp2Js]
+		with
+			exp1Js := <slice-exp-to-js> exp1;
+			exp2Js := <slice-exp-to-js> exp2
+	
+	slice-exp-to-js: Some(x) -> <gen-js-ast> x
+	slice-exp-to-js: None()  -> Undefined()
 	
 	// If the target is a primary expression, make a JS method call
 	
