@@ -53,7 +53,7 @@ context-free syntax
 	StructType.StructType	= <structtype>
 	
 	// TODO: Pointer types
-	PointerType.PointerType	= <pointertype>
+	PointerType.PointerType	= <*<Type>>
 
 	// Function types
 	

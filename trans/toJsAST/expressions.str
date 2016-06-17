@@ -98,6 +98,25 @@ rules
 		) -> <gen-js-ast> x
 	
 	gen-js-ast:
+		UnaryExpr("*", exp)
+		-> Call(Property(<gen-js-ast> exp, POINTERLIB_GET), [])
+	
+	gen-js-ast: 
+		UnaryExpr("&", 
+			exp
+		) -> Call(Property(Identifier(POINTERLIB_NAME), POINTERLIB_NEWPOINTER), [set, get])
+		with
+			expJs := <gen-js-ast> exp;
+			set:= <gen-pointer-set> expJs;
+			get:= <gen-pointer-get> expJs
+	
+	gen-pointer-set: e -> AnonFunction([parameter(parname)], [assignment(e, Identifier(parname))])
+		with
+			parname := <newname> "___parset___"
+			
+	gen-pointer-get: e -> AnonFunction([], [return(e)])
+	
+	gen-js-ast:
 		PrimaryExprArguments(
 			Operand(
 				MethodExpr(

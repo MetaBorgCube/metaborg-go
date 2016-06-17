@@ -144,7 +144,7 @@ context-free syntax
 		/*
 		Arguments      = "(" [ ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ] ] ")" .
 		*/
-		Arguments.Arguments = <(<ExpressionList?>)>
+		Arguments.Arguments = <(<ExpressionList?>)> {prefer}
 		Arguments.TypeArg = <(<TypeLit>)>
 		Arguments.TypeArgWithList = <(<TypeLit>, <ExpressionList>)>
 		

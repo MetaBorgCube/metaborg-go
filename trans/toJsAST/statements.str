@@ -116,6 +116,12 @@ rules
 		) -> js
 	      where
 			js := <zip(to-js-equals-assign)> (targetExpressions, valueExpressions)
+	
+	to-js-equals-assign: (UnaryExpr(UnaryExpr("*", operand)), rhs) 
+		-> expStmt(Call(Property(operandJs, POINTERLIB_SET), [rhJs]))
+		where
+			rhJs := <gen-js-ast> rhs;
+			operandJs := <gen-js-ast> operand
 			
 	to-js-equals-assign: (lhs, rhs) -> assignment(lhsJs, rhsJs)
 		where
@@ -154,3 +160,9 @@ overlays
 	ARRAYLIB_LOOKUPMETHOD = "getVal"
 	ARRAYLIB_CREATESLICEMETHOD = "getSlice"
 	ARRAYLIB_GETSTARTPOSTMETHOD = "getStartPos"
+	
+	POINTERLIB_NAME = "__GO_POINTERLIB__"
+	POINTERLIB_NEWPOINTER = "newPointer"
+	POINTERLIB_GET = "get"
+	POINTERLIB_SET = "set"
+	

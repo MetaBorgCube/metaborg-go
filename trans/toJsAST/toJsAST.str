@@ -51,7 +51,8 @@ overlays
 	
 	IMPORTLIST = [
 		varDecl(GOROUTINE_LIBNAME, Call(Identifier("require"), [String("\"\"../js/goroutine.js\"\"")])),
-		varDecl(ARRAYLIB_NAME, Call(Identifier("require"), [String("\"\"../js/go-array.js\"\"")]))
+		varDecl(ARRAYLIB_NAME, Call(Identifier("require"), [String("\"\"../js/go-array.js\"\"")])),
+		varDecl(POINTERLIB_NAME, Call(Identifier("require"), [String("\"\"../js/go-pointer.js\"\"")]))
 	]
 	
 	
