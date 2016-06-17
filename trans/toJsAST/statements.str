@@ -116,6 +116,7 @@ rules
 			ExpressionList([singleValueExpression])
 		) -> js
 	      where
+	      	<gt> (<length> targetExpressions, 1);
 			valuesArray := <gen-js-ast> singleValueExpression;
 			js := <gen-js-ast-multiple-assignment> (valuesArray, targetExpressions)
 	
@@ -146,6 +147,12 @@ rules
 		where
 			lhsJs := <gen-js-ast> lhs;
 			rhsJs := <gen-js-ast> rhs
+
+	gen-js-ast-indexed-assign(|tmpIdentifier): (index, UnaryExpr(UnaryExpr("*", operand))) 
+	-> expStmt(Call(Property(operandJs, POINTERLIB_SET), [array])) 
+		where
+			operandJs := <gen-js-ast> operand;
+			array := Array(Identifier(tmpIdentifier), IntegerLiteral(<int-to-string> <int-dec> index))
 			
 	gen-js-ast-indexed-assign(|tmpIdentifier): (index, lhs) -> assignment(lhsJs, Array(Identifier(tmpIdentifier), IntegerLiteral(<int-to-string> <int-dec> index)))
 		where
