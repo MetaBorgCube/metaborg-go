@@ -16,18 +16,25 @@ imports
 		
 rules
 	
-	func-block : Block(statementList) -> [try(
-		<conc> ([deferStackDecl], statementsJs), 
+	
+	//TODO: Fix Defer
+	
+	stmt-list : (stmtlist, _) -> stmtlist
+	subbed-list : (_, stmt) -> stmt
+	
+	func-block(|callbackname) : Block(statementList) -> [try(
+		<conc> ([deferStackDecl, deferStackSetRet], statementsJs), 
 		catch(Identifier("e"), [executeDeferred], None())
 	)
 	]
 		where
-			deferstackname := <debug(!"HOOI"); newname> "___deferstack___";
+			deferstackname := <newname> "___deferstack___";
 			deferStackDecl := varDecl(deferstackname, Call(Property(Identifier(GOROUTINE_LIBNAME), GODEFER_NEWDEFERMETHOD), []));
-			statements := <debug(!"HAAI"); statements-from-list> statementList;
+			deferStackSetRet := expStmt(Call(Property(Identifier(deferstackname), GODEFER_SETRETMETHOD), [Identifier(callbackname)]));
+			statements := <statements-from-list> statementList;
 			executeDeferred := <get-deferstmt(|deferstackname)> [];
-			statementsWithAddedJs := <conc; debug(!"Concat")> (statements, [AddedJsStmt(executeDeferred)]);
-			statementsJs := <debug(!"Block"); stmt-iter(|deferstackname); debug(!"Finished STMT Iter")> statementsWithAddedJs	
+			statementsWithAddedJs := <conc> (statements, [AddedJsStmt(executeDeferred)]);
+			statementsJs := <debug(!"Process Block"); stmt-iter(|deferstackname); debug(!"Finished Block")> statementsWithAddedJs	
 			//TODO: Add Cleanup on return
 	
 	gen-js-ast : Block(statementList) -> js
@@ -36,98 +43,159 @@ rules
 			js := <stmt-iter(|"")> statements 
 	
 	
-	//Send Statement, Generate Callback
-	stmt-iter(|defername): [SendStmt(channel, exp) | xs] ->[
+	process-substituted(|parstmt, rest, defername): [SendStmt(channel, exp) | []] -> [
 		expStmt(
 			Call(
-				Property(chanjs, "send"),[ 
-				expjs, 
-				AnonFunction([], [try(remaining, catch(Identifier("e"), executeDeferred, None()))])
+				Property(<Fst> parstmt, "send"),[ 
+				<Snd> parstmt, 
+				AnonFunction([], [try(remaining, catch(Identifier("e"), [executeDeferred], None()))])
                ]
             )
         )]
+        where
+        	remaining := <debug(!"Remaining"); stmt-iter(|defername)> rest;
+        	executeDeferred := <debug(!"edef"); get-deferstmt(|defername)> []
+	
+	process-substituted(|parstmt, rest, defername): [SubstitudedCall(target, argsJs, subVarName) | []] -> [callStmt]
 		where
-			chanjs := <gen-js-ast> channel;
-			expjs := <gen-js-ast> exp;
-			remaining := <stmt-iter(|defername)> xs;
-			executeDeferred := [<get-deferstmt(|defername)> []]
+			tailJs := <debug(!"final"); stmt-iter(|defername)> rest;
+			executeDeferred := <debug(!"test"); get-deferstmt(|defername)> [];
+			retFunc := AnonFunction([parameter(subVarName)], [try(<debug(!"conc1"); conc> (parstmt, tailJs), catch(Identifier("e"), [executeDeferred], None()))]);
+			callStmt := expStmt(Call(<get-target> target, <debug(!"conc2"); conc> (argsJs, [retFunc])))
+	
+	process-substituted(|parstmt, rest, defername): [SubstitudedCall(target, argsJs, subVarName) | tail] -> [callStmt]
+		where
+			tailJs := <debug(!"tails"); process-substituted(|parstmt, rest, defername)> tail;
+			executeDeferred := <debug(!"edef"); get-deferstmt(|defername)> [];
+			retFunc := AnonFunction([parameter(subVarName)], [try(tailJs , catch(Identifier("e"), [executeDeferred], None()))]);
+			callStmt := expStmt(Call(<get-target> target, <conc> (argsJs, [retFunc])))		
+
+	get-target: a@AnonFunction(x, y) -> Parenthesised(a)
+	get-target: x -> Identifier(x)
+
+
+	process-substituted(|parent, rest, dstack): [ReceiveStmt(varname, channelExp) | []] -> [
+			expStmt(
+                Call(
+                  Property(channelExp, "receive")
+                , [ AnonFunction(
+                      [parameter(varnameJs)]
+                    , [try(<conc> (parent, tailJs), catch(Identifier("e"), [executeDeferred], None()))]
+                    )
+                  ]
+                )
+            )]
+		where
+			varnameJs := <debug(!"vn"); extract-varname> varname;
+			tailJs := <debug(!"RestToJS"); stmt-iter(|dstack)> rest;
+			executeDeferred := <get-deferstmt(|dstack)> []
+
+	process-substituted(|parent, rest, dstack): [ReceiveStmt(varname, channelExp) | tail] -> [
+			expStmt(
+                Call(
+                  Property(channelExpJs, "receive")
+                , [ AnonFunction(
+                      [parameter(varnameJs)]
+                    , nextReceive
+                    )
+                  ]
+                )
+            )]
+		where
+			channelExpJs := <gen-js-ast> channelExp;
+			varnameJs := <extract-varname> varname;
+			nextReceive := <debug(!"Blockingnonlast"); process-substituted(|parent, rest, dstack)> tail
+	
+	
+	process-substituted(|parstmt, rest, defername): [] -> <conc> (parstmt, restJs)
+		where
+			restJs := <debug(!"iter"); stmt-iter(|defername); debug(!"itert")> rest
+
+	stmt-iter(|defername): [stat@SendStmt(channel, exp) | xs] -> ret 
+		where
+			tupleChan := <gen-js-ast> channel;
+			tupleExp := <gen-js-ast> exp;
+			stmts := <concat> [<stmts> tupleChan, <stmts> tupleExp, [stat]];
+			ret := <process-substituted(|(<exp> tupleChan, <exp> tupleExp), xs, defername)> stmts
+
+	stmt-iter(|defername): [stmt | xs] -> ret
+		where
+			tuple := <debug(!"Stmt-convert started"); convert-stmt(|defername); debug(!"Stmt-converted")> stmt;
+			subbedExps := <subbed-list> tuple;
+			ret := <process-substituted(|<stmt-list> tuple, xs, defername)> subbedExps
+			
+	stmt-iter(|defername): [] -> []
 	
 	
 	//Call(Property(Identifier("console"),"log"),[String("\"test\"")])
 	//To simlify it only (anonymous) functions are allowed;
+	
+	/**
 	stmt-iter(|defername): [DeferStmt(exp) | tail] -> <concat> [[addStmt], paramStmt, <stmt-iter(|defername)> tail]
 		where
 			expJs := <gen-js-ast; debug(!"ExpInJS")> exp;
-			addStmt := expStmt(Call(Property(Identifier(defername), "add"), [<debug(!"FuncNamePre"); funcname; debug(!"FuncNamePost")> expJs]));
-			paramStmt :=  <debug(!"ParPre"); params; map(gen-addparamstmt(|defername))> expJs
-			 
-	funcname: Call(Property(ident, p), params) -> Property(ident, p)
-	funcname: Call(x, params) -> Identifier(x)
+			addStmt := expStmt(Call(Property(Identifier(defername), "add"), [<funcname> expJs]));
+			paramStmt :=  <params; map(gen-addparamstmt(|defername))> expJs
+	*/
 	
-	params: Call(funcname, params) -> params
-	gen-addparamstmt(|defername): x -> expStmt(Call(Property(Identifier(defername), GODEFER_ADDPARAMMETHOD), [x]))
+			
+	convert-stmt(|defername) = stmt-to-js(|defername) <+ debug(!"Failed to convert STMT")
 	
-	//Receive Expressions in Expression
-	//Untangle the receive expressions, generate extra statements
-	//and then execute this statement
-	stmt-iter(|defername): [stmt | tail] -> stmtJs
+	stmt-to-js(|defername): AddedJsStmt(stmt) -> ([stmt], [])
+	
+	stmt-to-js(|defername): ExpressionStmt(expression) -> ([expStmt(exp)], stmts)
 		where
-			blockingStmts := <collect-om(?SubstitutedExp(_, _, _)); debug(!"Blocking Set: ")>  stmt;
-			<not-empty> blockingStmts;
-			extraStatements := <mapconcat(extract-stmtlist)> blockingStmts;
-			stmtJs := <generate-receive(|stmt, tail, defername)> extraStatements 
-
-	//Normal  non-blocking statement
-	stmt-iter(|defername): [stmt | tail] -> <conc> (allStmtJs, xsjs)
+			tuple := <gen-js-ast> expression;
+			exp := <exp> tuple;
+			stmts := <stmts> tuple
+			
+	stmt-to-js(|defername):
+		GoStmt(exp) -> ([expStmt(Call(Property(Identifier(GOROUTINE_LIBNAME), GOROURTINE_GOMETHOD),
+			[AnonFunction([], [expStmt(<exp> tuple)])]
+		))], <stmts> tuple)
 		where
-			blockingStmts := <collect-om(?SubstitutedExp(_, _, _)); debug(!"Empty Blocking Set: ")>  stmt;
-			<equal>(blockingStmts, []);
-			xjs := <gen-js-ast> stmt;
-			allStmtJs := <conc> (<cleanup-stmts(|defername)> stmt, xjs);
-			xsjs := <stmt-iter(|defername)> tail
+			tuple := <debug(!"GO Do stuff"); go-exp-to-js> exp
+			
+	stmt-to-js(|defername):
+		ReturnStmt(None()) -> ([
+			expStmt(Call(Property(Identifier(defername), GODEFER_RETURNMETHOD),
+				[]
+			)),
+			return(Undefined())
+		], [])
 	
-	
-	cleanup-stmts(|deferstackname): ReturnStmt(_) -> [<get-deferstmt(|deferstackname)> ""]
-	cleanup-stmts(|deferstackname): x -> []
-	
-	get-deferstmt(|name): x -> []
+	stmt-to-js(|defername):
+		ReturnStmt(Some(expList)) -> ([
+			expStmt(Call(Property(Identifier(defername), GODEFER_RETURNMETHOD),
+					[arrayJs]
+				)),
+			return(Undefined())
+		], [])
 		where
-			<equal>(name, "")
-	
-	get-deferstmt(|defername): x -> expStmt(Call(Property(Identifier(defername), GODEFER_EXECECUTEMETHOD), []))		
-	
-	//Empty 
-	stmt-iter(|defername): [] -> []
-	
-	not-empty: [x | xs] -> []
-	
-	gen-js-ast: AddedJsStmt(stmt) -> [stmt]
-		with
-			<debug(!"Mathced")> stmt
-	
-	gen-js-ast:
-		ExpressionStmt(expression) -> [expStmt(<gen-js-ast> expression)]
-	
+			arrayJs := <exps-list-to-js-array> expList
+			
 	// Matches on functions returning (possible) multiple values
-	gen-js-ast:
-		Assignment(
+	stmt-to-js(|defername): Assignment(
 			ExpressionList(targetExpressions),
 			AssignEquals(),
 			ExpressionList([singleValueExpression])
-		) -> js
+		) -> (js, <stmts> valuesArray)
 	      where
 	      	<gt> (<length> targetExpressions, 1);
 			valuesArray := <gen-js-ast> singleValueExpression;
-			js := <gen-js-ast-multiple-assignment> (valuesArray, targetExpressions)
+			js := <gen-js-ast-multiple-assignment> (<exp> valuesArray, targetExpressions)
+		
 	
-	gen-js-ast:
+	stmt-to-js(|defername):
 		Assignment(
 			ExpressionList(targetExpressions),
 			AssignEquals(),
 			ExpressionList(valueExpressions)
-		) -> js
+		) -> (js, statements)
 	      where
-			js := <zip(to-js-equals-assign)> (targetExpressions, valueExpressions)
+			tuples := <zip(to-js-equals-assign)> (targetExpressions, valueExpressions);
+			js := <map(stmt-list)> tuples;
+			statements := <mapconcat(stmts)> tuples
 	
 	gen-js-ast-multiple-assignment:
 		(valuesArray, targetExps) -> <flatten-list> [[valuesArrayJs], assignmentsJs]
@@ -137,13 +205,13 @@ rules
 			assignmentsJs := <map(gen-js-ast-indexed-assign(|tmpIdentifier))> <add-indices> targetExps
 	
 	to-js-equals-assign: (UnaryExpr(UnaryExpr("*", operand)), rhs) 
-		-> expStmt(Call(Property(operandJs, POINTERLIB_SET), [rhJs]))
+		-> (expStmt(Call(Property(operandJs, POINTERLIB_SET), [<exp> rhJs])), <stmts> rhJs)
 		where
 			rhJs := <gen-js-ast> rhs;
 			operandJs := <gen-js-ast> operand
 
 	to-js-equals-assign:
-		(lhs, rhs) -> assignment(lhsJs, rhsJs)
+		(lhs, rhs) -> (assignment(<exp> lhsJs,<exp> rhsJs), <stmts> rhsJs)
 		where
 			lhsJs := <gen-js-ast> lhs;
 			rhsJs := <gen-js-ast> rhs
@@ -151,33 +219,44 @@ rules
 	gen-js-ast-indexed-assign(|tmpIdentifier): (index, UnaryExpr(UnaryExpr("*", operand))) 
 	-> expStmt(Call(Property(operandJs, POINTERLIB_SET), [array])) 
 		where
-			operandJs := <gen-js-ast> operand;
+			operandJs := <gen-js-ast; exp> operand;
 			array := Array(Identifier(tmpIdentifier), IntegerLiteral(<int-to-string> <int-dec> index))
 			
 	gen-js-ast-indexed-assign(|tmpIdentifier): (index, lhs) -> assignment(lhsJs, Array(Identifier(tmpIdentifier), IntegerLiteral(<int-to-string> <int-dec> index)))
 		where
-			lhsJs := <gen-js-ast> lhs
+			lhsJs := <gen-js-ast; exp> lhs
 			
-	gen-js-ast:
-		GoStmt(exp) -> [expStmt(Call(Property(Identifier(GOROUTINE_LIBNAME), GOROURTINE_GOMETHOD),
-			[AnonFunction([], [expStmt(expJs)])]
-		))]
-		where
-			expJs := <gen-js-ast> exp
-			
-	gen-js-ast:
-		ReturnStmt(None()) -> [return(Undefined())]
-	
-	gen-js-ast:
-		ReturnStmt(Some(expList)) -> [return(arrayJs)]
-		where
-			arrayJs := <exps-list-to-js-array> expList
+
 	
 	exps-list-to-js-array:
 		ExpressionList(exps) -> ArrayLiteral(expsJs)
 		where
-			expsJs := <map(gen-js-ast)> exps
+			expsJs := <map(gen-js-ast; exp)> exps
 
+	go-exp-to-js: PrimaryExprArguments(
+			Operand(
+				OperandName(target)
+			),
+			args
+		) -> (Call(target, <exp> argsJs), <stmts> argsJs)
+		where
+			argsJs := <gen-js-ast> args
+
+	go-exp-to-js: UnaryExpr(x) -> <debug(!"GoUn"); go-exp-to-js> x
+	go-exp-to-js: PrimaryExpr(x) -> <debug(!"GoPrim"); go-exp-to-js> x
+	
+	get-deferstmt(|name): x -> []
+		where
+			<equal>(name, "")
+	
+	get-deferstmt(|defername): x -> expStmt(Call(Property(Identifier(defername), GODEFER_EXECECUTEMETHOD), []))		
+
+
+	funcname: Call(Property(ident, p), params) -> Property(ident, p)
+	funcname: Call(x, params) -> Identifier(x)
+	
+	params: Call(funcname, params) -> params
+	gen-addparamstmt(|defername): x -> expStmt(Call(Property(Identifier(defername), GODEFER_ADDPARAMMETHOD), [x]))
 overlays 
 	
 	GOROUTINE_LIBNAME = "routine"
@@ -188,6 +267,8 @@ overlays
 	GODEFER_ADDPARAMMETHOD = "addParam"
 	GODEFER_ADDDEFERMETHOD = "add"
 	GODEFER_EXECECUTEMETHOD = "cleanUp"
+	GODEFER_SETRETMETHOD = "setCallback"
+	GODEFER_RETURNMETHOD = "ret"
 	
 	ARRAYLIB_NAME = "__GO_ARRAYLIB__"
 	ARRAYLIB_NEWARRAYMETHOD = "newArray" 

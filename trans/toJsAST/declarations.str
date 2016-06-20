@@ -10,6 +10,7 @@ imports
 	signatures/Common-sig
 	trans/pp
 	toJsAST/statements
+	toJsAST/expressions
 	helpers
 		
 rules
@@ -23,37 +24,43 @@ rules
 	) -> method(name, paramsJs, bodyJs)
 		where
 			debug(!<concat-strings> ["Found function ", name, " with parameters ", <write-to-string> params]);
-			paramsJs := <map(gen-js-ast)> params;
-			bodyJs := <func-block> block
+			retparname := <newname> "__retcallback__";
+			paramsJs := <conc> (<map(gen-js-ast)> params, [parameter(retparname)]);
+			bodyJs := <func-block(|retparname)> block
 	
 	gen-js-ast : ParameterDecl(name, _) -> parameter(name)
 	
-	gen-js-ast : ConstDecl(constDecl) -> <gen-js-ast> constDecl
-	gen-js-ast : VarDecl(varDecl) -> <gen-js-ast> varDecl
+	stmt-to-js(|defername) : ConstDecl(constDecl) -> <convert-stmt(|defername)> constDecl
+	stmt-to-js(|defername): VarDecl(varDecl) -> <convert-stmt(|defername)> varDecl
 	
 	// Ignore type
-	gen-js-ast : VarSpecTyped(IdentifierList(identifierList), _, None()) -> <map(to-js-var)> identifierList
-	gen-js-ast : ConstSpecTyped(IdentifierList(identifierList), _, None()) -> <map(to-js-const)> identifierList
+	stmt-to-js(|defername) : VarSpecTyped(IdentifierList(identifierList), _, None()) -> (<map(to-js-var)> identifierList, [])
+	
+	stmt-to-js(|defername) : ConstSpecTyped(IdentifierList(identifierList), _, None()) -> (<map(to-js-const)> identifierList, [])
 	
 	to-js-var : identifier -> varDecl(identifier, Null())
 	to-js-const : identifier -> constDecl(identifier, Null())
 	
-	gen-js-ast : VarSpec(IdentifierList(targets), VarDeclAssign(ExpressionList(values))) -> declarationsJs
+	stmt-to-js(|defername) : VarSpec(IdentifierList(targets), VarDeclAssign(ExpressionList(values))) -> (expressions, stmts)
 		with
 			debug(!<concat-strings> ["Targets ", <write-to-string> targets]);
 			debug(!<concat-strings> ["Values ", <write-to-string> values]);
-			declarationsJs := <zip(to-js-vars)> (targets, values)
+			tuples := <zip(to-js-vars)> (targets, values);
+			expressions := <map(exp)> tuples;
+			stmts := <mapconcat(stmts)> tuples
 	
-	gen-js-ast : ConstSpec(IdentifierList(targets), ConstDeclAssign(ExpressionList(values))) -> declarationsJs
+	stmt-to-js(|defername): ConstSpec(IdentifierList(targets), ConstDeclAssign(ExpressionList(values))) -> (expressions, stmts)
 		with
 			debug(!<concat-strings> ["Targets ", <write-to-string> targets]);
 			debug(!<concat-strings> ["Values ", <write-to-string> values]);
-			declarationsJs := <zip(to-js-consts)> (targets, values)
+			tuples := <zip(to-js-consts)> (targets, values);
+			expressions := <map(exp)> tuples;
+			stmts := <mapconcat(stmts)> tuples
 	
-	to-js-vars: (target, value) -> varDecl(target, valueJs)
+	to-js-vars: (target, value) -> (varDecl(target, <exp> valueJs), <stmts> valueJs)
 		with
 			valueJs := <gen-js-ast> value
 	
-	to-js-consts: (target, value) -> constDecl(target, valueJs)
+	to-js-consts: (target, value) -> (constDecl(target, <exp> valueJs), <stmts> valueJs)
 		with
 			valueJs := <gen-js-ast> value

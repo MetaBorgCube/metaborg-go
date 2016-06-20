@@ -184,6 +184,7 @@ function Channel(size)
 function DeferList(){
 
 	var defers = []
+	var callback = function(){}
 
 	this.add = function(func)
 	{	
@@ -194,6 +195,17 @@ function DeferList(){
 	this.addParam = function(param)
 	{
 		defers[defers.length-1].addParam(param)
+	}
+
+	this.setCallback = function(cb)
+	{
+		callback=cb;
+	}
+
+	this.ret = function(val)
+	{
+		this.cleanUp();
+		callback(val);
 	}
 
 	this.cleanUp = function()
