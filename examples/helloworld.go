@@ -1,12 +1,10 @@
-package test
+package main
 
-import . "test"
-
-func main(x int) int {
+func main() {
 	// Const declarations
-	const a int;
+	const a int = 0;
 	const b = 1;
-	const c, d int;
+	const c, d int = 3, 4;
 	const e, f = 1, 2;
 	
 	// Var declarations
@@ -16,27 +14,51 @@ func main(x int) int {
 	var t, u = 1, 2;
 	
 	// Assignments
-	v = 2;
-	
-	// Call
-	y = x(v);
-	
-	x, y = 1, 2;
+	p = 1;
+	r, s = 2, 3;
+	r, s = func() (int, int) {
+		return 4, 5;
+	}();
 	
 	// Anonymous functions
 	var identity = func(x int) int {
-		return 1, 2;
+		return 1;
 	};
 	
+	// Call
+	p = identity(q);
+	
 	// Anonymous functions with application
-	var applied = func(x int) int {
+	var v = func(x int) int {
 		return x;
-	}(1);
+	}(p);
 	
 	// Goroutine with anonymous function
-	go func(x int) {
+	go func(x string) {
         println(x);
     }("Going");
+    
+    y := 123;
+    x := x(y);
+    
+    channels();
+    
+    // Log values
+    println(a);
+    println(b);
+    println(c);
+    println(d);
+    println(e);
+    println(f);
+    println(p);
+    println(q);
+    println(r);
+    println(s);
+    println(t);
+    println(u);
+    println(v);
+    println(x);
+    println(y);
 }
 
 func x(y int) int {
