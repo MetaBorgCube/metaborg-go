@@ -15,8 +15,19 @@ imports
 	toJsAST/channelhelper
 		
 rules
-	gen-js-ast:
-		BinaryExpr(lhs, "+", rhs) -> Addition(lhsJs, rhsJs)
-		where
-			lhsJs := <gen-js-ast> lhs;
-			rhsJs := <gen-js-ast> rhs
+	
+	// BinaryExpr(_, RelOp, _)
+	gen-js-ast:	BinaryExpr(lhs, "==", rhs) -> Equals(<gen-js-ast> lhs, <gen-js-ast> rhs)
+	gen-js-ast:	BinaryExpr(lhs, "!=", rhs) -> NotEquals(<gen-js-ast> lhs, <gen-js-ast> rhs)
+	gen-js-ast:	BinaryExpr(lhs, "<", rhs) -> Lower(<gen-js-ast> lhs, <gen-js-ast> rhs)
+	gen-js-ast:	BinaryExpr(lhs, "<=", rhs) -> LowerEquals(<gen-js-ast> lhs, <gen-js-ast> rhs)
+	gen-js-ast:	BinaryExpr(lhs, ">", rhs) -> Greater(<gen-js-ast> lhs, <gen-js-ast> rhs)
+	gen-js-ast:	BinaryExpr(lhs, ">=", rhs) -> GreaterEquals(<gen-js-ast> lhs, <gen-js-ast> rhs)
+	
+	// BinaryExpr(_, AddOp, _)
+	gen-js-ast:	BinaryExpr(lhs, "+", rhs) -> Addition(<gen-js-ast> lhs, <gen-js-ast> rhs)
+	gen-js-ast:	BinaryExpr(lhs, "-", rhs) -> Substraction(<gen-js-ast> lhs, <gen-js-ast> rhs)
+	
+	// BinaryExpr(_, MulOp, _)
+	gen-js-ast:	BinaryExpr(lhs, "*", rhs) -> Multiplication(<gen-js-ast> lhs, <gen-js-ast> rhs)
+	gen-js-ast:	BinaryExpr(lhs, "/", rhs) -> Division(<gen-js-ast> lhs, <gen-js-ast> rhs)
