@@ -1,0 +1,22 @@
+module toJsAST/arithmetic
+
+imports 
+	signatures/-
+	signatures/spoofaxJS-sig
+	signatures/MethodDecl-sig
+	signatures/Parameter-sig
+	signatures/Statement-sig
+	signatures/Expression-sig
+	signatures/Common-sig
+	trans/pp
+	helpers
+	toJsAST/statements
+	toJsAST/declarations
+	toJsAST/channelhelper
+		
+rules
+	gen-js-ast:
+		BinaryExpr(lhs, "+", rhs) -> Addition(lhsJs, rhsJs)
+		where
+			lhsJs := <gen-js-ast> lhs;
+			rhsJs := <gen-js-ast> rhs
