@@ -31,3 +31,23 @@ rules
 	// BinaryExpr(_, MulOp, _)
 	gen-js-ast:	BinaryExpr(lhs, "*", rhs) -> Multiplication(<gen-js-ast> lhs, <gen-js-ast> rhs)
 	gen-js-ast:	BinaryExpr(lhs, "/", rhs) -> Division(<gen-js-ast> lhs, <gen-js-ast> rhs)
+	
+	gen-js-ast: Assignment(ExpressionList([target]), AssignAddOp("+"), ExpressionList([value])) -> [assignment(targetJs, Addition(targetJs, valueJs))]
+	      where
+			targetJs := <gen-js-ast> target;
+			valueJs := <gen-js-ast> value
+	
+	gen-js-ast: Assignment(ExpressionList([target]), AssignAddOp("-"), ExpressionList([value])) -> [assignment(targetJs, Substraction(targetJs, valueJs))]
+	      where
+			targetJs := <gen-js-ast> target;
+			valueJs := <gen-js-ast> value
+	
+	gen-js-ast: Assignment(ExpressionList([target]), AssignMulOp("*"), ExpressionList([value])) -> [assignment(targetJs, Multiplication(targetJs, valueJs))]
+	      where
+			targetJs := <gen-js-ast> target;
+			valueJs := <gen-js-ast> value
+	
+	gen-js-ast: Assignment(ExpressionList([target]), AssignMulOp("/"), ExpressionList([value])) -> [assignment(targetJs, Division(targetJs, valueJs))]
+	      where
+			targetJs := <gen-js-ast> target;
+			valueJs := <gen-js-ast> value
