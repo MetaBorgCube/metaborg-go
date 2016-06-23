@@ -57,3 +57,7 @@ rules
 	to-js-consts: (target, value) -> constDecl(target, valueJs)
 		with
 			valueJs := <gen-js-ast> value
+			
+	gen-js-ast : ShortVarDecl(IdentifierList(targets), ShortVarDeclAssign(ExpressionList(values))) -> declarationsJs
+		with
+			declarationsJs := <zip(to-js-vars)> (targets, values)

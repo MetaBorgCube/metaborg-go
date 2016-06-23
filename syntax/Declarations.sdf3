@@ -53,7 +53,12 @@ context-free syntax
 	VarDeclAssign.VarDeclAssign = <= <ExpressionList>>
 
 	// TODO: Short variable declarations
-	ShortVarDecl.ShortVarDecl = <shortvar>
+	/*
+	ShortVarDecl = IdentifierList ":=" ExpressionList
+	*/
+	
+	ShortVarDecl.ShortVarDecl = <<IdentifierList> <ShortVarDeclAssign>>
+	ShortVarDeclAssign.ShortVarDeclAssign = <:= <ExpressionList>>
 
 	// Function declarations
 	/*
