@@ -56,6 +56,29 @@ lexical syntax
 	Identifier = "import" {reject}
 	Identifier = "return" {reject}
 	Identifier = "var" {reject}
+	
+	Identifier = "bool" {reject}
+	Identifier = "string" {reject}
+	Identifier = "int"{reject}
+	Identifier = "int8"{reject}
+	Identifier = "int16"{reject}
+	Identifier = "int32"{reject}
+	Identifier = "int64"{reject}
+	Identifier = "uint"{reject}
+	Identifier = "uint8"{reject}
+	Identifier = "uint16"{reject} 
+	Identifier = "uint32"{reject}
+	Identifier = "uint64"{reject}
+	Identifier = "uintptr"{reject}
+	Identifier = "byte"{reject}
+	Identifier = "rune" {reject}
+	Identifier = "float32" {reject}
+	Identifier = "float64"{reject}
+	Identifier = "complex64" {reject}
+	Identifier =  "complex128"{reject}
+	Identifier =  "chan" {reject}
+	Identifier =  "struct" {reject}
+	Identifier =  "array" {reject}
 
 	// Operators and Delimiters
 	
@@ -93,3 +116,8 @@ lexical syntax
 	*/
 	
 	// Constants
+	
+	lexical restrictions
+	
+	
+		Identifier -/- 	[a-zA-Z0-9\_]

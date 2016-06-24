@@ -6,6 +6,7 @@ imports
 	Statements
 	Expressions
 	Types
+	Lexical
 
 context-free syntax
 
@@ -33,13 +34,15 @@ context-free syntax
 	ConstSpec.ConstSpec				= <<IdentifierList> <ConstDeclAssign>>
 	ConstDeclAssign.ConstDeclAssign = <= <ExpressionList>>
 	
-	IdentifierList.IdentifierList = <<{ID ","}+>>
+	IdentifierList.IdentifierList = <<{Identifier ","}+>>
 	ExpressionList.ExpressionList = <<{Expression ","}+>>
 
 	// TODO: Iota
 
 	// TODO: Type declarations
-	TypeDecl.TypeDecl		= <type>
+	TypeDecl.TypeDecl		= <type <TypeSpec>>
+	TypeDecl.TypeDecls = <type (<{TypeSpec ";"}*>)>
+	TypeSpec.TypeSpec = <<Identifier> <Type>>
 
 	// Variable declarations
 	/*
