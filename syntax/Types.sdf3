@@ -59,7 +59,7 @@ context-free syntax
 	SliceType.SliceType		= <slicetype>
 	
 	// TODO: Struct types
-	StructType.StructType	= <struct {<FieldDecl*>}>
+	StructType.StructType	= <struct {<{FieldDecl ";"}*>}>
 	FieldDecl.NormalField = <<IdentifierList> <Type>> {prefer}
 	FieldDecl.AnonField = <<Pointer?> <TypeName>> {avoid}
 	Pointer.Pointer = <*>
