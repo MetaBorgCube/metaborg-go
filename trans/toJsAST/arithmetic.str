@@ -32,22 +32,74 @@ rules
 	gen-js-ast:	BinaryExpr(lhs, "*", rhs) -> Multiplication(<gen-js-ast> lhs, <gen-js-ast> rhs)
 	gen-js-ast:	BinaryExpr(lhs, "/", rhs) -> Division(<gen-js-ast> lhs, <gen-js-ast> rhs)
 	
-	gen-js-ast: Assignment(ExpressionList([target]), AssignAddOp("+"), ExpressionList([value])) -> [assignment(targetJs, Addition(targetJs, valueJs))]
+	stmt-to-js(|defername):
+		Assignment(
+			ExpressionList([target]), AssignAddOp("+"), ExpressionList([value])
+		) -> ([js], statements)
 	      where
-			targetJs := <gen-js-ast> target;
-			valueJs := <gen-js-ast> value
+			tuple := <to-js-equals-addition-assign> (target, value);
+			js := <stmt-list> tuple;
+			statements := <stmts> tuple
+			
+	to-js-equals-addition-assign:
+		(lhs, rhs) -> (
+			assignment(<exp> lhsJs, Addition(<exp> lhsJs, <exp> rhsJs)),
+			<stmts> rhsJs
+		)
+		where
+			lhsJs := <gen-js-ast> lhs;
+			rhsJs := <gen-js-ast> rhs
 	
-	gen-js-ast: Assignment(ExpressionList([target]), AssignAddOp("-"), ExpressionList([value])) -> [assignment(targetJs, Substraction(targetJs, valueJs))]
+	stmt-to-js(|defername):
+		Assignment(
+			ExpressionList([target]), AssignAddOp("-"), ExpressionList([value])
+		) -> ([js], statements)
 	      where
-			targetJs := <gen-js-ast> target;
-			valueJs := <gen-js-ast> value
+			tuple := <to-js-equals-substraction-assign> (target, value);
+			js := <stmt-list> tuple;
+			statements := <stmts> tuple
+			
+	to-js-equals-substraction-assign:
+		(lhs, rhs) -> (
+			assignment(<exp> lhsJs, Substraction(<exp> lhsJs, <exp> rhsJs)),
+			<stmts> rhsJs
+		)
+		where
+			lhsJs := <gen-js-ast> lhs;
+			rhsJs := <gen-js-ast> rhs
 	
-	gen-js-ast: Assignment(ExpressionList([target]), AssignMulOp("*"), ExpressionList([value])) -> [assignment(targetJs, Multiplication(targetJs, valueJs))]
+	stmt-to-js(|defername):
+		Assignment(
+			ExpressionList([target]), AssignMulOp("*"), ExpressionList([value])
+		) -> ([js], statements)
 	      where
-			targetJs := <gen-js-ast> target;
-			valueJs := <gen-js-ast> value
+			tuple := <to-js-equals-multiplication-assign> (target, value);
+			js := <stmt-list> tuple;
+			statements := <stmts> tuple
+			
+	to-js-equals-multiplication-assign:
+		(lhs, rhs) -> (
+			assignment(<exp> lhsJs, Multiplication(<exp> lhsJs, <exp> rhsJs)),
+			<stmts> rhsJs
+		)
+		where
+			lhsJs := <gen-js-ast> lhs;
+			rhsJs := <gen-js-ast> rhs
 	
-	gen-js-ast: Assignment(ExpressionList([target]), AssignMulOp("/"), ExpressionList([value])) -> [assignment(targetJs, Division(targetJs, valueJs))]
+	stmt-to-js(|defername):
+		Assignment(
+			ExpressionList([target]), AssignMulOp("/"), ExpressionList([value])
+		) -> ([js], statements)
 	      where
-			targetJs := <gen-js-ast> target;
-			valueJs := <gen-js-ast> value
+			tuple := <to-js-equals-division-assign> (target, value);
+			js := <stmt-list> tuple;
+			statements := <stmts> tuple
+			
+	to-js-equals-division-assign:
+		(lhs, rhs) -> (
+			assignment(<exp> lhsJs, Division(<exp> lhsJs, <exp> rhsJs)),
+			<stmts> rhsJs
+		)
+		where
+			lhsJs := <gen-js-ast> lhs;
+			rhsJs := <gen-js-ast> rhs
