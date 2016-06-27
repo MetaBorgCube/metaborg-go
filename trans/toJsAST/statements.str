@@ -208,7 +208,7 @@ rules
 		-> (expStmt(Call(Property(operandJs, POINTERLIB_SET), [<exp> rhJs])), <stmts> rhJs)
 		where
 			rhJs := <gen-js-ast> rhs;
-			operandJs := <gen-js-ast> operand
+			operandJs := <gen-js-ast; exp> operand
 
 	to-js-equals-assign:
 		(lhs, rhs) -> (assignment(<exp> lhsJs,<exp> rhsJs), <stmts> rhsJs)
