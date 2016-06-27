@@ -27,9 +27,9 @@ rules
 		with
 			filename := <guarantee-extension(|"js")> path;
 			debug(!"Analyzing Channel Usage");
-			analyzedAst := <debug(!"Pre:"); subAllChannels; debug(!"Post:")> ast;
+			//analyzedAst := <debug(!"Pre:"); subAllChannels; debug(!"Post:")> ast;
 			debug(!"Starting compilation pretty printed JS AST...");
-			result	 := <gen-js-ast> analyzedAst;
+			result	 := <gen-js-ast> ast;
 			debug(!"Compilation to JS AST finsished!");
 			pp 		 := <pp-js> result;
 			debug(!"Pretty printing of JS AST finished!")

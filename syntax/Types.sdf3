@@ -5,6 +5,11 @@ imports
 	Common
 	Declarations
 	Expressions
+	Lexical
+
+template options
+
+  newlines : separating
 
 context-free syntax
 
@@ -14,11 +19,11 @@ context-free syntax
 	TypeLit   = ArrayType | StructType | PointerType | FunctionType | InterfaceType | SliceType | MapType | ChannelType .
 	*/
 	
-	Type				= TypeLit		{prefer}
-	Type				= TypeName
-	Type				= TypeGrouped
+	Type				= TypeLit {prefer}
+	Type				= TypeName 	
+	Type				= TypeGrouped 
 	
-	TypeName.TypeName	= ID
+	TypeName	= Identifier
 	
 	TypeLit				= BooleanType
 	TypeLit				= NumericType
@@ -50,7 +55,10 @@ context-free syntax
 	SliceType.SliceType		= <slicetype>
 	
 	// TODO: Struct types
-	StructType.StructType	= <structtype>
+	StructType.StructType	= <struct {<FieldDecl*>}>
+	FieldDecl.NormalField = <<IdentifierList> <Type>> {prefer}
+	FieldDecl.AnonField = <<Pointer?> <TypeName>> {avoid}
+	Pointer.Pointer = <*>
 	
 	// TODO: Pointer types
 	PointerType.PointerType	= <*<Type>>
@@ -84,4 +92,9 @@ context-free syntax
 	ChannelType.Channel	= <chan <Type>>
 	ChannelType.ReceivingChannel = <chan <UnaryOp> <Type>>
 	ChannelType.SendingChannel = <<UnaryOp> chan <Type>>
+	
+	context-free priorities
+
+	  {left: FieldDecl.NormalField} >
+	  {left: FieldDecl.AnonField }
 	

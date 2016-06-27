@@ -13,6 +13,7 @@ signature
 	constructors
 		ReceiveStmt: Operand * Operand -> Statement
 		SubstitutedExp: Operand * List(Statement) * StringLit -> UnaryExpr
+		SubstitudedCall: Exp * Exp * StringLit -> Exp
 		AddedJsStmt: Statement -> Statement	
 		
 rules

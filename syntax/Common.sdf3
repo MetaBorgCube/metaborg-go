@@ -9,7 +9,7 @@ lexical syntax
   StringChar     = "\\\"" 
   StringChar     = BackSlashChar 
   BackSlashChar  = "\\" 
-  LAYOUT         = [\ \t\n\r] 
+  LAYOUT         = [\ \t\n\r\12] 
   CommentChar    = [\*] 
   LAYOUT         = "/*" InsideComment* "*/" 
   InsideComment  = ~[\*] 
