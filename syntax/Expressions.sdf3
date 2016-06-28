@@ -95,6 +95,8 @@ context-free syntax
 		CompositeLit.CompositeLit = <<LiteralType> <LiteralValue>>
 		
 		LiteralType = ArrayType
+		LiteralType = TypeName
+		
 		LiteralValue.LiteralValue = <{<ElementList?>}>
 		ElementList.ElementList = <<{KeyedElement ","}+>>
 		KeyedElement.SingleElem =  <<Element>>
@@ -127,6 +129,7 @@ context-free syntax
 		PrimaryExpr.PrimaryExprArguments = <<PrimaryExpr><Arguments>>
 		PrimaryExpr.PrimaryExprIndex= <<PrimaryExpr><Index>>
 		PrimaryExpr.PrimaryExprSlice= <<PrimaryExpr><Slice>>
+		PrimaryExpr.PrimaryExprSelector = <<PrimaryExpr><Selector>>
 		PrimaryExpr.Operand = Operand
 		
 		/*
@@ -149,6 +152,7 @@ context-free syntax
 		Arguments.TypeArgWithList = <(<TypeLit>, <ExpressionList>)>
 		
 	// Selectors
+		Selector.Selector = <.<Identifier>>
 	
 	// Method expressions
 	/*

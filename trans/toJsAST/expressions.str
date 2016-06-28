@@ -62,6 +62,16 @@ rules
 			stmt := [SubstitudedCall(target, <exp> argsJs, subVarName)]; 
 			allStmts := <conc> (<stmts> argsJs, stmt) 
 	
+	gen-js-ast:
+		PrimaryExprArguments(exp,args)
+			-> (Identifier(subVarName), allStmts)
+		where
+			subVarName := <newname> "_functionresult";
+			argsJs := <gen-js-ast; debug(!"argsJs")> args;
+			expJs := <gen-js-ast> exp;
+			stmt := [SubstitudedCall(<exp> expJs, <exp> argsJs, subVarName)]; 
+			allStmts := <conc> (<stmts> expJs,<stmts> argsJs, stmt) 
+	
 	//The Addition is added to support slicing.
 	gen-js-ast:
 		PrimaryExprIndex(
@@ -84,6 +94,14 @@ rules
 			sliceJs := <gen-js-ast> slice;
 			allStmts := <conc> (<stmts> idExpJs, <stmts> sliceJs)
 	
+	gen-js-ast:
+		PrimaryExprSelector(
+			exp, 
+			Selector(selectorName)
+		) -> (Property(<exp> tuple, selectorName), <stmts> tuple)
+		with
+			tuple := <gen-js-ast> exp
+			
 	gen-js-ast:
 		Slice(exp1, exp2) 
 		-> ([<exp> exp1Js, <exp> exp2Js], allStmts)
@@ -201,24 +219,50 @@ rules
 	gen-js-ast: IntLit(int) -> (String(int), [])
 	gen-js-ast: StringLit(string) -> (String(string), [])
 
+
+	//TODO composite literals cps
 	gen-js-ast: CompositeLit(ArrayType(sizeExp, type), arrayLit) -> 
-				Call(Property(Identifier(ARRAYLIB_NAME), ARRAYLIB_NEWARRAYMETHOD), [ 
-						  arrayLitJs
-	            		, sizeExpJs
+				(Call(Property(Identifier(ARRAYLIB_NAME), ARRAYLIB_NEWARRAYMETHOD), [ 
+						  <exp> arrayLitJs
+	            		, <exp> sizeExpJs
 	            		, String(typeJs)
             		]
-          		)
+          		), <debug(!"aLitJs"); conc; debug(!"aLitJs")> (<stmts> sizeExpJs, <stmts> arrayLitJs) )
 		with
 			sizeExpJs := <gen-js-ast> sizeExp;
 			//TODO: Type to JS
 			typeJs := "''";
 			arrayLitJs := <array-to-js> arrayLit
-	
-	array-to-js: LiteralValue(Some(ElementList(x))) -> ArrayLiteral(<map(gen-js-ast)> x)	
-	array-to-js: LiteralValue(None()) -> ArrayLiteral([]) 	
 
+	gen-js-ast: CompositeLit(typename, list) -> (Call(
+        Property(Identifier(typename), STRUCTLIB_GETNEWMETHOD)
+      , [<exp> tuple]
+      ), <stmts> tuple)
+      	with
+      		tuple := <debug(!"StructLit"); array-to-js> list
+                  
+	
+	array-to-js: LiteralValue(Some(ElementList(x))) -> (ArrayLiteral(expList), stmtList)	
+		where
+			<eq> (<collect-om(?KeyValPair(name, exp))> x, []);
+			tupleList := <map(gen-js-ast)> x;
+			expList := <map(exp)> tupleList;
+			stmtList := <mapconcat(stmts)> tupleList
+
+	array-to-js: LiteralValue(Some(ElementList(x))) -> (Object(expList), stmtList)	
+		where
+			tupleList := < map(gen-js-ast)> x;
+			expList := <map(exp)> tupleList;
+			stmtList := <mapconcat(stmts)> tupleList
+			
+	array-to-js: LiteralValue(None()) -> (ArrayLiteral([]), []) 	
+
+	//Object([KeyValue("x", IntegerLiteral("5"))])
 	gen-js-ast: FunctionLit(function) -> <gen-js-ast> function
 	gen-js-ast: SingleElem(exp) -> <gen-js-ast> exp
+	gen-js-ast: KeyValPair(name, exp) -> (KeyValue(name, <exp> tuple), <stmts> tuple)
+		where
+			tuple := <debug(!"KvP2"); gen-js-ast;debug(!"KvPPost")> exp
 
 	//TODO: CPS
 	gen-js-ast:

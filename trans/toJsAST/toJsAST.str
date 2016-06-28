@@ -15,6 +15,7 @@ imports
 	toJsAST/expressions
 	toJsAST/channelhelper
 	toJsAST/arithmetic
+	toJsAST/types
 		
 rules
 
@@ -53,7 +54,8 @@ overlays
 	IMPORTLIST = [
 		varDecl(GOROUTINE_LIBNAME, Call(Identifier("require"), [String("\"\"../js/goroutine.js\"\"")])),
 		varDecl(ARRAYLIB_NAME, Call(Identifier("require"), [String("\"\"../js/go-array.js\"\"")])),
-		varDecl(POINTERLIB_NAME, Call(Identifier("require"), [String("\"\"../js/go-pointer.js\"\"")]))
+		varDecl(POINTERLIB_NAME, Call(Identifier("require"), [String("\"\"../js/go-pointer.js\"\"")])),
+		varDecl(STRUCTLIB_NAME, Call(Identifier("require"), [String("\"\"../js/go-struct.js\"\"")]))
 	]
 	
 	

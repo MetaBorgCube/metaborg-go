@@ -71,6 +71,7 @@ rules
 			callStmt := expStmt(Call(<get-target> target, <conc> (argsJs, [retFunc])))		
 
 	get-target: a@AnonFunction(x, y) -> Parenthesised(a)
+	get-target: p@Property(_,_) -> p
 	get-target: x -> Identifier(x)
 
 
@@ -281,3 +282,6 @@ overlays
 	POINTERLIB_GET = "get"
 	POINTERLIB_SET = "set"
 	
+	STRUCTLIB_NAME = "__GO_STRUCTLIB__"
+	STRUCTLIB_DEFSTRUCTMETHOD = "defStruct"
+	STRUCTLIB_GETNEWMETHOD = "getNew"
