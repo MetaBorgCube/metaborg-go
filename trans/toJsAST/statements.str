@@ -168,8 +168,8 @@ rules
 	stmt-to-js(|defername):
 		ReturnStmt(Some(expList)) -> ([
 			expStmt(Call(Property(Identifier(defername), GODEFER_RETURNMETHOD),
-					[arrayJs]
-				)),
+				[arrayJs]
+			)),
 			return(Undefined())
 		], [])
 		where
@@ -230,9 +230,9 @@ rules
 
 	
 	exps-list-to-js-array:
-		ExpressionList(exps) -> ArrayLiteral(expsJs)
+		ExpressionList(exps) -> ArrayLiteral(<map(exp)> expsJs)
 		where
-			expsJs := <map(gen-js-ast; exp)> exps
+			expsJs := <map(gen-js-ast)> exps
 
 	go-exp-to-js: PrimaryExprArguments(
 			Operand(

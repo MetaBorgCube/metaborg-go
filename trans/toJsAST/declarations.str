@@ -65,6 +65,8 @@ rules
 		with
 			valueJs := <gen-js-ast> value
 			
-	gen-js-ast : ShortVarDecl(IdentifierList(targets), ShortVarDeclAssign(ExpressionList(values))) -> declarationsJs
+	stmt-to-js(|defername) : ShortVarDecl(IdentifierList(targets), ShortVarDeclAssign(ExpressionList(values))) -> (expressions, stmts)
 		with
-			declarationsJs := <zip(to-js-vars)> (targets, values)
+			tuples := <zip(to-js-vars)> (targets, values);
+			expressions := <map(exp)> tuples;
+			stmts := <mapconcat(stmts)> tuples
