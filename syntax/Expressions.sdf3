@@ -160,7 +160,7 @@ context-free syntax
 	ReceiverType  = TypeName | "(" "*" TypeName ")" | "(" ReceiverType ")" .
 	*/
 	
-	MethodExpr.MethodExpr	= <<ReceiverType>.<MethodName>>
+	MethodExpr.MethodExpr	= <<ReceiverType>.TODO123<MethodName>>
 	ReceiverType.TypeName	= TypeName
 	ReceiverType.Asterisk	= <(*<TypeName>)>
 	ReceiverType.Brackets	= <(<ReceiverType>)>

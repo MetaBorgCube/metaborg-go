@@ -164,14 +164,24 @@ rules
 			)),
 			return(Undefined())
 		], [])
+
+	stmt-to-js(|defername):
+		ReturnStmt(Some(ExpressionList([exp]))) -> ([
+			expStmt(Call(Property(Identifier(defername), GODEFER_RETURNMETHOD),
+				[<exp> expJs]
+			)),
+			return(Undefined())
+		], <stmts> expJs)
+		where
+			expJs := <gen-js-ast> exp
 	
 	stmt-to-js(|defername):
 		ReturnStmt(Some(expList)) -> ([
 			expStmt(Call(Property(Identifier(defername), GODEFER_RETURNMETHOD),
-				[arrayJs]
+				[<exp> arrayJs]
 			)),
 			return(Undefined())
-		], [])
+		], <stmts> arrayJs)
 		where
 			arrayJs := <exps-list-to-js-array> expList
 			
@@ -230,7 +240,7 @@ rules
 
 	
 	exps-list-to-js-array:
-		ExpressionList(exps) -> ArrayLiteral(<map(exp)> expsJs)
+		ExpressionList(exps) -> (ArrayLiteral(<map(exp)> expsJs), <mapconcat(stmts)> expsJs)
 		where
 			expsJs := <map(gen-js-ast)> exps
 

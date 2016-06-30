@@ -28,6 +28,23 @@ rules
 			paramsJs := <conc> (<map(gen-js-ast)> params, [parameter(retparname)]);
 			bodyJs := <func-block(|retparname)> block
 	
+	gen-js-ast: MethodDecl(
+      Parameters(receiver)
+    , MethodName(name)
+    , Function(
+        Signature(Parameters(params), returntype)
+      , FunctionBody(block
+        )
+      )
+    ) -> method(name, paramsJs, bodyJs)
+		where
+			debug(!<concat-strings> ["Found method ", name, " with parameters ", <write-to-string> params]);
+			retparname := <newname> "__retcallback__";
+			paramsJs := <conc> (<map(gen-js-ast)> receiver,<map(gen-js-ast)> params, [parameter(retparname)]);
+			bodyJs := <func-block(|retparname)> block
+	
+	
+	
 	gen-js-ast : ParameterDecl(name, _) -> parameter(name)
 	
 	stmt-to-js(|defername) : ConstDecl(constDecl) -> <convert-stmt(|defername)> constDecl

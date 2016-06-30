@@ -80,5 +80,5 @@ context-free syntax
 	FunctionBody.FunctionBody			= Block
 
 	// Method declarations
-	MethodDecl.MethodDecl		= <methoddecl>
-	MethodName.MethodName		= <methodname>
+	MethodDecl.MethodDecl		= <func <Parameters> <MethodName> <FunOrSig>>
+	MethodName.MethodName		= Identifier
