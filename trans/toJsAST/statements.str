@@ -33,7 +33,9 @@ rules
 			deferStackSetRet := expStmt(Call(Property(Identifier(deferstackname), GODEFER_SETRETMETHOD), [Identifier(callbackname)]));
 			statements := <statements-from-list> statementList;
 			executeDeferred := <get-deferstmt(|deferstackname)> [];
-			statementsWithAddedJs := <conc> (statements, [AddedJsStmt(executeDeferred)]);
+			statementsWithAddedJs := <conc> (statements, [AddedJsStmt(expStmt(Call(Property(Identifier(deferstackname), GODEFER_RETURNMETHOD),
+				[]
+			)))]);
 			statementsJs := <debug(!"Process Block"); stmt-iter(|deferstackname); debug(!"Finished Block")> statementsWithAddedJs	
 			//TODO: Add Cleanup on return
 	
