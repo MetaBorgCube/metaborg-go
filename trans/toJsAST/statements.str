@@ -247,12 +247,11 @@ rules
 			expsJs := <map(gen-js-ast)> exps
 
 	go-exp-to-js: PrimaryExprArguments(
-			Operand(
-				OperandName(target)
-			),
+			target,
 			args
-		) -> (Call(target, <exp> argsJs), <stmts> argsJs)
+		) -> (Call(Parenthesised(<exp> targetJs), <exp> argsJs), <conc> (<stmts> targetJs, <stmts> argsJs))
 		where
+			targetJs := <gen-js-ast> target;
 			argsJs := <gen-js-ast> args
 
 	go-exp-to-js: UnaryExpr(x) -> <debug(!"GoUn"); go-exp-to-js> x

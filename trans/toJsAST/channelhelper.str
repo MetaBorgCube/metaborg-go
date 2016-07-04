@@ -36,41 +36,6 @@ rules
 
 	substitute-channels: PrimaryExpr(Operand(GroupedExpression(UnaryExpr(x)))) -> <substitute-channels> x
 
-	generate-receive(|parent, rest, dstack): [ReceiveStmt(varname, channelExp) | []] -> [
-			expStmt(
-                Call(
-                  Property(channelExpJs, "receive")
-                , [ AnonFunction(
-                      [parameter(varnameJs)]
-                    , [try(<conc> (parentJs, tailJs), catch(Identifier("e"), [executeDeferred], None()))]
-                    )
-                  ]
-                )
-            )]
-		where
-			channelExpJs := <gen-js-ast> channelExp;
-			varnameJs := < extract-varname> varname;
-			parentJs := <gen-js-ast> parent;
-			tailJs := <debug(!"RestToJS"); stmt-iter(|dstack)> rest;
-			executeDeferred := <get-deferstmt(|dstack)> []
-			
-			
-	generate-receive(|parent, rest, dstack): [ReceiveStmt(varname, channelExp) | tail] -> [
-			expStmt(
-                Call(
-                  Property(channelExpJs, "receive")
-                , [ AnonFunction(
-                      [parameter(varnameJs)]
-                    , nextReceive
-                    )
-                  ]
-                )
-            )]
-		where
-			channelExpJs := <gen-js-ast> channelExp;
-			varnameJs := <extract-varname> varname;
-			nextReceive := <debug(!"Blockingnonlast"); generate-receive(|parent, rest, dstack)> tail
-
 
 	lastVar : SubstitutedExp(_, _, varname) -> varname
 	

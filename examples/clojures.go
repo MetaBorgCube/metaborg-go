@@ -16,9 +16,13 @@ func intSeq() func() int {
     };
 }
 
+func last () int {
+	println("Hooi");
+}
+
 func main() {
     nextInt := intSeq();
-
+	
     println(nextInt());
     println(nextInt());
     println(nextInt());

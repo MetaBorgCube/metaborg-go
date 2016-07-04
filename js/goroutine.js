@@ -208,7 +208,7 @@ function DeferList(){
 		callback(val);
 	}
 
-	this.cleanUp = function()
+	this.cleanUp = function(x)
 	{
 		var d;
 

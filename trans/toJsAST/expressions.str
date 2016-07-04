@@ -77,11 +77,11 @@ rules
 		PrimaryExprIndex(
 			idExp,
 			Index(indexExp)
-		) ->  (Array(Call(Property(<exp> idExpJs, ARRAYLIB_LOOKUPMETHOD), [<exp> indexExpJs]), [addition]), allStmts)
+		) ->  (Array(Call(Property(<exp> idExpJs, ARRAYLIB_LOOKUPMETHOD), [<exp> indexExpJs]), addition), allStmts)
 		with
 			idExpJs := <gen-js-ast> idExp;
 			indexExpJs := <gen-js-ast> indexExp;
-			addition := Addition(indexExpJs, Call(Property(<exp> idExpJs, ARRAYLIB_GETSTARTPOSTMETHOD), [<exp> indexExpJs]));
+			addition := Addition(<exp> indexExpJs, Call(Property(<exp> idExpJs, ARRAYLIB_GETSTARTPOSTMETHOD), [<exp> indexExpJs]));
 			allStmts := <conc> (<stmts> idExpJs, <stmts> indexExpJs)
 
 	gen-js-ast:
@@ -216,7 +216,7 @@ rules
 	gen-js-ast:
 		Literal(literal) -> <debug(!"LIT"); gen-js-ast> literal
 
-	gen-js-ast: IntLit(int) -> (String(int), [])
+	gen-js-ast: IntLit(int) -> (IntegerLiteral(int), [])
 	gen-js-ast: StringLit(string) -> (String(string), [])
 
 

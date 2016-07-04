@@ -52,8 +52,10 @@ rules
 	
 	// Ignore type
 	stmt-to-js(|defername) : VarSpecTyped(IdentifierList(identifierList), _, None()) -> (<map(to-js-var)> identifierList, [])
+	stmt-to-js(|defername) : VarSpecTyped(idList, _, Some(list)) -> <stmt-to-js(|defername)> ConstSpec(idList, list)
 	
 	stmt-to-js(|defername) : ConstSpecTyped(IdentifierList(identifierList), _, None()) -> (<map(to-js-const)> identifierList, [])
+	stmt-to-js(|defername) : ConstSpecTyped(idList, _, Some(list)) -> <stmt-to-js(|defername)> ConstSpec(idList, list)
 	
 	to-js-var : identifier -> varDecl(identifier, Null())
 	to-js-const : identifier -> constDecl(identifier, Null())
@@ -62,21 +64,21 @@ rules
 		with
 			debug(!<concat-strings> ["Targets ", <write-to-string> targets]);
 			debug(!<concat-strings> ["Values ", <write-to-string> values]);
-			tuples := <zip(to-js-vars)> (targets, values);
-			expressions := <map(exp)> tuples;
-			stmts := <mapconcat(stmts)> tuples
+			tuples := <debug(!"Zipped"); zip(to-js-vars); debug(!"Zipped")> (targets, values);
+			expressions := <debug(!"Exps"); map(exp)> tuples;
+			stmts := <debug(!"Tuples"); mapconcat(stmts)> tuples
 	
 	stmt-to-js(|defername): ConstSpec(IdentifierList(targets), ConstDeclAssign(ExpressionList(values))) -> (expressions, stmts)
 		with
 			debug(!<concat-strings> ["Targets ", <write-to-string> targets]);
 			debug(!<concat-strings> ["Values ", <write-to-string> values]);
-			tuples := <zip(to-js-consts)> (targets, values);
-			expressions := <map(exp)> tuples;
+			tuples := <debug(!"Zipped"); zip(to-js-consts); debug(!"Zipped")> (targets, values);
+			expressions := <debug(!"Exps"); map(exp); debug(!"Exps")> tuples;
 			stmts := <mapconcat(stmts)> tuples
 	
 	to-js-vars: (target, value) -> (varDecl(target, <exp> valueJs), <stmts> valueJs)
 		with
-			valueJs := <gen-js-ast> value
+			valueJs := <gen-js-ast; debug(!"ToJSVars")> value
 	
 	to-js-consts: (target, value) -> (constDecl(target, <exp> valueJs), <stmts> valueJs)
 		with
