@@ -1,9 +1,0 @@
-module lep
-
-imports
-
-	Packages
-
-context-free start-symbols
-
-	SourceFile

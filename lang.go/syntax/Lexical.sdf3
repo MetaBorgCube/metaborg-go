@@ -1,0 +1,123 @@
+module Lexical
+
+imports
+  
+  Common
+  Representation
+  
+lexical start-symbols
+
+  Identifier
+  StringLit
+  
+lexical syntax
+
+  // Keywords
+  
+  // Operators and Delimiters
+  
+  // Integer literals
+    
+  // Floating-point literals
+  
+  // Imaginary literals
+  
+  // Rune literals
+
+  // Identifiers
+  LetterUnicodeDigit = Letter
+  LetterUnicodeDigit = UnicodeDigit
+  
+  Identifier = Letter LetterUnicodeDigit*
+
+  // Keywords
+  Identifier = "break" {reject}
+  Identifier = "default" {reject}
+  Identifier = "func" {reject}
+  Identifier = "interface" {reject}
+  Identifier = "select" {reject}
+  Identifier = "case" {reject}
+  Identifier = "defer" {reject}
+  Identifier = "go" {reject}
+  Identifier = "map" {reject}
+  Identifier = "struct" {reject}
+  Identifier = "chan" {reject}
+  Identifier = "else" {reject}
+  Identifier = "goto" {reject}
+  Identifier = "package" {reject}
+  Identifier = "switch" {reject}
+  Identifier = "const" {reject}
+  Identifier = "fallthrough" {reject}
+  Identifier = "if" {reject}
+  Identifier = "range" {reject}
+  Identifier = "type" {reject}
+  Identifier = "continue" {reject}
+  Identifier = "for" {reject}
+  Identifier = "import" {reject}
+  Identifier = "return" {reject}
+  Identifier = "var" {reject}
+  
+  Identifier = "bool" {reject}
+  Identifier = "string" {reject}
+  Identifier = "int"{reject}
+  Identifier = "int8"{reject}
+  Identifier = "int16"{reject}
+  Identifier = "int32"{reject}
+  Identifier = "int64"{reject}
+  Identifier = "uint"{reject}
+  Identifier = "uint8"{reject}
+  Identifier = "uint16"{reject} 
+  Identifier = "uint32"{reject}
+  Identifier = "uint64"{reject}
+  Identifier = "uintptr"{reject}
+  Identifier = "byte"{reject}
+  Identifier = "rune" {reject}
+  Identifier = "float32" {reject}
+  Identifier = "float64"{reject}
+  Identifier = "complex64" {reject}
+  Identifier =  "complex128"{reject}
+  Identifier =  "chan" {reject}
+  Identifier =  "struct" {reject}
+  Identifier =  "array" {reject}
+
+  // Operators and Delimiters
+  
+  // Integer literals
+  /*
+  int_lit     = decimal_lit | octal_lit | hex_lit .
+  decimal_lit = ( "1" … "9" ) { decimal_digit } .
+  octal_lit   = "0" { octal_digit } .
+  hex_lit     = "0" ( "x" | "X" ) hex_digit { hex_digit } .
+  */
+  IntLit.Dec  = DecimalLit
+  IntLit.Oct  = OctalLit
+  IntLit.Hex  = HexLit
+  DecimalLit  = [1-9] DecimalDigit*
+  OctalLit  = "0" OctalDigit*
+  HexX     = "x" 
+  HexX     = "X" 
+  HexLit    = "0" HexX HexDigit+
+  
+  // Floating-point literals
+  
+  // Imaginary literals
+  
+  // Rune literals
+  
+  // String literals 
+  StringLit.StringLit  = "\"" UnicodeChar* "\""
+  
+  /*
+  Above implementation is a shortcut, correct implementation:
+    StringLit.RawStringLit      = RawStringLit
+    StringLit.InterpretedStringLit  = InterpretedStringLit
+    RawStringLit          = "\"" UnicodeChar* "\"" // TODO: not correct, should be "`" { unicode_char | newline } "`" .
+    InterpretedStringLit      = "\"" UnicodeChar* "\"" // TODO: not correct, should be `"` { unicode_value | byte_value } `"` .
+  */
+  
+  // Constants
+  
+  lexical restrictions
+  
+  
+    Identifier -/-   [a-zA-Z0-9\_]

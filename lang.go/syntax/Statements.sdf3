@@ -1,0 +1,232 @@
+module Statements
+
+imports
+  
+  Common
+  Declarations
+  Expressions
+
+context-free syntax
+  
+  //Statement.PrintLn = <println()>
+
+  /*
+  Statement =
+    Declaration | LabeledStmt | SimpleStmt |
+    GoStmt | ReturnStmt | BreakStmt | ContinueStmt | GotoStmt |
+    FallthroughStmt | Block | IfStmt | SwitchStmt | SelectStmt | ForStmt |
+    DeferStmt .
+  
+  SimpleStmt = EmptyStmt | ExpressionStmt | SendStmt | IncDecStmt | Assignment | ShortVarDecl
+  */
+
+  // Blocks
+  Block.Block = <{<StatementList>}>
+  
+  StatementList.StatementList = <<StatementLine*>>
+  StatementLine.StatementLine = <<Statement>;>
+
+  // Statement
+  Statement = Declaration
+  Statement = LabeledStmt
+  Statement = SimpleStmt
+  Statement = GoStmt
+  Statement = ReturnStmt
+  Statement = BreakStmt
+  Statement = ContinueStmt
+  Statement = GotoStmt
+  Statement = FallthroughStmt
+  Statement = Block
+  Statement = IfStmt
+  Statement = SwitchStmt
+  Statement = SelectStmt
+  Statement = ForStmt
+  Statement = DeferStmt
+  
+  SimpleStmt = EmptyStmt
+  SimpleStmt = ExpressionStmt
+  SimpleStmt = SendStmt {prefer}
+  SimpleStmt = IncDecStmt
+  SimpleStmt = Assignment
+  SimpleStmt = ShortVarDecl
+  
+  // Empty statements
+  
+    /*
+    EmptyStmt = .
+    */
+    EmptyStmt.EmptyStmt = 
+  
+  // Labeled statements
+  
+    /*
+    LabeledStmt = Label ":" Statement .
+    Label       = identifier .
+    */
+    LabeledStmt.LabeledStmt = <<Label>:<Statement>>
+    Label.Label              = ID
+  
+  // Expression statements
+  
+    /*
+    ExpressionStmt = Expression .
+    */
+    ExpressionStmt.ExpressionStmt = Expression
+  
+  // Send statements
+  
+    /*
+    SendStmt = Channel "<-" Expression .
+    Channel  = Expression .
+    */
+    SendStmt.SendStmt = [[Channel] <- [Expression]]
+    Channel.Channel   = Expression
+  
+  // IncDec statements
+  
+    /*
+    IncDecStmt = Expression ( "++" | "--" ) .
+    */
+    IncDecStmt.IncStmt = <<Expression>++>
+    IncDecStmt.DecStmt = <<Expression>-->
+  
+  // Assignments
+    
+    /*
+    Assignment = ExpressionList assign_op ExpressionList .
+
+    assign_op = [ add_op | mul_op ] "=" .
+    */
+    Assignment.Assignment = <<ExpressionList><AssignOp><ExpressionList>>
+    
+    AssignOp.AssignAddOp = <<AddOp>=>
+    AssignOp.AssignMulOp = <<MulOp>=>
+    AssignOp.AssignEquals = <=>
+  
+  // If statements
+  
+    /*
+    IfStmt = "if" [ SimpleStmt ";" ] Expression Block [ "else" ( IfStmt | Block ) ] .
+    */
+    IfStmt.IfStmt = <if<IfConditionStmt?> <Expression> <Block> <ElseStmt?>>
+    IfConditionStmt.IfConditionStmt = <<SimpleStmt>;>
+    ElseStmt.ElseIfStmt = <else <IfStmt>>
+    ElseStmt.ElseBlockStmt = <else <Block>>
+  
+  // TODO: Switch statements
+  
+    SwitchStmt.SwitchStmt = <switch>
+    
+    /*
+    SwitchStmt = ExprSwitchStmt | TypeSwitchStmt .
+    */
+  
+    /* Expression switches:
+    ExprSwitchStmt = "switch" [ SimpleStmt ";" ] [ Expression ] "{" { ExprCaseClause } "}" .
+    ExprCaseClause = ExprSwitchCase ":" StatementList .
+    ExprSwitchCase = "case" ExpressionList | "default" .
+    */
+  
+    /* Type switches:
+    TypeSwitchStmt  = "switch" [ SimpleStmt ";" ] TypeSwitchGuard "{" { TypeCaseClause } "}" .
+    TypeSwitchGuard = [ identifier ":=" ] PrimaryExpr "." "(" "type" ")" .
+    TypeCaseClause  = TypeSwitchCase ":" StatementList .
+    TypeSwitchCase  = "case" TypeList | "default" .
+    TypeList        = Type { "," Type } .
+    */
+  
+  // For statements
+  
+    /*
+    ForStmt = "for" [ Condition | ForClause | RangeClause ] Block .
+    Condition = Expression .
+    */
+    ForStmt.ForStmt = <for <ForCond> <Block>>
+    
+    ForCond.Condition = Condition
+    ForCond.ForClause = ForClause
+    ForCond.RangeClause = RangeClause
+    
+    Condition = Expression
+    
+    /*
+    ForClause = [ InitStmt ] ";" [ Condition ] ";" [ PostStmt ] .
+    InitStmt = SimpleStmt .
+    PostStmt = SimpleStmt .
+    */
+    ForClause.ForClause = <<InitStmt?>;<Condition?>;<PostStmt?>>
+    InitStmt = SimpleStmt
+    PostStmt = SimpleStmt
+    
+    /*
+    RangeClause = [ ExpressionList "=" | IdentifierList ":=" ] "range" Expression .
+    */
+    RangeClause.RangeClause = <<RangeExpIdList?> range <Expression>>
+    RangeExpIdList.ExpressionList = <<ExpressionList> =>
+    RangeExpIdList.IdentifierList = <<IdentifierList> :=>
+
+  // Go statements
+  
+    /*
+    GoStmt = "go" Expression .
+    */
+    GoStmt.GoStmt = <go <Expression>>
+  
+  // TODO: Select statements
+  
+    SelectStmt.SelectStmt = <select>
+    
+    /*
+    SelectStmt = "select" "{" { CommClause } "}" .
+    CommClause = CommCase ":" StatementList .
+    CommCase   = "case" ( SendStmt | RecvStmt ) | "default" .
+    RecvStmt   = [ ExpressionList "=" | IdentifierList ":=" ] RecvExpr .
+    RecvExpr   = Expression .
+    */
+  
+  // Return statements
+  
+    /*
+    ReturnStmt = "return" [ ExpressionList ]
+    */
+    ReturnStmt.ReturnStmt = <return <ExpressionList?>>
+  
+  // Break statements
+  
+    /*
+    BreakStmt = "break" [ Label ] .
+    */
+    BreakStmt.BreakStmt = <break <Label?>>
+  
+  // Continue statements
+  
+    /*
+    ContinueStmt = "continue" [ Label ] .
+    */
+    ContinueStmt.ContinueStmt = <continue <Label?>>
+  
+  // Goto statements
+  
+    /*
+    GotoStmt = "goto" Label .
+    */
+    GotoStmt.GotoStmt = <goto <Label?>>
+  
+  // Fallthrough statements
+  
+    /*
+    FallthroughStmt = "fallthrough"
+    */
+    FallthroughStmt.FallthroughStmt = <fallthrough>
+  
+  // Defer statements
+  
+    /*
+    DeferStmt = "defer" Expression .
+    */
+    DeferStmt.DeferStmt = <defer <Expression>>
+    
+context-free priorities
+  
+   {ExpressionStmt.ExpressionStmt} > {SendStmt.SendStmt}
+    

@@ -5,16 +5,24 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 >
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.example</groupId>
-  <artifactId>lep</artifactId>
+  <artifactId>lang.go.example</artifactId>
   <version>0.1.0-SNAPSHOT</version>
-  <packaging>spoofax-language</packaging>
+  <packaging>spoofax-project</packaging>
 
   <parent>
-  <groupId>org.metaborg</groupId>
-  <artifactId>parent.language</artifactId>
-  <version>2.0.0-beta1</version>
+    <groupId>org.metaborg</groupId>
+    <artifactId>parent.language</artifactId>
+    <version>2.3.0-SNAPSHOT</version>
   </parent>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.metaborg</groupId>
+      <artifactId>lang.go</artifactId>
+      <version>0.1.0-SNAPSHOT</version>
+      <type>spoofax-language</type>
+    </dependency>
+  </dependencies>
   
   <repositories>
     <repository>
@@ -35,17 +43,6 @@
       </releases>
       <snapshots>
         <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>spoofax-eclipse-repo</id>
-      <url>http://download.spoofax.org/update/nightly/</url>
-      <layout>p2</layout>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
       </snapshots>
     </repository>
   </repositories>
