@@ -1,0 +1,36 @@
+module statics/main
+
+imports
+
+  signatures/-
+
+rules
+
+  init ^ (s) := new s.
+
+  [[ Empty() ^ (s) ]] :=
+    false | note "Specify name binding and typing rules in static-semantics.nabl2".
+
+/* Predefined type identifiers
+
+  Type.UIntType       = "uint"
+  Type.UInt8Type      = "uint8"
+  Type.UInt16Type     = "uint16"
+  Type.UInt32Type     = "uint32"
+  Type.UInt64Type     = "uint64"
+  Type.UIntPtrType    = "uintptr"
+
+  Type.IntType        = "int"
+  Type.Int8Type       = "int8"
+  Type.Int16Type      = "int16"
+  Type.Int32Type      = "int32"
+  Type.Int64Type      = "int64"
+
+  Type.Float32Type    = "float32"
+  Type.Float64Type    = "float64"
+
+  Type.Complex64Type  = "complex64"
+  Type.Complex128Type = "complex128"
+
+  Type.UInt8Type      = "byte"
+  Type.Int32Type      = "rune"

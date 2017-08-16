@@ -1,11 +1,14 @@
-module Types
+module Types // https://golang.org/ref/spec#Types
 
 imports
   
-  Common
+  Lexical
   Declarations
   Expressions
-  Lexical
+
+context-free start-symbols
+
+  Type
 
 template options
 
@@ -13,92 +16,151 @@ template options
 
 context-free syntax
 
-  /*
-  Type      = TypeName | TypeLit | "(" Type ")" .
-  TypeName  = identifier | QualifiedIdent .
-  TypeLit   = ArrayType | StructType | PointerType | FunctionType | InterfaceType | SliceType | MapType | ChannelType .
-  */
-  
-  Type        = TypeLit {prefer}
   Type        = TypeName   
-  Type        = TypeGrouped 
-  
-  TypeName  = Identifier
-  
-  TypeLit        = BooleanType
-  TypeLit        = NumericType
-  TypeLit        = StringType
-  
-  TypeLit        = ArrayType
-  TypeLit        = StructType
-  TypeLit        = PointerType
-  TypeLit        = FunctionType
-  TypeLit        = InterfaceType
-  TypeLit        = SliceType
-  TypeLit        = MapType
-  TypeLit        = ChannelType
+  Type        = TypeLit
+  Type        = <( <Type> )> {bracket}
 
-  TypeGrouped.TypeGrouped  = <(<{Type ","}*>)>
+  TypeName    = Identifier
+  TypeName    = QualifiedIdent
 
-  // TODO: Method sets
-  
-  // TODO: Boolean types
-  BooleanType.BooleanType  = <bool>
-  
-  // TODO: Numeric types
-  NumericType.IntType    = <int>
-  
-  // TODO: String types
-  StringType.StringType  = <string>
-  
-  // TODO: String types
-  
-  ArrayType.ArrayType    = <[<Expression>] <Type>>
-  
-  // TODO: Slice types
-  SliceType.SliceType    = <slicetype>
-  
-  // TODO: Struct types
-  StructType.StructType  = <struct {<{FieldDecl ";"}*>}>
-  FieldDecl.NormalField = <<IdentifierList> <Type>> {prefer}
-  FieldDecl.AnonField = <<Pointer?> <TypeName>> {avoid}
-  Pointer.Pointer = <*>
-  
-  // TODO: Pointer types
-  PointerType.PointerType  = <*<Type>>
+  TypeLit     = ArrayType
+  TypeLit     = StructType
+  TypeLit     = PointerType
+  TypeLit     = FunctionType
+  TypeLit     = InterfaceType
+  TypeLit     = SliceType
+  TypeLit     = MapType
+  TypeLit     = ChannelType
 
-  // Function types
+
+/**
+ * Boolean types -- https://golang.org/ref/spec#Boolean_types
+ */
+ 
+  context-free syntax 
   
-  /*
-  FunctionType   = "func" Signature .
-  Signature      = Parameters [ Result ] .
-  Result         = Parameters | Type .
-  Parameters     = "(" [ ParameterList [ "," ] ] ")" .
-  ParameterList  = ParameterDecl { "," ParameterDecl } .
-  ParameterDecl  = [ IdentifierList ] [ "..." ] Type .
-  */
+  Type.Bool = "bool"
+
+  lexical syntax
+
+  Identifier = "bool" {reject}
+
+
+/**
+ * Numeric types -- https://golang.org/ref/spec#Numeric_types
+ */
+
+
+/**
+ * String types -- https://golang.org/ref/spec#String_types
+ */
+ 
+ 
+/**
+ * Array types -- https://golang.org/ref/spec#Array_types
+ */
+ 
+  context-free syntax
+
+  ArrayType.ArrayType = <[<ArrayLength>]<ElementType>> {left}
+ 
+  ArrayLength         = Expression
+  
+  ElementType         = Type
+ 
+ 
+/**
+ * Slice types -- https://golang.org/ref/spec#Slice_types
+ */
+ 
+  context-free syntax
+  
+  SliceType.SliceType = <[]<ElementType>> {left}
+ 
+ 
+/**
+ * Struct types -- https://golang.org/ref/spec#Struct_types
+ */
+ 
+  context-free syntax
+  
+  StructType.StructType   = <struct { <{FieldDecl ";"}*> }>
+ 
+  FieldDecl.FieldDecl     = <<Field> <Tag?>>
+  
+  Field.Field             = <<IdentifierList> <Type>>
+ 
+  Field.AnonymousPtrField = <*<TypeName>>
+  Field.AnonymousField    = TypeName
+  
+  Tag                     = StringLit
+
+
+/**
+ * Pointer types -- https://golang.org/ref/spec#Pointer_types
+ */
+  
+  context-free syntax
+  
+  PointerType.PointerType = <*<BaseType>>
+  
+  BaseType                = Type
+
+
+/**
+ * Function types -- https://golang.org/ref/spec#Function_types
+ */
+ 
+  context-free syntax
   
   FunctionType.FunctionType   = <func <Signature>>
-  
-  Signature.Signature      = <<Parameters> <Result?>>
-  Result            = Parameters
-  Result            = Type
-  Parameters.Parameters    = <(<{ParameterDecl ","}*>)>
-  ParameterDecl.ParameterDecl  = <<ID> <Type>>   // TODO: with dots: ParameterDecl.ParameterDecl  = <<IdentifierList?> <"..."?> <Type>>
 
-  // TODO: Interface types
-  InterfaceType.InterfaceType  = <interfacetype>
-  
-  // TODO: Map types
-  MapType.MapType        = <maptype>
-  
-  // TODO: Channel types
-  ChannelType.Channel  = <chan <Type>>
-  ChannelType.ReceivingChannel = <chan <UnaryOp> <Type>>
-  ChannelType.SendingChannel = <<UnaryOp> chan <Type>>
-  
-  context-free priorities
+  Signature.Signature         = <<Parameters> <Result?>>
 
-    {left: FieldDecl.NormalField} >
-    {left: FieldDecl.AnonField }
+  Result                      = Parameters
+  Result                      = Type
+
+  Parameters                  = <(<Parameters-Inner?>)> {brackets}
+  Parameters-Inner            = <<ParameterList> <Parameters-TrailingComma?>>
+  Parameters-TrailingComma    = ","
+
+  ParameterList               = {ParameterDecl ","}+
+
+  ParameterDecl.ParameterDecl = <<IdentifierList?> <ParameterDecl-Dots?><Type>>
+  ParameterDecl-Dots          = "..."
+
+/**
+ * Interface types -- https://golang.org/ref/spec#Interface_types
+ */
+ 
+  context-free syntax
   
+  InterfaceType.Interface = <interface { <{MethodSpec ";"}*> }>
+  
+  MethodSpec              = <<MethodName> <Signature>>
+  MethodSpec              = InterfaceTypeName
+  
+  MethodName              = Identifier
+  InterfaceTypeName       = TypeName
+ 
+
+/**
+ * Map types -- https://golang.org/ref/spec#Map_types
+ */
+ 
+  context-free syntax
+  
+  MapType.MapType = <map[<KeyType>]<ElementType>>
+
+  KeyType         = Type
+
+
+/**
+ * Channel types -- https://golang.org/ref/spec#Channel_types
+ */
+ 
+  context-free syntax
+
+  ChannelType.BidirectionalChannelType = [chan [ElementType]]
+  ChannelType.SendingChannelType       = [chan <- [ElementType]]
+  ChannelType.ReceivingChannelType     = [<- chan [ElementType]]

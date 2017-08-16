@@ -1,123 +1,185 @@
-module Lexical
+module Lexical // https://golang.org/ref/spec#Lexical_elements
 
 imports
   
-  Common
   Representation
-  
+
 lexical start-symbols
 
   Identifier
+  IntLit
+  FloatLit
+  ImaginaryLit
+  RuneLit
   StringLit
-  
-lexical syntax
 
-  // Keywords
-  
-  // Operators and Delimiters
-  
-  // Integer literals
-    
-  // Floating-point literals
-  
-  // Imaginary literals
-  
-  // Rune literals
+/**
+ * Comments -- https://golang.org/ref/spec#Comments
+ */
 
-  // Identifiers
-  LetterUnicodeDigit = Letter
-  LetterUnicodeDigit = UnicodeDigit
-  
-  Identifier = Letter LetterUnicodeDigit*
+  lexical syntax
 
-  // Keywords
+  LAYOUT         = "//" ~[\n\r]* NewLineEOF
+
+  LAYOUT         = "/*" InsideComment* "*/"
+  InsideComment  = ~[\*]
+  InsideComment  = CommentChar
+  CommentChar    = [\*]
+
+  NewLineEOF     = [\n\r]
+  NewLineEOF     = EOF
+  EOF            =  
+
+  lexical restrictions
+
+  CommentChar   -/- [\/]
+
+  EOF           -/- ~[]
+
+
+/**
+ * Tokens -- https://golang.org/ref/spec#Tokens
+ */
+
+  lexical syntax
+  
+  LAYOUT   =  [\ \t\n\r]
+
+  context-free restrictions
+
+  LAYOUT? -/- [\ \t\n\r]
+
+
+/**
+ * Identifiers -- https://golang.org/ref/spec#Identifiers
+ */
+
+  lexical syntax
+
+  Identifier  =  Letter (Letter | UnicodeDigit)*
+
+  lexical restrictions
+
+  Identifier -/- [A-Za-z\_0-9] // Letter | UnicodeDigit
+
+
+/**
+ * Keywords -- https://golang.org/ref/spec#Keywords
+ */
+
+  lexical syntax
+
   Identifier = "break" {reject}
-  Identifier = "default" {reject}
-  Identifier = "func" {reject}
-  Identifier = "interface" {reject}
-  Identifier = "select" {reject}
   Identifier = "case" {reject}
-  Identifier = "defer" {reject}
-  Identifier = "go" {reject}
-  Identifier = "map" {reject}
-  Identifier = "struct" {reject}
   Identifier = "chan" {reject}
-  Identifier = "else" {reject}
-  Identifier = "goto" {reject}
-  Identifier = "package" {reject}
-  Identifier = "switch" {reject}
   Identifier = "const" {reject}
-  Identifier = "fallthrough" {reject}
-  Identifier = "if" {reject}
-  Identifier = "range" {reject}
-  Identifier = "type" {reject}
   Identifier = "continue" {reject}
+  Identifier = "default" {reject}
+  Identifier = "defer" {reject}
+  Identifier = "else" {reject}
+  Identifier = "fallthrough" {reject}
   Identifier = "for" {reject}
+  Identifier = "func" {reject}
+  Identifier = "go" {reject}
+  Identifier = "goto" {reject}
+  Identifier = "if" {reject}
   Identifier = "import" {reject}
+  Identifier = "interface" {reject}
+  Identifier = "map" {reject}
+  Identifier = "package" {reject}
+  Identifier = "range" {reject}
   Identifier = "return" {reject}
+  Identifier = "select" {reject}
+  Identifier = "struct" {reject}
+  Identifier = "switch" {reject}
+  Identifier = "type" {reject}
   Identifier = "var" {reject}
-  
-  Identifier = "bool" {reject}
-  Identifier = "string" {reject}
-  Identifier = "int"{reject}
-  Identifier = "int8"{reject}
-  Identifier = "int16"{reject}
-  Identifier = "int32"{reject}
-  Identifier = "int64"{reject}
-  Identifier = "uint"{reject}
-  Identifier = "uint8"{reject}
-  Identifier = "uint16"{reject} 
-  Identifier = "uint32"{reject}
-  Identifier = "uint64"{reject}
-  Identifier = "uintptr"{reject}
-  Identifier = "byte"{reject}
-  Identifier = "rune" {reject}
-  Identifier = "float32" {reject}
-  Identifier = "float64"{reject}
-  Identifier = "complex64" {reject}
-  Identifier =  "complex128"{reject}
-  Identifier =  "chan" {reject}
-  Identifier =  "struct" {reject}
-  Identifier =  "array" {reject}
 
-  // Operators and Delimiters
-  
-  // Integer literals
-  /*
-  int_lit     = decimal_lit | octal_lit | hex_lit .
-  decimal_lit = ( "1" … "9" ) { decimal_digit } .
-  octal_lit   = "0" { octal_digit } .
-  hex_lit     = "0" ( "x" | "X" ) hex_digit { hex_digit } .
-  */
-  IntLit.Dec  = DecimalLit
-  IntLit.Oct  = OctalLit
-  IntLit.Hex  = HexLit
+
+/**
+ * Integer literals -- https://golang.org/ref/spec#Integer_literals
+ */
+
+  lexical syntax
+
+  IntLit      = DecimalLit
+  IntLit      = OctalLit
+  IntLit      = HexLit
+
   DecimalLit  = [1-9] DecimalDigit*
-  OctalLit  = "0" OctalDigit*
-  HexX     = "x" 
-  HexX     = "X" 
-  HexLit    = "0" HexX HexDigit+
-  
-  // Floating-point literals
-  
-  // Imaginary literals
-  
-  // Rune literals
-  
-  // String literals 
-  StringLit.StringLit  = "\"" UnicodeChar* "\""
-  
-  /*
-  Above implementation is a shortcut, correct implementation:
-    StringLit.RawStringLit      = RawStringLit
-    StringLit.InterpretedStringLit  = InterpretedStringLit
-    RawStringLit          = "\"" UnicodeChar* "\"" // TODO: not correct, should be "`" { unicode_char | newline } "`" .
-    InterpretedStringLit      = "\"" UnicodeChar* "\"" // TODO: not correct, should be `"` { unicode_value | byte_value } `"` .
-  */
-  
-  // Constants
-  
+  OctalLit    = "0" OctalDigit*
+  HexLit      = "0" ("x" | "X") HexDigit+
+
   lexical restrictions
   
-  
-    Identifier -/-   [a-zA-Z0-9\_]
+  DecimalLit -/- [A-Za-z0-9\.]
+  OctalLit   -/- [A-Za-z0-9\.]
+  HexLit     -/- [A-Za-z0-9\.]
+
+
+/**
+ * Floating-point literals
+ */
+ 
+  lexical syntax
+
+  FloatLit  = Decimals "." Decimals? Exponent?
+  FloatLit  = Decimals Exponent
+  FloatLit  = "." Decimals Exponent?
+
+  Decimals  = DecimalDigit+
+  Exponent  = ("e" | "E") ("+" | "-")? Decimals
+
+  lexical restrictions
+
+  FloatLit -/- [0-9\.]
+
+
+/**
+ * Imaginary literals -- https://golang.org/ref/spec#Imaginary_literals
+ */
+
+  lexical syntax
+
+  ImaginaryLit = (Decimals | FloatLit) "i"
+
+
+/**
+ * Rune literals -- https://golang.org/ref/spec#Rune_literals
+ */
+ 
+  lexical syntax
+
+  RuneLit        = "'" (UnicodeValue | ByteValue) "'"
+  UnicodeValue   = UnicodeChar
+  UnicodeValue   = LittleUValue
+  UnicodeValue   = BigUValue
+  UnicodeValue   = EscapedChar
+  ByteValue      = OctalByteValue
+  ByteValue      = HexByteValue
+  OctalByteValue = "\\" OctalDigit OctalDigit OctalDigit
+  HexByteValue   = "\\x" HexDigit HexDigit
+  LittleUValue   = "\\u" HexDigit HexDigit HexDigit HexDigit
+  BigUValue      = "\\U" HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+  EscapedChar    = "\\a"
+  EscapedChar    = "\\b"
+  EscapedChar    = "\\f"
+  EscapedChar    = "\\n"
+  EscapedChar    = "\\r"
+  EscapedChar    = "\\t"
+  EscapedChar    = "\\v"
+  EscapedChar    = "\\\\"
+  EscapedChar    = "\\'"
+  EscapedChar    = "\\\""
+
+
+/**
+ * String literals -- https://golang.org/ref/spec#String_literals
+ */
+ 
+  lexical syntax
+
+  StringLit            = RawStringLit
+  StringLit            = InterpretedStringLit
+  RawStringLit         = "`" (UnicodeChar | Newline)* "`"
+  InterpretedStringLit = "\"" (UnicodeValue | ByteValue)* "\""

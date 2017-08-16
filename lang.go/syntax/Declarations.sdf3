@@ -1,84 +1,109 @@
-module Declarations
+module Declarations // https://golang.org/ref/spec#Declarations_and_scope
 
 imports
 
-  Common
-  Statements
+  Blocks
+  Lexical
   Expressions
   Types
-  Lexical
+
+context-free start-symbols
+
+  TopLevelDecl
 
 context-free syntax
 
-  /*
-  Declaration   = ConstDecl | TypeDecl | VarDecl .
-  TopLevelDecl  = Declaration | FunctionDecl | MethodDecl .
-  */
+  Declaration  = ConstDecl
+  Declaration  = TypeDecl
+  Declaration  = VarDecl
 
-  Declaration        = ConstDecl
-  Declaration        = TypeDecl
-  Declaration        = VarDecl
+  TopLevelDecl = Declaration
+  TopLevelDecl = FunctionDecl
+  TopLevelDecl = MethodDecl
+
+/**
+ * Constant declarations -- https://golang.org/ref/spec#Constant_declarations
+ */
+ 
+  context-free syntax
   
-  TopLevelDecl      = Declaration
-  TopLevelDecl      = FunctionDecl
-  TopLevelDecl      = MethodDecl
-
-  // Constant declarations
-  /*
-  ConstDecl      = "const" ( ConstSpec | "(" { ConstSpec ";" } ")" ) .
-  ConstSpec      = IdentifierList [ [ Type ] "=" ExpressionList ] .
-  */
-
-  ConstDecl.ConstDecl        = <const <ConstSpec>>
-  ConstSpec.ConstSpecTyped    = <<IdentifierList> <Type> <ConstDeclAssign?>>
-  ConstSpec.ConstSpec        = <<IdentifierList> <ConstDeclAssign>>
-  ConstDeclAssign.ConstDeclAssign = <= <ExpressionList>>
+  ConstDecl       = <const <ConstDecl-Inner>>
+  ConstDecl-Inner = ConstSpec
+  ConstDecl-Inner = <(<{ConstSpec ";"}*>)>
   
-  IdentifierList.IdentifierList = <<{Identifier ","}+>>
-  ExpressionList.ExpressionList = <<{Expression ","}+>>
-
-  // TODO: Iota
-
-  // TODO: Type declarations
-  TypeDecl.TypeDecl    = <type <TypeSpec>>
-  TypeDecl.TypeDecls = <type (<{TypeSpec ";"}*>)>
-  TypeSpec.TypeSpec = <<Identifier> <Type>>
-
-  // Variable declarations
-  /*
-  VarDecl     = "var" ( VarSpec | "(" { VarSpec ";" } ")" ) .
-  VarSpec     = IdentifierList ( Type [ "=" ExpressionList ] | "=" ExpressionList ) .
-  */
+  ConstSpec       = <<IdentifierList> <ConstSpec-Inner?>>
+  ConstSpec-Inner = <<Type?> = <ExpressionList>>
   
-  VarDecl.VarDecl        = <var <VarSpec>>
-  VarSpec.VarSpecTyped    = <<IdentifierList> <Type> <VarDeclAssign?>>
-  VarSpec.VarSpec        = <<IdentifierList> <VarDeclAssign>>
-  VarDeclAssign.VarDeclAssign = <= <ExpressionList>>
+  IdentifierList  = {Identifier ","}*
+  ExpressionList  = {Expression ","}+
 
-  // TODO: Short variable declarations
-  /*
-  ShortVarDecl = IdentifierList ":=" ExpressionList
-  */
+/**
+ * Iota -- https://golang.org/ref/spec#Iota
+ */
+ 
+/**
+ * Type declarations -- https://golang.org/ref/spec#Type_declarations
+ */
+ 
+  context-free syntax
   
-  ShortVarDecl.ShortVarDecl = <<IdentifierList> <ShortVarDeclAssign>>
-  ShortVarDeclAssign.ShortVarDeclAssign = <:= <ExpressionList>>
+  TypeDecl       = <type <TypeDecl-Inner>>
+  TypeDecl-Inner = TypeSpec
+  TypeDecl-Inner = <(<{TypeSpec ";"}*>)>
 
-  // Function declarations
-  /*
-  FunctionDecl = "func" FunctionName ( Function | Signature ) .
-  FunctionName = identifier .
-  Function     = Signature FunctionBody .
-  FunctionBody = Block .
-  */
+  TypeSpec       = Identifier Type
+
   
-  FunctionDecl.FunctionDecl  = <func <FunctionName> <FunOrSig>>
-  FunctionName.FunctionName  = ID
-  FunOrSig          = Function
-  FunOrSig          = FunctionSignature
-  Function.Function          = <<Signature> <FunctionBody>>
-  FunctionSignature.FunctionSignature  = Signature
-  FunctionBody.FunctionBody      = Block
+  VarDecl = []
+  FunctionDecl = []
+  MethodDecl = []
 
-  // Method declarations
-  MethodDecl.MethodDecl    = <func <Parameters> <MethodName> <FunOrSig>>
-  MethodName.MethodName    = Identifier
+/**
+ * Var declarations -- https://golang.org/ref/spec#Variable_declarations
+ */
+ 
+  VarDecl        = <var <VarDecl-Inner>>
+  VarDecl-Inner  = VarSpec
+  VarDecl-Inner  = <(<{VarSpec ";"}*>)>
+  
+  VarSpec        = IdentifierList VarSpec-Inner
+  VarSpec-Inner  = <<Type> <VarSpec-Assign?>>
+  VarSpec-Inner  = VarSpec-Assign
+  VarSpec-Assign = <= <ExpressionList>>
+
+  
+/**
+ * Short variable declarations -- https://golang.org/ref/spec#Short_variable_declarations
+ */
+ 
+  context-free syntax
+
+  ShortVarDecl = <<IdentifierList> := <ExpressionList>>
+
+
+/**
+ * Function declarations -- https://golang.org/ref/spec#Function_declarations
+ */
+ 
+  context-free syntax
+  
+  FunctionDecl       = <func <FunctionName> <FunctionDecl-Inner>>
+  FunctionDecl-Inner = Function
+  FunctionDecl-Inner = Signature
+  
+  FunctionName       = Identifier
+  Function           = Signature FunctionBody
+  FunctionBody       = Block
+
+
+/**
+ * Method declarations -- https://golang.org/ref/spec#Method_declarations
+ */
+ 
+  context-free syntax
+  
+  MethodDecl       = <func <Receiver> <MethodName> <MethodDecl-Inner>>
+  MethodDecl-Inner = Function
+  MethodDecl-Inner = Signature
+
+  Receiver         = Parameters

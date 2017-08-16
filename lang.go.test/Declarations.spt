@@ -1,0 +1,56 @@
+module Declarations
+
+language GoLang
+
+start symbol TopLevelDecl
+
+test const decl [[const Pi float64 = 3.14159265358979323846]] parse succeeds
+test const decl [[const zero = 0.0]] parse succeeds
+test const decl [[const (
+  size int64 = 1024;
+  eof        = -1
+)]] parse succeeds
+test const decl [[const a, b, c = 3, 4, "foo"]] parse succeeds
+test const decl [[const u, v float32 = 0, 3]] parse succeeds
+
+test type decl [[type IntArray [16]int]] parse succeeds
+test type decl [[type (
+  Point struct{ x, y float64 };
+  Polar Point
+)]] parse succeeds
+test type decl [[type TreeNode struct {
+  left, right *TreeNode;
+  value *Comparable
+}]] parse succeeds
+test type decl [[type Block interface {
+  BlockSize() int;
+  Encrypt(src, dst []byte);
+  Decrypt(src, dst []byte)
+}]] parse succeeds
+
+test var decl[[var i int]] parse succeeds
+test var decl[[var U, V, W float64]] parse succeeds
+test var decl[[var k = 0]] parse succeeds
+test var decl[[var x, y float32 = -1, -2]] parse succeeds
+test var decl[[var (
+  i       int;
+  u, v, s = 2.0, 3.0, "bar"
+)]] parse succeeds
+test var decl[[var re, im = complexSqrt(-1)]] parse succeeds
+test var decl[[var _, found = entries[name] ]] parse succeeds
+
+test function decl [[func min(x int, y int) int {
+  if x < y {
+    return x
+  };
+  return y
+}]] parse succeeds
+test function decl [[func flushICache(begin, end uintptr)]] parse succeeds
+
+test method decl [[func (p *Point) Length() float64 {
+  return math.Sqrt(p.x * p.x + p.y * p.y)
+}]] parse succeeds
+test method decl [[func (p *Point) Scale(factor float64) {
+  p.x *= factor;
+  p.y *= factor
+}]] parse succeeds

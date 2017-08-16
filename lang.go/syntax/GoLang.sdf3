@@ -2,12 +2,11 @@ module GoLang
 
 imports
   
+  Blocks
+  Declarations
+  Expressions
+  Lexical
   Packages
-
-context-free start-symbols
-  
-  Start
-
-context-free syntax
-
-  Start = SourceFile
+  Representation
+  Statements
+  Types

@@ -48,14 +48,18 @@ Static Semantics of Go
   here `v` is only visible in the condition and the body
 
 * structs
-  * constructed either by providing all fields positionally, or by
-    providing some fields by name
-  * structurally equal structs with a different name, (same fields and
-    field types) can be converted by `Struct2(struct1)`
-  * struct members are accessed using dot-notation `s.Fld`. _ambiguous
-    with package element access_
+  * constructed either by providing all fields positionally, or by providing
+    some fields by name
+  * structurally equal structs with a different name, (same fields and field
+    types) can be converted by `Struct2(struct1)`
+  * struct members are accessed using dot-notation `s.Fld`. _ambiguous with
+    package element access_
   * _accessing a field via a struct pointer does not require explicit
     dereferencing of the pointer_
+  * anonymous fields
+    * unqualified type name is used as the field name
+    * anonymous fields cause methods of the anonymous fields be promoted to
+      methods of the struct
 
 * types
   * new named types are introduced using `type Name TypeExpr`
@@ -116,3 +120,6 @@ Static Semantics of Go
 
 * operators are overloaded (plus for different numeric types, and
   strings, for example)
+
+---
+

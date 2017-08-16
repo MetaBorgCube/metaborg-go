@@ -1,0 +1,17 @@
+module StringLit
+
+language GoLang
+
+start symbol StringLit
+
+test string 1 [[`abc`]] parse succeeds                // same as "abc"
+test string 2 [[`\n
+\n`]] parse succeeds                                  // same as "\\n\n\\n"
+test string 3 [["\n"]] parse succeeds
+test string 4 [["\""]] parse succeeds                 // same as `"`
+test string 5 [["Hello, world!\n"]] parse succeeds
+test string 6 [["日本語"]] parse succeeds
+test string 7 [["\u65e5本\U00008a9e"]] parse succeeds
+test string 8 [["\xff\u00FF"]] parse succeeds
+test string 9 [["\uD800"]] parse fails                // illegal: surrogate half
+test string 10 [["\U00110000"]] parse fails           // illegal: invalid Unicode code point

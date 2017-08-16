@@ -1,0 +1,15 @@
+module ImaginaryLit
+
+language GoLang
+
+start symbol ImaginaryLit
+
+test imaginary 1 [[0i]] parse succeeds
+test imaginary 2 [[011i]] parse succeeds  // == 11i
+test imaginary 3 [[0.i]] parse succeeds
+test imaginary 4 [[2.71828i]] parse succeeds
+test imaginary 5 [[1.e+0i]] parse succeeds
+test imaginary 6 [[6.67428e-11i]] parse succeeds
+test imaginary 7 [[1E6i]] parse succeeds
+test imaginary 8 [[.25i]] parse succeeds
+test imaginary 9 [[.12345E+5i]] parse succeeds

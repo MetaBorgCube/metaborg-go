@@ -1,0 +1,40 @@
+module Identifier
+
+language GoLang
+
+start symbol Identifier
+
+test single letter identifier [[a]] parse succeeds
+test identifier starting with underscore [[_x9]] parse succeeds
+test captialized identifier [[ThisVariableIsExported]] parse succeeds
+test unicode identifier [[αβ]] parse succeeds
+
+test break is reserved [[break]] parse fails
+test case is reserved [[case]] parse fails
+test chan is reserved [[chan]] parse fails
+test const is reserved [[const]] parse fails
+test continue is reserved [[continue]] parse fails
+test default is reserved [[default]] parse fails
+test defer is reserved [[defer]] parse fails
+test else is reserved [[else]] parse fails
+test fallthrough is reserved [[fallthrough]] parse fails
+test for is reserved [[for]] parse fails
+test func is reserved [[func]] parse fails
+test go is reserved [[go]] parse fails
+test goto is reserved [[goto]] parse fails
+test if is reserved [[if]] parse fails
+test import is reserved [[import]] parse fails
+test interface is reserved [[interface]] parse fails
+test map is reserved [[map]] parse fails
+test package is reserved [[package]] parse fails
+test range is reserved [[range]] parse fails
+test return is reserved [[return]] parse fails
+test select is reserved [[select]] parse fails
+test struct is reserved [[struct]] parse fails
+test switch is reserved [[switch]] parse fails
+test type is reserved [[type]] parse fails
+test var is reserved [[var]] parse fails
+
+test uint is allowed [[uint]] parse succeeds
+test string is allowed [[string]] parse succeeds
+test rune is allowed [[rune]] parse succeeds

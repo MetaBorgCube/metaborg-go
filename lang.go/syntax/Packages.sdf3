@@ -1,43 +1,45 @@
-module Packages
+module Packages // https://golang.org/ref/spec#Packages
 
 imports
-  
-  Lexical
+
   Declarations
+  Lexical
 
-context-free syntax
+context-free start-symbols
 
-/*
-  From Go language spec:
+  SourceFile
 
-  SourceFile       = PackageClause ";" { ImportDecl ";" } { TopLevelDecl ";" } .
-  PackageClause    = "package" PackageName .
-  PackageName      = identifier .
-  ImportDecl       = "import" ( ImportSpec | "(" { ImportSpec ";" } ")" ) .
-  ImportSpec       = [ "." | PackageName ] ImportPath .
-  ImportPath       = string_lit .
-*/
+/**
+ * Source file -- https://golang.org/ref/spec#Source_file_organization
+ */
 
-  // Source file organisation 
-  SourceFile.SourceFile  =
-<
-<PackageClause>
+  context-free syntax
 
-<ImportDecl*>
+  SourceFile        = <<PackageClause>; <SourceFile-Inner1*> <SourceFile-Inner2*>>
+  SourceFile-Inner1 = <<ImportDecl>;>
+  SourceFile-Inner2 = <<TopLevelDecl>;>
 
-<TopLevelDecl*>
->
+/**
+ * Package clause -- https://golang.org/ref/spec#Package_clause
+ */
+ 
+  context-free syntax
+
+  PackageClause = <package <PackageName>>
+  PackageName   = Identifier
+
+/**
+ * Import declarations -- https://golang.org/ref/spec#Import_declarations
+ */
+ 
+  context-free syntax
   
-  // Packages
-  PackageClause.PackageClause  = <package <PackageName>>
-  PackageName.PackageName    = Identifier
+  ImportDecl             = <import <ImportDecl-Inner>>
+  ImportDecl-Inner       = ImportSpec
+  ImportDecl-Inner       = <( <ImportDecl-Inner-Inner*> )>
+  ImportDecl-Inner-Inner = <<ImportSpec>;>
 
-  // Imports
-  ImportDecl.SingleImportDecl = <import <ImportSpec>>
-  ImportDecl.MultiImportDecl  = <import (<{ImportSpec ";"}*>)>
-    
-  ImportSpec.ImportSpec       = <<PackageSelector> <ImportPath>>
-  PackageSelector.SubSet    = Identifier
-  PackageSelector.All     = "."
-    
-  ImportPath.ImportPath    = StringLit
+  ImportSpec       = <<ImportSpec-Inner> <ImportPath>>
+  ImportSpec-Inner = <.>
+  ImportSpec-Inner = <PackageName>
+  ImportPath       = StringLit 

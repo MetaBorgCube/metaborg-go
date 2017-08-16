@@ -1,0 +1,15 @@
+module FloatLit
+
+language GoLang
+
+start symbol FloatLit
+
+test float 1 [[0.]] parse succeeds
+test float 2 [[72.40]] parse succeeds
+test float 3 [[072.40]] parse succeeds  // == 72.40
+test float 4 [[2.71828]] parse succeeds
+test float 5 [[1.e+0]] parse succeeds
+test float 6 [[6.67428e-11]] parse succeeds
+test float 7 [[1E6]] parse succeeds
+test float 8 [[.25]] parse succeeds
+test float 9 [[.12345E+5]] parse succeeds

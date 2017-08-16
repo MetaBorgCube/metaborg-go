@@ -1,0 +1,213 @@
+module Expressions
+
+imports
+  
+  Common
+  Lexical
+  Packages
+  Declarations
+  Types
+
+lexical syntax
+
+  // Qualified identifiers
+  QualifiedIdent = PackageName "." Identifier
+  
+  // Operators
+  BinaryOp  = "||"
+  BinaryOp  = "&&"
+  BinaryOp  = RelOp
+  BinaryOp  = AddOp
+  BinaryOp  = MulOp
+  
+  RelOp     = "=="
+  RelOp     = "!="
+  RelOp     = "<"
+  RelOp     = "<="
+  RelOp     = ">"
+  RelOp     = ">="
+  
+  AddOp     = "+"
+  AddOp     = "-"
+  AddOp     = "|"
+  AddOp     = "^"
+  
+  MulOp     = "*"
+  MulOp     = "/"
+  MulOp     = "%"
+  MulOp     = "<<"
+  MulOp     = ">>"
+  MulOp     = "&"
+  MulOp     = "&^"
+  
+  UnaryOp   = "+"
+  UnaryOp   = "-"
+  UnaryOp   = "!"
+  UnaryOp   = "^"
+  UnaryOp   = "*"
+  UnaryOp   = "&"
+  UnaryOp   = "<-"
+
+context-free syntax
+
+  // Operands
+    
+    /*
+    Operand     = Literal | OperandName | MethodExpr | "(" Expression ")" .
+    */
+    Operand.Literal        = Literal
+    Operand.OperandName      = OperandName
+    Operand.MethodExpr      = MethodExpr
+    Operand.GroupedExpression  = <(<Expression>)>
+  
+    /*
+    Literal     = BasicLit | CompositeLit | FunctionLit .
+    */
+    Literal     = BasicLit
+    Literal     = CompositeLit
+    Literal     = FunctionLit
+  
+    /*
+    TODO: BasicLit    = int_lit | float_lit | imaginary_lit | rune_lit | string_lit .
+    */
+    BasicLit.IntLit     = IntLit
+    BasicLit.StringLit  = StringLit
+  
+    /*
+    OperandName = identifier | QualifiedIdent.
+    */
+    OperandName = Identifier
+    OperandName = QualifiedIdent
+  
+  // TODO: Composite literals
+  
+    /*
+    CompositeLit  = LiteralType LiteralValue .
+    LiteralType   = StructType | ArrayType | "[" "..." "]" ElementType | SliceType | MapType | TypeName .
+    LiteralValue  = "{" [ ElementList [ "," ] ] "}" .
+    ElementList   = KeyedElement { "," KeyedElement } .
+    KeyedElement  = [ Key ":" ] Element .
+    Key           = FieldName | Expression | LiteralValue .
+    FieldName     = identifier .
+    Element       = Expression | LiteralValue .
+    */
+    
+    CompositeLit.CompositeLit = <<LiteralType> <LiteralValue>>
+    
+    LiteralType = ArrayType
+    LiteralType = TypeName
+    
+    LiteralValue.LiteralValue = <{<ElementList?>}>
+    ElementList.ElementList = <<{KeyedElement ","}+>>
+    KeyedElement.SingleElem =  <<Element>>
+    KeyedElement.KeyValPair = <<Key>: <Element>>
+    Key = Identifier
+    Element = Expression
+    Element = LiteralValue
+      
+  // Function literals
+    
+    /*
+    FunctionLit = "func" Function .
+    */
+    
+    FunctionLit.FunctionLit = <func <Function>>
+  
+  // TODO: Primary expressions
+  
+    /*
+    PrimaryExpr =
+    Operand |
+    Conversion |
+    PrimaryExpr Selector |
+    PrimaryExpr Index |
+    PrimaryExpr Slice |
+    PrimaryExpr TypeAsserti
+    on |
+    PrimaryExpr Arguments .
+    */
+    PrimaryExpr.PrimaryExprArguments = <<PrimaryExpr><Arguments>>
+    PrimaryExpr.PrimaryExprIndex= <<PrimaryExpr><Index>>
+    PrimaryExpr.PrimaryExprSlice= <<PrimaryExpr><Slice>>
+    PrimaryExpr.PrimaryExprSelector = <<PrimaryExpr><Selector>>
+    PrimaryExpr.Operand = Operand
+    
+    /*
+    Selector       = "." identifier .
+    Index          = "[" Expression "]" .
+    Slice          = "[" ( [ Expression ] ":" [ Expression ] ) |
+                         ( [ Expression ] ":" Expression ":" Expression )
+                     "]" .
+    TypeAssertion  = "." "(" Type ")" .
+    */
+    Index.Index = <[<Expression>]>
+    //TODO: Max
+    Slice.Slice = <[<Expression?> : <Expression?>]>
+    
+    /*
+    Arguments      = "(" [ ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ] ] ")" .
+    */
+    Arguments.Arguments = <(<ExpressionList?>)> {prefer}
+    Arguments.TypeArg = <(<TypeLit>)>
+    Arguments.TypeArgWithList = <(<TypeLit>, <ExpressionList>)>
+    
+  // Selectors
+    Selector.Selector = <.<Identifier>>
+  
+  // Method expressions
+  /*
+  MethodExpr    = ReceiverType "." MethodName .
+  ReceiverType  = TypeName | "(" "*" TypeName ")" | "(" ReceiverType ")" .
+  */
+  
+  MethodExpr.MethodExpr  = <<ReceiverType>.TODO123<MethodName>>
+  ReceiverType.TypeName  = TypeName
+  ReceiverType.Asterisk  = <(*<TypeName>)>
+  ReceiverType.Brackets  = <(<ReceiverType>)>
+  
+  // Index expressions
+  
+  // Slice expressions
+  
+  // Calls
+  
+  // Operators
+  /*
+  Expression = UnaryExpr | Expression binary_op Expression .
+  UnaryExpr  = PrimaryExpr | unary_op UnaryExpr .
+  
+  binary_op  = "||" | "&&" | rel_op | add_op | mul_op .
+  rel_op     = "==" | "!=" | "<" | "<=" | ">" | ">=" .
+  add_op     = "+" | "-" | "|" | "^" .
+  mul_op     = "*" | "/" | "%" | "<<" | ">>" | "&" | "&^" .
+  
+  unary_op   = "+" | "-" | "!" | "^" | "*" | "&" | "<-" .
+  */
+  
+  Expression.UnaryExpr = UnaryExpr
+  Expression.BinaryExpr = <<Expression> <BinaryOp> <Expression>>
+  UnaryExpr.PrimaryExpr  = PrimaryExpr
+  UnaryExpr.UnaryExpr  = <<UnaryOp> <UnaryExpr>>
+  
+  // Arithmetic operators
+  
+  // Comparison operators
+  
+  // Logical operators
+  
+  // Address operators
+  
+  // Receive operator
+  
+  // Conversions
+  /*
+  Conversion = Type "(" Expression [ "," ] ")" .
+  */
+  
+  Conversion.Conversion = <<Type>(<Expression>)>
+  
+  // Constant expressions
+  
+
+  
+  

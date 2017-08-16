@@ -1,0 +1,10 @@
+module IntLit
+
+language GoLang
+
+start symbol IntLit
+
+test decimal integer [[42]] parse succeeds
+test octal integer [[0600]] parse succeeds
+test hex integer [[0xBadFace]] parse succeeds
+test long decimal integer [[170141183460469231731687303715884105727]] parse succeeds

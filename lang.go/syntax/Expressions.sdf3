@@ -1,213 +1,290 @@
 module Expressions
 
 imports
-  
-  Common
+
+  Declarations
   Lexical
   Packages
-  Declarations
+  Representation
   Types
 
-lexical syntax
+context-free start-symbols
 
-  // Qualified identifiers
-  QualifiedIdent = PackageName "." Identifier
-  
-  // Operators
-  BinaryOp  = "||"
-  BinaryOp  = "&&"
-  BinaryOp  = RelOp
-  BinaryOp  = AddOp
-  BinaryOp  = MulOp
-  
-  RelOp     = "=="
-  RelOp     = "!="
-  RelOp     = "<"
-  RelOp     = "<="
-  RelOp     = ">"
-  RelOp     = ">="
-  
-  AddOp     = "+"
-  AddOp     = "-"
-  AddOp     = "|"
-  AddOp     = "^"
-  
-  MulOp     = "*"
-  MulOp     = "/"
-  MulOp     = "%"
-  MulOp     = "<<"
-  MulOp     = ">>"
-  MulOp     = "&"
-  MulOp     = "&^"
-  
-  UnaryOp   = "+"
-  UnaryOp   = "-"
-  UnaryOp   = "!"
-  UnaryOp   = "^"
-  UnaryOp   = "*"
-  UnaryOp   = "&"
-  UnaryOp   = "<-"
+  Expression
 
-context-free syntax
+/**
+ * Operands -- https://golang.org/ref/spec#Operands
+ */
+ 
+  context-free syntax
+ 
+  Operand = Literal
+  Operand = OperandName
+  Operand = MethodExpr
+  Operand = <(<Expression>)>
 
-  // Operands
-    
-    /*
-    Operand     = Literal | OperandName | MethodExpr | "(" Expression ")" .
-    */
-    Operand.Literal        = Literal
-    Operand.OperandName      = OperandName
-    Operand.MethodExpr      = MethodExpr
-    Operand.GroupedExpression  = <(<Expression>)>
+  Literal = BasicLit
+  Literal = CompositeLit
+  Literal = FunctionLit
   
-    /*
-    Literal     = BasicLit | CompositeLit | FunctionLit .
-    */
-    Literal     = BasicLit
-    Literal     = CompositeLit
-    Literal     = FunctionLit
-  
-    /*
-    TODO: BasicLit    = int_lit | float_lit | imaginary_lit | rune_lit | string_lit .
-    */
-    BasicLit.IntLit     = IntLit
-    BasicLit.StringLit  = StringLit
-  
-    /*
-    OperandName = identifier | QualifiedIdent.
-    */
-    OperandName = Identifier
-    OperandName = QualifiedIdent
-  
-  // TODO: Composite literals
-  
-    /*
-    CompositeLit  = LiteralType LiteralValue .
-    LiteralType   = StructType | ArrayType | "[" "..." "]" ElementType | SliceType | MapType | TypeName .
-    LiteralValue  = "{" [ ElementList [ "," ] ] "}" .
-    ElementList   = KeyedElement { "," KeyedElement } .
-    KeyedElement  = [ Key ":" ] Element .
-    Key           = FieldName | Expression | LiteralValue .
-    FieldName     = identifier .
-    Element       = Expression | LiteralValue .
-    */
-    
-    CompositeLit.CompositeLit = <<LiteralType> <LiteralValue>>
-    
-    LiteralType = ArrayType
-    LiteralType = TypeName
-    
-    LiteralValue.LiteralValue = <{<ElementList?>}>
-    ElementList.ElementList = <<{KeyedElement ","}+>>
-    KeyedElement.SingleElem =  <<Element>>
-    KeyedElement.KeyValPair = <<Key>: <Element>>
-    Key = Identifier
-    Element = Expression
-    Element = LiteralValue
-      
-  // Function literals
-    
-    /*
-    FunctionLit = "func" Function .
-    */
-    
-    FunctionLit.FunctionLit = <func <Function>>
-  
-  // TODO: Primary expressions
-  
-    /*
-    PrimaryExpr =
-    Operand |
-    Conversion |
-    PrimaryExpr Selector |
-    PrimaryExpr Index |
-    PrimaryExpr Slice |
-    PrimaryExpr TypeAsserti
-    on |
-    PrimaryExpr Arguments .
-    */
-    PrimaryExpr.PrimaryExprArguments = <<PrimaryExpr><Arguments>>
-    PrimaryExpr.PrimaryExprIndex= <<PrimaryExpr><Index>>
-    PrimaryExpr.PrimaryExprSlice= <<PrimaryExpr><Slice>>
-    PrimaryExpr.PrimaryExprSelector = <<PrimaryExpr><Selector>>
-    PrimaryExpr.Operand = Operand
-    
-    /*
-    Selector       = "." identifier .
-    Index          = "[" Expression "]" .
-    Slice          = "[" ( [ Expression ] ":" [ Expression ] ) |
-                         ( [ Expression ] ":" Expression ":" Expression )
-                     "]" .
-    TypeAssertion  = "." "(" Type ")" .
-    */
-    Index.Index = <[<Expression>]>
-    //TODO: Max
-    Slice.Slice = <[<Expression?> : <Expression?>]>
-    
-    /*
-    Arguments      = "(" [ ( ExpressionList | Type [ "," ExpressionList ] ) [ "..." ] [ "," ] ] ")" .
-    */
-    Arguments.Arguments = <(<ExpressionList?>)> {prefer}
-    Arguments.TypeArg = <(<TypeLit>)>
-    Arguments.TypeArgWithList = <(<TypeLit>, <ExpressionList>)>
-    
-  // Selectors
-    Selector.Selector = <.<Identifier>>
-  
-  // Method expressions
-  /*
-  MethodExpr    = ReceiverType "." MethodName .
-  ReceiverType  = TypeName | "(" "*" TypeName ")" | "(" ReceiverType ")" .
-  */
-  
-  MethodExpr.MethodExpr  = <<ReceiverType>.TODO123<MethodName>>
-  ReceiverType.TypeName  = TypeName
-  ReceiverType.Asterisk  = <(*<TypeName>)>
-  ReceiverType.Brackets  = <(<ReceiverType>)>
-  
-  // Index expressions
-  
-  // Slice expressions
-  
-  // Calls
-  
-  // Operators
-  /*
-  Expression = UnaryExpr | Expression binary_op Expression .
-  UnaryExpr  = PrimaryExpr | unary_op UnaryExpr .
-  
-  binary_op  = "||" | "&&" | rel_op | add_op | mul_op .
-  rel_op     = "==" | "!=" | "<" | "<=" | ">" | ">=" .
-  add_op     = "+" | "-" | "|" | "^" .
-  mul_op     = "*" | "/" | "%" | "<<" | ">>" | "&" | "&^" .
-  
-  unary_op   = "+" | "-" | "!" | "^" | "*" | "&" | "<-" .
-  */
-  
-  Expression.UnaryExpr = UnaryExpr
-  Expression.BinaryExpr = <<Expression> <BinaryOp> <Expression>>
-  UnaryExpr.PrimaryExpr  = PrimaryExpr
-  UnaryExpr.UnaryExpr  = <<UnaryOp> <UnaryExpr>>
-  
-  // Arithmetic operators
-  
-  // Comparison operators
-  
-  // Logical operators
-  
-  // Address operators
-  
-  // Receive operator
-  
-  // Conversions
-  /*
-  Conversion = Type "(" Expression [ "," ] ")" .
-  */
-  
-  Conversion.Conversion = <<Type>(<Expression>)>
-  
-  // Constant expressions
-  
+  BasicLit = IntLit
+  BasicLit = FloatLit
+  BasicLit = ImaginaryLit
+  BasicLit = RuneLit
+  BasicLit = StringLit
 
+  OperandName = Identifier
+  OperandName = QualifiedIdent
+
+/**
+ * Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
+ */
+
+  context-free syntax 
+
+  QualifiedIdent = <<PackageName>.<Identifier>>
+
+/**
+ * Composite literals -- https://golang.org/ref/spec#Composite_literals
+ */
+
+  context-free syntax 
+
+  CompositeLit = <<LiteralType> <LiteralValue>>
+
+  LiteralType  = StructType
+  LiteralType  = ArrayType
+  LiteralType  = <[ ... ]<ElementType>>
+  LiteralType  = SliceType
+  LiteralType  = MapType
+  LiteralType  = TypeName
+
+  LiteralValue       = <{ <LiteralValue-Inner?> }>
+  LiteralValue-Inner = <<ElementList> <Comma?>>
+  ElementList        = {KeyedElement ","}+
+  KeyedElement       = <<KeyedElement-Inner?> <Element>>
+  KeyedElement-Inner = <<Key>:>
+  Key                = FieldName
+  Key                = Expression
+  Key                = LiteralValue
+  FieldName          = Identifier
+  Element            = Expression
+  Element            = LiteralValue
+
+/**
+ * Function literals -- https://golang.org/ref/spec#Function_literals
+ */
+
+  context-free syntax 
+
+  FunctionLit = <func <Function>>
+
+
+/**
+ * Primary expressions -- https://golang.org/ref/spec#Primary_expressions
+ */
+ 
+  context-free syntax 
+
+  PrimaryExpr = Operand
+  PrimaryExpr = Conversion
   
+  // inlined
+  PrimaryExpr.Selector      = <<PrimaryExpr>.<Identifier>> {left}
+  PrimaryExpr.Index         = <<PrimaryExpr>[<Expression>]>
+  PrimaryExpr.Slice         = <<PrimaryExpr>[<Expression?>:<Expression?>]>
+  PrimaryExpr.Slice         = <<PrimaryExpr>[<Expression?>:<Expression?>:<Expression?>]>
+  PrimaryExpr.TypeAssertion = <<PrimaryExpr>.(<Type>)>
+  PrimaryExpr.Arguments     = <<PrimaryExpr>(<Arguments-Inner?>)>
   
+  Arguments-Inner = <<Arguments-Inner-Inner> <Dots?> <Comma?>>
+  Arguments-Inner-Inner = ExpressionList
+  Arguments-Inner-Inner = <<Type> <Arguments-Inner-Inner-Inner?>>
+  Arguments-Inner-Inner-Inner = <, <ExpressionList>>
+
+
+/**
+ * Selectors -- https://golang.org/ref/spec#Selectors
+ */
+
+  // no extra syntax
+
+/**
+ * Method expressions -- https://golang.org/ref/spec#Method_expressions
+ */
+
+  context-free syntax 
+
+  MethodExpr   = <<ReceiverType>.<MethodName>>
+  ReceiverType = TypeName
+  ReceiverType = <(*<TypeName>)>
+  ReceiverType = <(<ReceiverType>)> {bracket}
+
+
+/**
+ * Method values -- https://golang.org/ref/spec#Method_values
+ */
+
+  // no syntax
+
+/**
+ * Index expressions -- https://golang.org/ref/spec#Index_expressions
+ */
+
+  // no syntax
+
+/**
+ * Slice expressions -- https://golang.org/ref/spec#Slice_expressions
+ */
+ 
+  // no syntax
+
+/**
+ * Type assertions -- https://golang.org/ref/spec#Type_assertions
+ */
+
+  // no syntax
+
+/**
+ * Calls -- https://golang.org/ref/spec#Calls
+ */
+ 
+  // no syntax
+
+/**
+ * Passing arguments to ... parameters -- https://golang.org/ref/spec#Passing_arguments_to_..._parameters
+ */
+ 
+  // no syntax
+
+/**
+ * Operators -- https://golang.org/ref/spec#Operators
+ */
+ 
+  context-free syntax 
+
+  Expression = UnaryExpr
+  Expression = BinaryExpr
+
+  // binary_op
+  BinaryExpr.LogicalOr  = <<Expression> || <Expression>> {left}
+  BinaryExpr.LogicalAnd = <<Expression> && <Expression>> {left}
+
+  // rel_op
+  BinaryExpr.Equal          = <<Expression> == <Expression>> {left}
+  BinaryExpr.NotEqual       = <<Expression> != <Expression>> {left}
+  BinaryExpr.Less           = [[Expression] < [Expression]] {left}
+  BinaryExpr.LessOrEqual    = [[Expression] <= [Expression]] {left}
+  BinaryExpr.Greater        = [[Expression] > [Expression]] {left}
+  BinaryExpr.GreaterOrEqual = [[Expression] >= [Expression]] {left}
+
+  // add_op
+  BinaryExpr.Sum        = [[Expression] + [Expression]] {left}
+  BinaryExpr.Difference = [[Expression] - [Expression]] {left}
+  BinaryExpr.BitwiseOr  = [[Expression] | [Expression]] {left}
+  BinaryExpr.BitwiseXor = [[Expression] ^ [Expression]] {left}
+
+  // mul_op
+  BinaryExpr.Product    = [[Expression] * [Expression]] {left}
+  BinaryExpr.Quotient   = [[Expression] / [Expression]] {left}
+  BinaryExpr.Remainder  = [[Expression] % [Expression]] {left}
+  BinaryExpr.LeftShift  = [[Expression] << [Expression]] {left}
+  BinaryExpr.RightShift = [[Expression] >> [Expression]] {left}
+  BinaryExpr.BitwiseAnd = [[Expression] & [Expression]] {left}
+  BinaryExpr.BitClear   = [[Expression] &^ [Expression]] {left}
+  
+  UnaryExpr                   = PrimaryExpr
+  UnaryExpr.Positive          = <+<UnaryExpr>> {left}
+  UnaryExpr.Negation          = <-<UnaryExpr>> {left}
+  UnaryExpr.Not               = <!<UnaryExpr>> {left}
+  UnaryExpr.BitwiseComplement = <^<UnaryExpr>> {left}
+  UnaryExpr.AddressOf         = <*<UnaryExpr>> {left} // not clearly named in spec
+  UnaryExpr.ValueAt           = <&<UnaryExpr>> {left} // not clearly named in spec
+  UnaryExpr.Recieve           = [<-[UnaryExpr]] {left}
+
+  context-free priorities
+  { left: // unary_op
+    UnaryExpr.Positive
+    UnaryExpr.Negation
+    UnaryExpr.Not
+    UnaryExpr.BitwiseComplement
+    UnaryExpr.AddressOf
+    UnaryExpr.ValueAt
+    UnaryExpr.Recieve
+  } > { left: // mul_op
+    BinaryExpr.Product
+    BinaryExpr.Quotient
+    BinaryExpr.Remainder
+    BinaryExpr.LeftShift
+    BinaryExpr.RightShift
+    BinaryExpr.BitwiseAnd
+    BinaryExpr.BitClear
+  } > { left: // add_op
+    BinaryExpr.Sum
+    BinaryExpr.Difference
+    BinaryExpr.BitwiseOr
+    BinaryExpr.BitwiseXor
+  } > { left: // rel_op
+    BinaryExpr.Equal
+    BinaryExpr.NotEqual
+    BinaryExpr.Less
+    BinaryExpr.LessOrEqual
+    BinaryExpr.Greater
+    BinaryExpr.GreaterOrEqual
+  } > { left: // and_op
+    BinaryExpr.LogicalAnd
+  } > { left: // or_op
+    BinaryExpr.LogicalOr
+  }
+
+/**
+ * Arithemtic operators -- https://golang.org/ref/spec#Arithmetic_operators
+ */
+ 
+  // no syntax
+
+/**
+ * Comparison operators -- https://golang.org/ref/spec#Comparison_operators
+ */
+
+  // no syntax
+
+/**
+ * Logical operators -- https://golang.org/ref/spec#Logical_operators
+ */
+ 
+  // no syntax
+
+/**
+ * Address operators -- https://golang.org/ref/spec#Address_operators
+ */
+ 
+  // no syntax
+
+/**
+ * Receive operators -- https://golang.org/ref/spec#Conversions
+ */
+ 
+  // no syntax
+
+/**
+ * Conversions -- https://golang.org/ref/spec#Conversions
+ */
+ 
+  context-free syntax 
+
+  Conversion = <<Type>(<Expression> <Comma?>)>
+
+
+/**
+ * Constant expressions -- https://golang.org/ref/spec#Constant_expressions
+ */
+ 
+  context-free syntax 
+
+
+/**
+ * Order of evaluation -- https://golang.org/ref/spec#Order_of_evaluation
+ */
+
+  // no syntax

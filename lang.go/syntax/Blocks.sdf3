@@ -1,0 +1,11 @@
+module Blocks // https://golang.org/ref/spec#Blocks
+
+imports
+
+  Statements
+
+context-free syntax
+
+  Block         = <{ <StatementList> }>
+  
+  StatementList = {Statement ";"}*
