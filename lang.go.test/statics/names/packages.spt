@@ -3,35 +3,70 @@ module packages
 language GoLang
 start symbol TestSources
 
-test lala [[
+test package in multiple files [[
+  ["test"]
+  package test;
+  
+  type [[Point]] struct{
+      X, Y int
+  };
+
+  ["test"]
+  package test;
+
+  var p [[Point]];
+]] resolve #2 to #1
+
+test import with default name [[
   ["."]
   package main;
 
   import (
-      point "pkg";
-      "fmt";
+      "test";
   );
 
-  func main() {
-       p := point.Point{1,1};
-       d := p.Dist();
-       fmt.Println(d)
+  var p test.[[Point]];
+
+  ["test"]
+  package test;
+
+  type [[Point]] struct {
+      X, Y int
   };
+]] resolve #1 to #2
 
-  ["pkg"]
-  package pkg;
+test import with custom name [[
+  ["."]
+  package main;
 
-  type Point struct {
-      X int;
-      Y int
+  import (
+      t "test";
+  );
+
+  var p t.[[Point]];
+
+  ["test"]
+  package test;
+
+  type [[Point]] struct {
+      X, Y int
   };
- 
-  ["pkg"]
-  package pkg;
+]] resolve #1 to #2
 
-  import "math";
+test import unqualified [[
+  ["."]
+  package main;
 
-  func (p Point) Dist() float64 {
-       return math.Sqrt(float64((p.X * p.X) + (p.Y * p.Y)))
+  import (
+      . "test";
+  );
+
+  var p [[Point]];
+
+  ["test"]
+  package test;
+
+  type [[Point]] struct {
+      X, Y int
   };
-]] analysis succeeds
+]] resolve #1 to #2
