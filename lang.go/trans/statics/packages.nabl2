@@ -24,7 +24,7 @@ rules
     new s_pkg_imp,
     Pkg{pkg_path} =IMP=> s_pkg_imp,
     Var{pkg_name} <- s_pkg_imp,
-    Var{pkg_name} : PackageTy(s_pkg_pub),
+    Var{pkg_name} : PkgT(s_pkg_pub),
  
     Map2[[ imports ^ (s_univ, s_file) ]],
     Map2[[ decls ^ (s_pkg_pub, s_file) ]].
@@ -50,7 +50,7 @@ rules
   [[ ImportSpec(Alias(PackageName(pkg_name)), pkg_path) ^ (s_univ, s_file) ]] :=
     new s_imp,
     Var{pkg_name} <- s_file,
-    Var{pkg_name} : PackageTy(s_imp),
+    Var{pkg_name} : PkgT(s_imp),
     
     Pkg{pkg_path} -> s_univ,
     Pkg{pkg_path} <=PUB= s_imp.

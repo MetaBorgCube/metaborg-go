@@ -41,7 +41,9 @@ context-free syntax
   IdentifierList-OPT.NoIdentifiers = <>
   IdentifierList-OPT               = IdentifierList
 
-  ExpressionList  = {Expression ","}+
+  ExpressionList                   = {Expression ","}+
+  ExpressionList-OPT.NoExpressions = <>
+  ExpressionList-OPT               = ExpressionList
 
 /**
  * Iota -- https://golang.org/ref/spec#Iota

@@ -12,6 +12,11 @@ signature
   name resolution
     labels P IMP PUB PRV
     well-formedness P*.(IMP?.PUB? | PRV?)
+
+  functions
+    typeScope : Type -> Scope {
+      PkgT(s) -> s
+    } 
  
 rules
 

@@ -117,10 +117,12 @@ context-free syntax
  
   context-free syntax
   
-  IfStmt        = <if <IfStmt-Inner1?> <Expression> <Block> <IfStmt-Inner2?>>
-  IfStmt-Inner1 = <<SimpleStmt>;>
-  IfStmt-Inner2 = <else <IfStmt>>
-  IfStmt-Inner2 = <else <Block>>
+  IfStmt        = <if <IfStmt-Inner1-OPT> <Expression> <Block> <IfStmt-Inner2-OPT>>
+  IfStmt-Inner1-OPT.EmptyStmt = <>
+  IfStmt-Inner1-OPT           = <<SimpleStmt>;>
+  IfStmt-Inner2-OPT.NoElse    = <>
+  IfStmt-Inner2-OPT           = <else <IfStmt>>
+  IfStmt-Inner2-OPT           = <else <Block>>
 
   
 /**
@@ -132,20 +134,25 @@ context-free syntax
   SwitchStmt = ExprSwitchStmt
   SwitchStmt = TypeSwitchStmt
   
-  ExprSwitchStmt       = <switch <ExprSwitchStmt-Inner?> <Expression?> { <ExprCaseClause*> }>
-  ExprSwitchStmt-Inner = <<SimpleStmt>;>
+  ExprSwitchStmt       = <switch <ExprSwitchStmt-Inner-OPT> <Expression-OPT> { <ExprCaseClause*> }>
+  ExprSwitchStmt-Inner-OPT.EmptyStmt = <>
+  ExprSwitchStmt-Inner-OPT           = <<SimpleStmt>;>
   ExprCaseClause       = <<ExprSwitchCase>: <StatementList>>
   ExprSwitchCase       = <case <ExpressionList>>
   ExprSwitchCase       = <default>
   
-  TypeSwitchStmt        = <switch <TypeSwitchStmt-Inner?> <TypeSwitchGuard> { <TypeCaseClause*> }> 
-  TypeSwitchStmt-Inner  = <<SimpleStmt>;>
-  TypeSwitchGuard       = <<TypeSwitchGuard-Inner?> <PrimaryExpr>.( type )>
-  TypeSwitchGuard-Inner = <<Identifier> :=>
-  TypeCaseClause      = <<TypeSwitchCase>: <StatementList>>
-  TypeSwitchCase        = <case <TypeList>>
-  TypeSwitchCase        = <default>
-  TypeList              = {Type ","}+
+  TypeSwitchStmt                     = <switch <TypeSwitchStmt-Inner-OPT> <TypeSwitchGuard> { <TypeCaseClause*> }> 
+  TypeSwitchStmt-Inner-OPT.EmptyStmt = <>
+  TypeSwitchStmt-Inner-OPT           = <<SimpleStmt>;>
+
+  TypeSwitchGuard                        = <<TypeSwitchGuard-Inner-OPT> <PrimaryExpr>.( type )>
+  TypeSwitchGuard-Inner-OPT.NoIdentifier = <>
+  TypeSwitchGuard-Inner-OPT              = <<Identifier> :=>
+
+  TypeCaseClause = <<TypeSwitchCase>: <StatementList>>
+  TypeSwitchCase = <case <TypeList>>
+  TypeSwitchCase = <default>
+  TypeList       = {Type ","}+
 
    
 /**
@@ -202,7 +209,7 @@ context-free syntax
 
   context-free syntax
 
-  ReturnStmt.ReturnStmt = <return <ExpressionList?>>
+  ReturnStmt.ReturnStmt = <return <ExpressionList-OPT>>
 
 
 /**

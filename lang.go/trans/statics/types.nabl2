@@ -3,7 +3,7 @@ module statics/types
 signature
 
   constructors
-    FunT : Type
+    PkgT : scope -> Type
 
 rules
 
@@ -11,13 +11,20 @@ rules
     Type{name} -> s,
     Type{name} |-> _.
 
-  [[ QualifiedTypeName(name) ^ (s) ]] :=
-    [[ name ^ (s) ]].
-    
+  [[ QualifiedTypeName(QualifiedIdent(PackageName(pkg),name)) ^ (s) ]] :=
+    Var{pkg} -> s,
+    Var{pkg} |-> d,
+    d : ty,
+    s_ty is typeScope of ty,
+    new s_qual,
+    s_qual ---> s_ty,
+    Type{name} -> s_qual,
+    Type{name} |-> _.
+
 /**
  * Array types -- https://golang.org/ref/spec#Array_types
  */
- 
+
   [[ ArrayType(expr, type) ^ (s) ]] :=
     [[ expr ^ (s) ]],
     [[ type ^ (s) ]].
@@ -25,14 +32,14 @@ rules
 /**
  * Slice types -- https://golang.org/ref/spec#Slice_types
  */
- 
+
   [[ SliceType(type) ^ (s) ]] :=
     [[ type ^ (s) ]].
 
 /**
  * Struct types -- https://golang.org/ref/spec#Struct_types
  */
- 
+
   [[ StructType(fields) ^ (s) ]] :=
     Map1[[ fields ^ (s) ]].
     
@@ -41,17 +48,17 @@ rules
     [[ tag ^ (s) ]].
     
   [[ Field(names, type) ^ (s) ]] :=
-    [[ names ^ (s) ]],
+    Map1(VarDecl)[[ names ^ (s) ]],
     [[ type ^ (s) ]].
-    
+
   [[ AnonymousPtrField(type) ^ (s) ]] :=
     [[ type ^ (s) ]].
- 
+
   [[ AnonymousField(type) ^ (s) ]] :=
     [[ type ^ (s) ]].
- 
+
   [[ NoTag() ^ (_) ]].
-  
+
 /**
  * Pointer types -- https://golang.org/ref/spec#Pointer_types
  */

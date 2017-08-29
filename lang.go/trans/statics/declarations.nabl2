@@ -68,7 +68,6 @@ rules
  
     [[ FunctionDecl(FunctionName(name), function_inner) ^ (s_decl, s) ]] :=
       Var{name} <- s_decl,
-      Var{name} : FunT(),
       [[ function_inner ^ (s) ]].
  
     [[ Function(signature, body) ^ (s) ]] :=

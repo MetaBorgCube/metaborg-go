@@ -16,10 +16,17 @@ rules
  * Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
  */
 
-  [[ QualifiedIdent(PackageName(pkg),name) ^ (s) ]] :=
+  [[ OperandName(name) ^ (s) ]] :=
+    Var{name} -> s,
+    Var{name} |-> _.
+
+  [[ QualifiedOperandName(QualifiedIdent(PackageName(pkg),name)) ^ (s) ]] :=
     Var{pkg} -> s,
-    Var{pkg} |-> _,
+    Var{pkg} |-> d,
+    d : ty,
+    s_ty is typeScope of ty,
     new s_qual,
+    s_qual ---> s_ty,
     Var{name} -> s_qual,
     Var{name} |-> _.
 

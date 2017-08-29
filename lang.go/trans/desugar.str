@@ -64,3 +64,5 @@ rules
   desugar-opt: Elements(elems,_) -> elems
  
   desugar-opt: NoIdentifiers() -> []
+
+  desugar-opt: NoExpressions() -> []
