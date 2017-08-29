@@ -3,13 +3,19 @@ module statics/main
 imports
 
   signatures/-
+ 
+signature
 
+  constructors
+     PackageTy : scope -> Type
+
+  name resolution
+    labels P IMP PUB PRV
+    well-formedness P*.(IMP?.PUB? | PRV?)
+ 
 rules
 
-  init ^ (s) := new s.
-
-  [[ Empty() ^ (s) ]] :=
-    false | note "Specify name binding and typing rules in static-semantics.nabl2".
+  init ^ (s_univ) := new s_univ.
 
 /* Predefined type identifiers
 

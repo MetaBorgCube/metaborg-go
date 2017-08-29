@@ -1,6 +1,5 @@
-package pkg
+package pkg;
 
 type Point struct {
-    X int;
-    Y int
-}
+    X, Y int
+};

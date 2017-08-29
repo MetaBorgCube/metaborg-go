@@ -6,6 +6,6 @@ imports
 
 context-free syntax
 
-  Block         = <{ <StatementList> }>
+  Block.Block   = <{ <StatementList> }>
   
   StatementList = {Statement ";"}*

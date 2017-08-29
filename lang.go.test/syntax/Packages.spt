@@ -1,0 +1,16 @@
+module Types
+
+language GoLang
+
+start symbol SourceFile
+
+test imports [[
+  package main;
+  
+  import _ "lib/math";
+  import (
+      "lib/math";
+    m "lib/math";
+    . "lib/math";
+  );
+]] parse succeeds

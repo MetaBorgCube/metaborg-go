@@ -27,14 +27,20 @@ context-free syntax
  
   context-free syntax
   
-  ConstDecl       = <const <ConstDecl-Inner>>
-  ConstDecl-Inner = ConstSpec
-  ConstDecl-Inner = <(<{ConstSpec ";"}*>)>
-  
-  ConstSpec       = <<IdentifierList> <ConstSpec-Inner?>>
-  ConstSpec-Inner = <<Type?> = <ExpressionList>>
-  
-  IdentifierList  = {Identifier ","}*
+  ConstDecl.SingleConstDecl = <const <ConstSpec>>
+  ConstDecl.MultiConstDecl  = <const (<MultiConstDecl-Inner*>)>
+  MultiConstDecl-Inner      = <<ConstSpec>;>
+
+  ConstSpec.ConstSpec                    = <<IdentifierList> <ConstSpec-Assignment-OPT>>
+  ConstSpec-Assignment-OPT.NoConstAssign = <>
+  ConstSpec-Assignment-OPT.ConstAssign   = <<ConstSpec-Type-OPT> = <ExpressionList>>
+  ConstSpec-Type-OPT.NoType              = <>
+  ConstSpec-Type-OPT                     = Type
+
+  IdentifierList                   = {Identifier ","}+
+  IdentifierList-OPT.NoIdentifiers = <>
+  IdentifierList-OPT               = IdentifierList
+
   ExpressionList  = {Expression ","}+
 
 /**
@@ -46,39 +52,37 @@ context-free syntax
  */
  
   context-free syntax
-  
-  TypeDecl       = <type <TypeDecl-Inner>>
-  TypeDecl-Inner = TypeSpec
-  TypeDecl-Inner = <(<{TypeSpec ";"}*>)>
 
-  TypeSpec       = Identifier Type
+  TypeDecl.SingleTypeDecl = <type <TypeSpec>>
+  TypeDecl.MultiTypeDecl  = <type (<MultiTypeDecl-Inner*>)>
+  MultiTypeDecl-Inner     = <<TypeSpec>;>
 
-  
-  VarDecl = []
-  FunctionDecl = []
-  MethodDecl = []
+  TypeSpec.TypeSpec       = <<Identifier> <Type>>
+
 
 /**
  * Var declarations -- https://golang.org/ref/spec#Variable_declarations
  */
  
-  VarDecl        = <var <VarDecl-Inner>>
-  VarDecl-Inner  = VarSpec
-  VarDecl-Inner  = <(<{VarSpec ";"}*>)>
+  VarDecl.SingleVarDecl = <var <VarSpec>>
+  VarDecl.MultiVarDecl  = <var (<MultiVarDecl-Inner*>)>
+  MultiVarDecl-Inner    = <<VarSpec>;>
   
-  VarSpec        = IdentifierList VarSpec-Inner
-  VarSpec-Inner  = <<Type> <VarSpec-Assign?>>
-  VarSpec-Inner  = VarSpec-Assign
-  VarSpec-Assign = <= <ExpressionList>>
+  VarSpec.VarSpec                = <<IdentifierList> <VarSpec-Inner>>
+  VarSpec-Inner.Typed            = <<Type> <VarSpec-Assign-OPT>>
+  VarSpec-Inner.Untyped          = VarSpec-Assign
+  VarSpec-Assign-OPT.NoVarAssign = <>
+  VarSpec-Assign-OPT             = VarSpec-Assign
+  VarSpec-Assign.VarAssign       = <= <ExpressionList>>
 
-  
+
 /**
  * Short variable declarations -- https://golang.org/ref/spec#Short_variable_declarations
  */
  
   context-free syntax
 
-  ShortVarDecl = <<IdentifierList> := <ExpressionList>>
+  ShortVarDecl.ShortVarDecl = <<IdentifierList> := <ExpressionList>>
 
 
 /**
@@ -87,13 +91,13 @@ context-free syntax
  
   context-free syntax
   
-  FunctionDecl       = <func <FunctionName> <FunctionDecl-Inner>>
-  FunctionDecl-Inner = Function
-  FunctionDecl-Inner = Signature
+  FunctionDecl.FunctionDecl = <func <FunctionName> <FunctionDecl-Inner>>
+  FunctionDecl-Inner        = Function
+  FunctionDecl-Inner        = Signature
   
-  FunctionName       = Identifier
-  Function           = Signature FunctionBody
-  FunctionBody       = Block
+  FunctionName.FunctionName = Identifier
+  Function.Function         = <<Signature> <FunctionBody>>
+  FunctionBody              = Block
 
 
 /**
@@ -102,8 +106,8 @@ context-free syntax
  
   context-free syntax
   
-  MethodDecl       = <func <Receiver> <MethodName> <MethodDecl-Inner>>
-  MethodDecl-Inner = Function
-  MethodDecl-Inner = Signature
+  MethodDecl.MethodDecl = <func <Receiver> <MethodName> <MethodDecl-Inner>>
+  MethodDecl-Inner      = Function
+  MethodDecl-Inner      = Signature
 
-  Receiver         = Parameters
+  Receiver.Receiver     = Parameters

@@ -14,28 +14,28 @@ context-free start-symbols
 
 context-free syntax
 
-  Statement = Declaration
-  Statement = LabeledStmt
-  Statement = SimpleStmt
-  Statement = GoStmt
-  Statement = ReturnStmt
-  Statement = BreakStmt
-  Statement = ContinueStmt
-  Statement = GotoStmt
-  Statement = FallthroughStmt
-  Statement = Block
-  Statement = IfStmt
-  Statement = SwitchStmt
-  Statement = SelectStmt
-  Statement = ForStmt
-  Statement = DeferStmt
+  Statement.DeclarationStmt = Declaration
+  Statement                 = LabeledStmt
+  Statement                 = SimpleStmt
+  Statement                 = GoStmt
+  Statement                 = ReturnStmt
+  Statement                 = BreakStmt
+  Statement                 = ContinueStmt
+  Statement                 = GotoStmt
+  Statement                 = FallthroughStmt
+  Statement                 = Block
+  Statement                 = IfStmt
+  Statement                 = SwitchStmt
+  Statement                 = SelectStmt
+  Statement                 = ForStmt
+  Statement                 = DeferStmt
 
-  SimpleStmt = EmptyStmt
-  SimpleStmt = ExpressionStmt
-  SimpleStmt = SendStmt
-  SimpleStmt = IncDecStmt
-  SimpleStmt = Assignment
-  SimpleStmt = ShortVarDecl
+  SimpleStmt                 = EmptyStmt
+  SimpleStmt                 = ExpressionStmt
+  SimpleStmt                 = SendStmt
+  SimpleStmt                 = IncDecStmt
+  SimpleStmt                 = Assignment
+  SimpleStmt.DeclarationStmt = ShortVarDecl
 
 
 /**
@@ -44,7 +44,7 @@ context-free syntax
  
   context-free syntax 
  
-  EmptyStmt = <>
+  EmptyStmt.EmptyStmt = <>
  
 
 /**
@@ -53,8 +53,10 @@ context-free syntax
  
   context-free syntax 
 
-  LabeledStmt = <<Label>: <Statement>>
-  Label       = Identifier
+  LabeledStmt.LabeledStmt = <<Label>: <Statement>>
+  Label.Label             = Identifier
+  Label-OPT.NoLabel       = <>
+  Label-OPT               = Label
  
 
 /**
@@ -63,7 +65,7 @@ context-free syntax
  
   context-free syntax 
 
-  ExpressionStmt = Expression
+  ExpressionStmt.ExpressionStmt = Expression
 
 
 /**
@@ -72,8 +74,8 @@ context-free syntax
  
   context-free syntax 
 
-  SendStmt = [[Channel] <- [Expression]]
-  Channel  = Expression
+  SendStmt.SendStmt = [[Channel] <- [Expression]]
+  Channel           = Expression
 
 
 /**
@@ -82,8 +84,8 @@ context-free syntax
  
   context-free syntax 
 
-  IncDecStmt = <<Expression>++>
-  IncDecStmt = <<Expression>-->
+  IncDecStmt.IncStmt = <<Expression>++>
+  IncDecStmt.DecStmt = <<Expression>-->
 
 
 /**
@@ -92,22 +94,22 @@ context-free syntax
  
   context-free syntax
   
-  Assignment = <<ExpressionList> = <ExpressionList>>
+  Assignment.AssignStmt = <<ExpressionList> = <ExpressionList>>
 
   // add_op
-  Assignment = <<ExpressionList> += <ExpressionList>>
-  Assignment = <<ExpressionList> -= <ExpressionList>>
-  Assignment = <<ExpressionList> |= <ExpressionList>>
-  Assignment = <<ExpressionList> ^= <ExpressionList>>
+  Assignment.SumAssignStmt        = <<ExpressionList> += <ExpressionList>>
+  Assignment.DifferenceAssignStmt = <<ExpressionList> -= <ExpressionList>>
+  Assignment.BitwiseOrAssignStmt  = <<ExpressionList> |= <ExpressionList>>
+  Assignment.BitwiseXorAssignStmt = <<ExpressionList> ^= <ExpressionList>>
 
   // mul_op
-  Assignment = [[ExpressionList] *= [ExpressionList]]
-  Assignment = [[ExpressionList] /= [ExpressionList]]
-  Assignment = [[ExpressionList] %= [ExpressionList]]
-  Assignment = [[ExpressionList] <<= [ExpressionList]]
-  Assignment = [[ExpressionList] >>= [ExpressionList]]
-  Assignment = [[ExpressionList] &= [ExpressionList]]
-  Assignment = [[ExpressionList] &^= [ExpressionList]]
+  Assignment.ProductAssignStmt    = [[ExpressionList] *= [ExpressionList]]
+  Assignment.QuotientAssignStmt   = [[ExpressionList] /= [ExpressionList]]
+  Assignment.RemainderAssignStmt  = [[ExpressionList] %= [ExpressionList]]
+  Assignment.LeftShiftAssignStmt  = [[ExpressionList] <<= [ExpressionList]]
+  Assignment.RightShiftAssignStmt = [[ExpressionList] >>= [ExpressionList]]
+  Assignment.BitwiseAndAssignStmt = [[ExpressionList] &= [ExpressionList]]
+  Assignment.BitClearAssignStmt   = [[ExpressionList] &^= [ExpressionList]]
 
 /**
  * If statements -- https://golang.org/ref/spec#If_statements
@@ -173,7 +175,7 @@ context-free syntax
  
   context-free syntax
   
-  GoStmt = <go <Expression>>
+  GoStmt.GoStmt = <go <Expression>>
   
 
 /**
@@ -197,28 +199,28 @@ context-free syntax
 /**
  * Return statements
  */
- 
+
   context-free syntax
-  
-  ReturnStmt = <return <ExpressionList?>>
+
+  ReturnStmt.ReturnStmt = <return <ExpressionList?>>
 
 
 /**
  * Break statements
  */
- 
+
   context-free syntax
   
-  BreakStmt = <break <Label?>>
-  
-  
+  BreakStmt.BreakStmt = <break <Label-OPT>>
+
+
 /**
  * Continue statements
  */
  
   context-free syntax
   
-  ContinueStmt = <continue <Label?>>
+  ContinueStmt.ContinueStmt = <continue <Label-OPT>>
   
   
 /**
@@ -227,7 +229,7 @@ context-free syntax
  
   context-free syntax
   
-  GotoStmt = <goto <Label>>
+  GotoStmt.GotoStmt = <goto <Label>>
   
   
 /**
@@ -236,7 +238,7 @@ context-free syntax
  
   context-free syntax
   
-  FallthroughStmt = <fallthrough>
+  FallthroughStmt.FallthroughStmt = <fallthrough>
   
   
 /**
@@ -245,5 +247,5 @@ context-free syntax
  
   context-free syntax
   
-  DeferStmt = <defer <Expression>>
+  DeferStmt.DeferStmt = <defer <Expression>>
 

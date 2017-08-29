@@ -1,0 +1,147 @@
+module statics/statements
+
+rules
+
+  [[ DeclarationStmt(decl) ^ (s) ]] :=
+    [[ decl ^ (s, s) ]].
+
+/**
+ * Empty statements -- https://golang.org/ref/spec#Empty_statements
+ */
+ 
+  [[ EmptyStmt() ^ (_) ]].
+
+/**
+ * Labeled statements -- https://golang.org/ref/spec#Labeled_statements
+ */
+ 
+  [[ LabeledStmt(label, stmt) ^ (s) ]] :=
+    LabelDecl[[ label ^ (s) ]],
+    [[ stmt ^ (s) ]].
+  
+  LabelDecl[[ Label(name) ^ (s) ]] :=
+    Lbl{name} <- s.
+  
+  LabelRef[[ NoLabel() ^ (s) ]].
+  
+  LabelRef[[ Label(name) ^ (s) ]] :=
+    Lbl{name} -> s,
+    Lblb{name} |-> _.
+  
+/**
+ * Expression statements -- https://golang.org/ref/spec#Expression_statements
+ */
+ 
+  [[ ExpressionStmt(expr) ^ (s) ]] :=
+    [[ expr ^ (s) ]].
+    
+/**
+ * Send statements -- https://golang.org/ref/spec#Send_statements
+ */
+  
+  [[ SendStmt(channel, expr) ^ (s) ]] :=
+    [[ channel ^ (s) ]],
+    [[ expr ^ (s) ]].
+
+/**
+ * IncDec statements -- https://golang.org/ref/spec#IncDec_statements
+ */
+ 
+  [[ IncStmt(expr) ^ (s) ]] :=
+    [[ expr ^ (s) ]].
+ 
+  [[ DecStmt(expr) ^ (s) ]] :=
+    [[ expr ^ (s) ]].
+ 
+/**
+ * Assignments -- https://golang.org/ref/spec#Assignments
+ */
+ 
+  [[ AssignStmt(expr1, expr2) ^ (s) ]] :=
+    [[ expr1 ^ (s) ]],
+    [[ expr2 ^ (s) ]].
+
+  // add_op
+  [[ SumAssignStmt(expr1, expr2) ^ (s) ]] :=
+    [[ expr1 ^ (s) ]],
+    [[ expr2 ^ (s) ]].
+  [[ DifferenceAssignStmt(expr1, expr2) ^ (s) ]] :=
+    [[ expr1 ^ (s) ]],
+    [[ expr2 ^ (s) ]].
+  [[ BitwiseOrAssignStmt(expr1, expr2) ^ (s) ]] :=
+    [[ expr1 ^ (s) ]],
+    [[ expr2 ^ (s) ]].
+  [[ BitwiseXorAssignStmt(expr1, expr2) ^ (s) ]] :=
+    [[ expr1 ^ (s) ]],
+    [[ expr2 ^ (s) ]].
+
+  // mul_op
+  [[ ProductAssignStmt(expr1, expr2) ^ (s) ]] :=
+    [[ expr1 ^ (s) ]],
+    [[ expr2 ^ (s) ]].
+  [[ QuotientAssignStmt(expr1, expr2) ^ (s) ]] :=
+    [[ expr1 ^ (s) ]],
+    [[ expr2 ^ (s) ]].
+  [[ RemainderAssignStmt(expr1, expr2) ^ (s) ]] :=
+    [[ expr1 ^ (s) ]],
+    [[ expr2 ^ (s) ]].
+  [[ LeftShiftAssignStmt(expr1, expr2) ^ (s) ]] :=
+    [[ expr1 ^ (s) ]],
+    [[ expr2 ^ (s) ]].
+  [[ RightShiftAssignStmt(expr1, expr2) ^ (s) ]] :=
+    [[ expr1 ^ (s) ]],
+    [[ expr2 ^ (s) ]].
+  [[ BitwiseAndAssignStmt(expr1, expr2) ^ (s) ]] :=
+    [[ expr1 ^ (s) ]],
+    [[ expr2 ^ (s) ]].
+  [[ BitClearAssignStmt(expr1, expr2) ^ (s) ]] :=
+    [[ expr1 ^ (s) ]],
+    [[ expr2 ^ (s) ]].
+ 
+/**
+ * Go statements -- https://golang.org/ref/spec#Go_statements
+ */
+ 
+  [[ GoStmt(expr) ^ (s) ]] :=
+    [[ expr ^ (s) ]].
+ 
+/**
+ * Return statements
+ */
+
+  [[ ReturnStmt(exprs) ^ (s) ]] :=
+    Map1[[ exprs ^ (s) ]].
+    
+/**
+ * Break statements
+ */
+
+  [[ BreakStmt(label) ^ (s) ]] :=
+    LabelRef[[ label ^ (s) ]].
+
+/**
+ * Continue statements
+ */
+ 
+  [[ ContinueStmt(label) ^ (s) ]] :=
+    LabelRef[[ label ^ (s) ]].
+
+/**
+ * Goto statements
+ */
+ 
+  [[ GotoStmt(label) ^ (s) ]] :=
+    LabelRef[[ label ^ (s) ]].
+
+/**
+ * Fallthrough statements
+ */
+ 
+  [[ FallthroughStmt() ^ (s) ]].
+  
+/**
+ * Defer statements
+ */
+ 
+  [[ DeferStmt(expr) ^ (s) ]] :=
+    [[ expr ^ (s) ]].

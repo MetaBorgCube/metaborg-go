@@ -1,12 +1,11 @@
-package main
+package main;
 
 import (
-    "pkg"
-    "fmt"
-)
+    point "pkg";
+    "fmt";
+);
 
 func main() {
-     p := pkg.Point{1,1}
-     d := p.Dist()
-     fmt.Println(d)
-}
+    var x int = 42;
+    p := point.Point{1,1};
+};

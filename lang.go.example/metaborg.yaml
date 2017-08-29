@@ -4,8 +4,11 @@ name: GoLang
 dependencies:
   compile:
   - org.metaborg:lang.go:0.1.0-SNAPSHOT
+sources:
+- language: GoLang
+  directory: src
 runtime:
   nabl2:
-    debug: analysis files
+    debug: analysis files collection
 build:
   useBuildSystemSpec: true

@@ -5,6 +5,7 @@ imports
   Lexical
   Declarations
   Expressions
+  Representation
 
 context-free start-symbols
 
@@ -16,12 +17,12 @@ template options
 
 context-free syntax
 
-  Type        = TypeName   
+  Type        = TypeName
   Type        = TypeLit
   Type        = <( <Type> )> {bracket}
 
-  TypeName    = Identifier
-  TypeName    = QualifiedIdent
+  TypeName.TypeName          = Identifier
+  TypeName.QualifiedTypeName = QualifiedIdent
 
   TypeLit     = ArrayType
   TypeLit     = StructType
@@ -37,14 +38,6 @@ context-free syntax
  * Boolean types -- https://golang.org/ref/spec#Boolean_types
  */
  
-  context-free syntax 
-  
-  Type.Bool = "bool"
-
-  lexical syntax
-
-  Identifier = "bool" {reject}
-
 
 /**
  * Numeric types -- https://golang.org/ref/spec#Numeric_types
@@ -86,14 +79,16 @@ context-free syntax
   
   StructType.StructType   = <struct { <{FieldDecl ";"}*> }>
  
-  FieldDecl.FieldDecl     = <<Field> <Tag?>>
-  
-  Field.Field             = <<IdentifierList> <Type>>
+  FieldDecl.FieldDecl     = <<Field> <Tag-OPT>>
  
+  Field.Field             = <<IdentifierList> <Type>>
+
   Field.AnonymousPtrField = <*<TypeName>>
   Field.AnonymousField    = TypeName
-  
-  Tag                     = StringLit
+
+  Tag-OPT.NoTag = <>
+  Tag-OPT       = Tag
+  Tag           = StringLit
 
 
 /**
@@ -115,19 +110,19 @@ context-free syntax
   
   FunctionType.FunctionType   = <func <Signature>>
 
-  Signature.Signature         = <<Parameters> <Result?>>
-
+  Signature.Signature         = <<Parameters> <Result-OPT>>
+  Result-OPT.NoResult         = <>
+  Result-OPT                  = Result
   Result                      = Parameters
   Result                      = Type
 
-  Parameters                  = <(<Parameters-Inner?>)> {brackets}
-  Parameters-Inner            = <<ParameterList> <Parameters-TrailingComma?>>
-  Parameters-TrailingComma    = ","
+  Parameters                        = <(<Parameters-Inner-OPT>)> {brackets}
+  Parameters-Inner-OPT.NoParameters = <>
+  Parameters-Inner-OPT.Parameters   = <<ParameterList> <Comma?>>
 
   ParameterList               = {ParameterDecl ","}+
 
-  ParameterDecl.ParameterDecl = <<IdentifierList?> <ParameterDecl-Dots?><Type>>
-  ParameterDecl-Dots          = "..."
+  ParameterDecl.ParameterDecl = <<IdentifierList-OPT> <Dots?><Type>>
 
 /**
  * Interface types -- https://golang.org/ref/spec#Interface_types
@@ -137,10 +132,10 @@ context-free syntax
   
   InterfaceType.Interface = <interface { <{MethodSpec ";"}*> }>
   
-  MethodSpec              = <<MethodName> <Signature>>
+  MethodSpec.MethodSpec   = <<MethodName> <Signature>>
   MethodSpec              = InterfaceTypeName
   
-  MethodName              = Identifier
+  MethodName.MethodName   = Identifier
   InterfaceTypeName       = TypeName
  
 
@@ -162,5 +157,5 @@ context-free syntax
   context-free syntax
 
   ChannelType.BidirectionalChannelType = [chan [ElementType]]
-  ChannelType.SendingChannelType       = [chan <- [ElementType]]
-  ChannelType.ReceivingChannelType     = [<- chan [ElementType]]
+  ChannelType.SendingChannelType       = [chan<- [ElementType]]
+  ChannelType.ReceivingChannelType     = [<-chan [ElementType]]

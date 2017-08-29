@@ -27,14 +27,15 @@ context-free start-symbols
   Literal = CompositeLit
   Literal = FunctionLit
   
-  BasicLit = IntLit
-  BasicLit = FloatLit
-  BasicLit = ImaginaryLit
-  BasicLit = RuneLit
-  BasicLit = StringLit
+  BasicLit.IntLit       = IntLit
+  BasicLit.FloatLit     = FloatLit
+  BasicLit.ImaginaryLit = ImaginaryLit
+  BasicLit.RuneLit      = RuneLit
+  BasicLit.StringLit    = StringLit
 
   OperandName = Identifier
   OperandName = QualifiedIdent
+
 
 /**
  * Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
@@ -42,7 +43,8 @@ context-free start-symbols
 
   context-free syntax 
 
-  QualifiedIdent = <<PackageName>.<Identifier>>
+  QualifiedIdent.QualifiedIdent = <<PackageName>.<Identifier>>
+
 
 /**
  * Composite literals -- https://golang.org/ref/spec#Composite_literals
@@ -50,20 +52,24 @@ context-free start-symbols
 
   context-free syntax 
 
-  CompositeLit = <<LiteralType> <LiteralValue>>
+  CompositeLit.CompositeLit = <<LiteralType> <LiteralValue>>
 
-  LiteralType  = StructType
-  LiteralType  = ArrayType
-  LiteralType  = <[ ... ]<ElementType>>
-  LiteralType  = SliceType
-  LiteralType  = MapType
-  LiteralType  = TypeName
+  LiteralType               = StructType
+  LiteralType               = ArrayType
+  LiteralType.AutoArrayType = <[ ... ]<ElementType>>
+  LiteralType               = SliceType
+  LiteralType               = MapType
+  LiteralType               = TypeName
 
-  LiteralValue       = <{ <LiteralValue-Inner?> }>
-  LiteralValue-Inner = <<ElementList> <Comma?>>
-  ElementList        = {KeyedElement ","}+
-  KeyedElement       = <<KeyedElement-Inner?> <Element>>
-  KeyedElement-Inner = <<Key>:>
+  LiteralValue.LiteralValue         = <{ <LiteralValue-Inner-OPT> }>
+  LiteralValue-Inner-OPT.NoElements = <>
+  LiteralValue-Inner-OPT.Elements   = <<ElementList> <Comma?>>
+
+  ElementList                = {KeyedElement ","}+
+  KeyedElement.KeyedElement  = <<KeyedElement-Key-OPT> <Element>>
+  KeyedElement-Key-OPT.NoKey = <>
+  KeyedElement-Key-OPT       = <<Key>:>
+
   Key                = FieldName
   Key                = Expression
   Key                = LiteralValue
@@ -71,13 +77,14 @@ context-free start-symbols
   Element            = Expression
   Element            = LiteralValue
 
+
 /**
  * Function literals -- https://golang.org/ref/spec#Function_literals
  */
 
   context-free syntax 
 
-  FunctionLit = <func <Function>>
+  FunctionLit.FunctionLit = <func <Function>>
 
 
 /**
@@ -92,15 +99,16 @@ context-free start-symbols
   // inlined
   PrimaryExpr.Selector      = <<PrimaryExpr>.<Identifier>> {left}
   PrimaryExpr.Index         = <<PrimaryExpr>[<Expression>]>
-  PrimaryExpr.Slice         = <<PrimaryExpr>[<Expression?>:<Expression?>]>
-  PrimaryExpr.Slice         = <<PrimaryExpr>[<Expression?>:<Expression?>:<Expression?>]>
+  PrimaryExpr.Slice         = <<PrimaryExpr>[<Expression-OPT>:<Expression-OPT>]>
+  PrimaryExpr.Slice         = <<PrimaryExpr>[<Expression-OPT>:<Expression-OPT>:<Expression-OPT>]>
   PrimaryExpr.TypeAssertion = <<PrimaryExpr>.(<Type>)>
-  PrimaryExpr.Arguments     = <<PrimaryExpr>(<Arguments-Inner?>)>
+  PrimaryExpr.Arguments     = <<PrimaryExpr>(<Arguments-Inner-OPT>)>
   
-  Arguments-Inner = <<Arguments-Inner-Inner> <Dots?> <Comma?>>
-  Arguments-Inner-Inner = ExpressionList
-  Arguments-Inner-Inner = <<Type> <Arguments-Inner-Inner-Inner?>>
-  Arguments-Inner-Inner-Inner = <, <ExpressionList>>
+  Arguments-Inner-OPT.NoArguments        = <>
+  Arguments-Inner-OPT.Arguments          = <<Arguments-Inner-Inner> <Dots?> <Comma?>>
+  Arguments-Inner-Inner.Arguments        = ExpressionList
+  Arguments-Inner-Inner.TypeArgument     = Type
+  Arguments-Inner-Inner.TypedArguments   = <<Type>, <ExpressionList>>
 
 
 /**
@@ -115,10 +123,10 @@ context-free start-symbols
 
   context-free syntax 
 
-  MethodExpr   = <<ReceiverType>.<MethodName>>
-  ReceiverType = TypeName
-  ReceiverType = <(*<TypeName>)>
-  ReceiverType = <(<ReceiverType>)> {bracket}
+  MethodExpr.MethodExpr        = <<ReceiverType>.<MethodName>>
+  ReceiverType.ValueReceiver   = TypeName
+  ReceiverType.PointerReceiver = <(*<TypeName>)>
+  ReceiverType                 = <(<ReceiverType>)> {bracket}
 
 
 /**
@@ -165,6 +173,9 @@ context-free start-symbols
 
   Expression = UnaryExpr
   Expression = BinaryExpr
+
+  Expression-OPT.NoExpression = <>
+  Expression-OPT              = Expression
 
   // binary_op
   BinaryExpr.LogicalOr  = <<Expression> || <Expression>> {left}
@@ -273,7 +284,7 @@ context-free start-symbols
  
   context-free syntax 
 
-  Conversion = <<Type>(<Expression> <Comma?>)>
+  Conversion.Conversion = <<Type>(<Expression> <Comma?>)>
 
 
 /**

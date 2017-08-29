@@ -1,7 +1,7 @@
-package pkg
+package pkg;
 
-import "math"
+import "math";
 
 func (p Point) Dist() float64 {
-     return math.Sqrt((p.X * p.X) + (p.Y * p.Y))
-}
+     return math.Sqrt(float64((p.X * p.X) + (p.Y * p.Y)))
+};

@@ -1,0 +1,90 @@
+module statics/declarations
+
+rules
+
+/**
+ * Constant declarations -- https://golang.org/ref/spec#Constant_declarations
+ */
+ 
+  [[ MultiConstDecl(constspecs) ^ (s_decl, s) ]] :=
+    [[ constspecs ^ (s_decl, s) ]].
+  
+  [[ ConstSpec(names, constassign) ^ (s_decl, s) ]] :=
+    Map1(VarDecl)[[ names ^ (s_decl) ]],
+    [[ constassign ^ (s) ]].
+
+  [[ NoConstAssign() ^ (_) ]].
+  
+  [[ ConstAssign(type, exprs) ^ (s) ]] :=
+    [[ type ^ (s) ]],
+    Map1[[ exprs ^ (s) ]].
+    
+  [[ NoType() ^ (_) ]].
+
+/**
+ * Type declarations -- https://golang.org/ref/spec#Type_declarations
+ */
+ 
+  [[ MultiTypeDecl(typespecs) ^ (s_decl, s) ]] :=
+    Map1[[ typespecs ^ (s_decl, s) ]].
+
+  [[ TypeSpec(name, type) ^ (s_decl, s) ]] :=
+    Type{name} <- s_decl,
+    [[ type ^ (s) ]].
+
+/**
+ * Var declarations -- https://golang.org/ref/spec#Variable_declarations
+ */
+
+  [[ MultiVarDecl(varspecs) ^ (s_decl, s) ]] :=
+    Map1[[ varspecs ^ (s_decl, s) ]].
+
+  [[ VarSpec(names, inner) ^ (s_decl, s) ]] :=
+    Map1(VarDecl)[[ names ^ (s_decl) ]],
+    [[ inner ^ (s) ]].
+
+  [[ Typed(type, varassign) ^ (s) ]] :=
+    [[ type ^ (s) ]],
+    [[ varassign ^ (s) ]].
+
+  [[ Untyped(varassign) ^ (s) ]] :=
+    [[ varassign ^ (s) ]].
+
+  [[ NoVarAssign() ^ (_) ]]. 
+
+  [[ VarAssign(exprs) ^ (s) ]] :=
+    Map1[[ exprs ^ (s) ]].
+ 
+  VarDecl[[ name ^ (s) ]] :=
+    Var{name} <- s.
+ 
+  VarRef[[ name ^ (s) ]] :=
+    Var{name} -> s,
+    Var{name} |-> _.
+ 
+/**
+ * Function declarations -- https://golang.org/ref/spec#Function_declarations
+ */
+ 
+    [[ FunctionDecl(FunctionName(name), function_inner) ^ (s_decl, s) ]] :=
+      Var{name} <- s_decl,
+      Var{name} : FunT(),
+      [[ function_inner ^ (s) ]].
+ 
+    [[ Function(signature, body) ^ (s) ]] :=
+      [[ signature ^ () ]],
+      [[ body ^ (s_fun) ]],
+      new s_fun,
+      s_fun ---> s.
+
+/**
+ * Method declarations -- https://golang.org/ref/spec#Method_declarations
+ */
+ 
+  [[ MethodDecl(recv, MethodName(name), inner) ^ (s_decl, s) ]] :=
+    [[ recv ^ (s) ]],
+    Var{name} <- s_decl,
+    [[ inner ^ (s) ]].
+ 
+  [[ Receiver(params) ^ (s) ]] :=
+    Map1[[ params ^ (s) ]].

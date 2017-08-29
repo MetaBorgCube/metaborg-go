@@ -177,9 +177,17 @@ lexical start-symbols
  * String literals -- https://golang.org/ref/spec#String_literals
  */
  
-  lexical syntax
+  context-free syntax
 
-  StringLit            = RawStringLit
-  StringLit            = InterpretedStringLit
-  RawStringLit         = "`" (UnicodeChar | Newline)* "`"
-  InterpretedStringLit = "\"" (UnicodeValue | ByteValue)* "\""
+  StringLit                  = RawStringLit
+  StringLit                  = InterpretedStringLit
+  
+  syntax
+
+  RawStringLit-CF            = "`" RawStringLit-Inner-LEX "`"
+  InterpretedStringLit-CF    = "\"" InterpretedStringLit-Inner-LEX "\""
+
+  lexical syntax
+  
+  RawStringLit-Inner         = (UnicodeChar | Newline)*
+  InterpretedStringLit-Inner = (UnicodeValue | ByteValue)*

@@ -1,0 +1,71 @@
+module statics/types
+
+signature
+
+  constructors
+    FunT : Type
+
+rules
+
+  [[ TypeName(name) ^ (s) ]] :=
+    Type{name} -> s,
+    Type{name} |-> _.
+
+  [[ QualifiedTypeName(name) ^ (s) ]] :=
+    [[ name ^ (s) ]].
+    
+/**
+ * Array types -- https://golang.org/ref/spec#Array_types
+ */
+ 
+  [[ ArrayType(expr, type) ^ (s) ]] :=
+    [[ expr ^ (s) ]],
+    [[ type ^ (s) ]].
+
+/**
+ * Slice types -- https://golang.org/ref/spec#Slice_types
+ */
+ 
+  [[ SliceType(type) ^ (s) ]] :=
+    [[ type ^ (s) ]].
+
+/**
+ * Struct types -- https://golang.org/ref/spec#Struct_types
+ */
+ 
+  [[ StructType(fields) ^ (s) ]] :=
+    Map1[[ fields ^ (s) ]].
+    
+  [[ FieldDecl(field, tag) ^ (s) ]] :=
+    [[ field ^ (s) ]],
+    [[ tag ^ (s) ]].
+    
+  [[ Field(names, type) ^ (s) ]] :=
+    [[ names ^ (s) ]],
+    [[ type ^ (s) ]].
+    
+  [[ AnonymousPtrField(type) ^ (s) ]] :=
+    [[ type ^ (s) ]].
+ 
+  [[ AnonymousField(type) ^ (s) ]] :=
+    [[ type ^ (s) ]].
+ 
+  [[ NoTag() ^ (_) ]].
+  
+/**
+ * Pointer types -- https://golang.org/ref/spec#Pointer_types
+ */
+  
+/**
+ * Function types -- https://golang.org/ref/spec#Function_types
+ */
+ 
+  [[ FunctionType(sig) ^ (s) ]] :=
+    [[ sig ^ (s) ]]. 
+ 
+  [[ Signature(params, result) ^ (s) ]] :=
+    Map1[[ params ^ (s) ]].
+    
+  [[ ParameterDecl(names, dots, type) ^ (s) ]] :=
+    Map1(VarDecl)[[ names ^ (s) ]],
+    [[ type ^ (s) ]].

@@ -1,0 +1,63 @@
+module statics/packages
+
+rules
+
+/**
+ * Source file -- https://golang.org/ref/spec#Source_file_organization
+ */
+
+  [[ SourceFile(pkg_path, PackageClause(PackageName(pkg_name)), imports, decls) ^ (s_univ) ]] :=
+
+    // define package public and private, and file scopes
+    new s_pkg_pub s_pkg_prv s_file,
+    s_pkg_prv ---> s_pkg_pub,
+    s_file ---> s_pkg_prv,
+    Pkg{pkg_path} <- s_univ,
+    Pkg{pkg_path} =PUB=> s_pkg_pub,
+    Pkg{pkg_path} =PRV=> s_pkg_pub,
+    
+    // implicitly import other files from the same package
+    Pkg{pkg_path} -> s_univ,
+    Pkg{pkg_path} <=PRV= s_pkg_prv,
+ 
+    // define scope for default imports
+    new s_pkg_imp,
+    Pkg{pkg_path} =IMP=> s_pkg_imp,
+    Var{pkg_name} <- s_pkg_imp,
+    Var{pkg_name} : PackageTy(s_pkg_pub),
+ 
+    Map2[[ imports ^ (s_univ, s_file) ]],
+    Map2[[ decls ^ (s_pkg_pub, s_file) ]].
+ 
+/**
+ * Package clause -- https://golang.org/ref/spec#Package_clause
+ */
+ 
+  [[ MultiImportDecl(import_specs) ^ (s_univ, s_file) ]] :=
+    Map2[[ import_specs ^ (s_univ, s_file) ]].
+
+  [[ ImportSpec(Qual(), pkg_path) ^ (s_univ, s_file) ]] :=
+    Pkg{pkg_path} -> s_univ,
+    Pkg{pkg_path} <=IMP= s_file.
+
+  [[ ImportSpec(Unqual(), pkg_path) ^ (s_univ, s_file) ]] :=
+    Pkg{pkg_path} -> s_univ,
+    Pkg{pkg_path} <=PUB= s_file.
+
+  [[ ImportSpec(Alias(PackageName("_")), pkg_path) ^ (s_univ, s_file) ]] :=
+    true.
+
+  [[ ImportSpec(Alias(PackageName(pkg_name)), pkg_path) ^ (s_univ, s_file) ]] :=
+    new s_imp,
+    Var{pkg_name} <- s_file,
+    Var{pkg_name} : PackageTy(s_imp),
+    
+    Pkg{pkg_path} -> s_univ,
+    Pkg{pkg_path} <=PUB= s_imp.
+
+/**
+ * Source files for testing
+ */
+
+  [[ TestSources(sourcefiles) ^ (s_univ) ]] :=
+    Map1[[ sourcefiles ^ (s_univ) ]].

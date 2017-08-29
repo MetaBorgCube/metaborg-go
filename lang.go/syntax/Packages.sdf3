@@ -8,6 +8,7 @@ imports
 context-free start-symbols
 
   SourceFile
+  TestSources
 
 /**
  * Source file -- https://golang.org/ref/spec#Source_file_organization
@@ -15,9 +16,14 @@ context-free start-symbols
 
   context-free syntax
 
-  SourceFile        = <<PackageClause>; <SourceFile-Inner1*> <SourceFile-Inner2*>>
-  SourceFile-Inner1 = <<ImportDecl>;>
-  SourceFile-Inner2 = <<TopLevelDecl>;>
+  SourceFile.SourceFile = <
+    <PackageClause>;
+
+    <SourceFile-Imports*>
+    <SourceFile-Decls*>
+  >
+  SourceFile-Imports = <<ImportDecl>;>
+  SourceFile-Decls   = <<TopLevelDecl>;>
 
 /**
  * Package clause -- https://golang.org/ref/spec#Package_clause
@@ -25,21 +31,37 @@ context-free start-symbols
  
   context-free syntax
 
-  PackageClause = <package <PackageName>>
-  PackageName   = Identifier
+  PackageClause.PackageClause = <package <PackageName>>
+  PackageName.PackageName     = Identifier
 
 /**
  * Import declarations -- https://golang.org/ref/spec#Import_declarations
  */
  
   context-free syntax
-  
-  ImportDecl             = <import <ImportDecl-Inner>>
-  ImportDecl-Inner       = ImportSpec
-  ImportDecl-Inner       = <( <ImportDecl-Inner-Inner*> )>
-  ImportDecl-Inner-Inner = <<ImportSpec>;>
 
-  ImportSpec       = <<ImportSpec-Inner> <ImportPath>>
-  ImportSpec-Inner = <.>
-  ImportSpec-Inner = <PackageName>
-  ImportPath       = StringLit 
+  ImportDecl.SingleImportDecl = <import <ImportSpec>>
+  ImportDecl.MultiImportDecl  = <import (<MultiImportDecl-Inner*>)>
+  MultiImportDecl-Inner       = <<ImportSpec>;>
+
+  ImportSpec.ImportSpec  = <<ImportSpec-Qual> <ImportPath>>
+  ImportSpec-Qual.Qual   = <>
+  ImportSpec-Qual.Unqual = <.>
+  ImportSpec-Qual.Alias  = PackageName
+  ImportPath             = StringLit
+
+/**
+ * Source files for testing
+ */
+
+  context-free syntax
+  
+  TestSources.TestSources = TestSource*
+
+  TestSource.SourceFile = <
+    [<ImportPath>]
+    <PackageClause>;
+
+    <SourceFile-Imports*>
+    <SourceFile-Decls*>
+  >
