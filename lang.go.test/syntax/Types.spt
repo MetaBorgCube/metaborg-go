@@ -27,7 +27,7 @@ test rune type [[rune]] parse succeeds
 test string type [[string]] parse succeeds
 
 test array type [[ [32]byte]] parse succeeds
-test array type [[ [2*N] struct { x, y int32 }]] parse succeeds
+test array type [[ [2*N] struct { x, y int32; }]] parse succeeds
 test array type [[ [1000]*float64]] parse succeeds
 test array type [[ [3][5]int]] parse succeeds
 test array type [[ [2][2][2]float64]] parse to [[ [2]([2]([2]float64))]]
@@ -38,28 +38,28 @@ test struct type [[struct {
   u float32;
   _ float32;  // padding
   A *[]int;
-  F func()
+  F func();
 }]] parse succeeds
 test struct type [[struct {
   T1;       // field name is T1
   *T2;      // field name is T2
   P.T3;     // field name is T3
   *P.T4;    // field name is T4
-  x, y int  // field names are x and y
+  x, y int; // field names are x and y
 }]] parse succeeds
 test struct type [[struct {
   T;    // conflicts with anonymous field *T and *P.T
   *T;   // conflicts with anonymous field T and *P.T
-  *P.T  // conflicts with anonymous field T and *T
+  *P.T; // conflicts with anonymous field T and *T
 }]] parse succeeds
 test struct type [[struct {
   x, y float64 ""; // an empty tag string is like an absent tag
   name string  "any string is permitted as a tag";
-  _    [4]byte "ceci n'est pas un champ de structure"
+  _    [4]byte "ceci n'est pas un champ de structure";
 }]] parse succeeds
 test struct type [[struct {
   microsec  uint64 `protobuf:"1"`;
-  serverIP6 uint64 `protobuf:"2"`
+  serverIP6 uint64 `protobuf:"2"`;
 }]] parse succeeds
 
 test pointer type [[*Point]] parse succeeds
@@ -77,31 +77,31 @@ test function type [[func(n int) func(p *T)]] parse succeeds
 test interface type [[interface {
   Read(b Buffer) bool;
   Write(b Buffer) bool;
-  Close()
+  Close();
 }]] parse succeeds
 
 test interface type [[interface{}]] parse succeeds
 test interface type [[interface {
   Lock();
-  Unlock()
+  Unlock();
 }]] parse succeeds
 test interface type [[interface {
   Read(b Buffer) bool;
-  Write(b Buffer) bool
+  Write(b Buffer) bool;
 }]] parse succeeds
 test interface type [[interface {
   ReadWriter;  // same as adding the methods of ReadWriter
   Locker;      // same as adding the methods of Locker
-  Close()
+  Close();
 }]] parse succeeds
 test interface type [[interface {
   Locker;
   File;        // illegal: Lock, Unlock not unique
-  Lock()      // illegal: Lock not unique
+  Lock();     // illegal: Lock not unique
 }]] parse succeeds
 
 test map type [[map[string]int]] parse succeeds
-test map type [[map[*T]struct{ x, y float64 }]] parse succeeds
+test map type [[map[*T]struct{ x, y float64; }]] parse succeeds
 test map type [[map[string]interface{}]] parse succeeds
 
 test channel type[[chan T]] parse succeeds

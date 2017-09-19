@@ -8,7 +8,7 @@ test package in multiple files [[
   package test;
   
   type [[Point]] struct{
-      X, Y int
+      X, Y int;
   };
 
   ["test"]
@@ -31,7 +31,7 @@ test import with default name [[
   package test;
 
   type [[Point]] struct {
-      X, Y int
+      X, Y int;
   };
 ]] resolve #1 to #2
 
@@ -49,7 +49,7 @@ test import with custom name [[
   package test;
 
   type [[Point]] struct {
-      X, Y int
+      X, Y int;
   };
 ]] resolve #1 to #2
 
@@ -67,6 +67,6 @@ test import unqualified [[
   package test;
 
   type [[Point]] struct {
-      X, Y int
+      X, Y int;
   };
 ]] resolve #1 to #2

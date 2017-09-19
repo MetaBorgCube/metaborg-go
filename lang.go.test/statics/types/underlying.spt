@@ -1,0 +1,127 @@
+module underlying
+
+language GoLang
+start symbol TestSources
+
+fixture [[
+  ["."]
+  package test;
+
+  [[...]]
+]]
+
+
+test type alias [[
+  type (
+    [[A1]] = string;
+    [[A2]] = A1;
+  );
+]] run nabl2-get-ast-type on #1 to StringT()
+   run nabl2-get-ast-type on #2 to StringT()
+
+test type alias [[
+  type (
+    A1 = string;
+    A2 = A1;
+  );
+  func test(x string) A1 { return x; };
+]] 0 errors
+
+test type alias [[
+  type (
+    A1 = string;
+    A2 = A1;
+  );
+  func test(x A1) A2 { return x; };
+]] 0 errors
+
+test type alias [[
+  type (
+    A1 = string;
+    A2 = A1;
+  );
+  func test(x A2) A1 { return x; };
+]] 0 errors
+
+test type alias [[
+  type (
+    A1 = string;
+    A2 = A1;
+  );
+  func test(x A2) string { return x; };
+]] 0 errors
+
+
+
+test type decl [[
+  type (
+    [[B1]] string;
+    [[B2]] B1;
+    [[B3]] []B1;
+    [[B4]] B3;
+  );
+]] run nabl2-get-ast-type on #1 to StringT()
+   run nabl2-get-ast-type on #2 to StringT()
+   run nabl2-get-ast-type on #3 to SliceT(NamedT(Occurrence(Namespace("Type"),"B1",_)))
+   run nabl2-get-ast-type on #4 to SliceT(NamedT(Occurrence(Namespace("Type"),"B1",_)))
+
+test type decl [[
+  type (
+    B1 string;
+    B2 B1;
+    B3 []B1;
+    B4 B3;
+  );
+  func test(x B1) B1 { return x; };
+]] 0 errors   
+
+test type decl [[
+  type (
+    B1 string;
+    B2 B1;
+    B3 []B1;
+    B4 B3;
+  );
+  func test(x []B1) []B1 { return x; };
+]] 0 errors
+
+test type decl [[
+  type (
+    B1 string;
+    B2 B1;
+    B3 []B1;
+    B4 B3;
+  );
+  func test(x B3) []B1 { return x; };
+]] 0 errors
+
+test type decl [[
+  type (
+    B1 string;
+    B2 B1;
+    B3 []B1;
+    B4 B3;
+  );
+  func test(x []B1) B3 { return x; };
+]] 0 errors
+
+test type decl [[
+  type (
+    B1 string;
+    B2 B1;
+    B3 []B1;
+    B4 B3;
+  );
+  func test(x B3) B4 { return x; };
+]] > 0 errors   
+
+
+test named struct [[
+  type S struct{};
+  func test(x S) struct{} { return x; };
+]] 0 errors
+
+test named struct [[
+  type S struct{};
+  func test(x struct{}) S { return x; };
+]] 0 errors

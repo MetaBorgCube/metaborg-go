@@ -20,6 +20,7 @@ context-free start-symbols
     <PackageClause>;
 
     <SourceFile-Imports*>
+
     <SourceFile-Decls*>
   >
   SourceFile-Imports = <<ImportDecl>;>

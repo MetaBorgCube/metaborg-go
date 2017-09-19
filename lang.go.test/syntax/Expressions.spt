@@ -30,9 +30,9 @@ test map literal [[map[string]float32{
   "G0": 24.50, "A0": 27.50, "B0": 30.87,
 }]] parse succeeds
 
-test function literal [[func(a, b int, z float64) bool { return a*b < int(z) }]] parse succeeds
-test function literal [[func(x, y int) int { return x + y }]] parse succeeds
-test function literal [[func(ch chan int) { ch <- ACK }]] parse succeeds
+test function literal [[func(a, b int, z float64) bool { return a*b < int(z); }]] parse succeeds
+test function literal [[func(x, y int) int { return x + y; }]] parse succeeds
+test function literal [[func(ch chan int) { ch <- ACK; }]] parse succeeds
 
 test primary expression [[x]] parse succeeds
 test primary expression [[2]] parse succeeds

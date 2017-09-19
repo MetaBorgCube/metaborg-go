@@ -24,18 +24,18 @@ context-free syntax
 /**
  * Constant declarations -- https://golang.org/ref/spec#Constant_declarations
  */
- 
+
   context-free syntax
-  
+
   ConstDecl.SingleConstDecl = <const <ConstSpec>>
   ConstDecl.MultiConstDecl  = <const (<MultiConstDecl-Inner*>)>
   MultiConstDecl-Inner      = <<ConstSpec>;>
 
-  ConstSpec.ConstSpec                    = <<IdentifierList> <ConstSpec-Assignment-OPT>>
-  ConstSpec-Assignment-OPT.NoConstAssign = <>
-  ConstSpec-Assignment-OPT.ConstAssign   = <<ConstSpec-Type-OPT> = <ExpressionList>>
-  ConstSpec-Type-OPT.NoType              = <>
-  ConstSpec-Type-OPT                     = Type
+  // spec seems wrong here, assignment is always required
+  ConstSpec.ConstSpec              = <<IdentifierList> <ConstSpec-Assignment>>
+  ConstSpec-Assignment.ConstAssign = <<ConstSpec-Type-OPT> = <ExpressionList>>
+  ConstSpec-Type-OPT.NoType        = <>
+  ConstSpec-Type-OPT               = Type
 
   IdentifierList                   = {Identifier ","}+
   IdentifierList-OPT.NoIdentifiers = <>
@@ -59,7 +59,12 @@ context-free syntax
   TypeDecl.MultiTypeDecl  = <type (<MultiTypeDecl-Inner*>)>
   MultiTypeDecl-Inner     = <<TypeSpec>;>
 
-  TypeSpec.TypeSpec       = <<Identifier> <Type>>
+  TypeSpec                = AliasDecl
+  TypeSpec                = TypeDef
+
+  AliasDecl.AliasDecl     = <<Identifier> = <Type>>
+
+  TypeDef.TypeDef         = <<Identifier> <Type>>
 
 
 /**
@@ -112,4 +117,8 @@ context-free syntax
   MethodDecl-Inner      = Function
   MethodDecl-Inner      = Signature
 
-  Receiver.Receiver     = Parameters
+//Receiver.Receiver          = Parameters                   // FIXME inlined special case here
+  Receiver.Receiver          = <(<Identifier> <Receiver-Inner>)>
+  Receiver.AnonymousReceiver = <(<Receiver-Inner>)>
+  Receiver-Inner             = TypeName
+  Receiver-Inner             = <*<TypeName>>

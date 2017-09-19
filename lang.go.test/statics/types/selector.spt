@@ -1,0 +1,206 @@
+module const
+
+language GoLang
+start symbol TestSources
+
+fixture [[
+  ["."]
+  package test;
+
+  [[...]]
+]]
+
+test select field [[
+  type T0 struct { x int; };
+  func (*T0) M0() {};
+  type T1 struct { y int; };
+  func (T1) M1() {};
+  type T2 struct { [[z]] int; T1; *T0; };
+  func (*T2) M2() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = t.s#[[z]];
+]] resolve #2 to #1
+
+test select field via anonymous field [[
+  type T0 struct { x int; };
+  func (*T0) M0() {};
+  type T1 struct { [[y]] int; };
+  func (T1) M1() {};
+  type T2 struct { z int; T1; *T0; };
+  func (*T2) M2() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = t.s#[[y]];
+]] resolve #2 to #1
+
+test select field via anonymous pointer field [[
+  type T0 struct { [[x]] int; };
+  func (*T0) M0() {};
+  type T1 struct { y int; };
+  func (T1) M1() {};
+  type T2 struct { z int; T1; *T0; };
+  func (*T2) M2() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = t.s#[[x]];
+]] resolve #2 to #1
+
+test select field via pointer [[
+  type T0 struct { x int; };
+  func (*T0) M0() {};
+  type T1 struct { y int; };
+  func (T1) M1() {};
+  type T2 struct { [[z]] int; T1; *T0; };
+  func (*T2) M2() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = p.s#[[z]];
+]] resolve #2 to #1
+
+test selectfield via pointer and anonymous field [[
+  type T0 struct { x int; };
+  func (*T0) M0() {};
+  type T1 struct { [[y]] int; };
+  func (T1) M1() {};
+  type T2 struct { z int; T1; *T0; };
+  func (*T2) M2() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = p.s#[[y]];
+]] resolve #2 to #1
+
+test select field via pointer and anonymous pointer field [[
+  type T0 struct { [[x]] int; };
+  func (*T0) M0() {};
+  type T1 struct { y int; };
+  func (T1) M1() {};
+  type T2 struct { z int; T1; *T0; };
+  func (*T2) M2() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = p.s#[[x]];
+]] resolve #2 to #1
+
+test select field via pointer [[
+  type T0 struct { [[x]] int; };
+  func (*T0) M0() {};
+  type T1 struct { y int; };
+  func (T1) M1() {};
+  type T2 struct { z int; T1; *T0; };
+  func (*T2) M2() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = q.s#[[x]];
+]] resolve #2 to #1
+
+test select method via anonymous pointer field [[
+  type T0 struct { x int; };
+  func (*T0) [[M0]]() {};
+  type T1 struct { y int; };
+  func (T1) M1() {};
+  type T2 struct { z int; T1; *T0; };
+  func (*T2) M2() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = p.s#[[M0]]();
+]] resolve #2 to #1
+
+test select method via anonymous field [[
+  type T0 struct { x int; };
+  func (*T0) M0() {};
+  type T1 struct { y int; };
+  func (T1) [[M1]]() {};
+  type T2 struct { z int; T1; *T0; };
+  func (*T2) M2() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = p.s#[[M1]]();
+]] resolve #2 to #1
+
+test select pointer method via pointer [[
+  type T0 struct { x int; };
+  func (*T0) M0() {};
+  type T1 struct { y int; };
+  func (T1) M1() {};
+  type T2 struct { z int; T1; *T0; };
+  func (*T2) [[M2]]() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = p.s#[[M2]]();
+]] resolve #2 to #1
+
+test select pointer method via value [[
+  type T0 struct { x int; };
+  func (*T0) M0() {};
+  type T1 struct { y int; };
+  func (T1) M1() {};
+  type T2 struct { z int; T1; *T0; };
+  func (*T2) [[M2]]() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = t.s#[[M2]]();
+]] resolve #2 to #1
+
+test select method via pointer dereference [[
+  type T0 struct { x int; };
+  func (*T0) [[M0]]() {};
+  type T1 struct { y int; };
+  func (T1) M1() {};
+  type T2 struct { z int; T1; *T0; };
+  func (*T2) M2() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = (*q).s#[[M0]]();
+]] resolve #2 to #1
+
+test select method via pointer fails [[
+  type T0 struct { x int; };
+  func (*T0) M0() {};
+  type T1 struct { y int; };
+  func (T1) M1() {};
+  type T2 struct { z int; T1; *T0; };
+  func (*T2) M2() {};
+  type Q *T2;
+  var t T2;     // with t.T0 != nil
+  var p *T2;    // with p != nil and (*p).T0 != nil
+  var q Q = p;
+
+  var _ = q.s#[[M0]]();
+]] > 0 errors

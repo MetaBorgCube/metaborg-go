@@ -1,0 +1,58 @@
+module const
+
+language GoLang
+start symbol TestSources
+
+fixture [[
+  ["."]
+  package test;
+
+  [[...]]
+]]
+  
+
+test typed const literal [[
+  const x int = 42;
+]] 0 errors
+
+test typed const expression [[
+  const x int = 21 * 2;
+]] 0 errors
+
+test type const expression [[
+  const x int = 21;
+  const y int = 2 * x;
+]] 0 errors
+
+test const with non-const expression [[
+  var x int = 21;
+  const y int = 2 * x;
+]] > 0 errors
+
+test untyped const [[
+  const x = 42;
+  var y int32 = x;
+  var z int64 = x;
+]] 0 errors
+
+test untyped const [[
+  const x int = 42;
+  var y int32 = x;
+  var z int64 = x;
+]] > 0 errors
+
+test untyped cascading const [[
+  const x = 21;
+  const y = 2 * x;
+
+  var u int32 = x;
+  var v int64 = x;
+]] 0 errors
+
+test typed cascading const [[
+  const x int = 21;
+  const y = 2 * x;
+
+  var u int32 = x;
+  var v int64 = x;
+]] > 0 errors

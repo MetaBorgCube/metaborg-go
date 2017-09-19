@@ -43,6 +43,7 @@ context-free start-symbols
 
   context-free syntax 
 
+  QualifiedIdent.QualifiedIdent = [[PackageName].q#[Identifier]]
   QualifiedIdent.QualifiedIdent = <<PackageName>.<Identifier>>
 
 
@@ -97,11 +98,13 @@ context-free start-symbols
   PrimaryExpr = Conversion
   
   // inlined
+  PrimaryExpr.Selector      = [[PrimaryExpr].s#[Identifier]] {left}
   PrimaryExpr.Selector      = <<PrimaryExpr>.<Identifier>> {left}
   PrimaryExpr.Index         = <<PrimaryExpr>[<Expression>]>
   PrimaryExpr.Slice         = <<PrimaryExpr>[<Expression-OPT>:<Expression-OPT>]>
   PrimaryExpr.Slice         = <<PrimaryExpr>[<Expression-OPT>:<Expression-OPT>:<Expression-OPT>]>
   PrimaryExpr.TypeAssertion = <<PrimaryExpr>.(<Type>)>
+  PrimaryExpr.Arguments     = [[PrimaryExpr](c#[Arguments-Inner-OPT])]
   PrimaryExpr.Arguments     = <<PrimaryExpr>(<Arguments-Inner-OPT>)>
   
   Arguments-Inner-OPT.NoArguments        = <>
@@ -123,6 +126,7 @@ context-free start-symbols
 
   context-free syntax 
 
+  MethodExpr.MethodExpr        = [[ReceiverType].m#[MethodName]]
   MethodExpr.MethodExpr        = <<ReceiverType>.<MethodName>>
   ReceiverType.ValueReceiver   = TypeName
   ReceiverType.PointerReceiver = <(*<TypeName>)>
@@ -284,6 +288,7 @@ context-free start-symbols
  
   context-free syntax 
 
+  Conversion.Conversion = [[Type](t#[Expression] [Comma?])]
   Conversion.Conversion = <<Type>(<Expression> <Comma?>)>
 
 

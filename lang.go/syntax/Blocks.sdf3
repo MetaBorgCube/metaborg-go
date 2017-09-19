@@ -8,4 +8,5 @@ context-free syntax
 
   Block.Block   = <{ <StatementList> }>
   
-  StatementList = {Statement ";"}*
+  StatementList = StatementList-Inner*
+  StatementList-Inner = <<Statement>;>

@@ -1,5 +1,13 @@
 package pkg;
 
+type Int int;
+
 type Point struct {
-    X, Y int
+    X int;
+    Y int;
+};
+
+type Circle struct {
+  Point;
+  Radius float64;
 };

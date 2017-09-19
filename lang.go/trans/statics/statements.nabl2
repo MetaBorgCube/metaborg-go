@@ -26,14 +26,14 @@ rules
   
   LabelRef[[ Label(name) ^ (s) ]] :=
     Lbl{name} -> s,
-    Lblb{name} |-> _.
+    Lbl{name} |-> _.
   
 /**
  * Expression statements -- https://golang.org/ref/spec#Expression_statements
  */
  
   [[ ExpressionStmt(expr) ^ (s) ]] :=
-    [[ expr ^ (s) ]].
+    [[ expr ^ (s) : _ ]].
     
 /**
  * Send statements -- https://golang.org/ref/spec#Send_statements
@@ -41,76 +41,77 @@ rules
   
   [[ SendStmt(channel, expr) ^ (s) ]] :=
     [[ channel ^ (s) ]],
-    [[ expr ^ (s) ]].
+    [[ expr ^ (s) : _ ]].
 
 /**
  * IncDec statements -- https://golang.org/ref/spec#IncDec_statements
  */
  
   [[ IncStmt(expr) ^ (s) ]] :=
-    [[ expr ^ (s) ]].
+    [[ expr ^ (s) : _ ]].
  
   [[ DecStmt(expr) ^ (s) ]] :=
-    [[ expr ^ (s) ]].
+    [[ expr ^ (s) : _ ]].
  
 /**
  * Assignments -- https://golang.org/ref/spec#Assignments
  */
  
-  [[ AssignStmt(expr1, expr2) ^ (s) ]] :=
-    [[ expr1 ^ (s) ]],
-    [[ expr2 ^ (s) ]].
+  [[ AssignStmt(exprs1, exprs2) ^ (s) ]] :=
+    Map1T[[ exprs1 ^ (s) : lhs_tys ]],
+    Map1T[[ exprs2 ^ (s) : rhs_tys ]],
+    lhs_tys <`assignable`? rhs_tys.
 
   // add_op
-  [[ SumAssignStmt(expr1, expr2) ^ (s) ]] :=
-    [[ expr1 ^ (s) ]],
-    [[ expr2 ^ (s) ]].
-  [[ DifferenceAssignStmt(expr1, expr2) ^ (s) ]] :=
-    [[ expr1 ^ (s) ]],
-    [[ expr2 ^ (s) ]].
-  [[ BitwiseOrAssignStmt(expr1, expr2) ^ (s) ]] :=
-    [[ expr1 ^ (s) ]],
-    [[ expr2 ^ (s) ]].
-  [[ BitwiseXorAssignStmt(expr1, expr2) ^ (s) ]] :=
-    [[ expr1 ^ (s) ]],
-    [[ expr2 ^ (s) ]].
+  [[ SumAssignStmt(exprs1, exprs2) ^ (s) ]] :=
+    Map1T[[ exprs1 ^ (s) : _ ]],
+    Map1T[[ exprs2 ^ (s) : _ ]].
+  [[ DifferenceAssignStmt(exprs1, exprs2) ^ (s) ]] :=
+    Map1T[[ exprs1 ^ (s) : _ ]],
+    Map1T[[ exprs2 ^ (s) : _ ]].
+  [[ BitwiseOrAssignStmt(exprs1, exprs2) ^ (s) ]] :=
+    Map1T[[ exprs1 ^ (s) : _ ]],
+    Map1T[[ exprs2 ^ (s) : _ ]].
+  [[ BitwiseXorAssignStmt(exprs1, exprs2) ^ (s) ]] :=
+    Map1T[[ exprs1 ^ (s) : _ ]],
+    Map1T[[ exprs2 ^ (s) : _ ]].
 
   // mul_op
-  [[ ProductAssignStmt(expr1, expr2) ^ (s) ]] :=
-    [[ expr1 ^ (s) ]],
-    [[ expr2 ^ (s) ]].
-  [[ QuotientAssignStmt(expr1, expr2) ^ (s) ]] :=
-    [[ expr1 ^ (s) ]],
-    [[ expr2 ^ (s) ]].
-  [[ RemainderAssignStmt(expr1, expr2) ^ (s) ]] :=
-    [[ expr1 ^ (s) ]],
-    [[ expr2 ^ (s) ]].
-  [[ LeftShiftAssignStmt(expr1, expr2) ^ (s) ]] :=
-    [[ expr1 ^ (s) ]],
-    [[ expr2 ^ (s) ]].
-  [[ RightShiftAssignStmt(expr1, expr2) ^ (s) ]] :=
-    [[ expr1 ^ (s) ]],
-    [[ expr2 ^ (s) ]].
-  [[ BitwiseAndAssignStmt(expr1, expr2) ^ (s) ]] :=
-    [[ expr1 ^ (s) ]],
-    [[ expr2 ^ (s) ]].
-  [[ BitClearAssignStmt(expr1, expr2) ^ (s) ]] :=
-    [[ expr1 ^ (s) ]],
-    [[ expr2 ^ (s) ]].
+  [[ ProductAssignStmt(exprs1, exprs2) ^ (s) ]] :=
+    Map1T[[ exprs1 ^ (s) : _ ]],
+    Map1T[[ exprs2 ^ (s) : _ ]].
+  [[ QuotientAssignStmt(exprs1, exprs2) ^ (s) ]] :=
+    Map1T[[ exprs1 ^ (s) : _ ]],
+    Map1T[[ exprs2 ^ (s) : _ ]].
+  [[ RemainderAssignStmt(exprs1, exprs2) ^ (s) ]] :=
+    Map1T[[ exprs1 ^ (s) : _ ]],
+    Map1T[[ exprs2 ^ (s) : _ ]].
+  [[ LeftShiftAssignStmt(exprs1, exprs2) ^ (s) ]] :=
+    Map1T[[ exprs1 ^ (s) : _ ]],
+    Map1T[[ exprs2 ^ (s) : _ ]].
+  [[ RightShiftAssignStmt(exprs1, exprs2) ^ (s) ]] :=
+    Map1T[[ exprs1 ^ (s) : _ ]],
+    Map1T[[ exprs2 ^ (s) : _ ]].
+  [[ BitwiseAndAssignStmt(exprs1, exprs2) ^ (s) ]] :=
+    Map1T[[ exprs1 ^ (s) : _ ]],
+    Map1T[[ exprs2 ^ (s) : _ ]].
+  [[ BitClearAssignStmt(exprs1, exprs2) ^ (s) ]] :=
+    Map1T[[ exprs1 ^ (s) : _ ]],
+    Map1T[[ exprs2 ^ (s) : _ ]].
  
 /**
  * Go statements -- https://golang.org/ref/spec#Go_statements
  */
  
   [[ GoStmt(expr) ^ (s) ]] :=
-    [[ expr ^ (s) ]].
+    [[ expr ^ (s) : _ ]].
  
 /**
  * Return statements
  */
 
   [[ ReturnStmt(exprs) ^ (s) ]] :=
-    Map1[[ exprs ^ (s) ]].
+    Map1T[[ exprs ^ (s) : _ ]].
     
 /**
  * Break statements
@@ -144,4 +145,4 @@ rules
  */
  
   [[ DeferStmt(expr) ^ (s) ]] :=
-    [[ expr ^ (s) ]].
+    [[ expr ^ (s) : _ ]].

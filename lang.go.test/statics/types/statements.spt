@@ -1,0 +1,13 @@
+module statements
+
+language GoLang
+start symbol TestSources
+
+test assign to untyped variable [[
+  ["."]
+  package test;
+  var x string;
+  func main() {
+    x = "Go";
+  };
+]] 0 errors

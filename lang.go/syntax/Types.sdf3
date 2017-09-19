@@ -77,7 +77,8 @@ context-free syntax
  
   context-free syntax
   
-  StructType.StructType   = <struct { <{FieldDecl ";"}*> }>
+  StructType.StructType   = <struct { <StructType-Inner*> }>
+  StructType-Inner        = <<FieldDecl>;>
  
   FieldDecl.FieldDecl     = <<Field> <Tag-OPT>>
  
@@ -105,9 +106,9 @@ context-free syntax
 /**
  * Function types -- https://golang.org/ref/spec#Function_types
  */
- 
+
   context-free syntax
-  
+
   FunctionType.FunctionType   = <func <Signature>>
 
   Signature.Signature         = <<Parameters> <Result-OPT>>
@@ -130,8 +131,9 @@ context-free syntax
  
   context-free syntax
   
-  InterfaceType.Interface = <interface { <{MethodSpec ";"}*> }>
-  
+  InterfaceType.InterfaceType = <interface { <InterfaceType-Inner*> }>
+  InterfaceType-Inner         = <<MethodSpec>;>
+ 
   MethodSpec.MethodSpec   = <<MethodName> <Signature>>
   MethodSpec              = InterfaceTypeName
   

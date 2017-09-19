@@ -161,6 +161,7 @@ lexical start-symbols
   HexByteValue   = "\\x" HexDigit HexDigit
   LittleUValue   = "\\u" HexDigit HexDigit HexDigit HexDigit
   BigUValue      = "\\U" HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+  UnicodeValue   = "\\" {reject}
   EscapedChar    = "\\a"
   EscapedChar    = "\\b"
   EscapedChar    = "\\f"
@@ -181,13 +182,20 @@ lexical start-symbols
 
   StringLit                  = RawStringLit
   StringLit                  = InterpretedStringLit
-  
+
   syntax
 
-  RawStringLit-CF            = "`" RawStringLit-Inner-LEX "`"
-  InterpretedStringLit-CF    = "\"" InterpretedStringLit-Inner-LEX "\""
+  RawStringLit-CF            = "`" RawStringLit-Chars-LEX "`"
+  InterpretedStringLit-CF    = "\"" InterpretedStringLit-Chars-LEX "\""
 
   lexical syntax
   
-  RawStringLit-Inner         = (UnicodeChar | Newline)*
-  InterpretedStringLit-Inner = (UnicodeValue | ByteValue)*
+  RawStringLit-Chars = RawStringLit-Char*
+  RawStringLit-Char  = UnicodeChar
+  RawStringLit-Char  = Newline
+  RawStringLit-Char  = "`" {reject}
+
+  InterpretedStringLit-Chars = InterpretedStringLit-Char*
+  InterpretedStringLit-Char  = UnicodeValue
+  InterpretedStringLit-Char  = ByteValue
+  InterpretedStringLit-Char  = "\"" {reject}

@@ -1,0 +1,13 @@
+module aliases
+
+language GoLang
+start symbol TestSources
+
+test type alias [[
+  ["."]
+  package test;
+  
+  type Int = int;
+  
+  func test(x Int) int { return x; };
+]] 0 errors
