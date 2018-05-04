@@ -1,0 +1,25 @@
+module signatures/jasmin-sig
+
+imports
+  signatures/JasminXT-Whitespace-sig
+  signatures/JasminXT-Header-sig
+  signatures/JasminXT-Fields-sig
+  signatures/JasminXT-Methods-sig
+
+
+signature
+  constructors
+                       : JasminFile -> Start
+    JBCFile            : JasminHeader * List(Field) * List(Method) -> JasminFile
+    Start-Plhdr        : Start
+    JasminFile-Plhdr   : JasminFile
+    JasminHeader-Plhdr : JasminHeader
+    Field-Plhdr        : Field
+    Method-Plhdr       : Method
+    Start-Plhdr        : COMPLETION-INSERTION -> Start
+    JasminFile-Plhdr   : COMPLETION-INSERTION -> JasminFile
+    JasminHeader-Plhdr : COMPLETION-INSERTION -> JasminHeader
+    Field-Plhdr        : COMPLETION-INSERTION -> Field
+    Method-Plhdr       : COMPLETION-INSERTION -> Method
+    Field-Opt-Plhdr    : Field
+    Method-Opt-Plhdr   : Method

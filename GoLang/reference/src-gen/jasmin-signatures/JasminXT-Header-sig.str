@@ -1,0 +1,127 @@
+module signatures/JasminXT-Header-sig
+
+imports
+  signatures/JasminXT-Names-sig
+  signatures/JasminXT-Numbers-sig
+  signatures/JasminXT-Strings-sig
+  signatures/JasminXT-Descriptors-sig
+
+
+signature
+  constructors
+    JBCHeader                    : BytecodeSpec * SourceSpec * ClassSpec * SuperSpec * List(ImplementsSpec) * SignatureSpec * EnclosingSpec * List(DebugSpec) * List(InnerClassSpec) * List(InnerInterfaceSpec) -> JasminHeader
+    JasminHeader-Plhdr           : JasminHeader
+    BytecodeSpec-Plhdr           : BytecodeSpec
+    SourceSpec-Plhdr             : SourceSpec
+    ClassSpec-Plhdr              : ClassSpec
+    SuperSpec-Plhdr              : SuperSpec
+    ImplementsSpec-Plhdr         : ImplementsSpec
+    SignatureSpec-Plhdr          : SignatureSpec
+    EnclosingSpec-Plhdr          : EnclosingSpec
+    DebugSpec-Plhdr              : DebugSpec
+    InnerClassSpec-Plhdr         : InnerClassSpec
+    InnerInterfaceSpec-Plhdr     : InnerInterfaceSpec
+    JasminHeader-Plhdr           : COMPLETION-INSERTION -> JasminHeader
+    BytecodeSpec-Plhdr           : COMPLETION-INSERTION -> BytecodeSpec
+    SourceSpec-Plhdr             : COMPLETION-INSERTION -> SourceSpec
+    ClassSpec-Plhdr              : COMPLETION-INSERTION -> ClassSpec
+    SuperSpec-Plhdr              : COMPLETION-INSERTION -> SuperSpec
+    ImplementsSpec-Plhdr         : COMPLETION-INSERTION -> ImplementsSpec
+    SignatureSpec-Plhdr          : COMPLETION-INSERTION -> SignatureSpec
+    EnclosingSpec-Plhdr          : COMPLETION-INSERTION -> EnclosingSpec
+    DebugSpec-Plhdr              : COMPLETION-INSERTION -> DebugSpec
+    InnerClassSpec-Plhdr         : COMPLETION-INSERTION -> InnerClassSpec
+    InnerInterfaceSpec-Plhdr     : COMPLETION-INSERTION -> InnerInterfaceSpec
+    ImplementsSpec-Opt-Plhdr     : ImplementsSpec
+    DebugSpec-Opt-Plhdr          : DebugSpec
+    InnerClassSpec-Opt-Plhdr     : InnerClassSpec
+    InnerInterfaceSpec-Opt-Plhdr : InnerInterfaceSpec
+    JBCVersion                   : MajorVersion * MinorVersion -> BytecodeSpec
+    None                         : BytecodeSpec
+    Major                        : Int -> MajorVersion
+    Minor                        : Int -> MinorVersion
+    None                         : MinorVersion
+    JBCSource                    : String -> SourceSpec
+    None                         : SourceSpec
+    BytecodeSpec-Plhdr           : BytecodeSpec
+    MajorVersion-Plhdr           : MajorVersion
+    Int-Plhdr                    : Int
+    MinorVersion-Plhdr           : MinorVersion
+    String-Plhdr                 : String
+    SourceSpec-Plhdr             : SourceSpec
+    BytecodeSpec-Plhdr           : COMPLETION-INSERTION -> BytecodeSpec
+    MajorVersion-Plhdr           : COMPLETION-INSERTION -> MajorVersion
+    Int-Plhdr                    : COMPLETION-INSERTION -> Int
+    MinorVersion-Plhdr           : COMPLETION-INSERTION -> MinorVersion
+    String-Plhdr                 : COMPLETION-INSERTION -> String
+    SourceSpec-Plhdr             : COMPLETION-INSERTION -> SourceSpec
+    BytecodeSpec-Opt-Plhdr       : BytecodeSpec
+    MinorVersion-Opt-Plhdr       : MinorVersion
+    SourceSpec-Opt-Plhdr         : SourceSpec
+    JBCClass                     : List(ClassAccess) * ClassName -> ClassSpec
+    JBCInterface                 : List(ClassAccess) * ClassName -> ClassSpec
+    PUBLIC                       : ClassAccess
+    FINAL                        : ClassAccess
+    INTERFACE                    : ClassAccess
+    ABSTRACT                     : ClassAccess
+    SUPER                        : ClassAccess
+    JBCSuper                     : ClassName -> SuperSpec
+    JBCImplements                : ClassName -> ImplementsSpec
+    ClassSpec-Plhdr              : ClassSpec
+    ClassAccess-Plhdr            : ClassAccess
+    SuperSpec-Plhdr              : SuperSpec
+    ImplementsSpec-Plhdr         : ImplementsSpec
+    ClassName-Plhdr              : ClassName
+    ClassSpec-Plhdr              : COMPLETION-INSERTION -> ClassSpec
+    ClassAccess-Plhdr            : COMPLETION-INSERTION -> ClassAccess
+    SuperSpec-Plhdr              : COMPLETION-INSERTION -> SuperSpec
+    ImplementsSpec-Plhdr         : COMPLETION-INSERTION -> ImplementsSpec
+    ClassName-Plhdr              : COMPLETION-INSERTION -> ClassName
+    ClassAccess-Opt-Plhdr        : ClassAccess
+    JBCSignature                 : String -> SignatureSpec
+    None                         : SignatureSpec
+    JBCEnclosing                 : MethodDescriptor -> EnclosingSpec
+    None                         : EnclosingSpec
+    JBCDebug                     : String -> DebugSpec
+    SignatureSpec-Plhdr          : SignatureSpec
+    MethodDescriptor-Plhdr       : MethodDescriptor
+    EnclosingSpec-Plhdr          : EnclosingSpec
+    DebugSpec-Plhdr              : DebugSpec
+    String-Plhdr                 : String
+    SignatureSpec-Plhdr          : COMPLETION-INSERTION -> SignatureSpec
+    MethodDescriptor-Plhdr       : COMPLETION-INSERTION -> MethodDescriptor
+    EnclosingSpec-Plhdr          : COMPLETION-INSERTION -> EnclosingSpec
+    DebugSpec-Plhdr              : COMPLETION-INSERTION -> DebugSpec
+    String-Plhdr                 : COMPLETION-INSERTION -> String
+    SignatureSpec-Opt-Plhdr      : SignatureSpec
+    EnclosingSpec-Opt-Plhdr      : EnclosingSpec
+    JBCInnerClass                : InnerClassAccess * InnerClassName * InnerName * OuterName -> InnerClassSpec
+    JBCInnerInterface            : InnerClassAccess * InnerClassName * InnerName * OuterName -> InnerInterfaceSpec
+                                 : ClassAccess -> InnerClassAccess
+    None                         : InnerClassAccess
+                                 : ClassName -> InnerClassName
+    None                         : InnerClassName
+    InnerNameSpec                : List(ClassName) -> InnerName
+    None                         : InnerName
+    OuterNameSpec                : ClassName -> OuterName
+    None                         : OuterName
+    InnerClassSpec-Plhdr         : InnerClassSpec
+    InnerInterfaceSpec-Plhdr     : InnerInterfaceSpec
+    ClassAccess-Plhdr            : ClassAccess
+    InnerClassAccess-Plhdr       : InnerClassAccess
+    InnerClassName-Plhdr         : InnerClassName
+    InnerName-Plhdr              : InnerName
+    ClassName-Plhdr              : ClassName
+    OuterName-Plhdr              : OuterName
+    InnerClassSpec-Plhdr         : COMPLETION-INSERTION -> InnerClassSpec
+    InnerInterfaceSpec-Plhdr     : COMPLETION-INSERTION -> InnerInterfaceSpec
+    ClassAccess-Plhdr            : COMPLETION-INSERTION -> ClassAccess
+    InnerClassAccess-Plhdr       : COMPLETION-INSERTION -> InnerClassAccess
+    InnerClassName-Plhdr         : COMPLETION-INSERTION -> InnerClassName
+    InnerName-Plhdr              : COMPLETION-INSERTION -> InnerName
+    ClassName-Plhdr              : COMPLETION-INSERTION -> ClassName
+    OuterName-Plhdr              : COMPLETION-INSERTION -> OuterName
+    InnerClassAccess-Opt-Plhdr   : InnerClassAccess
+    InnerClassName-Opt-Plhdr     : InnerClassName
+    InnerName-Opt-Plhdr          : InnerName
+    OuterName-Opt-Plhdr          : OuterName

@@ -1,0 +1,974 @@
+module reference/src-gen/pp/expressions-pp
+
+imports
+  libstratego-gpp
+  libspoofax/sdf/pp
+  libspoofax/term/origin
+  libstratego-sglr
+  reference/src-gen/signatures/expressions-sig
+
+
+imports
+  reference/src-gen/signatures/lex-sig
+
+
+imports
+  reference/src-gen/pp/lex-pp
+
+
+strategies
+  prettyprint-example =
+    prettyprint-minijava
+
+  prettyprint-minijava =
+    fail
+
+
+strategies
+  prettyprint-SDF-start-symbols =
+    prettyprint-minijava-start-symbols
+
+  prettyprint-minijava-start-symbols =
+    fail
+
+
+strategies
+  prettyprint-minijava =
+    prettyprint-minijava-VarRef
+
+  prettyprint-minijava =
+    prettyprint-minijava-IndexExp
+
+  prettyprint-minijava =
+    prettyprint-minijava-Exp
+
+  prettyprint-minijava(|sort):
+    t -> <prettyprint-minijava-VarRef>
+    where <?"VarRef"> sort
+
+  prettyprint-minijava(|sort):
+    t -> <prettyprint-minijava-IndexExp>
+    where <?"IndexExp"> sort
+
+  prettyprint-minijava(|sort):
+    t -> <prettyprint-minijava-Exp>
+    where <?"Exp"> sort
+
+  prettyprint-minijava-Exp :
+    True() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("true")]
+                )
+              ]
+
+  is-minijava-Exp =
+    ?True()
+
+  minijava-get-indent :
+    (t@True(), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@True(), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@True(), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    False() -> [ H(
+                   [SOpt(HS(), "0")]
+                 , [S("false")]
+                 )
+               ]
+
+  is-minijava-Exp =
+    ?False()
+
+  minijava-get-indent :
+    (t@False(), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@False(), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@False(), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    This() -> [ H(
+                  [SOpt(HS(), "0")]
+                , [S("this")]
+                )
+              ]
+
+  is-minijava-Exp =
+    ?This()
+
+  minijava-get-indent :
+    (t@This(), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@This(), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@This(), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-VarRef :
+    VarRef(t1__) -> [ H(
+                        [SOpt(HS(), "0")]
+                      , [t1__']
+                      )
+                    ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-ID) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+
+  is-minijava-VarRef =
+    ?VarRef(_)
+
+  minijava-get-indent :
+    (t@VarRef(t1__), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"VarRef"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@VarRef(t1__), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"VarRef"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@VarRef(t1__), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"VarRef"> sort
+    with switch !index
+           case ?1 :
+             ws := ""
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-minijava-Exp)
+    where t1__' := <pp-one-Z(prettyprint-minijava-VarRef) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+
+  prettyprint-minijava-Exp :
+    IntValue(t1__) -> [ H(
+                          [SOpt(HS(), "0")]
+                        , [t1__']
+                        )
+                      ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-INT) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+
+  is-minijava-Exp =
+    ?IntValue(_)
+
+  minijava-get-indent :
+    (t@IntValue(t1__), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@IntValue(t1__), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@IntValue(t1__), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             ws := ""
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    Not(t1__) -> [ H(
+                     [SOpt(HS(), "0")]
+                   , [S("!"), t1__']
+                   )
+                 ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+
+  is-minijava-Exp =
+    ?Not(_)
+
+  minijava-get-indent :
+    (t@Not(t1__), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@Not(t1__), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@Not(t1__), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             ws := ""
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    Add(t1__, t2__) -> [ H(
+                           [SOpt(HS(), "0")]
+                         , [t1__', S(" + "), t2__']
+                         )
+                       ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+    with t2__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t2__
+
+  is-minijava-Exp =
+    ?Add(_, _)
+
+  minijava-get-indent :
+    (t@Add(t1__, t2__), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           case ?2 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@Add(t1__, t2__), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           case ?2 :
+             separator := ""
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@Add(t1__, t2__), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             ws := ""
+           case ?2 :
+             ws := " "
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    Sub(t1__, t2__) -> [ H(
+                           [SOpt(HS(), "0")]
+                         , [t1__', S(" - "), t2__']
+                         )
+                       ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+    with t2__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t2__
+
+  is-minijava-Exp =
+    ?Sub(_, _)
+
+  minijava-get-indent :
+    (t@Sub(t1__, t2__), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           case ?2 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@Sub(t1__, t2__), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           case ?2 :
+             separator := ""
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@Sub(t1__, t2__), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             ws := ""
+           case ?2 :
+             ws := " "
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    Mul(t1__, t2__) -> [ H(
+                           [SOpt(HS(), "0")]
+                         , [t1__', S(" * "), t2__']
+                         )
+                       ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+    with t2__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t2__
+
+  is-minijava-Exp =
+    ?Mul(_, _)
+
+  minijava-get-indent :
+    (t@Mul(t1__, t2__), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           case ?2 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@Mul(t1__, t2__), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           case ?2 :
+             separator := ""
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@Mul(t1__, t2__), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             ws := ""
+           case ?2 :
+             ws := " "
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    Lt(t1__, t2__) -> [ H(
+                          [SOpt(HS(), "0")]
+                        , [t1__', S(" < "), t2__']
+                        )
+                      ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+    with t2__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t2__
+
+  is-minijava-Exp =
+    ?Lt(_, _)
+
+  minijava-get-indent :
+    (t@Lt(t1__, t2__), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           case ?2 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@Lt(t1__, t2__), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           case ?2 :
+             separator := ""
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@Lt(t1__, t2__), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             ws := ""
+           case ?2 :
+             ws := " "
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    And(t1__, t2__) -> [ H(
+                           [SOpt(HS(), "0")]
+                         , [t1__', S(" && "), t2__']
+                         )
+                       ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+    with t2__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t2__
+
+  is-minijava-Exp =
+    ?And(_, _)
+
+  minijava-get-indent :
+    (t@And(t1__, t2__), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           case ?2 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@And(t1__, t2__), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           case ?2 :
+             separator := ""
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@And(t1__, t2__), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             ws := ""
+           case ?2 :
+             ws := " "
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    Call(t1__, t2__, t3__) -> [ H(
+                                  [SOpt(HS(), "0")]
+                                , [ t1__'
+                                  , S(".")
+                                  , t2__'
+                                  , S("(")
+                                  , t3__'
+                                  , S(")")
+                                  ]
+                                )
+                              ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+    with t2__' := <pp-one-Z(prettyprint-minijava-ID) <+ pp-one-Z(prettyprint-completion-aux)> t2__
+    with t3__' := <pp-H-list(prettyprint-minijava-Exp|", ")
+                   <+ pp-one-Z(prettyprint-completion-aux)> t3__
+
+  is-minijava-Exp =
+    ?Call(_, _, _)
+
+  minijava-get-indent :
+    ( t@Call(t1__, t2__, t3__)
+    , index
+    ) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           case ?2 :
+             indent := ""
+           case ?3 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    ( t@Call(t1__, t2__, t3__)
+    , index
+    ) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           case ?2 :
+             separator := ""
+           case ?3 :
+             separator := ", "
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    ( t@Call(t1__, t2__, t3__)
+    , index
+    ) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             ws := ""
+           case ?2 :
+             ws := ""
+           case ?3 :
+             ws := ""
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    NewArray(t1__) -> [ H(
+                          [SOpt(HS(), "0")]
+                        , [ S("new int [")
+                          , t1__'
+                          , S("]")
+                          ]
+                        )
+                      ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+
+  is-minijava-Exp =
+    ?NewArray(_)
+
+  minijava-get-indent :
+    (t@NewArray(t1__), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@NewArray(t1__), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@NewArray(t1__), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             ws := ""
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    Subscript(t1__, t2__) -> [ H(
+                                 [SOpt(HS(), "0")]
+                               , [ t1__'
+                                 , S("[")
+                                 , t2__'
+                                 , S("]")
+                                 ]
+                               )
+                             ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+    with t2__' := <pp-one-Z(prettyprint-minijava-IndexExp) <+ pp-one-Z(prettyprint-completion-aux)> t2__
+
+  is-minijava-Exp =
+    ?Subscript(_, _)
+
+  minijava-get-indent :
+    (t@Subscript(t1__, t2__), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           case ?2 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@Subscript(t1__, t2__), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           case ?2 :
+             separator := ""
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@Subscript(t1__, t2__), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             ws := ""
+           case ?2 :
+             ws := ""
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-IndexExp :
+    t1__ -> [ H(
+                [SOpt(HS(), "0")]
+              , [t1__']
+              )
+            ]
+    where not(is-minijava-IndexExp)
+    where t1__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+
+  prettyprint-minijava-Exp :
+    Length(t1__) -> [ H(
+                        [SOpt(HS(), "0")]
+                      , [t1__', S(".length")]
+                      )
+                    ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+
+  is-minijava-Exp =
+    ?Length(_)
+
+  minijava-get-indent :
+    (t@Length(t1__), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@Length(t1__), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@Length(t1__), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             ws := ""
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    NewObject(t1__) -> [ H(
+                           [SOpt(HS(), "0")]
+                         , [ S("new ")
+                           , t1__'
+                           , S("()")
+                           ]
+                         )
+                       ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-ID) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+
+  is-minijava-Exp =
+    ?NewObject(_)
+
+  minijava-get-indent :
+    (t@NewObject(t1__), index) -> indent
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             indent := ""
+           otherwise :
+             indent := ""
+         end
+
+  minijava-get-separator :
+    (t@NewObject(t1__), index) -> separator
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             separator := ""
+           otherwise :
+             separator := ""
+         end
+
+  minijava-get-leading-ws :
+    (t@NewObject(t1__), index) -> ws
+    where sort := <ia-get-sort> t
+          ; <?"Exp"> sort
+    with switch !index
+           case ?1 :
+             ws := " "
+           otherwise :
+             ws := ""
+         end
+
+  prettyprint-minijava-Exp :
+    Parenthetical(t1__) -> [ H(
+                               [SOpt(HS(), "0")]
+                             , [ S("(")
+                               , t1__'
+                               , S(")")
+                               ]
+                             )
+                           ]
+    with t1__' := <pp-one-Z(prettyprint-minijava-Exp) <+ pp-one-Z(prettyprint-completion-aux)> t1__
+
+  is-minijava-VarRef =
+    fail
+
+  is-minijava-IndexExp =
+    fail
+
+  is-minijava-Exp =
+    fail
+
+  prettyprint-minijava-VarRef :
+    amb([h|hs]) -> <prettyprint-minijava-VarRef> h
+
+  prettyprint-minijava-IndexExp :
+    amb([h|hs]) -> <prettyprint-minijava-IndexExp> h
+
+  prettyprint-minijava-Exp :
+    amb([h|hs]) -> <prettyprint-minijava-Exp> h
+
+  prettyprint-minijava-VarRef :
+    VarRef-Plhdr() -> [ H(
+                          [SOpt(HS(), "0")]
+                        , [S("[[VarRef]]")]
+                        )
+                      ]
+
+  is-minijava-VarRef =
+    ?VarRef-Plhdr()
+
+  prettyprint-minijava-INT :
+    INT-Plhdr() -> [ H(
+                       [SOpt(HS(), "0")]
+                     , [S("[[INT]]")]
+                     )
+                   ]
+
+  is-minijava-INT =
+    ?INT-Plhdr()
+
+  prettyprint-minijava-IndexExp :
+    IndexExp-Plhdr() -> [ H(
+                            [SOpt(HS(), "0")]
+                          , [S("[[IndexExp]]")]
+                          )
+                        ]
+
+  is-minijava-IndexExp =
+    ?IndexExp-Plhdr()
+
+  prettyprint-minijava-ID :
+    ID-Plhdr() -> [ H(
+                      [SOpt(HS(), "0")]
+                    , [S("[[ID]]")]
+                    )
+                  ]
+
+  is-minijava-ID =
+    ?ID-Plhdr()
+
+  prettyprint-minijava-Exp :
+    Exp-Plhdr() -> [ H(
+                       [SOpt(HS(), "0")]
+                     , [S("[[Exp]]")]
+                     )
+                   ]
+
+  is-minijava-Exp =
+    ?Exp-Plhdr()
+
+  prettyprint-minijava-VarRef :
+    VarRef-Plhdr(_) -> [ H(
+                           [SOpt(HS(), "0")]
+                         , [S("[[VarRef]]")]
+                         )
+                       ]
+
+  is-minijava-VarRef =
+    ?VarRef-Plhdr(_)
+
+  prettyprint-minijava-INT :
+    INT-Plhdr(_) -> [ H(
+                        [SOpt(HS(), "0")]
+                      , [S("[[INT]]")]
+                      )
+                    ]
+
+  is-minijava-INT =
+    ?INT-Plhdr(_)
+
+  prettyprint-minijava-IndexExp :
+    IndexExp-Plhdr(_) -> [ H(
+                             [SOpt(HS(), "0")]
+                           , [S("[[IndexExp]]")]
+                           )
+                         ]
+
+  is-minijava-IndexExp =
+    ?IndexExp-Plhdr(_)
+
+  prettyprint-minijava-ID :
+    ID-Plhdr(_) -> [ H(
+                       [SOpt(HS(), "0")]
+                     , [S("[[ID]]")]
+                     )
+                   ]
+
+  is-minijava-ID =
+    ?ID-Plhdr(_)
+
+  prettyprint-minijava-Exp :
+    Exp-Plhdr(_) -> [ H(
+                        [SOpt(HS(), "0")]
+                      , [S("[[Exp]]")]
+                      )
+                    ]
+
+  is-minijava-Exp =
+    ?Exp-Plhdr(_)
+
+  prettyprint-minijava-Exp :
+    Exp-Opt-Plhdr() -> [ H(
+                           []
+                         , [S("")]
+                         )
+                       ]
+
+  is-minijava-Exp =
+    ?Exp-Opt-Plhdr()

@@ -1,0 +1,30 @@
+module signatures/JasminXT-Descriptors-sig
+
+imports
+  signatures/JasminXT-Types-sig
+
+
+signature
+  constructors
+    JBCFieldDesc               : FieldType -> FieldDescriptor
+                               : FieldType -> ParameterDescriptor
+                               : FieldType -> AnnotationDescriptor
+                               : FieldType -> ReturnDescriptor
+    Void                       : ReturnDescriptor
+    FieldDescriptor-Plhdr      : FieldDescriptor
+    ParameterDescriptor-Plhdr  : ParameterDescriptor
+    AnnotationDescriptor-Plhdr : AnnotationDescriptor
+    FieldType-Plhdr            : FieldType
+    ReturnDescriptor-Plhdr     : ReturnDescriptor
+    FieldDescriptor-Plhdr      : COMPLETION-INSERTION -> FieldDescriptor
+    ParameterDescriptor-Plhdr  : COMPLETION-INSERTION -> ParameterDescriptor
+    AnnotationDescriptor-Plhdr : COMPLETION-INSERTION -> AnnotationDescriptor
+    FieldType-Plhdr            : COMPLETION-INSERTION -> FieldType
+    ReturnDescriptor-Plhdr     : COMPLETION-INSERTION -> ReturnDescriptor
+    JBCMethodDesc              : List(ParameterDescriptor) * ReturnDescriptor -> MethodDescriptor
+    MethodDescriptor-Plhdr     : MethodDescriptor
+    ParameterDescriptor-Plhdr  : ParameterDescriptor
+    ReturnDescriptor-Plhdr     : ReturnDescriptor
+    MethodDescriptor-Plhdr     : COMPLETION-INSERTION -> MethodDescriptor
+    ParameterDescriptor-Plhdr  : COMPLETION-INSERTION -> ParameterDescriptor
+    ReturnDescriptor-Plhdr     : COMPLETION-INSERTION -> ReturnDescriptor

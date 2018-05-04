@@ -1,0 +1,15 @@
+module reference/src-gen/completion/colorer/minijava-cc-esv
+
+imports
+  reference/src-gen/completion/colorer/lex-cc-esv
+  reference/src-gen/completion/colorer/expressions-cc-esv
+  reference/src-gen/completion/colorer/statements-cc-esv
+  reference/src-gen/completion/colorer/classes-cc-esv
+
+colorer
+  _.Start-Plhdr     : gray   
+  _.Program-Plhdr   : gray   
+  _.ClassDecl-Plhdr : gray   
+  _.MainClass-Plhdr : gray   
+  _.ID-Plhdr        : gray   
+  _.Statement-Plhdr : gray   

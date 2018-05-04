@@ -1,0 +1,48 @@
+module reference/src-gen/completion
+
+imports
+  
+  libspoofax/editor/completion/-
+  reference/src-gen/completion/minijava-cp
+  reference/src-gen/pp/-
+  trans/pp
+ 
+  
+rules
+  
+  get-proposals-empty-program-minijava                         = ?(sort, _); 
+                                                                 get-proposals-empty-program(pp-partial-minijava-string(|sort), parenthesize-minijava, 
+                                                                                             minijava-get-indent, minijava-get-leading-ws, 
+                                                                                             minijava-get-separator)
+  get-proposals-left-recursive-minijava                        = ?(sort, _); 
+                                                                 get-proposals-left-recursive(pp-partial-minijava-string, parenthesize-minijava, 
+                                                                                             minijava-get-indent, minijava-get-leading-ws, 
+                                                                                             minijava-get-separator)
+  get-proposals-right-recursive-minijava                       = ?(sort, _); 
+                                                                 get-proposals-right-recursive(pp-partial-minijava-string, parenthesize-minijava, 
+                                                                                             minijava-get-indent, minijava-get-leading-ws, 
+                                                                                             minijava-get-separator)
+  get-proposals-placeholder-minijava                           = ?(sort, _, _, _);
+                                                                 get-proposals-placeholder(pp-partial-minijava-string(|sort), parenthesize-minijava, 
+                                                                                             minijava-get-indent, minijava-get-leading-ws, 
+                                                                                             minijava-get-separator)
+  get-proposals-optional-minijava                              = ?(sort, _, _);
+                                                                 get-proposals-optional(pp-partial-minijava-string(|sort), parenthesize-minijava, 
+                                                                                             minijava-get-indent, minijava-get-leading-ws, 
+                                                                                             minijava-get-separator)
+  get-proposals-list-minijava                                  = ?(sort, _, _, _);
+                                                                 get-proposals-list(pp-partial-minijava-string(|sort), parenthesize-minijava, 
+                                                                                             minijava-get-indent, minijava-get-leading-ws, 
+                                                                                             minijava-get-separator)
+  get-proposals-incorrect-programs-minijava                    = ?(sort, _, _, _, _);
+                                                                 get-proposals-incorrect-programs(pp-partial-minijava-string(|sort), parenthesize-minijava, 
+                                                                                             minijava-get-indent, minijava-get-leading-ws, 
+                                                                                             minijava-get-separator)
+  get-proposals-incorrect-programs-nested-minijava             = ?(sort, _, _, _, _, _);
+                                                                 get-proposals-incorrect-programs-nested(pp-partial-minijava-string(|sort), parenthesize-minijava, 
+                                                                                             minijava-get-indent, minijava-get-leading-ws, 
+                                                                                             minijava-get-separator)
+  get-proposals-incorrect-programs-single-placeholder-minijava = ?(sort, _, _, _, _, _, _);
+                                                                 get-proposals-incorrect-programs-single-placeholder(pp-partial-minijava-string(|sort), parenthesize-minijava, 
+                                                                                             minijava-get-indent, minijava-get-leading-ws, 
+                                                                                             minijava-get-separator)

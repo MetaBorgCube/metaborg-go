@@ -1,0 +1,8 @@
+module signatures/JasminXT-Synchronisation-sig
+
+signature
+  constructors
+    MONITORENTER      : Instruction
+    MONITOREXIT       : Instruction
+    Instruction-Plhdr : Instruction
+    Instruction-Plhdr : COMPLETION-INSERTION -> Instruction

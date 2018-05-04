@@ -1,0 +1,130 @@
+module reference/src-gen/pp/lex-pp
+
+imports
+  libstratego-gpp
+  libspoofax/sdf/pp
+  libspoofax/term/origin
+  libstratego-sglr
+  reference/src-gen/signatures/lex-sig
+
+
+strategies
+  prettyprint-example =
+    prettyprint-minijava
+
+  prettyprint-minijava =
+    fail
+
+
+strategies
+  prettyprint-SDF-start-symbols =
+    prettyprint-minijava-start-symbols
+
+  prettyprint-minijava-start-symbols =
+    fail
+
+
+strategies
+  prettyprint-minijava =
+    prettyprint-minijava-INT
+
+  prettyprint-minijava =
+    prettyprint-minijava-ID
+
+  prettyprint-minijava =
+    prettyprint-minijava-MainID
+
+  prettyprint-minijava =
+    prettyprint-minijava-EOF
+
+  prettyprint-minijava =
+    prettyprint-minijava-BlockComment
+
+  prettyprint-minijava =
+    prettyprint-minijava-CommPart
+
+  prettyprint-minijava =
+    prettyprint-minijava-Asterisk
+
+  prettyprint-minijava =
+    prettyprint-minijava-Slash
+
+  prettyprint-minijava(|sort):
+    t -> <prettyprint-minijava-INT>
+    where <?"INT"> sort
+
+  prettyprint-minijava(|sort):
+    t -> <prettyprint-minijava-ID>
+    where <?"ID"> sort
+
+  prettyprint-minijava(|sort):
+    t -> <prettyprint-minijava-MainID>
+    where <?"MainID"> sort
+
+  prettyprint-minijava(|sort):
+    t -> <prettyprint-minijava-EOF>
+    where <?"EOF"> sort
+
+  prettyprint-minijava(|sort):
+    t -> <prettyprint-minijava-BlockComment>
+    where <?"BlockComment"> sort
+
+  prettyprint-minijava(|sort):
+    t -> <prettyprint-minijava-CommPart>
+    where <?"CommPart"> sort
+
+  prettyprint-minijava(|sort):
+    t -> <prettyprint-minijava-Asterisk>
+    where <?"Asterisk"> sort
+
+  prettyprint-minijava(|sort):
+    t -> <prettyprint-minijava-Slash>
+    where <?"Slash"> sort
+
+  prettyprint-minijava-INT =
+    ![S(<is-string>)]
+
+  prettyprint-minijava-ID =
+    ![S(<is-string>)]
+
+  prettyprint-minijava-MainID =
+    ![S(<is-string>)]
+
+  prettyprint-minijava-EOF =
+    ![S(<is-string>)]
+
+  prettyprint-minijava-BlockComment =
+    ![S(<is-string>)]
+
+  prettyprint-minijava-CommPart =
+    ![S(<is-string>)]
+
+  prettyprint-minijava-Asterisk =
+    ![S(<is-string>)]
+
+  prettyprint-minijava-Slash =
+    ![S(<is-string>)]
+
+  prettyprint-minijava-INT :
+    amb([h|hs]) -> <prettyprint-minijava-INT> h
+
+  prettyprint-minijava-ID :
+    amb([h|hs]) -> <prettyprint-minijava-ID> h
+
+  prettyprint-minijava-MainID :
+    amb([h|hs]) -> <prettyprint-minijava-MainID> h
+
+  prettyprint-minijava-EOF :
+    amb([h|hs]) -> <prettyprint-minijava-EOF> h
+
+  prettyprint-minijava-BlockComment :
+    amb([h|hs]) -> <prettyprint-minijava-BlockComment> h
+
+  prettyprint-minijava-CommPart :
+    amb([h|hs]) -> <prettyprint-minijava-CommPart> h
+
+  prettyprint-minijava-Asterisk :
+    amb([h|hs]) -> <prettyprint-minijava-Asterisk> h
+
+  prettyprint-minijava-Slash :
+    amb([h|hs]) -> <prettyprint-minijava-Slash> h

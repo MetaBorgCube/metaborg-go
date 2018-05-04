@@ -1,0 +1,150 @@
+module reference/src-gen/pp/minijava-parenthesize
+
+imports
+  libstratego-lib
+  reference/src-gen/signatures/-
+
+
+strategies
+  io-minijava-parenthesize =
+    io-wrap(parenthesize-minijava)
+
+  parenthesize-minijava =
+    innermost(minijavaParenthesize)
+
+
+rules
+
+  minijavaParenthesize :
+    Length(t_0) -> Length(Parenthetical(t_0))
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + ?Sub(_, _)
+            + ?Add(_, _)
+            + ?Mul(_, _)
+            + ?Not(_)
+            + fail)> t_0
+
+  minijavaParenthesize :
+    Call(t_0, t_1, t_2) -> Call(Parenthetical(t_0), t_1, t_2)
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + ?Sub(_, _)
+            + ?Add(_, _)
+            + ?Mul(_, _)
+            + ?Not(_)
+            + fail)> t_0
+
+  minijavaParenthesize :
+    Call(t_0, t_1, t_2) -> Call(t_0, Parenthetical(t_1), t_2)
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + ?Sub(_, _)
+            + ?Add(_, _)
+            + ?Mul(_, _)
+            + ?Not(_)
+            + fail)> t_1
+
+  minijavaParenthesize :
+    Call(t_0, t_1, t_2) -> Call(t_0, t_1, Parenthetical(t_2))
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + ?Sub(_, _)
+            + ?Add(_, _)
+            + ?Mul(_, _)
+            + ?Not(_)
+            + fail)> t_2
+
+  minijavaParenthesize :
+    Subscript(t_0, t_1) -> Subscript(Parenthetical(t_0), t_1)
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + ?Sub(_, _)
+            + ?Add(_, _)
+            + ?Mul(_, _)
+            + ?Not(_)
+            + fail)> t_0
+
+  minijavaParenthesize :
+    Subscript(t_0, t_1) -> Subscript(t_0, Parenthetical(t_1))
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + ?Sub(_, _)
+            + ?Add(_, _)
+            + ?Mul(_, _)
+            + ?Not(_)
+            + fail)> t_1
+
+  minijavaParenthesize :
+    Mul(t_0, t_1) -> Mul(Parenthetical(t_0), t_1)
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + ?Sub(_, _)
+            + ?Add(_, _)
+            + fail)> t_0
+
+  minijavaParenthesize :
+    Mul(t_0, t_1) -> Mul(t_0, Parenthetical(t_1))
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + ?Sub(_, _)
+            + ?Add(_, _)
+            + ?Mul(_, _)
+            + fail)> t_1
+
+  minijavaParenthesize :
+    Not(t_0) -> Not(Parenthetical(t_0))
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + ?Sub(_, _)
+            + ?Add(_, _)
+            + ?Mul(_, _)
+            + fail)> t_0
+
+  minijavaParenthesize :
+    Sub(t_0, t_1) -> Sub(Parenthetical(t_0), t_1)
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + fail)> t_0
+
+  minijavaParenthesize :
+    Sub(t_0, t_1) -> Sub(t_0, Parenthetical(t_1))
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + ?Sub(_, _)
+            + ?Add(_, _)
+            + fail)> t_1
+
+  minijavaParenthesize :
+    Add(t_0, t_1) -> Add(Parenthetical(t_0), t_1)
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + fail)> t_0
+
+  minijavaParenthesize :
+    Add(t_0, t_1) -> Add(t_0, Parenthetical(t_1))
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + ?Add(_, _)
+            + ?Sub(_, _)
+            + fail)> t_1
+
+  minijavaParenthesize :
+    Lt(t_0, t_1) -> Lt(Parenthetical(t_0), t_1)
+    where <(?And(_, _) + fail)> t_0
+
+  minijavaParenthesize :
+    Lt(t_0, t_1) -> Lt(t_0, Parenthetical(t_1))
+    where <(?And(_, _)
+            + ?Lt(_, _)
+            + fail)> t_1
+
+  minijavaParenthesize :
+    And(t_0, t_1) -> And(t_0, Parenthetical(t_1))
+    where <(?And(_, _) + fail)> t_1
+
+
+signature
+  constructors
+    Parenthetical : Unknown -> Unknown
+

@@ -1,0 +1,83 @@
+module codegen/build
+
+imports
+
+  stratego/metaborg
+
+  codegen/classes
+  jasmin
+
+imports // Jasmin signatures
+
+  signatures/JasminXT-Header-sig
+  signatures/jasmin-sig
+
+rules
+
+  /**
+   * Transform MiniJava AST to Jasmin AST and show the resulting ATerm.
+   *
+   * @type MiniJava AST -> Jasmin AST
+   */
+//  show-jbc:
+//    (selected, _, ast, path, project-path) -> (filename, result)
+//    with
+//      filename := <guarantee-extension(|$[j.aterm])> path
+//    ; result   := <program-to-jbc; map(set-jasmin-source(|path))> ast
+
+   /**
+   * Generate Jasmin files (.j files) for each of the classes in the MiniJava AST.
+   *
+   * @type MiniJava AST -> None
+   */
+  generate-jbc:
+    (selected, _, ast, path, project-path) -> (filename,result)
+    with
+      filename := <guarantee-extension(|"j")> path
+	; debug(!"Try to execute program-to-jbc")
+	; result := <program-to-jbc> ast
+
+  /**
+   * Generate bytecode (.class files) for each of the classes in the MiniJava AST.
+   *
+   * @type MiniJava AST -> None
+   */
+  generate-jc:
+    (selected, _, ast, path, project-path) -> (filename,result)
+    with
+       filename := <guarantee-extension(|"class")> path
+	; debug(!"Try to execute program-to-jbc")
+	; result := <program-to-jbc> ast
+//      dir := <remove-extension> path
+//    ; <try(mkdir)> dir
+//    ; <program-to-jbc; map(set-jasmin-source(|path)); map(jasmin-generate(|project-path))> ast
+
+  /**
+   * Generate bytecode (.class files) for each of the classes in the MiniJava AST
+   * and run the main class.
+   */
+  run-jc:
+    (selected, _, ast, path, project-path) -> resultExecute
+    with    
+       filename := <guarantee-extension(|"class")> project-path
+	; debug(!<concat-strings>["Try to execute program-to-jbc", project-path," ",filename])
+	; result* := <program-to-jbc> ast
+	; debug(!<concat-strings>["file ", filename])
+    ; resultExecute := <Hd; jasmin-execute(|filename)> result*
+
+rules
+
+  set-jasmin-source(|path) = JBCFile(JBCHeader(id, !JBCSource(<double-quote> path), id, id, id, id, id, id, id, id), id, id)
+
+  write-jbc(|dir):
+    f@JBCFile(JBCHeader(_, _, JBCClass(_, cn), _, _, _, _, _, _, _), _, _) -> fn
+    where
+      fn  := $[[dir]/[cn].j];
+      <fputs; fclose> (<jasmin-pp> f, <fopen> (fn, "w"));
+      <refresh-workspace-file> fn
+
+  run-jc-trim:
+    selected -> trimmed
+    with
+      (_, output) := <run-jc> (selected, None(), selected, "Main.spt", <prim("SSL_EXT_projectpath")>)
+    ; trimmed     := <string-replace(|"\n", "")> output

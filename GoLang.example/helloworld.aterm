@@ -1,0 +1,36 @@
+SourceFile(
+  PackageClause(PackageName("main"))
+, [SingleImportDecl(ImportSpec(Qual(), "fmt"))]
+, [ FunctionDecl(
+      FunctionName("main")
+    , Function(
+        Signature(NoParameters(), NoResult())
+      , Block(
+          [ ExpressionStmt(
+              amb(
+                [ Arguments(
+                    amb(
+                      [ Selector(OperandName("fmt"), "Println")
+                      , amb(
+                          [ MethodExpr(ValueReceiver(TypeName("fmt")), MethodName("Println"))
+                          , QualifiedOperandName(QualifiedIdent(PackageName("fmt"), "Println"))
+                          ]
+                        )
+                      ]
+                    )
+                  , Arguments(Arguments([StringLit("Hello world")]), None(), None())
+                  )
+                , Conversion(
+                    QualifiedTypeName(QualifiedIdent(PackageName("fmt"), "Println"))
+                  , StringLit("Hello world")
+                  , None()
+                  )
+                ]
+              )
+            )
+          ]
+        )
+      )
+    )
+  ]
+)

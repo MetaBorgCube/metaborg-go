@@ -1,0 +1,431 @@
+module codegen/classes
+//hoi
+imports
+
+  src-gen/signatures/-
+  libspoofax/stratego/debug
+  codegen/-
+  reference/desugar-signatures
+
+imports // Jasmin signatures
+
+  signatures/JasminXT-Annotations-sig
+  signatures/JasminXT-Arithmetic-sig
+  signatures/JasminXT-Control-sig
+  signatures/JasminXT-Conversion-sig
+  signatures/JasminXT-Descriptors-sig
+  signatures/JasminXT-Directives-sig
+  signatures/JasminXT-Exceptions-sig
+  signatures/JasminXT-Fields-sig
+  signatures/JasminXT-Header-sig
+  signatures/JasminXT-Instructions-sig
+  signatures/JasminXT-InvokeReturn-sig
+  signatures/JasminXT-LoadStore-sig
+  signatures/JasminXT-Methods-sig
+  signatures/JasminXT-Names-sig
+  signatures/JasminXT-Numbers-sig
+  signatures/JasminXT-Objects-sig
+  signatures/JasminXT-Stack-sig
+  signatures/JasminXT-Strings-sig
+  signatures/JasminXT-Synchronisation-sig
+  signatures/JasminXT-Types-sig
+  signatures/JasminXT-Whitespace-sig
+  signatures/jasmin-sig
+  reference/desugar-signatures
+  analysis
+
+rules
+
+  // http://tudelft-in4303-2016.github.io/assignments/ms3/lab8.html#implement-a-code-generation-strategy
+/*************************************************************************************
+***************************************PROGRAM-TO-JBC***********************************
+**************************************************************************************/  
+  program-to-jbc : SourceFile(packageClause, _, topLevelDecls)  -> JBCFile(
+    JBCHeader(
+    None()
+  , JBCSource("")
+  , JBCClass([PUBLIC()], "Main")
+  , JBCSuper("java/lang/Object")
+  , []
+  , None()
+  , None()
+  , []
+  , []
+  , []
+  )
+, [],
+  [JBCMethod(
+      [PUBLIC(), STATIC()]
+    , "main"
+    , JBCMethodDesc([Array(Reference(CRef("java/lang/String")))], Void())
+    , [ JBCLimitLocals("4")
+      , JBCLimitStack("3")
+      , GETSTATIC(
+          JBCFieldRef(
+            CRef("java/lang/System")
+          , FRef("out")
+          , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
+          )
+        )
+      , ASTORE_1()
+      , ALOAD_1()
+      , LDC("hello world")
+      , INVOKEVIRTUAL(
+          JBCMethodRef(
+            CRef("java/io/PrintStream")
+          , MRef("println")
+          , JBCMethodDesc([Int()], Void())
+          )
+        )
+      , RETURN()
+      ]
+    )]
+  )
+///**sc([], Void())
+//    	, [ ALOAD_0()
+//      	, INVOKESPECIAL(
+//          JBCMethodRef(<constructor-ref>parent, MRef(Init()), JBCMethodDesc([], Void()))
+//        )
+//      	, RETURN()
+//      	])]
+//		, <map(method-to-jbc)> methods*]
+//		)
+//
+//constructor-ref: Parent(name) -> CRef(name)
+//constructor-ref: None() -> CRef("java/lang/Object")
+//parent-to-jbc: Parent(name) -> JBCSuper(name)
+//
+//parent-to-jbc: None() -> JBCSuper("java/lang/Object")
+//
+///*************************************************************************************
+//***************************************FIELD-TO-JBC***********************************
+//**************************************************************************************/  
+//  field-to-jbc: Field(type,varname) -> JBCField([PUBLIC()], varname,JBCFieldDesc(<type-to-jbc>type), None(), None())
+//
+///*************************************************************************************
+//***************************************METHOD-TO-JBC**********************************
+//**************************************************************************************/  
+//  method-to-jbc : Method(returntype, methodname, params*,vars*,statements*,returnstmt) -> 
+//	JBCMethod(
+//	      [PUBLIC()]
+//	    , methodname	//method name
+//	    //first one are params i think as a list
+//	    , JBCMethodDesc([paramtypesout*], returntype)
+//	    , methodstatements
+//	    )
+//	    where
+//	    startlabel := <newname> "startmethod_";
+//    	endlabel := <newname> "endmethod_";
+//    	varout* := <map(var-to-jbc(|startlabel,endlabel))> vars*;
+//	    paramout* := <map(param-to-jbc(|startlabel,endlabel))> params*;
+//	    paramtypesout* := <map(param-types-to-jbc)> params*;
+//	    
+//	    statementsout* := <map(stmt-to-jbc)> statements*;
+//	    returnstmtout* := <exp-to-jbc> returnstmt;
+//	    retjasmin := <ret-to-jbc> returntype;
+//	    methodstatements := <concat>[[JBCLimitStack("99")
+//      						, JBCLimitLocals("99")],
+//      						[JBCLabel(startlabel)],
+//      						varout*,
+//							paramout*,
+//      						statementsout*,
+//      						[returnstmtout*],
+//      						[retjasmin],
+//      						[JBCLabel(endlabel)]]
+////params
+//param-types-to-jbc : Bind(index, Param(type,name)) -> <type-to-jbc> type
+////local vars
+//var-to-jbc(|label1,label2) : Bind(index, Var(type,name)) ->
+//[JBCVarDecl(
+//		  index
+//		, name
+//		, JBCFieldDesc(<type-to-jbc>type)
+//		, LabelRef(label1)
+//		, LabelRef(label2)
+//		)]
+//		
+//param-to-jbc(|label1,label2) : Bind(index, Param(type,name)) ->
+//[JBCVarDecl(
+//		  index
+//		, name
+//		, JBCFieldDesc(<type-to-jbc>type)
+//		, LabelRef(label1)
+//		, LabelRef(label2)
+//		)]
+///*************************************************************************************
+//***************************************STMT-TO-JBC************************************
+//**************************************************************************************/
+//	stmt-to-jbc : Print(toPrint) -> [
+//      GETSTATIC(
+//          JBCFieldRef(
+//            CRef("java/lang/System")
+//          , FRef("out")
+//          , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
+//          )
+//        )
+//      , toprint*
+//      , INVOKEVIRTUAL(
+//          JBCMethodRef(
+//            CRef("java/io/PrintStream")
+//          , MRef("println")
+//          , JBCMethodDesc([Int()], Void())
+//          )
+//        )
+//      ]
+//     where
+//     toprint* := <concat>[<exp-to-jbc> toPrint]
+//    //recrusive call for block statements
+//    stmt-to-jbc : Block(statements) -> <map(stmt-to-jbc) ; concat> statements
+//    //if statement
+//	stmt-to-jbc : If(expression, ifstmt, elsestmt) -> output*
+//    where
+//    if_exp* := <exp-to-jbc> expression;
+//    if_stmt* := <stmt-to-jbc> ifstmt;
+//    else_stmt* := <stmt-to-jbc> elsestmt;
+//    elsetrue* := <newname> "elsetrue_";
+//    endif* := <newname> "endif_";
+//    output* := [if_exp*,
+//    			IFEQ(LabelRef(elsetrue*)),
+//    			if_stmt*,
+//    			GOTO(LabelRef(endif*)),
+//    			JBCLabel(elsetrue*),
+//    			else_stmt*,
+//    			JBCLabel(endif*)]
+//    //while statement
+//     stmt-to-jbc : While(expression, statement) -> output*
+//     where
+//     out_exp* := <exp-to-jbc> expression;
+//     out_stmt* := <stmt-to-jbc> statement;
+//     while* := <newname> "while_";
+//     done* := <newname> "done_";
+//     output* :=   [JBCLabel(while*),
+//     			out_exp*,
+//     			IFLE(LabelRef(done*)),
+//     			out_stmt*,
+//     			GOTO(LabelRef(while*)),
+//     			JBCLabel(done*)]
+//     			
+////assign array field
+//stmt-to-jbc : ArrayAssign(VarRef(name), index, val) -> output*
+//where 
+//a       := <nabl2-get-ast-analysis> name;
+//ref-occ := <nabl2-mk-occurrence(|"Var")> name;
+//dec-occ := <nabl2-get-resolved-name(|a); Fst> ref-occ;
+//kind    := <nabl2-get-property(|a, "origin")> dec-occ;
+//type    := <nabl2-get-type(|a)> dec-occ;
+//indexexp := <exp-to-jbc> index;
+//valexp := <exp-to-jbc> val;
+//Field() := <nabl2-get-property(|a, "origin")> dec-occ;
+//classname := <nabl2-get-property(|a, "cname")> dec-occ;
+//output* := <concat>[[ALOAD_0()
+//	      , GETFIELD(
+//	          JBCFieldRef(
+//	            CRef(classname)
+//	          , FRef(name)
+//	          , JBCFieldDesc(<type-to-jbc>type)
+//	          )
+//	        )],indexexp,valexp,[IASTORE()]]
+//	        
+////assign array local
+//stmt-to-jbc : ArrayAssign(VarRef(name), index, val) -> output*
+//where 
+//a       := <nabl2-get-ast-analysis> name;
+//ref-occ := <nabl2-mk-occurrence(|"Var")> name;
+//dec-occ := <nabl2-get-resolved-name(|a); Fst> ref-occ;
+//kind    := <nabl2-get-property(|a, "origin")> dec-occ;
+//type    := <nabl2-get-type(|a)> dec-occ;
+//indexexp := <exp-to-jbc> index;
+//valexp := <exp-to-jbc> val;
+//Local() := <nabl2-get-property(|a, "origin")> dec-occ;
+//indexlocal    := <nabl2-get-property(|a, "index")> dec-occ;
+//output* := <concat>[[ALOAD(VarNum(<int-to-string>indexlocal))],indexexp,valexp,[IASTORE()]]
+//
+//
+////assign normal field
+//stmt-to-jbc : Assign(VarRef(name), toAssign) -> output*
+//where
+//a       := <nabl2-get-ast-analysis> name;
+//ref-occ := <nabl2-mk-occurrence(|"Var")> name;
+//dec-occ := <nabl2-get-resolved-name(|a); Fst> ref-occ;
+//kind    := <nabl2-get-property(|a, "origin")> dec-occ;
+//type    := <nabl2-get-type(|a)> dec-occ;
+//Field() := <nabl2-get-property(|a, "origin")> dec-occ;
+//classname := <nabl2-get-property(|a, "cname")> dec-occ;
+//toAssignRes* := <exp-to-jbc> toAssign;
+//output* := [toAssignRes*,ALOAD_0(),SWAP(),PUTFIELD(
+//          JBCFieldRef(
+//            CRef(classname)
+//          , FRef(name)
+//          , JBCFieldDesc(<type-to-jbc>type)
+//          )
+//        )]
+//
+////assign normal local
+//stmt-to-jbc : Assign(VarRef(name), toAssign) -> output*
+//where
+//a       := <nabl2-get-ast-analysis> name;
+//ref-occ := <nabl2-mk-occurrence(|"Var")> name;
+//dec-occ := <nabl2-get-resolved-name(|a); Fst> ref-occ;
+//Local() := <nabl2-get-property(|a, "origin")> dec-occ;
+//toAssignRes* := <exp-to-jbc> toAssign;
+//index    := <nabl2-get-property(|a, "index")> dec-occ;
+//type    := <nabl2-get-type(|a)> dec-occ;
+//toStore := <store-local-variable(|index)> type;
+//output* := [toAssignRes*,toStore]
+//
+////Store local variable jasmin instructions
+//store-local-variable(|index): Int() -> ISTORE(VarNum(<int-to-string>index))
+//store-local-variable(|index): Bool() -> ISTORE(VarNum(<int-to-string>index))
+//store-local-variable(|index): IntArray() -> ASTORE(VarNum(<int-to-string>index))
+//store-local-variable(|index): ClassType(_) -> ASTORE(VarNum(<int-to-string>index))
+///*************************************************************************************
+//***************************************EXP-TO-JBC************************************
+//**************************************************************************************/
+//
+////varref field
+//exp-to-jbc : VarRef(name) -> output*
+//where
+//a       := <nabl2-get-ast-analysis> name; debug;
+//ref-occ := <nabl2-mk-occurrence(|"Var")> name;
+//dec-occ := <nabl2-get-resolved-name(|a); Fst> ref-occ;
+//Field() := <nabl2-get-property(|a, "origin")> dec-occ;
+//kind    := <nabl2-get-property(|a, "origin")> dec-occ;
+//type    := <nabl2-get-type(|a)> dec-occ;
+//classname := <nabl2-get-property(|a, "cname")> dec-occ;
+//output* := [ALOAD_0(),GETFIELD(
+//          JBCFieldRef(
+//            CRef(classname)
+//          , FRef(name)
+//          , JBCFieldDesc(<type-to-jbc>type)
+//          )
+//        )]
+//
+////varref local
+//exp-to-jbc : VarRef(name) -> output*
+//where
+//a       := <nabl2-get-ast-analysis> name; debug;
+//ref-occ := <nabl2-mk-occurrence(|"Var")> name;
+//dec-occ := <nabl2-get-resolved-name(|a); Fst> ref-occ;
+////locals
+//Local() := <nabl2-get-property(|a, "origin")> dec-occ;
+//index    := <nabl2-get-property(|a, "index")> dec-occ;
+//type    := <nabl2-get-type(|a)> dec-occ;
+//output* := [<load-local-variable(|index)> type]
+//
+////Load local variable jasmin instructions
+//load-local-variable(|index): Int() -> ILOAD(VarNum(<int-to-string>index))
+//load-local-variable(|index): Bool() -> ILOAD(VarNum(<int-to-string>index))
+//load-local-variable(|index): IntArray() -> ALOAD(VarNum(<int-to-string>index))
+//load-local-variable(|index): ClassType(_) -> ALOAD(VarNum(<int-to-string>index))
+//
+////intvalue  
+//exp-to-jbc : IntValue(int) -> [BIPUSH(int)]
+////True and false
+//exp-to-jbc : True() -> [ICONST_1()]
+//exp-to-jbc : False() -> [ICONST_0()]
+//
+////This
+//exp-to-jbc: This() -> [ALOAD_0()]
+//
+////Call
+//exp-to-jbc: Call(exp, methodname,exptocall*) -> output*
+//where
+//classtocall* := <exp-to-jbc> exp;
+//
+//a       := <nabl2-get-ast-analysis> methodname;
+//ref-occ := <nabl2-mk-occurrence(|"Method")> methodname;
+//dec-occ := <nabl2-get-resolved-name(|a); Fst> ref-occ;
+//classname := <nabl2-get-property(|a, "cname")> dec-occ;
+//MethodType(returnType,parameterTypes)    := <nabl2-get-type(|a)> dec-occ;
+//retType := <type-to-jbc> returnType;
+//paramtypes := <map(type-to-jbc)> parameterTypes;
+//exptocallout := <map(exp-to-jbc); concat> exptocall*;
+//
+//output* := <concat>[[classtocall*],exptocallout,[
+//			INVOKEVIRTUAL(
+//			          JBCMethodRef(
+//			            CRef(classname)
+//			          , MRef(methodname)
+//			          //second one is return type first one is params again
+//			          , JBCMethodDesc(paramtypes, returnType)
+//			          )
+//			        )
+//			        ]]
+//			        
+//exp-to-jbc: NewObject(cname) -> [NEW(CRef(cname))	
+//							  	 		,DUP()					
+//							  	 		,INVOKESPECIAL(			
+//								          JBCMethodRef(CRef(cname), MRef(Init()), JBCMethodDesc([], Void()))
+//								        )]  
+//
+///*************************************************************************************
+//**************************************Expressions with operators**********************
+//**************************************************************************************/
+////   UnExp       : UnOp * Exp -> Exp
+// exp-to-jbc: UnExp(op, e) -> <concat>[<exp-to-jbc>e,<op-to-jbc>op]
+////    LengthOp    : UnOp
+// op-to-jbc: LengthOp() -> [ARRAYLENGTH()]
+////    NewArrayOp  : UnOp
+//op-to-jbc: NewArrayOp() -> [NEWARRAY(IntName())]
+////    NotOp       : UnOp
+//op-to-jbc: NotOp() -> [ICONST_1(),IXOR()]
+//
+////    AndOp       : BinOp
+//exp-to-jbc: BinExp(AndOp(), e1, e2) -> output*
+//  	where
+//  		andfalse_label := <newname> "andfalse_";
+//  		andend_label	 := <newname> "andendfalse_";
+//  		boole1*	 := <exp-to-jbc> e1;
+//  		boole2*	 := <exp-to-jbc> e2;
+//  		output*	 := [
+//  			boole1*,
+//  			IFEQ(LabelRef(andfalse_label)),
+//			boole2*,
+//			IFEQ(LabelRef(andfalse_label)),
+//			ICONST_1(),
+//			GOTO(LabelRef(andend_label)),
+//  			JBCLabel(andfalse_label),
+//  			ICONST_0(),
+//  			JBCLabel(andend_label)
+//  		]
+////BinExp    : BinOp * Exp * Exp -> Exp
+//  exp-to-jbc: BinExp(op, e1, e2) -> <concat>[<exp-to-jbc>e1,<exp-to-jbc>e2,<op-to-jbc>op]
+////    Plus        : BinOp
+//  op-to-jbc: Plus() -> [IADD()]
+////    Minus       : BinOp
+//  op-to-jbc: Minus() -> [ISUB()]
+////    Times       : BinOp
+//  op-to-jbc: Times() -> [IMUL()]
+////    LtOp        : BinOp
+// op-to-jbc: LtOp() ->  [IF_ICMPLT(LabelRef("trueltlabel")),  				
+//  						ICONST_0(),
+//  						GOTO(LabelRef("endltlabel")),
+//  						JBCLabel("trueltlabel"),
+//  						ICONST_1(),
+//  						JBCLabel("endltlabel")]
+//  
+////    SubscriptOp : BinOp
+//  op-to-jbc: SubscriptOp() -> [IALOAD()]
+//  
+//  //type-to-jbc
+//  type-to-jbc: Int() -> Int()
+//  
+//  type-to-jbc: Bool() -> Int()
+//  
+//  type-to-jbc: IntArray() -> Array(Int())
+//  
+//  type-to-jbc: ClassType(name) -> Reference(CRef(<nabl2-get-occurrence-name>name))
+//  
+//  type-to-jbc: ClassType(name) -> Reference(CRef(name))
+//
+// //return type to jasmin
+//  ret-to-jbc: Int() -> IRETURN()
+//  
+//  ret-to-jbc: Bool() -> IRETURN()
+//  
+//  ret-to-jbc: IntArray() -> ARETURN()
+//  
+//  ret-to-jbc: ClassType(name) -> ARETURN()
+  
+ 
+  

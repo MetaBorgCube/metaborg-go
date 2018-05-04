@@ -1,0 +1,20 @@
+module desugar-signatures
+
+signature
+  constructors
+  
+    UnExp       : UnOp * Exp -> Exp
+    LengthOp    : UnOp
+    NewArrayOp  : UnOp
+    NotOp       : UnOp
+
+    BinExp      : BinOp * Exp * Exp -> Exp
+    Plus        : BinOp
+    Minus       : BinOp
+    Times       : BinOp
+    LtOp        : BinOp
+    AndOp       : BinOp
+    SubscriptOp : BinOp
+
+    Bind : INT * Param -> ParamDecl
+    Bind : INT * Var   -> VarDecl

@@ -1,0 +1,59 @@
+module signatures/JasminXT-Fields-sig
+
+imports
+  signatures/JasminXT-Names-sig
+  signatures/JasminXT-Numbers-sig
+  signatures/JasminXT-Strings-sig
+  signatures/JasminXT-Descriptors-sig
+  signatures/JasminXT-Annotations-sig
+
+
+signature
+  constructors
+    JBCField                     : List(FieldAccess) * FieldName * FieldDescriptor * FieldSignatureSpec * InitialValue -> Field
+    JBCExtField                  : List(FieldAccess) * FieldName * FieldDescriptor * FieldSignatureSpec * InitialValue * List(FieldAttribute) -> Field
+    JBCSignature                 : String -> FieldAttribute
+    JBCDeprecated                : FieldAttribute
+    JBCAttribute                 : AttributeName * FileName -> FieldAttribute
+    JBCAnnotation                : Annotation -> FieldAttribute
+    FieldSig                     : String -> FieldSignatureSpec
+    None                         : FieldSignatureSpec
+    InitVal                      : Constant -> InitialValue
+    None                         : InitialValue
+    PUBLIC                       : FieldAccess
+    PRIVATE                      : FieldAccess
+    PROTECTED                    : FieldAccess
+    STATIC                       : FieldAccess
+    FINAL                        : FieldAccess
+    VOLATILE                     : FieldAccess
+    TRANSIENT                    : FieldAccess
+    FPSTRICT                     : FieldAccess
+    SYNTHETIC                    : FieldAccess
+    Field-Plhdr                  : Field
+    FieldName-Plhdr              : FieldName
+    FieldDescriptor-Plhdr        : FieldDescriptor
+    AttributeName-Plhdr          : AttributeName
+    FileName-Plhdr               : FileName
+    FieldAttribute-Plhdr         : FieldAttribute
+    Annotation-Plhdr             : Annotation
+    String-Plhdr                 : String
+    FieldSignatureSpec-Plhdr     : FieldSignatureSpec
+    Constant-Plhdr               : Constant
+    InitialValue-Plhdr           : InitialValue
+    FieldAccess-Plhdr            : FieldAccess
+    Field-Plhdr                  : COMPLETION-INSERTION -> Field
+    FieldName-Plhdr              : COMPLETION-INSERTION -> FieldName
+    FieldDescriptor-Plhdr        : COMPLETION-INSERTION -> FieldDescriptor
+    AttributeName-Plhdr          : COMPLETION-INSERTION -> AttributeName
+    FileName-Plhdr               : COMPLETION-INSERTION -> FileName
+    FieldAttribute-Plhdr         : COMPLETION-INSERTION -> FieldAttribute
+    Annotation-Plhdr             : COMPLETION-INSERTION -> Annotation
+    String-Plhdr                 : COMPLETION-INSERTION -> String
+    FieldSignatureSpec-Plhdr     : COMPLETION-INSERTION -> FieldSignatureSpec
+    Constant-Plhdr               : COMPLETION-INSERTION -> Constant
+    InitialValue-Plhdr           : COMPLETION-INSERTION -> InitialValue
+    FieldAccess-Plhdr            : COMPLETION-INSERTION -> FieldAccess
+    FieldAccess-Opt-Plhdr        : FieldAccess
+    FieldAttribute-Opt-Plhdr     : FieldAttribute
+    FieldSignatureSpec-Opt-Plhdr : FieldSignatureSpec
+    InitialValue-Opt-Plhdr       : InitialValue

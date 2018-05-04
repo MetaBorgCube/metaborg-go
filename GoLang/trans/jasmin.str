@@ -1,0 +1,60 @@
+module codegen/jasmin
+
+imports
+
+  libstratego-gpp
+  libspoofax/sdf/pp
+  libspoofax/core/language
+  
+  signatures/-
+
+imports // Jasmin signatures
+
+  signatures/JasminXT-Header-sig
+  signatures/jasmin-sig
+  
+
+rules
+
+  /**
+   * Pretty-prints a Jasmin AST into Jasmin concrete syntax.
+   *
+   * @type Jasmin AST -> Jasmin concrete syntax
+   */
+  jasmin-pp = call-in-language(|"jasmin", "pp-Jasmin-string")
+  
+  /**
+   * Generates a .class file (that can be executed in the JVM) from the given
+   * Jasmin AST.
+   *
+   * @type Jasmin AST -> None()
+   */
+  jasmin-generate(|project-path):
+    ast -> None()
+    where
+      filename := <jasmin-filename> ast
+    ; <call-in-language(|"jasmin", "generate-class")> ((), (), ast, filename, project-path)
+
+  /**
+   * Executes the .class file corresponding to the given Jasmin AST. Use
+   * jasmin-generate to generate the .class file first!
+   *
+   * @type Jasmin AST -> None()
+   */
+  jasmin-execute(|project-path):
+    ast -> result
+    where
+      filename := <jasmin-filename> ast
+    ; result   := <call-in-language(|"jasmin", "execute-class")> ((), (), ast, filename, project-path)
+
+  /**
+   * Get the filename of the given Jasmin AST
+   *
+   * @type Jasmin AST -> String
+   */
+  jasmin-filename:
+    ast@JBCFile(JBCHeader(_, JBCSource(source), JBCClass(_, classname), _, _, _, _, _, _, _), _, _) -> filename
+    where
+      dirname  := <try(un-double-quote); remove-extension> source
+    ; filename := $[[dirname]/[classname]]
+  

@@ -1,0 +1,85 @@
+module reference/src-gen/completion/minijava-cp
+
+imports
+  libstratego-gpp
+  libspoofax/editor/completion/-
+
+
+imports
+  reference/src-gen/signatures/minijava-sig
+
+
+imports
+  reference/src-gen/completion/lex-cp
+  reference/src-gen/completion/expressions-cp
+  reference/src-gen/completion/statements-cp
+  reference/src-gen/completion/classes-cp
+
+
+rules
+
+  suggest-completions(|completions):
+    Start-Plhdr() -> <suggest-completions(|completions)> Program-Plhdr()
+    where <not(is-expanded)> (Start-Plhdr(), Program-Plhdr())
+          ; rules (
+              is-expanded :
+                (Start-Plhdr(), Program-Plhdr()) -> <id>
+            )
+
+  suggest-completions(|completions):
+    Program-Plhdr() -> <add-completions(
+                        | ( "Program"
+                          , Program(
+                              <try(inline-completions(|Program-Plhdr()))> MainClass-Plhdr()
+                            , CURSOR_ELEMENT()
+                            )
+                          )
+                        )
+                        ; fail> completions
+
+  suggest-completions(|completions):
+    MainClass-Plhdr() -> <add-completions(
+                          | ( "MainClass"
+                            , MainClass(
+                                <try(inline-completions(|MainClass-Plhdr()))> ID-Plhdr()
+                              , <try(inline-completions(|MainClass-Plhdr()))> ID-Plhdr()
+                              , <try(inline-completions(|MainClass-Plhdr()))> Statement-Plhdr()
+                              )
+                            )
+                          )
+                          ; fail> completions
+
+
+rules
+
+  is-left-recursive :
+    "Program" -> <is-left-recursive> "Start"
+    where <not(is-lexical-completion-sort)> "Program"
+
+  is-right-recursive :
+    "Program" -> <is-right-recursive> "Start"
+    where <not(is-lexical-completion-sort)> "Program"
+
+  is-Start-completion-sort :
+    "Program" -> <id>
+
+
+rules
+
+  is-SDF-placeholder =
+    ?Start-Plhdr()
+
+  is-SDF-placeholder =
+    ?Program-Plhdr()
+
+  is-SDF-placeholder =
+    ?ClassDecl-Plhdr()
+
+  is-SDF-placeholder =
+    ?MainClass-Plhdr()
+
+  is-SDF-placeholder =
+    ?ID-Plhdr()
+
+  is-SDF-placeholder =
+    ?Statement-Plhdr()

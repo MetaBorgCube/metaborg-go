@@ -1,0 +1,19 @@
+module signatures/JasminXT-Numbers-sig
+
+signature
+  constructors
+                   : String -> Double
+                   : String -> Float
+                   : String -> Int
+                   : String -> NegInt
+    Double         : Double -> Constant
+    Float          : Float -> Constant
+    Int            : Int -> Constant
+    Double-Plhdr   : Double
+    Float-Plhdr    : Float
+    Constant-Plhdr : Constant
+    Int-Plhdr      : Int
+    Double-Plhdr   : COMPLETION-INSERTION -> Double
+    Float-Plhdr    : COMPLETION-INSERTION -> Float
+    Constant-Plhdr : COMPLETION-INSERTION -> Constant
+    Int-Plhdr      : COMPLETION-INSERTION -> Int

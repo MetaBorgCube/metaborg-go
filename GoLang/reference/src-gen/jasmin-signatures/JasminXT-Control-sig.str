@@ -1,0 +1,59 @@
+module signatures/JasminXT-Control-sig
+
+imports
+  signatures/JasminXT-Names-sig
+  signatures/JasminXT-Numbers-sig
+
+
+signature
+  constructors
+    RelativeFwd           : Int -> RelOffset
+    RelativeBwd           : Int -> RelOffset
+                          : LabelRef -> Target
+                          : RelOffset -> Target
+    Int-Plhdr             : Int
+    LabelRef-Plhdr        : LabelRef
+    Target-Plhdr          : Target
+    RelOffset-Plhdr       : RelOffset
+    Int-Plhdr             : COMPLETION-INSERTION -> Int
+    LabelRef-Plhdr        : COMPLETION-INSERTION -> LabelRef
+    Target-Plhdr          : COMPLETION-INSERTION -> Target
+    RelOffset-Plhdr       : COMPLETION-INSERTION -> RelOffset
+    IFEQ                  : Target -> Instruction
+    IFLT                  : Target -> Instruction
+    IFLE                  : Target -> Instruction
+    IFNE                  : Target -> Instruction
+    IFGT                  : Target -> Instruction
+    IFGE                  : Target -> Instruction
+    IFNULL                : Target -> Instruction
+    IFNONNULL             : Target -> Instruction
+    IF_ICMPEQ             : Target -> Instruction
+    IF_ICMPLT             : Target -> Instruction
+    IF_ICMPLE             : Target -> Instruction
+    IF_ICMPNE             : Target -> Instruction
+    IF_ICMPGT             : Target -> Instruction
+    IF_ICMPGE             : Target -> Instruction
+    IF_ACMPEQ             : Target -> Instruction
+    IF_ACMPNE             : Target -> Instruction
+    Table                 : Int * List(TableEntry) * LabelRef -> Instruction
+    Lookup                : List(LookupEntry) * LabelRef -> Instruction
+                          : LabelRef -> TableEntry
+    NPAIR                 : Int * LabelRef -> LookupEntry
+    GOTO                  : LabelRef -> Instruction
+    GOTO_W                : LabelRef -> Instruction
+    JSR                   : LabelRef -> Instruction
+    JSR_W                 : LabelRef -> Instruction
+    Target-Plhdr          : Target
+    TableEntry-Plhdr      : TableEntry
+    LookupEntry-Plhdr     : LookupEntry
+    Int-Plhdr             : Int
+    Instruction-Plhdr     : Instruction
+    LabelRef-Plhdr        : LabelRef
+    Target-Plhdr          : COMPLETION-INSERTION -> Target
+    TableEntry-Plhdr      : COMPLETION-INSERTION -> TableEntry
+    LookupEntry-Plhdr     : COMPLETION-INSERTION -> LookupEntry
+    Int-Plhdr             : COMPLETION-INSERTION -> Int
+    Instruction-Plhdr     : COMPLETION-INSERTION -> Instruction
+    LabelRef-Plhdr        : COMPLETION-INSERTION -> LabelRef
+    TableEntry-Opt-Plhdr  : TableEntry
+    LookupEntry-Opt-Plhdr : LookupEntry

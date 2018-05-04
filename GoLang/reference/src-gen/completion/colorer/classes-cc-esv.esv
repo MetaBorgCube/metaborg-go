@@ -1,0 +1,18 @@
+module reference/src-gen/completion/colorer/classes-cc-esv
+
+imports
+  reference/src-gen/completion/colorer/statements-cc-esv
+  reference/src-gen/completion/colorer/lex-cc-esv
+  reference/src-gen/completion/colorer/expressions-cc-esv
+
+colorer
+  _.ClassDecl-Plhdr  : gray   
+  _.ParentDecl-Plhdr : gray   
+  _.FieldDecl-Plhdr  : gray   
+  _.MethodDecl-Plhdr : gray   
+  _.Statement-Plhdr  : gray   
+  _.Exp-Plhdr        : gray   
+  _.VarDecl-Plhdr    : gray   
+  _.ParamDecl-Plhdr  : gray   
+  _.Type-Plhdr       : gray   
+  _.ID-Plhdr         : gray   

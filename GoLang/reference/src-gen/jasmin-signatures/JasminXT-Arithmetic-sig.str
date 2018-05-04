@@ -1,0 +1,64 @@
+module signatures/JasminXT-Arithmetic-sig
+
+imports
+  signatures/JasminXT-Names-sig
+  signatures/JasminXT-Numbers-sig
+
+
+signature
+  constructors
+    IADD              : Instruction
+    IAND              : Instruction
+    IDIV              : Instruction
+    IMUL              : Instruction
+    INEG              : Instruction
+    IOR               : Instruction
+    IREM              : Instruction
+    ISHL              : Instruction
+    ISHR              : Instruction
+    ISUB              : Instruction
+    IUSHR             : Instruction
+    IXOR              : Instruction
+    LADD              : Instruction
+    LAND              : Instruction
+    LDIV              : Instruction
+    LMUL              : Instruction
+    LNEG              : Instruction
+    LOR               : Instruction
+    LREM              : Instruction
+    LSHL              : Instruction
+    LSHR              : Instruction
+    LSUB              : Instruction
+    LUSHR             : Instruction
+    LXOR              : Instruction
+    FADD              : Instruction
+    FDIV              : Instruction
+    FMUL              : Instruction
+    FNEG              : Instruction
+    FREM              : Instruction
+    FSUB              : Instruction
+    DADD              : Instruction
+    DDIV              : Instruction
+    DMUL              : Instruction
+    DNEG              : Instruction
+    DREM              : Instruction
+    DSUB              : Instruction
+    IINC              : VarRef * Amount -> Instruction
+    IINC_W            : VarRef * Amount -> Instruction
+                      : Int -> Amount
+    Neg               : NegInt -> Amount
+    FCMPG             : Instruction
+    FCMPL             : Instruction
+    DCMPG             : Instruction
+    DCMPL             : Instruction
+    LCMP              : Instruction
+    VarRef-Plhdr      : VarRef
+    Int-Plhdr         : Int
+    Amount-Plhdr      : Amount
+    NegInt-Plhdr      : NegInt
+    Instruction-Plhdr : Instruction
+    VarRef-Plhdr      : COMPLETION-INSERTION -> VarRef
+    Int-Plhdr         : COMPLETION-INSERTION -> Int
+    Amount-Plhdr      : COMPLETION-INSERTION -> Amount
+    NegInt-Plhdr      : COMPLETION-INSERTION -> NegInt
+    Instruction-Plhdr : COMPLETION-INSERTION -> Instruction
