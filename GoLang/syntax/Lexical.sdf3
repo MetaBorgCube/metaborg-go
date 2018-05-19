@@ -94,6 +94,7 @@ lexical start-symbols
   Identifier = "switch" {reject}
   Identifier = "type" {reject}
   Identifier = "var" {reject}
+  Identifier = "var" {reject}
 
 
 /**
