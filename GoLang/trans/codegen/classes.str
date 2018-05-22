@@ -79,63 +79,81 @@ rules
   stackInit := [JBCLimitLocals("99")
       			, JBCLimitStack("99")];
   expressions :=    <map(expression-stmt-to-jbc);concat > expressionStatements;
-  output* := <concat>[stackInit,expressions]
+  output* := <concat>[stackInit,expressions, [RETURN()]]
  
  expression-stmt-to-jbc: ExpressionStmt(expression) ->
  <expression-stmt-to-jbc>expression
  
  //PRINT STATEMENT
- expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"),
- Arguments(Arguments([UnTypedArg(StringLit(toPrint))]), None(), None())) -> [output*, RETURN()]
-// [
-// 	GETSTATIC(
-//          JBCFieldRef(
-//        CRef("java/lang/System")
-//      , FRef("out")
-//      , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
-//      )
-//    )
-//  , ASTORE_1()
-//  , ALOAD_1()
-//  , LDC('h')
-//  , INVOKEVIRTUAL(
-//      JBCMethodRef(
-//        CRef("java/io/PrintStream")
-//      , MRef("print")
-//      , JBCMethodDesc([Char()], Void())
-//      )
-//    ),
-//    GETSTATIC(
-//          JBCFieldRef(
-//        CRef("java/lang/System")
-//      , FRef("out")
-//      , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
-//      )
-//    )
-//    , LDC('h')
-//  , INVOKEVIRTUAL(
-//      JBCMethodRef(
-//        CRef("java/io/PrintStream")
-//      , MRef("print")
-//      , JBCMethodDesc([Char()], Void())
-//      )
-//    )
-//  , LDC('e')
-//  , INVOKEVIRTUAL(
-//      JBCMethodRef(
-//        CRef("java/io/PrintStream")
-//      , MRef("print")
-//      , JBCMethodDesc([Char()], Void())
-//      )
-//    )
-//  , RETURN()
-//  ]
-	
-  where
-  charList := <explode-string>toPrint;
-  output* := <map(print-char); concat > charList
+ //expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"),
+ //Arguments(Arguments([UnTypedArg(StringLit(toPrint))]), None(), None())) -> [output*, RETURN()]	
+ // where
+ // charList := <explode-string>toPrint;
+ // output* := <map(print-char); concat > charList
   
-  print-char: char ->
+ expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"),
+ Arguments(Arguments([UnTypedArg(toPrint)]), None(), None())) -> [output*]
+  where
+  //charList := <explode-string>toPrint;
+   output* := <print-to-jbc> toPrint
+  
+ 
+  
+print-to-jbc:
+IntLit(toPrint) -> 
+      [GETSTATIC(
+          JBCFieldRef(
+            CRef("java/lang/System")
+          , FRef("out")
+          , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
+          )
+        )
+      , LDC(Int(toPrint))
+      , INVOKEVIRTUAL(
+          JBCMethodRef(
+            CRef("java/io/PrintStream")
+          , MRef("print")
+          , JBCMethodDesc([Int()], Void())
+          )
+        )
+     ]
+     
+     
+print-to-jbc:
+StringLit(toPrint) ->
+      [GETSTATIC(
+          JBCFieldRef(
+            CRef("java/lang/System")
+          , FRef("out")
+          , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
+          )
+        )
+      , LDC(toPrint)
+      , INVOKEVIRTUAL(
+          JBCMethodRef( 
+            CRef("java/io/PrintStream")
+          , MRef("print")
+          , JBCMethodDesc([Reference(CRef("java/lang/String"))], Void())
+          )
+      )
+      , GETSTATIC(
+          JBCFieldRef(
+            CRef("java/lang/System")
+          , FRef("out")
+          , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
+          )
+        )
+      , LDC("\n")
+      , INVOKEVIRTUAL(
+          JBCMethodRef(
+            CRef("java/io/PrintStream")
+          , MRef("print")
+          , JBCMethodDesc([Reference(CRef("java/lang/String"))], Void())
+          )
+        )
+     ]
+     
+/*  print-char: char ->
   [
  	GETSTATIC(
           JBCFieldRef(
@@ -153,3 +171,4 @@ rules
       )
     )
     ]
+    */
