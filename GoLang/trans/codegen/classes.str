@@ -83,22 +83,14 @@ rules
  
  expression-stmt-to-jbc: ExpressionStmt(expression) ->
  <expression-stmt-to-jbc>expression
- 
- //PRINT STATEMENT
- //expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"),
- //Arguments(Arguments([UnTypedArg(StringLit(toPrint))]), None(), None())) -> [output*, RETURN()]	
- // where
- // charList := <explode-string>toPrint;
- // output* := <map(print-char); concat > charList
   
  expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"),
  Arguments(Arguments([UnTypedArg(toPrint)]), None(), None())) -> [output*]
   where
-  //charList := <explode-string>toPrint;
    output* := <print-to-jbc> toPrint
   
  
-  
+ //Golang fmt.Println only allows strings to be printed 
 print-to-jbc:
 IntLit(toPrint) -> 
       [GETSTATIC(
@@ -112,7 +104,7 @@ IntLit(toPrint) ->
       , INVOKEVIRTUAL(
           JBCMethodRef(
             CRef("java/io/PrintStream")
-          , MRef("print")
+          , MRef("println")
           , JBCMethodDesc([Int()], Void())
           )
         )
@@ -132,7 +124,7 @@ StringLit(toPrint) ->
       , INVOKEVIRTUAL(
           JBCMethodRef( 
             CRef("java/io/PrintStream")
-          , MRef("print")
+          , MRef("println")
           , JBCMethodDesc([Reference(CRef("java/lang/String"))], Void())
           )
       )
@@ -142,33 +134,5 @@ StringLit(toPrint) ->
           , FRef("out")
           , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
           )
-        )
-      , LDC("\n")
-      , INVOKEVIRTUAL(
-          JBCMethodRef(
-            CRef("java/io/PrintStream")
-          , MRef("print")
-          , JBCMethodDesc([Reference(CRef("java/lang/String"))], Void())
-          )
-        )
+        )  
      ]
-     
-/*  print-char: char ->
-  [
- 	GETSTATIC(
-          JBCFieldRef(
-        CRef("java/lang/System")
-      , FRef("out")
-      , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
-      )
-    )
-  , LDC(char)
-  , INVOKEVIRTUAL(
-      JBCMethodRef(
-        CRef("java/io/PrintStream")
-      , MRef("print")
-      , JBCMethodDesc([Char()], Void())
-      )
-    )
-    ]
-    */
