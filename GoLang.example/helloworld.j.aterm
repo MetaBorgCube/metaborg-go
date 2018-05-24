@@ -1,0 +1,75 @@
+JBCFile(
+  JBCHeader(
+    None()
+  , JBCSource("")
+  , JBCClass([PUBLIC()], "main")
+  , JBCSuper("java/lang/Object")
+  , []
+  , None()
+  , None()
+  , []
+  , []
+  , []
+  )
+, []
+, [ JBCMethod(
+      [PUBLIC()]
+    , Init()
+    , JBCMethodDesc([], Void())
+    , [ ALOAD_0()
+      , INVOKESPECIAL(
+          JBCMethodRef(CRef("java/lang/Object"), MRef(Init()), JBCMethodDesc([], Void()))
+        )
+      , RETURN()
+      ]
+    )
+  , JBCMethod(
+      [PUBLIC(), STATIC()]
+    , "main"
+    , JBCMethodDesc([Array(Reference(CRef("java/lang/String")))], Void())
+    , [ JBCLimitLocals("99")
+      , JBCLimitStack("99")
+      , NEW(CRef("main"))
+      , DUP()
+      , INVOKESPECIAL(
+          JBCMethodRef(CRef("main"), MRef(Init()), JBCMethodDesc([], Void()))
+        )
+      , INVOKEVIRTUAL(
+          JBCMethodRef(CRef("java/lang/main"), MRef("test"), JBCMethodDesc([], Void()))
+        )
+      , RETURN()
+      ]
+    )
+  , JBCMethod(
+      [PUBLIC()]
+    , "test"
+    , JBCMethodDesc([], Void())
+    , [ JBCLimitLocals("99")
+      , JBCLimitStack("99")
+      , GETSTATIC(
+          JBCFieldRef(
+            CRef("java/lang/System")
+          , FRef("out")
+          , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
+          )
+        )
+      , LDC("hello world")
+      , INVOKEVIRTUAL(
+          JBCMethodRef(
+            CRef("java/io/PrintStream")
+          , MRef("println")
+          , JBCMethodDesc([Reference(CRef("java/lang/String"))], Void())
+          )
+        )
+      , GETSTATIC(
+          JBCFieldRef(
+            CRef("java/lang/System")
+          , FRef("out")
+          , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
+          )
+        )
+      , RETURN()
+      ]
+    )
+  ]
+)
