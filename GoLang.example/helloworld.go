@@ -3,14 +3,11 @@ package main;
 import "fmt";
 
 func main(){
-	test3();
+	x := "hello world";
+	fmt.Println(x);
+	test();
 };
 
-func test2(){
-	fmt.Println("hello world 2");
-};
-
-func test3(){
-	fmt.Println("Test");
-test2();
+func test() {
+	fmt.Println("Hello 2");
 };

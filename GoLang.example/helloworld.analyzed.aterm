@@ -1,0 +1,37 @@
+SourceFile(
+  PackageClause(PackageName("main"{TermIndex("helloworld.go", 1)}){TermIndex("helloworld.go", 2)}){TermIndex("helloworld.go", 3)}
+, [SingleImportDecl(ImportSpec(Qual(){TermIndex("helloworld.go", 4)}, "fmt"{TermIndex("helloworld.go", 5)}){TermIndex("helloworld.go", 6)}){TermIndex("helloworld.go", 7)}]{TermIndex("helloworld.go", 10)}
+, [ FunctionDecl(
+      FunctionName("main"{TermIndex("helloworld.go", 11)}){TermIndex("helloworld.go", 12)}
+    , Function(
+        Signature(NoParameters(){TermIndex("helloworld.go", 13)}, NoResult(){TermIndex("helloworld.go", 14)}){TermIndex("helloworld.go", 15)}
+      , Block(
+          [ DeclarationStmt(ShortVarDecl(["x"{TermIndex("helloworld.go", 16)}]{TermIndex("helloworld.go", 19)}, [StringLit("hello world"{TermIndex("helloworld.go", 20)}){TermIndex("helloworld.go", 21)}]{TermIndex("helloworld.go", 24)}){TermIndex("helloworld.go", 25)}){TermIndex("helloworld.go", 26)}
+          , ExpressionStmt(
+              ArgumentsPackage(
+                QualifiedIdent(PackageName("fmt"{TermIndex("helloworld.go", 27)}){TermIndex("helloworld.go", 28)}, "Println"{TermIndex("helloworld.go", 29)}){TermIndex("helloworld.go", 30)}
+              , Arguments(Arguments([UnTypedArg(OperandName("x"{TermIndex("helloworld.go", 31)}){TermIndex("helloworld.go", 32)}){TermIndex("helloworld.go", 33)}]{TermIndex("helloworld.go", 36)}){TermIndex("helloworld.go", 37)}, None(){TermIndex("helloworld.go", 38)}, None(){TermIndex("helloworld.go", 39)}){TermIndex("helloworld.go", 40)}
+              ){TermIndex("helloworld.go", 41)}
+            ){TermIndex("helloworld.go", 42)}
+          , ExpressionStmt(ArgumentsPackage("test"{TermIndex("helloworld.go", 43)}, NoArguments(){TermIndex("helloworld.go", 44)}){TermIndex("helloworld.go", 45)}){TermIndex("helloworld.go", 46)}
+          ]
+        ){TermIndex("helloworld.go", 52)}
+      ){TermIndex("helloworld.go", 53)}
+    ){TermIndex("helloworld.go", 54)}
+  , FunctionDecl(
+      FunctionName("test"{TermIndex("helloworld.go", 55)}){TermIndex("helloworld.go", 56)}
+    , Function(
+        Signature(NoParameters(){TermIndex("helloworld.go", 57)}, NoResult(){TermIndex("helloworld.go", 58)}){TermIndex("helloworld.go", 59)}
+      , Block(
+          [ ExpressionStmt(
+              ArgumentsPackage(
+                QualifiedIdent(PackageName("fmt"{TermIndex("helloworld.go", 60)}){TermIndex("helloworld.go", 61)}, "Println"{TermIndex("helloworld.go", 62)}){TermIndex("helloworld.go", 63)}
+              , Arguments(Arguments([UnTypedArg(StringLit("Hello 2"{TermIndex("helloworld.go", 64)}){TermIndex("helloworld.go", 65)}){TermIndex("helloworld.go", 66)}]{TermIndex("helloworld.go", 69)}){TermIndex("helloworld.go", 70)}, None(){TermIndex("helloworld.go", 71)}, None(){TermIndex("helloworld.go", 72)}){TermIndex("helloworld.go", 73)}
+              ){TermIndex("helloworld.go", 74)}
+            ){TermIndex("helloworld.go", 75)}
+          ]{TermIndex("helloworld.go", 78)}
+        ){TermIndex("helloworld.go", 79)}
+      ){TermIndex("helloworld.go", 80)}
+    ){TermIndex("helloworld.go", 81)}
+  ]
+){TermIndex("helloworld.go", 86)}

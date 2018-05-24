@@ -5,7 +5,17 @@ SourceFile(
       FunctionName("main")
     , Function(
         Signature(NoParameters(), NoResult())
-      , Block([ExpressionStmt(ArgumentsPackage("test", NoArguments()))])
+      , Block(
+          [ DeclarationStmt(ShortVarDecl(["x"], [StringLit("hello world")]))
+          , ExpressionStmt(
+              ArgumentsPackage(
+                QualifiedIdent(PackageName("fmt"), "Println")
+              , Arguments(Arguments([UnTypedArg(OperandName("x"))]), None(), None())
+              )
+            )
+          , ExpressionStmt(ArgumentsPackage("test", NoArguments()))
+          ]
+        )
       )
     )
   , FunctionDecl(
@@ -16,7 +26,7 @@ SourceFile(
           [ ExpressionStmt(
               ArgumentsPackage(
                 QualifiedIdent(PackageName("fmt"), "Println")
-              , Arguments(Arguments([UnTypedArg(StringLit("hello world"))]), None(), None())
+              , Arguments(Arguments([UnTypedArg(StringLit("Hello 2"))]), None(), None())
               )
             )
           ]
