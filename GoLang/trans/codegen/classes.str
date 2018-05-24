@@ -1,10 +1,11 @@
 module codegen/classes
-//hoi
+
 imports
 
   src-gen/signatures/-
   libspoofax/stratego/debug
   codegen/-
+  nabl2/api
   reference/desugar-signatures
 
 imports // Jasmin signatures
@@ -36,7 +37,7 @@ imports // Jasmin signatures
 
 rules
 
-  // http://tudelft-in4303-2016.github.io/assignments/ms3/lab8.html#implement-a-code-generation-strategy
+
 /*************************************************************************************
 ***************************************PROGRAM-TO-JBC***********************************
 **************************************************************************************/ 
@@ -78,6 +79,9 @@ rules
   , []
   , []
   ) 
+ /*************************************************************************************
+*****************************FUNCTION-DECLARATION-TO-JBC***********************************
+**************************************************************************************/ 
  function-declaration-to-jbc: FunctionDecl(FunctionName("main"), Function(_,block)) ->
  JBCMethod(
       [PUBLIC(), STATIC()]
@@ -96,18 +100,23 @@ rules
     , <function-block-to-jbc> block
 )
  
- function-block-to-jbc: Block(expressionStatements)->output*
+ function-block-to-jbc: Block(statements)->output*
  where
   stackInit := [JBCLimitLocals("99")
       			, JBCLimitStack("99")];
-  expressions :=    <map(expression-stmt-to-jbc);concat > expressionStatements;
-  output* := <concat>[stackInit,expressions, [RETURN()]]
+  statementsResult :=    <map(stmt-to-jbc);concat > statements;
+  output* := <concat>[stackInit,statementsResult, [RETURN()]]
  
- expression-stmt-to-jbc: ExpressionStmt(expression) ->
+ stmt-to-jbc: DeclarationStmt(declaration) ->
+ <declaration-stmt-to-jbc>declaration
+ 
+ stmt-to-jbc: ExpressionStmt(expression) ->
  <expression-stmt-to-jbc>expression
  
+/*************************************************************************************
+*************************EXPRESSION-STMT-TO-JBC***********************************
+**************************************************************************************/ 
 
-  
  expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"),
  Arguments(Arguments([UnTypedArg(toPrint)]), None(), None())) -> [output*]
   where
@@ -124,14 +133,17 @@ rules
         CRef("main")
       , MRef(methodName)
       //second one is return type first one is params again
-      //TODO HANDLE ARGUMENTS AND RETURNS
+      //TODO: HANDLE ARGUMENTS AND RETURNS
       , JBCMethodDesc([], Void())
       )
     )
  ]
+ 
+ //TODO: Implement return stmt
+ expression-stmt-to-jbc: ReturnStmt(_) -> []
   
  
- //Golang fmt.Println only allows strings to be printed 
+ //TODO: Golang fmt.Println only allows strings to be printed 
 print-to-jbc:
 IntLit(toPrint) -> 
       [GETSTATIC(
@@ -150,7 +162,31 @@ IntLit(toPrint) ->
           )
         )
      ]
-     
+
+print-to-jbc: OperandName(name) -> 
+[GETSTATIC(
+          JBCFieldRef(
+            CRef("java/lang/System")
+          , FRef("out")
+          , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
+          )
+        ),
+        ALOAD(VarNum("0"))
+//      	ALOAD(VarNum(<int-to-string>index*))
+      , INVOKEVIRTUAL(
+          JBCMethodRef(
+            CRef("java/io/PrintStream")
+          , MRef("println")
+          , JBCMethodDesc([Reference(CRef("java/lang/String"))], Void())
+          )
+        )
+     ] 
+  where
+ a       := <nabl2-get-ast-analysis> name;
+ debug(!<concat-strings>["a"]) ;
+ref-occ := <nabl2-mk-occurrence(|"ShortVarDecl")> name;
+debug(!<concat-strings>["ref-occ"]) ;
+index* := <get-term-index> ref-occ
      
 print-to-jbc:
 StringLit(toPrint) ->
@@ -169,11 +205,35 @@ StringLit(toPrint) ->
           , JBCMethodDesc([Reference(CRef("java/lang/String"))], Void())
           )
       )
-      , GETSTATIC(
-          JBCFieldRef(
-            CRef("java/lang/System")
-          , FRef("out")
-          , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
-          )
-        )  
      ]
+     
+/*************************************************************************************
+*************************DECLARATION-STMT-TO-JBC***********************************
+**************************************************************************************/ 
+ declaration-stmt-to-jbc: ShortVarDecl(names,values) -> result*
+ where
+ valueList := <map(literal-to-jbc)>values;
+ varNames := <map(var-name-to-jbc)>names;
+ result* := <concat>[valueList,varNames]
+ 
+ //TODO: Probably need some nabl2 type analysis.
+ //Term indexes should reference to correct variables
+ var-name-to-jbc: name -> ASTORE(VarNum("0"))
+// ASTORE(VarNum(<int-to-string>index*))
+ where
+ a       := <nabl2-get-ast-analysis> name;
+ debug(!<concat-strings>["a"]) ;
+ref-occ := <nabl2-mk-occurrence(|"ShortVarDecl")> name;
+debug(!<concat-strings>["ref-occ"]) ;
+index* := <get-term-index> ref-occ
+
+get-term-index: Occurrence(_,_,TermIndex(_,index)) -> index
+ 
+ literal-to-jbc: StringLit(val) -> 
+ 	LDC(val)
+ literal-to-jbc: IntLit(val) -> 
+ 	LDC(Int(val))
+ 
+ 
+ 
+ 
