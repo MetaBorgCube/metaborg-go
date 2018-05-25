@@ -16,7 +16,7 @@ context-free syntax
 
   Statement.DeclarationStmt = Declaration
   Statement.LabeledStmt     = LabeledStmt
-  Statement.Simplestmt      = SimpleStmt
+  Statement                 = SimpleStmt
   Statement.Gostmt          = GoStmt
   Statement.ReturnStmt      = ReturnStmt
   Statement.BreakStmt       = BreakStmt
