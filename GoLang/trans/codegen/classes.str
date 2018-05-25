@@ -88,7 +88,7 @@ rules
     , "main"
     //TODO correct func signature
     , JBCMethodDesc([Array(Reference(CRef("java/lang/String")))], Void())
-    , <function-block-to-jbc> block
+    , <block-to-jbc> block
 )
 
  function-declaration-to-jbc: FunctionDecl(FunctionName(name), Function(_,block)) ->
@@ -97,21 +97,40 @@ rules
     , name
     //TODO correct func signature
     , JBCMethodDesc([], Void())
-    , <function-block-to-jbc> block
+    , <block-to-jbc> block
 )
  
- function-block-to-jbc: Block(statements)->output*
+block-to-jbc: Block(statements)->output*
  where
   stackInit := [JBCLimitLocals("99")
       			, JBCLimitStack("99")];
   statementsResult :=    <map(stmt-to-jbc);concat > statements;
   output* := <concat>[stackInit,statementsResult, [RETURN()]]
+  
+block-to-jbc: NoBlock()->[]
  
  stmt-to-jbc: DeclarationStmt(declaration) ->
  <declaration-stmt-to-jbc>declaration
  
  stmt-to-jbc: ExpressionStmt(expression) ->
  <expression-stmt-to-jbc>expression
+ 
+ stmt-to-jbc: IfStmt((_, expr, ifblock, elseblock)) -> output*
+	where
+	ifExpression := <expression-stmt-to-jbc>expr;
+	debug(!<concat-strings>["ifExpression"]) ;
+	ifBlock := <block-to-jbc>ifblock;
+	elseBlock := <block-to-jbc>elseblock;
+	elsetrue* := <newname> "elsetrue_";
+	endif* := <newname> "endif_";
+	output* := <concat>[
+	ifExpression,
+	[IFEQ(LabelRef(elsetrue*))],
+	ifBlock,
+	[JBCLabel(elsetrue*)],
+	elseBlock,
+	[JBCLabel(endif*)]
+	]
  
 /*************************************************************************************
 *************************EXPRESSION-STMT-TO-JBC***********************************
@@ -138,6 +157,8 @@ rules
       )
     )
  ]
+ 
+ expression-stmt-to-jbc: expression -> [<literal-to-jbc> expression]
  
  //TODO: Implement return stmt
  expression-stmt-to-jbc: ReturnStmt(_) -> []
@@ -183,9 +204,7 @@ print-to-jbc: OperandName(name) ->
      ] 
   where
  a       := <nabl2-get-ast-analysis> name;
- debug(!<concat-strings>["a"]) ;
 ref-occ := <nabl2-mk-occurrence(|"ShortVarDecl")> name;
-debug(!<concat-strings>["ref-occ"]) ;
 index* := <get-term-index> ref-occ
      
 print-to-jbc:
@@ -222,18 +241,19 @@ StringLit(toPrint) ->
 // ASTORE(VarNum(<int-to-string>index*))
  where
  a       := <nabl2-get-ast-analysis> name;
- debug(!<concat-strings>["a"]) ;
 ref-occ := <nabl2-mk-occurrence(|"ShortVarDecl")> name;
-debug(!<concat-strings>["ref-occ"]) ;
 index* := <get-term-index> ref-occ
-
+//TODO replace when nabl2 is fixed.
 get-term-index: Occurrence(_,_,TermIndex(_,index)) -> index
  
  literal-to-jbc: StringLit(val) -> 
  	LDC(val)
  literal-to-jbc: IntLit(val) -> 
  	LDC(Int(val))
- 
+ literal-to-jbc: BoolLit("false") -> 
+ 	LDC(Int("0"))
+ literal-to-jbc: BoolLit("true") -> 
+ 	LDC(Int("1"))
  
  
  
