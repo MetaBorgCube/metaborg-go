@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site>
+   <feature url="features/GoLang.eclipse.feature_0.1.0.qualifier.jar" id="GoLang.eclipse.feature" version="0.1.0.qualifier">
+      <category name="GoLang"/>
+   </feature>
+   <category-def name="GoLang" label="GoLang language Eclipse plugin">
+      <description>
+         GoLang language Eclipse plugin.
+      </description>
+   </category-def>
+</site>

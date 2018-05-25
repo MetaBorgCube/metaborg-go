@@ -1,0 +1,9 @@
+---
+id: org.example:GoLang.test:0.1.0-SNAPSHOT
+name: GoLang
+dependencies:
+  compile:
+  - org.example:GoLang:0.1.0-SNAPSHOT
+  - org.metaborg:org.metaborg.meta.lang.spt:${metaborgVersion}
+build:
+  useBuildSystemSpec: true

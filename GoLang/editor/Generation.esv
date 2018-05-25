@@ -1,0 +1,11 @@
+module Generation
+
+menus
+  
+  menu: "Generation" (openeditor) (realtime)
+    
+    action: "Generate Jasmin (.j.aterm file)"      = show-jbc
+    action: "Generate Jasmin (.j files)"           = generate-jbc
+    action: "Generate Java (.class files)"         = generate-jc
+    action: "Generate Java (.class files) and run" = run-jc
+    

@@ -1,0 +1,202 @@
+module Lexical // https://golang.org/ref/spec#Lexical_elements
+
+imports
+  
+  Representation
+
+lexical start-symbols
+
+  Identifier
+  IntLit
+  FloatLit
+  ImaginaryLit
+  RuneLit
+  StringLit
+
+/**
+ * Comments -- https://golang.org/ref/spec#Comments
+ */
+
+  lexical syntax
+
+  LAYOUT         = "//" ~[\n\r]* NewLineEOF
+
+  LAYOUT         = "/*" InsideComment* "*/"
+  InsideComment  = ~[\*]
+  InsideComment  = CommentChar
+  CommentChar    = [\*]
+
+  NewLineEOF     = [\n\r]
+  NewLineEOF     = EOF
+  EOF            =  
+
+  lexical restrictions
+
+  CommentChar   -/- [\/]
+
+  EOF           -/- ~[]
+
+
+/**
+ * Tokens -- https://golang.org/ref/spec#Tokens
+ */
+
+  lexical syntax
+  
+  LAYOUT   =  [\ \t\n\r]
+
+  context-free restrictions
+
+  LAYOUT? -/- [\ \t\n\r]
+
+
+/**
+ * Identifiers -- https://golang.org/ref/spec#Identifiers
+ */
+
+  lexical syntax
+
+  Identifier  =  Letter (Letter | UnicodeDigit)*
+
+  lexical restrictions
+
+  Identifier -/- [A-Za-z\_0-9] // Letter | UnicodeDigit
+
+
+/**
+ * Keywords -- https://golang.org/ref/spec#Keywords
+ */
+
+  lexical syntax
+
+  Identifier = "break" {reject}
+  Identifier = "case" {reject}
+  Identifier = "chan" {reject}
+  Identifier = "const" {reject}
+  Identifier = "continue" {reject}
+  Identifier = "default" {reject}
+  Identifier = "defer" {reject}
+  Identifier = "else" {reject}
+  Identifier = "fallthrough" {reject}
+  Identifier = "for" {reject}
+  Identifier = "func" {reject}
+  Identifier = "go" {reject}
+  Identifier = "goto" {reject}
+  Identifier = "if" {reject}
+  Identifier = "import" {reject}
+  Identifier = "interface" {reject}
+  Identifier = "map" {reject}
+  Identifier = "package" {reject}
+  Identifier = "range" {reject}
+  Identifier = "return" {reject}
+  Identifier = "select" {reject}
+  Identifier = "struct" {reject}
+  Identifier = "switch" {reject}
+  Identifier = "type" {reject}
+  Identifier = "var" {reject}
+  Identifier = "var" {reject}
+
+
+/**
+ * Integer literals -- https://golang.org/ref/spec#Integer_literals
+ */
+
+  lexical syntax
+
+  IntLit      = DecimalLit
+  IntLit      = OctalLit
+  IntLit      = HexLit
+
+  DecimalLit  = [1-9] DecimalDigit*
+  OctalLit    = "0" OctalDigit*
+  HexLit      = "0" ("x" | "X") HexDigit+
+
+  lexical restrictions
+  
+  DecimalLit -/- [A-Za-z0-9\.]
+  OctalLit   -/- [A-Za-z0-9\.]
+  HexLit     -/- [A-Za-z0-9\.]
+
+
+/**
+ * Floating-point literals
+ */
+ 
+  lexical syntax
+
+  FloatLit  = Decimals "." Decimals? Exponent?
+  FloatLit  = Decimals Exponent
+  FloatLit  = "." Decimals Exponent?
+
+  Decimals  = DecimalDigit+
+  Exponent  = ("e" | "E") ("+" | "-")? Decimals
+
+  lexical restrictions
+
+  FloatLit -/- [0-9\.]
+
+
+/**
+ * Imaginary literals -- https://golang.org/ref/spec#Imaginary_literals
+ */
+
+  lexical syntax
+
+  ImaginaryLit = (Decimals | FloatLit) "i"
+
+
+/**
+ * Rune literals -- https://golang.org/ref/spec#Rune_literals
+ */
+ 
+  lexical syntax
+
+  RuneLit        = "'" (UnicodeValue | ByteValue) "'"
+  UnicodeValue   = UnicodeChar
+  UnicodeValue   = LittleUValue
+  UnicodeValue   = BigUValue
+  UnicodeValue   = EscapedChar
+  ByteValue      = OctalByteValue
+  ByteValue      = HexByteValue
+  OctalByteValue = "\\" OctalDigit OctalDigit OctalDigit
+  HexByteValue   = "\\x" HexDigit HexDigit
+  LittleUValue   = "\\u" HexDigit HexDigit HexDigit HexDigit
+  BigUValue      = "\\U" HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
+  UnicodeValue   = "\\" {reject}
+  EscapedChar    = "\\a"
+  EscapedChar    = "\\b"
+  EscapedChar    = "\\f"
+  EscapedChar    = "\\n"
+  EscapedChar    = "\\r"
+  EscapedChar    = "\\t"
+  EscapedChar    = "\\v"
+  EscapedChar    = "\\\\"
+  EscapedChar    = "\\'"
+  EscapedChar    = "\\\""
+
+
+/**
+ * String literals -- https://golang.org/ref/spec#String_literals
+ */
+ 
+  context-free syntax
+
+  StringLit                  = RawStringLit
+  StringLit                  = InterpretedStringLit
+
+  syntax
+
+  RawStringLit-CF            = "`" RawStringLit-Chars-LEX "`"
+  InterpretedStringLit-CF    = "\"" InterpretedStringLit-Chars-LEX "\""
+
+  lexical syntax
+  
+  RawStringLit-Chars = RawStringLit-Char*
+  RawStringLit-Char  = UnicodeChar
+  RawStringLit-Char  = Newline
+  RawStringLit-Char  = "`" {reject}
+
+  InterpretedStringLit-Chars = InterpretedStringLit-Char*
+  InterpretedStringLit-Char  = UnicodeValue
+  InterpretedStringLit-Char  = ByteValue
+  InterpretedStringLit-Char  = "\"" {reject}

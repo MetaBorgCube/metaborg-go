@@ -1,0 +1,106 @@
+module signatures/JasminXT-Names-sig
+
+imports
+  signatures/JasminXT-Strings-sig
+  signatures/JasminXT-Numbers-sig
+  signatures/JasminXT-Descriptors-sig
+
+
+signature
+  constructors
+                           : String -> Identifier
+                           : String -> SQIdentifier
+                           : String -> QualifiedName
+                           : String -> LabelName
+                           : String -> FileName
+                           : QualifiedName -> ClassName
+                           : Identifier -> AttributeName
+                           : Identifier -> AnnotationName
+                           : Identifier -> FieldName
+                           : Identifier -> MethodName
+    Init                   : MethodName
+                           : SQIdentifier -> VarName
+    FileName-Plhdr         : FileName
+    String-Plhdr           : String
+    ClassName-Plhdr        : ClassName
+    QualifiedName-Plhdr    : QualifiedName
+    AttributeName-Plhdr    : AttributeName
+    AnnotationName-Plhdr   : AnnotationName
+    FieldName-Plhdr        : FieldName
+    Identifier-Plhdr       : Identifier
+    MethodName-Plhdr       : MethodName
+    VarName-Plhdr          : VarName
+    SQIdentifier-Plhdr     : SQIdentifier
+    FileName-Plhdr         : COMPLETION-INSERTION -> FileName
+    String-Plhdr           : COMPLETION-INSERTION -> String
+    ClassName-Plhdr        : COMPLETION-INSERTION -> ClassName
+    QualifiedName-Plhdr    : COMPLETION-INSERTION -> QualifiedName
+    AttributeName-Plhdr    : COMPLETION-INSERTION -> AttributeName
+    AnnotationName-Plhdr   : COMPLETION-INSERTION -> AnnotationName
+    FieldName-Plhdr        : COMPLETION-INSERTION -> FieldName
+    Identifier-Plhdr       : COMPLETION-INSERTION -> Identifier
+    MethodName-Plhdr       : COMPLETION-INSERTION -> MethodName
+    VarName-Plhdr          : COMPLETION-INSERTION -> VarName
+    SQIdentifier-Plhdr     : COMPLETION-INSERTION -> SQIdentifier
+    CRef                   : ClassName -> ClassRef
+    VarNum                 : Int -> VarRef
+    LabelRef               : LabelName -> LabelRef
+    Absolute               : Int -> LabelRef
+    FRef                   : FieldName -> FRef
+    MRef                   : MethodName -> MRef
+    ClassRef-Plhdr         : ClassRef
+    ClassName-Plhdr        : ClassName
+    VarRef-Plhdr           : VarRef
+    LabelName-Plhdr        : LabelName
+    LabelRef-Plhdr         : LabelRef
+    Int-Plhdr              : Int
+    FRef-Plhdr             : FRef
+    FieldName-Plhdr        : FieldName
+    MRef-Plhdr             : MRef
+    MethodName-Plhdr       : MethodName
+    ClassRef-Plhdr         : COMPLETION-INSERTION -> ClassRef
+    ClassName-Plhdr        : COMPLETION-INSERTION -> ClassName
+    VarRef-Plhdr           : COMPLETION-INSERTION -> VarRef
+    LabelName-Plhdr        : COMPLETION-INSERTION -> LabelName
+    LabelRef-Plhdr         : COMPLETION-INSERTION -> LabelRef
+    Int-Plhdr              : COMPLETION-INSERTION -> Int
+    FRef-Plhdr             : COMPLETION-INSERTION -> FRef
+    FieldName-Plhdr        : COMPLETION-INSERTION -> FieldName
+    MRef-Plhdr             : COMPLETION-INSERTION -> MRef
+    MethodName-Plhdr       : COMPLETION-INSERTION -> MethodName
+    JBCFieldRef            : ClassRef * FRef * FieldDescriptor -> FieldRef
+    JBCMethodRef           : ClassRef * MRef * MethodDescriptor -> MethodRef
+    FieldRef-Plhdr         : FieldRef
+    FRef-Plhdr             : FRef
+    FieldDescriptor-Plhdr  : FieldDescriptor
+    MethodRef-Plhdr        : MethodRef
+    ClassRef-Plhdr         : ClassRef
+    MRef-Plhdr             : MRef
+    MethodDescriptor-Plhdr : MethodDescriptor
+    FieldRef-Plhdr         : COMPLETION-INSERTION -> FieldRef
+    FRef-Plhdr             : COMPLETION-INSERTION -> FRef
+    FieldDescriptor-Plhdr  : COMPLETION-INSERTION -> FieldDescriptor
+    MethodRef-Plhdr        : COMPLETION-INSERTION -> MethodRef
+    ClassRef-Plhdr         : COMPLETION-INSERTION -> ClassRef
+    MRef-Plhdr             : COMPLETION-INSERTION -> MRef
+    MethodDescriptor-Plhdr : COMPLETION-INSERTION -> MethodDescriptor
+    ByteName               : BaseTypeName
+    CharName               : BaseTypeName
+    DoubleName             : BaseTypeName
+    FloatName              : BaseTypeName
+    IntName                : BaseTypeName
+    LongName               : BaseTypeName
+    ShortName              : BaseTypeName
+    BooleanName            : BaseTypeName
+    BaseTypeName-Plhdr     : BaseTypeName
+    BaseTypeName-Plhdr     : COMPLETION-INSERTION -> BaseTypeName
+    Reference              : ClassRef -> ObjectType
+    ObjectType-Plhdr       : ObjectType
+    ClassRef-Plhdr         : ClassRef
+    ObjectType-Plhdr       : COMPLETION-INSERTION -> ObjectType
+    ClassRef-Plhdr         : COMPLETION-INSERTION -> ClassRef
+                           : ObjectType -> FieldType
+    FieldType-Plhdr        : FieldType
+    ObjectType-Plhdr       : ObjectType
+    FieldType-Plhdr        : COMPLETION-INSERTION -> FieldType
+    ObjectType-Plhdr       : COMPLETION-INSERTION -> ObjectType
