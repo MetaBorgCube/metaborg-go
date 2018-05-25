@@ -1,0 +1,6 @@
+module statics/blocks
+
+rules
+
+  [[ Block(stmts) ^ (s) ]] :=
+    Map1[[ stmts ^ (s) ]].

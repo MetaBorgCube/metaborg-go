@@ -1,0 +1,68 @@
+module desugar
+
+imports
+
+  libspoofax/resource/path
+  libspoofax/term/origin
+
+  signatures/-
+
+signature
+  constructors
+    SourceFile : ImportPath * PackageName * ImportDecls * TopLevelDecls -> SourceFile
+    Elements   : ElementList -> LiteralValue-Inner
+    Parameters : ParameterList -> Parameters-Inner
+
+rules
+
+  desugar-all =
+    try(desugar-sourcefile);
+    desugar-short-var-decls;
+    desugar-single-decls;
+    desugar-opts
+
+rules
+
+  desugar-sourcefile:
+      file@SourceFile(name, imports, decls) -> SourceFile(pkg-path, name, imports, decls)
+    with file-path := <origin-file> file;
+         pkg-path  := <current-language-relative-source-or-include-path;dirname> file-path
+
+rules
+
+  desugar-short-var-decls =
+    topdown(try(desugar-short-var-decl))
+  
+  desugar-short-var-decl:
+      ShortVarDecl(ids, exprs) -> SingleVarDecl(VarSpec(ids,Untyped(VarAssign(exprs))))
+
+rules
+
+  desugar-single-decls =
+    topdown(try(desugar-single-decl))
+ 
+  desugar-single-decl:
+      SingleImportDecl(import-spec) -> MultiImportDecl([import-spec])
+
+  desugar-single-decl:
+    SingleConstDecl(const-spec) -> MultiConstDecl([const-spec])
+
+  desugar-single-decl:
+    SingleTypeDecl(type-spec) -> MultiTypeDecl([type-spec])
+
+  desugar-single-decl:
+    SingleVarDecl(var-spec) -> MultiVarDecl([var-spec])
+
+rules
+
+  desugar-opts = topdown(try(desugar-opt))
+  
+  desugar-opt: NoParameters() -> []
+  desugar-opt: Parameters(params,_) -> params
+  
+  desugar-opt: NoElements() -> []
+  desugar-opt: Elements(elems,_) -> elems
+ 
+  desugar-opt: NoIdentifiers() -> []
+
+  desugar-opt: NoExpressions() -> []

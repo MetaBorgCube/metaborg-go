@@ -1,0 +1,13 @@
+module statics/util
+
+imports
+
+  signatures/-
+ 
+rules
+
+  Map1t(X)[[ [x|xs] ^ (s) : ty ]] :=
+    X[[ x ^ (s) : ty ]],
+    Map1t(X)[[ xs ^ (s) : ty ]].
+
+  Map1t(X)[[ [] ^ (s) : _ ]].

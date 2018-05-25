@@ -1,0 +1,70 @@
+module statics/main
+
+imports
+
+  signatures/-
+ 
+signature
+
+  namespaces
+    Var
+    Type
+    TypeFM
+    PkgPath
+    Pkg
+    Lbl
+
+  name resolution
+    labels P IMP PUB PRV FM
+    well-formedness P* (IMP? PUB? PUB? | PRV?) FM*
+    order P < PRV, P < PUB, P < FM
+
+rules
+
+  init ^ (s_univ) :=
+    new s_univ,
+ 
+    Type{"uint"} <- s_univ,
+    Type{"uint"} : UIntT(),
+    Type{"uint8"} <- s_univ,
+    Type{"uint8"} : UInt8T(),
+    Type{"uint16"} <- s_univ,
+    Type{"uint16"} : UInt16T(),
+    Type{"uint32"} <- s_univ,
+    Type{"uint32"} : UInt32T(),
+    Type{"uint64"} <- s_univ,
+    Type{"uint64"} : UInt64T(),
+    Type{"uintptr"} <- s_univ,
+    Type{"uintptr"} : UIntPtrT(),
+
+    Type{"int"} <- s_univ,
+    Type{"int"} : IntT(),
+    Type{"int8"} <- s_univ,
+    Type{"int8"} : Int8T(),
+    Type{"int16"} <- s_univ,
+    Type{"int16"} : Int16T(),
+    Type{"int32"} <- s_univ,
+    Type{"int32"} : Int32T(),
+    Type{"int64"} <- s_univ,
+    Type{"int64"} : Int64T(),
+
+    Type{"float64"} <- s_univ,
+    Type{"float64"} : Float64T(),
+    Type{"float128"} <- s_univ,
+    Type{"float128"} : Float128T(),
+
+    Type{"complex64"} <- s_univ,
+    Type{"complex64"} : Complex64T(),
+    Type{"complex128"} <- s_univ,
+    Type{"complex128"} : Complex128T(),
+
+    Type{"byte"} <- s_univ,
+    Type{"byte"} : UInt8T(),
+
+    Type{"rune"} <- s_univ,
+    Type{"rune"} : Int32T(),
+
+    Type{"string"} <- s_univ,
+    Type{"string"} : StringT(),
+
+    true.

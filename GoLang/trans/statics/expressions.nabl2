@@ -1,0 +1,191 @@
+module statics/expressions
+
+rules
+
+/**
+ * Operands -- https://golang.org/ref/spec#Operands
+ */
+ 
+  [[ IntLit(_) ^ (s) : _ ]].
+  [[ FloatLit(_) ^ (s) : _ ]].
+  [[ ImaginaryLit(_) ^ (s) : _ ]].
+  [[ RuneLit(_) ^ (s) : _ ]].
+  [[ StringLit(_) ^ (s) : StringT() ]]. 
+ 
+/**
+ * Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
+ */
+
+  [[ OperandName(name) ^ (s) : ty ]] :=
+    Var{name} -> s,
+    Var{name} |-> d,
+    d : ty.
+
+  [[ QualifiedOperandName(QualifiedIdent(PackageName(pkg),name)) ^ (s) : ty ]] :=
+    Pkg{pkg} -> s,
+    new s_qual,
+    Pkg{pkg} <=PUB= s_qual,
+    Var{name} -> s_qual,
+    Var{name} |-> d,
+    d : ty.
+
+/**
+ * Composite literals -- https://golang.org/ref/spec#Composite_literals
+ */
+
+  [[ CompositeLit(type, value) ^ (s) : ty ]] :=
+    [[ type ^ (s, s_ty) : ty ]], new s_ty,
+    [[ value ^ (s) : _ ]].
+    
+  [[ AutoArrayType(type) ^ (s) ]] :=
+    [[ type ^ (s, s_ty) : ty ]], new s_ty.
+
+  [[ LiteralValue(elems) ^ (s) : ty ]] :=
+    Map1[[ elems ^ (s) ]].
+    
+  [[ KeyedElement(key, elem) ^ (s) ]] :=
+    [[ key ^ (s) ]],
+    [[ elem ^ (s) : ty ]].
+    
+  [[ NoKey() ^ (s) ]].
+
+/**
+ * Function literals -- https://golang.org/ref/spec#Function_literals
+ */
+
+  [[ FunctionLit(fun) ^ (s) : ty ]] :=
+    [[ fun ^ (s) ]].
+ 
+/**
+ * Primary expressions -- https://golang.org/ref/spec#Primary_expressions
+ */
+ 
+  [[ Selector(expr,name) ^ (s) : ty ]] :=
+    [[ expr ^ (s) : ty_e ]],
+    ty_e == NamedT(d_ty), // FIXME Hardcoded for this one case
+    d_ty ?=FM=> s_ty,
+    new s_fld,
+    s_fld ---> s_ty,
+    VarRef[[ name ^ (s_fld) : ty ]],
+    false | note "TODO: Selector/2".
+ 
+  [[ Arguments(expr,args) ^ (s) : ty ]] :=
+    [[ expr ^ (s) : FunT(ty_params,ty) ]],
+    Map1T[[ args ^ (s) : ty_args ]],
+    // check ty_args against ty_params
+    false | note "TODO: Arguments/2".
+ 
+/**
+ * Method expressions -- https://golang.org/ref/spec#Method_expressions
+ */
+ 
+/**
+ * Index expressions -- https://golang.org/ref/spec#Index_expressions
+ */
+
+/**
+ * Slice expressions -- https://golang.org/ref/spec#Slice_expressions
+ */
+ 
+/**
+ * Type assertions -- https://golang.org/ref/spec#Type_assertions
+ */
+
+/**
+ * Calls -- https://golang.org/ref/spec#Calls
+ */
+ 
+/**
+ * Passing arguments to ... parameters -- https://golang.org/ref/spec#Passing_arguments_to_..._parameters
+ */
+ 
+/**
+ * Operators -- https://golang.org/ref/spec#Operators
+ */
+ 
+  [[ LogicalOr(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ LogicalAnd(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+
+  // rel_op
+  [[ Equal(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ NotEqual(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ Less(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ LessOrEqual(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ Greater(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ GreaterOrEqual(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+
+  // add_op
+  [[ Sum(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ Difference(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ BitwiseOr(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ BitwiseXor(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+
+  // mul_op
+  [[ Product(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ Quotient(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ Remainder(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ LeftShift(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ RightShift(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ BitwiseAnd(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  [[ BitClear(expr1, expr2) ^ (s) : _ ]] :=
+    [[ expr1 ^ (s) : _ ]],
+    [[ expr2 ^ (s) : _ ]].
+  
+  [[ Positive(expr) ^ (s) : _ ]] :=
+    [[ expr ^ (s) : _ ]].
+  [[ Negation(expr) ^ (s) : _ ]] :=
+    [[ expr ^ (s) : _ ]].
+  [[ Not(expr) ^ (s) : _ ]] :=
+    [[ expr ^ (s) : _ ]].
+  [[ BitwiseComplement(expr) ^ (s) : _ ]] :=
+    [[ expr ^ (s) : _ ]].
+  [[ AddressOf(expr) ^ (s) : _ ]] :=
+    [[ expr ^ (s) : _ ]].
+  [[ ValueAt(expr) ^ (s) : _ ]] :=
+    [[ expr ^ (s) : _ ]].
+  [[ Recieve(expr) ^ (s) : _ ]] :=
+    [[ expr ^ (s) : _ ]].
+
+/**
+ * Conversions -- https://golang.org/ref/spec#Conversions
+ */
+ 
+  [[ Conversion(type, expr, _) ^ (s) : ty ]] :=
+    [[ type ^ (s, s_ty) : ty ]], new s_ty,
+    [[ expr ^ (s) : _ ]].
