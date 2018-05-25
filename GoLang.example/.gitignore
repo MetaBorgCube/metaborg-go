@@ -11,3 +11,7 @@
 *.name-resolution
 *.unifier
 *.symbolic
+*.class
+*.j
+*.aterm
+*.result.txt

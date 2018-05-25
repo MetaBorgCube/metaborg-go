@@ -1,0 +1,130 @@
+module statics/declarations
+
+rules
+
+/**
+ * Constant declarations -- https://golang.org/ref/spec#Constant_declarations
+ */
+ 
+  [[ MultiConstDecl(constspecs) ^ (s_decl, s) ]] :=
+    [[ constspecs ^ (s_decl, s) ]].
+  
+  [[ ConstSpec(names, ConstAssign(NoType(), exprs)) ^ (s_decl, s) ]] :=
+    Map1T(VarDecl)[[ names ^ (s_decl) : tys ]],
+    Map1T[[ exprs ^ (s) : tys ]].
+
+  [[ ConstSpec(names, ConstAssign(type, exprs)) ^ (s_decl, s) ]] :=
+    Map1t(VarDecl)[[ names ^ (s_decl) : ty ]],
+    [[ type ^ (s, s_ty) : ty ]], new s_ty,
+    Map1t[[ exprs ^ (s) : ty ]].
+
+/**
+ * Type declarations -- https://golang.org/ref/spec#Type_declarations
+ */
+ 
+  [[ MultiTypeDecl(typespecs) ^ (s_decl, s) ]] :=
+    Map1[[ typespecs ^ (s_decl, s) ]].
+
+  [[ TypeDef(name, type) ^ (s_decl, s) ]] :=
+    Type{name} <- s_decl,
+    Type{name} : ty,
+    new s_ty, // type scope
+    Type{name} =FM=> s_ty,
+    TypeFM{name} -> s,
+    TypeFM{name} <=FM= s_ty,
+    TopLevelType[[ type ^ (s, s_ty) : ty ]].
+
+  TopLevelType[[ TypeName(name) ^ (s, s_ty) : ty ]] :=
+    Type{name} -> s,
+    Type{name} |-> d_ty,
+    d_ty : ty.
+
+  TopLevelType[[ QualifiedTypeName(QualifiedIdent(PackageName(pkg),name)) ^ (s, s_ty) : ty ]] :=
+    Pkg{pkg} -> s,
+    new s_qual,
+    Pkg{pkg} <=PUB= s_qual,
+    Type{name} -> s_qual,
+    Type{name} |-> d_ty,
+    d_ty : ty.
+
+  TopLevelType[[ t ^ (s, s_ty) : ty ]] :=
+    [[ t ^ (s, s_ty) : ty ]].
+
+
+/**
+ * Var declarations -- https://golang.org/ref/spec#Variable_declarations
+ */
+
+  [[ MultiVarDecl(varspecs) ^ (s_decl, s) ]] :=
+    Map1[[ varspecs ^ (s_decl, s) ]].
+
+  [[ VarSpec(names, Typed(type, NoVarAssign())) ^ (s_decl, s) ]] :=
+    Map1t(VarDecl)[[ names ^ (s) : ty ]],
+    [[ type ^ (s, s_ty) : ty ]], new s_ty.
+
+  [[ VarSpec(names, Typed(type, VarAssign(exprs))) ^ (s_decl, s) ]] :=
+    Map1t(VarDecl)[[ names ^ (s) : ty ]],
+    [[ type ^ (s, s_ty) : ty ]], new s_ty,
+    Map1t(VarDecl)[[ exprs ^ (s) : ty ]].
+
+  [[ VarSpec(names, Untyped(VarAssign(exprs))) ^ (s_decl, s) ]] :=
+    // FIXME weird errors if lists are different length
+    Map1T(VarDecl)[[ names ^ (s) : tys ]],
+    Map1T[[ exprs ^ (s) : tys ]].
+
+
+  VarDecl[[ name ^ (s) : ty ]] :=
+    Var{name} <- s,
+    Var{name} : ty.
+ 
+  VarRef[[ name ^ (s) : ty ]] :=
+    Var{name} -> s,
+    Var{name} |-> d,
+    d : ty.
+
+/**
+ * Function declarations -- https://golang.org/ref/spec#Function_declarations
+ */
+
+    [[ FunctionDecl(FunctionName(name), function_inner) ^ (s_decl, s) ]] :=
+      Var{name} <- s_decl,
+      [[ function_inner ^ (s) : ty ]].
+ 
+    [[ Function(sig, body) ^ (s) : ty ]] :=
+      [[ sig ^ (s) : ty ]],
+      [[ body ^ (s_fun) ]],
+      new s_fun,
+      s_fun ---> s.
+
+/**
+ * Method declarations -- https://golang.org/ref/spec#Method_declarations
+ */
+
+  [[ MethodDecl(Receiver(varname, type@TypeName(tyname)), MethodName(name), inner) ^ (s_decl, s) ]] :=
+    // method decl
+    new s_fm,
+    TypeFM{tyname} <- s_decl,
+    TypeFM{tyname} =FM=> s_fm,
+    Var{name} <- s_fm,
+    // body
+    new s',
+    s' ---> s,
+    Var{varname} <- s',
+    [[ type ^ (s, s_ty) : ty ]], new s_ty,
+    Var{varname} : ty,
+    [[ inner ^ (s') : _ ]].
+
+  [[ MethodDecl(AnonymousReceiver(type@TypeName(tyname)), MethodName(name), inner) ^ (s_decl, s) ]] :=
+    // method decl
+    new s_fm,
+    TypeFM{tyname} <- s_decl,
+    TypeFM{tyname} =FM=> s_fm,
+    Var{name} <- s_fm,
+    // body
+    new s',
+    s' ---> s,
+    [[ type ^ (s, s_ty) : ty ]], new s_ty,
+    [[ inner ^ (s') ]].
+
+
+

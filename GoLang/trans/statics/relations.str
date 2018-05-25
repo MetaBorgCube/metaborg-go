@@ -1,0 +1,39 @@
+module statics/relations
+
+imports
+
+  signatures/nabl2/shared/common/-
+  signatures/nabl2/shared/constraints/-
+
+  statics/types
+
+rules
+
+  assignable: (lhs_tys, rhs_tys, msginfo) -> c*
+    where <is-list> lhs_tys;
+          <is-list> rhs_tys
+    with if <(length,length);eq> (lhs_tys,rhs_tys) then
+           c* := <zip;map(\ (lhs_ty,rhs_ty) -> CCheckRel(lhs_ty,ExtRelation("assignable"),rhs_ty,msginfo) \)> (lhs_tys, rhs_tys)
+         else
+           c* := [CFalse(msginfo)]
+         end
+  assignable: (lhs_tys, rhs_ty, msginfo) -> [CFalse(msginfo)]
+    where <is-list> lhs_tys;
+          <not(is-list)> rhs_ty
+  assignable: (lhs_ty, rhs_tys, msginfo) -> [CFalse(msginfo)]
+    where <not(is-list)> lhs_ty;
+          <is-list> rhs_tys
+ 
+  assignable: (lhs_ty, rhs_ty, msginfo) -> []
+    where <eq> (lhs_ty, rhs_ty)
+
+  assignable: (NamedT(lhs_d), rhs_ty, msginfo) ->
+      [ CDeclProperty(lhs_d,Type(),lhs_ty,"",msginfo)
+      , CCheckRel(lhs_ty,ExtRelation("assignable"),rhs_ty,msginfo)
+      ]
+    with lhs_ty := <nabl2--new-var(|"")> "lhs_ty"
+  assignable: (lhs_ty, NamedT(rhs_d), msginfo) ->
+      [ CDeclProperty(rhs_d,Type(),rhs_ty,"",msginfo)
+      , CCheckRel(lhs_ty,ExtRelation("assignable"),rhs_ty,msginfo)
+      ]
+    with rhs_ty := <nabl2--new-var(|"")> "rhs_ty"

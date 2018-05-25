@@ -1,0 +1,122 @@
+module statics/types
+
+signature
+
+  sorts
+    Type
+    Int
+
+  constructors
+    NamedT      : occurrence -> Type
+    FunT        : list(Type) * list(Type) -> Type
+    ArrayT      : Int * Type ->Type
+    SliceT      : Type -> Type
+    StructT     : scope -> Type
+    PtrT        : Type -> Type
+    MapT        : Type * Type -> Type
+    StringT     : Type
+
+    UIntT       : Type
+    UInt8T      : Type
+    UInt16T     : Type
+    UInt32T     : Type
+    UInt64T     : Type
+    UIntPtrT    : Type
+
+    IntT        : Type
+    Int8T       : Type
+    Int16T      : Type
+    Int32T      : Type
+    Int64T      : Type
+
+    Float64T    : Type
+    Float128T   : Type
+
+    Complex64T  : Type
+    Complex128T : Type
+
+rules
+
+  [[ TypeName(name) ^ (s, _) : NamedT(d_ty) ]] :=
+    Type{name} -> s,
+    Type{name} |-> d_ty.
+
+  [[ QualifiedTypeName(QualifiedIdent(PackageName(pkg),name)) ^ (s, _) : NamedT(d_ty) ]] :=
+    Pkg{pkg} -> s,
+    new s_qual,
+    Pkg{pkg} <=PUB= s_qual,
+    Type{name} -> s_qual,
+    Type{name} |-> d_ty.
+
+
+/**
+ * Array types -- https://golang.org/ref/spec#Array_types
+ */
+
+  [[ ArrayType(expr, type) ^ (s, s_ty) : ArrayT(42,ty) ]] :=
+    [[ expr ^ (s) : _ ]], // TODO does this have to be evaluated?
+    [[ type ^ (s, s_ty) : ty ]].
+
+/**
+ * Slice types -- https://golang.org/ref/spec#Slice_types
+ */
+
+  [[ SliceType(type) ^ (s, s_ty) : SliceT(ty) ]] :=
+    [[ type ^ (s, s_ty) : ty ]].
+
+/**
+ * Struct types -- https://golang.org/ref/spec#Struct_types
+ */
+
+  [[ StructType(fields) ^ (s, s_ty) : StructT(s_ty) ]] :=
+    Map2[[ fields ^ (s, s_ty) ]].
+
+  [[ FieldDecl(field, tag) ^ (s, s_ty) ]] :=
+    [[ field ^ (s, s_ty) ]],
+    [[ tag ^ (s) ]].
+
+  [[ Field(names, type) ^ (s, s_ty) ]] :=
+    Map1t(VarDecl)[[ names ^ (s_ty) : ty ]],
+    [[ type ^ (s, s_ty) : ty ]].
+
+  // FIXME qualified types
+
+  [[ AnonymousPtrField(type@TypeName(name)) ^ (s, s_ty) ]] :=
+    Var{name} <- s_ty,
+    [[ type ^ (s, s_ty') : ty ]], new s_ty',
+    Var{name} : ty,
+    Type{name} -> s,
+    Type{name} <=FM= s_ty.
+
+  [[ AnonymousField(type@TypeName(name)) ^ (s, s_ty) ]] :=
+    Var{name} <- s_ty,
+    [[ type ^ (s, s_ty') : ty ]], new s_ty',
+    Var{name} : ty,
+    Type{name} -> s,
+    Type{name} <=FM= s_ty.
+
+  [[ NoTag() ^ (_) ]].
+
+/**
+ * Pointer types -- https://golang.org/ref/spec#Pointer_types
+ */
+
+  [[ PointerType(type) ^ (s, s_ty) : PtrT(ty) ]] :=
+    [[ type ^ (s, s_ty) : ty ]].
+
+/**
+ * Function types -- https://golang.org/ref/spec#Function_types
+ */
+ 
+  [[ FunctionType(sig) ^ (s, s_ty) : ty ]] :=
+    [[ sig ^ (s) : ty ]]. 
+ 
+  [[ Signature(params, result) ^ (s) : FunT(_,_) ]] :=
+    Map2[[ params ^ (s, s_ty) ]],
+    [[ result ^ (s, s_ty) : ty ]].
+ 
+  [[ ParameterDecl(names, dots, type) ^ (s, s_ty) ]] :=
+    Map1t(VarDecl)[[ names ^ (s) : ty ]],
+    [[ type ^ (s, s_ty) : ty ]].
+
+  [[ NoResult() ^ (s, s_ty) : [] ]].
