@@ -15,27 +15,28 @@ context-free start-symbols
 context-free syntax
 
   Statement.DeclarationStmt = Declaration
-  Statement                 = LabeledStmt
-  Statement                 = SimpleStmt
-  Statement                 = GoStmt
-  Statement                 = ReturnStmt
-  Statement                 = BreakStmt
-  Statement                 = ContinueStmt
-  Statement                 = GotoStmt
-  Statement                 = FallthroughStmt
-  Statement                 = Block
-  Statement                 = IfStmt
-  Statement                 = SwitchStmt
-  Statement                 = SelectStmt
-  Statement                 = ForStmt
-  Statement                 = DeferStmt
+  Statement.LabeledStmt     = LabeledStmt
+  Statement.Simplestmt      = SimpleStmt
+  Statement.Gostmt          = GoStmt
+  Statement.ReturnStmt      = ReturnStmt
+  Statement.BreakStmt       = BreakStmt
+  Statement.ContinueStmt    = ContinueStmt
+  Statement.GotoStmt        = GotoStmt
+  Statement.FallthroughStmt = FallthroughStmt
+  Statement.Block           = Block
+  Statement.IfStmt          = IfStmt
+  Statement.SwitchStmt      = SwitchStmt
+  Statement.SelectStmt      = SelectStmt
+  Statement.ForStmt         = ForStmt
+  Statement.DeferStmt       = DeferStmt
 
-  SimpleStmt                 = EmptyStmt
-  SimpleStmt                 = ExpressionStmt
-  SimpleStmt                 = SendStmt
-  SimpleStmt                 = IncDecStmt
-  SimpleStmt                 = Assignment
+  SimpleStmt.EmptyStmt       = EmptyStmt
+  SimpleStmt.ExpressionStmt  = Expression
+  SimpleStmt.SendStmt        = SendStmt
+  SimpleStmt.IncDecStmt      = IncDecStmt
+  SimpleStmt.Assignment      = Assignment
   SimpleStmt.DeclarationStmt = ShortVarDecl
+  
 
 
 /**
@@ -65,7 +66,7 @@ context-free syntax
  
   context-free syntax 
 
-  ExpressionStmt.ExpressionStmt = Expression
+ // ExpressionStmt.ExpressionStmt = Expression
 
 
 /**
@@ -117,13 +118,13 @@ context-free syntax
  
   context-free syntax
   
-  IfStmt        = <if <IfStmt-Inner1-OPT> <Expression> <Block> <IfStmt-Inner2-OPT>>
+  IfStmt			          = <if <IfStmt-Inner1-OPT> <Expression> <Block> <IfStmt-Inner2-OPT>>
   IfStmt-Inner1-OPT.EmptyStmt = <>
   IfStmt-Inner1-OPT           = <<SimpleStmt>;>
   IfStmt-Inner2-OPT.NoElse    = <>
-  IfStmt-Inner2-OPT           = <else <IfStmt>>
-  IfStmt-Inner2-OPT           = <else <Block>>
-
+  IfStmt-Inner2-OPT.IfStmt    = [else [IfStmt]]
+  IfStmt-Inner2-OPT           = [else [Block]]
+ 
   
 /**
  * Switch statements -- https://golang.org/ref/spec#Switch_statements
@@ -161,18 +162,22 @@ context-free syntax
   
   context-free syntax
    
-  ForStmt       = <for <ForStmt-Inner?> <Block>>
-  ForStmt-Inner = Condition
-  ForStmt-Inner = ForClause
-  ForStmt-Inner = RangeClause
-  Condition     = Expression
+  ForStmt       = [for [ForStmt-Inner-OPT] [Block]]
+  ForStmt-Inner-OPT.Empty = []
+  ForStmt-Inner-OPT.Condition = Expression
+  ForStmt-Inner-OPT.ForClause = [[ForClause-OPT]; [ForClause-OPT]; [ForClause-OPT]]
+  ForClause-OPT = [[SimpleStmt]]
+  ForClause-OPT = []
+  ForStmt-Inner-OPT.RangeClause = RangeClause
+  //Condition     = Expression
 
-  ForClause = <<InitStmt?>; <Condition?>; <PostStmt?>>
-  InitStmt  = SimpleStmt
-  PostStmt  = SimpleStmt
+  //ForClause = [[SimpleStmt?]; [SimpleStmt?]; [SimpleStmt?]]
+  //InitStmt  = SimpleStmt
+  //PostStmt  = SimpleStmt
   
-  RangeClause       = <<RangeClause-Inner?> range <Expression>>
-  RangeClause-Inner = <<ExpressionList> =>
+  RangeClause       = <<RangeClause-Inner> range <Expression>>
+  RangeClause-Inner-OPT = <<ExpressionList> =>
+  RangeClause-Inner-OPT = []
   RangeClause-Inner = <<IdentifierList> :=>
 
   
