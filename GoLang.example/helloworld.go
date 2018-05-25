@@ -1,9 +1,8 @@
 package main;
 
 import "fmt";
-
-func main(){
-	if false {
-		fmt.Println("HI");
-	};
-};
+  
+func main(){ 
+		x := 1; 
+		fmt.Println("HI"); 
+};          

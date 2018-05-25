@@ -69,7 +69,7 @@ rules
     VarRef[[ name ^ (s_fld) : ty ]],
     false | note "TODO: Selector/2".
  
-  [[ Arguments(expr,args) ^ (s) : ty ]] :=
+  [[ ArgumentsPackage(expr,args) ^ (s) : ty ]] :=
     [[ expr ^ (s) : FunT(ty_params,ty) ]],
     Map1T[[ args ^ (s) : ty_args ]],
     // check ty_args against ty_params

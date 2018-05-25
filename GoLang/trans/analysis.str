@@ -6,13 +6,21 @@ imports
   nabl2runtime
   
   static-semantics
+  statics/blocks
+  statics/declarations  
+  statics/expressions
+  //statics/main
+  statics/packages
+  statics/statements  
+  statics/types
+  statics/util
+  desugar
+  pp 
 
-  pp
-
-rules // Analysis
-
-  editor-analyze = nabl2-analyze(id)
-
+rules // Analysis 
+ 
+  editor-analyze = nabl2-analyze(desugar-all)
+ 
 rules // Debugging
   
   // Prints the abstract syntax ATerm of a selection.

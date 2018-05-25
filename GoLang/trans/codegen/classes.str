@@ -98,12 +98,13 @@ rules
     //TODO correct func signature
     , JBCMethodDesc([], Void())
     , <function-block-to-jbc> block
-)
+) 
  
  function-block-to-jbc: Block(statements)->output*
- where
+ where 
   stackInit := [JBCLimitLocals("99")
       			, JBCLimitStack("99")];
+  debug(!<concat-strings>["Block stmt-to-jbc"]);
   statementsResult :=    <map(stmt-to-jbc);concat > statements;
   output* := <concat>[stackInit,statementsResult, [RETURN()]]
  
@@ -112,7 +113,9 @@ rules
  
  stmt-to-jbc: ExpressionStmt(expression) ->
  <expression-stmt-to-jbc>expression
- 
+ where 
+  debug(!<concat-strings>["Expression stmt-to-jbc"])
+
 /*************************************************************************************
 *************************EXPRESSION-STMT-TO-JBC***********************************
 **************************************************************************************/ 
@@ -140,7 +143,7 @@ rules
  ]
  
  //TODO: Implement return stmt
- expression-stmt-to-jbc: ReturnStmt(_) -> []
+ expression-stmt-to-jbc: ReturnStmt(_) -> [] 
   
  
  //TODO: Golang fmt.Println only allows strings to be printed 
@@ -185,8 +188,8 @@ print-to-jbc: OperandName(name) ->
  a       := <nabl2-get-ast-analysis> name;
  debug(!<concat-strings>["a"]) ;
 ref-occ := <nabl2-mk-occurrence(|"ShortVarDecl")> name;
-debug(!<concat-strings>["ref-occ"]) ;
-index* := <get-term-index> ref-occ
+debug(!<concat-strings>["ref-occ"])
+//;index* := <get-term-index> ref-occ
      
 print-to-jbc:
 StringLit(toPrint) ->
@@ -200,7 +203,7 @@ StringLit(toPrint) ->
       , LDC(toPrint)
       , INVOKEVIRTUAL(
           JBCMethodRef( 
-            CRef("java/io/PrintStream")
+            CRef("java/io/PrintStream") 
           , MRef("println")
           , JBCMethodDesc([Reference(CRef("java/lang/String"))], Void())
           )
@@ -224,12 +227,12 @@ StringLit(toPrint) ->
  a       := <nabl2-get-ast-analysis> name;
  debug(!<concat-strings>["a"]) ;
 ref-occ := <nabl2-mk-occurrence(|"ShortVarDecl")> name;
-debug(!<concat-strings>["ref-occ"]) ;
-index* := <get-term-index> ref-occ
-
-get-term-index: Occurrence(_,_,TermIndex(_,index)) -> index
+debug(!<concat-strings>["ref-occ"])
+//;index* := <get-term-index> ref-occ
  
- literal-to-jbc: StringLit(val) -> 
+//get-term-index: Occurrence(_,_,TermIndex(_,index)) -> index
+ 
+ literal-to-jbc: StringLit(val) ->  
  	LDC(val)
  literal-to-jbc: IntLit(val) -> 
  	LDC(Int(val))
