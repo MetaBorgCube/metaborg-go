@@ -12,6 +12,7 @@ lexical start-symbols
   ImaginaryLit
   RuneLit
   StringLit
+  BoolLit
 
 /**
  * Comments -- https://golang.org/ref/spec#Comments
@@ -94,9 +95,20 @@ lexical start-symbols
   Identifier = "switch" {reject}
   Identifier = "type" {reject}
   Identifier = "var" {reject}
-  Identifier = "var" {reject}
+  Identifier = "true" {reject}
+  Identifier = "false" {reject}
 
+/**
+ * Boolean literals -- https://golang.org/ref/spec#Boolean_types
+ */
 
+  lexical syntax
+  
+  BoolLit = TrueLit
+  BoolLit = FalseLit
+  
+  FalseLit = "false"
+  TrueLit = "true"
 /**
  * Integer literals -- https://golang.org/ref/spec#Integer_literals
  */
