@@ -15,9 +15,9 @@ imports // Jasmin signatures
 rules
 
   /**
-   * Transform MiniJava AST to Jasmin AST and show the resulting ATerm.
+   * Transform GoLang AST to Jasmin AST and show the resulting ATerm.
    *
-   * @type MiniJava AST -> Jasmin AST
+   * @type GoLang AST -> Jasmin AST
    */
   show-jbc:
     (selected, _, ast, path, project-path) -> (filename, result)
@@ -27,9 +27,9 @@ rules
 	; debug(!<concat-strings>["result"])    
 
    /**
-   * Generate Jasmin files (.j files) for each of the classes in the MiniJava AST.
+   * Generate Jasmin files (.j files) for each of the classes in the GoLang AST.
    *
-   * @type MiniJava AST -> None
+   * @type GoLang AST -> None
    */
   generate-jbc:
     (selected, _, ast, path, project-path) -> None()
@@ -39,9 +39,9 @@ rules
     ; <program-to-jbc; strip-annos; write-jbc(|dir)> ast
 
   /**
-   * Generate bytecode (.class files) for each of the classes in the MiniJava AST.
+   * Generate bytecode (.class files) for each of the classes in the GoLang AST.
    *
-   * @type MiniJava AST -> None
+   * @type GoLang AST -> None
    */
   generate-jc:
     (selected, _, ast, path, project-path) -> None()
@@ -51,7 +51,7 @@ rules
 	; result := <program-to-jbc;strip-annos;set-jasmin-source(|path); jasmin-generate(|project-path)> ast
 
   /**
-   * Generate bytecode (.class files) for each of the classes in the MiniJava AST
+   * Generate bytecode (.class files) for each of the classes in the GoLang AST
    * and run the main class.
    */
   run-jc:
