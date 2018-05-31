@@ -121,7 +121,7 @@ context-free syntax
   IfStmt			          = <if <IfStmt-Inner1-OPT> <Expression> <Block> <IfStmt-Inner2-OPT>>
   IfStmt-Inner1-OPT.EmptyStmt = <>
   IfStmt-Inner1-OPT           = <<SimpleStmt>;>
-  IfStmt-Inner2-OPT.NoElse    = <>
+  IfStmt-Inner2-OPT.NoBlock    = <>
   IfStmt-Inner2-OPT.IfStmt    = [else [IfStmt]]
   IfStmt-Inner2-OPT           = [else [Block]]
  
