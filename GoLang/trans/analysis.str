@@ -9,7 +9,7 @@ imports
   statics/blocks
   statics/declarations  
   statics/expressions
-  //statics/main
+  statics/main
   statics/packages
   statics/statements  
   statics/types

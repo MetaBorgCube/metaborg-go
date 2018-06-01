@@ -205,8 +205,12 @@ print-to-jbc: OperandName(name) ->
      ] 
   where
  a       := <nabl2-get-ast-analysis> name;
-ref-occ := <nabl2-mk-occurrence(|"ShortVarDecl")> name;
-index* := <get-term-index> ref-occ
+ref-occ := <nabl2-mk-occurrence(|"Var")> name;
+debug(!<concat-strings>["ref-occ"])
+//dec-occ := <nabl2-get-resolved-name(|a); Fst> ref-occ;
+//debug(!<concat-strings>["dec-occ"]);
+
+//index* := <get-term-index> ref-occ
      
 print-to-jbc:
 StringLit(toPrint) ->
@@ -230,22 +234,28 @@ StringLit(toPrint) ->
 /*************************************************************************************
 *************************DECLARATION-STMT-TO-JBC***********************************
 **************************************************************************************/ 
- declaration-stmt-to-jbc: ShortVarDecl(names,values) -> result*
+ declaration-stmt-to-jbc: MultiVarDecl([VarSpec(names,Untyped(VarAssign(values)))]) -> result*
  where
  valueList := <map(literal-to-jbc)>values;
+ debug(!<concat-strings>["valueList"]);
  varNames := <map(var-name-to-jbc)>names;
- result* := <concat>[valueList,varNames]
+ debug(!<concat-strings>["varNames"]);
+ result* := <concat>[valueList,varNames];
+ debug(!<concat-strings>["result*"])
  
  //TODO: Probably need some nabl2 type analysis.
  //Term indexes should reference to correct variables
  var-name-to-jbc: name -> ASTORE(VarNum("0"))
 // ASTORE(VarNum(<int-to-string>index*))
  where
- a       := <nabl2-get-ast-analysis> name;
-ref-occ := <nabl2-mk-occurrence(|"ShortVarDecl")> name;
-index* := <get-term-index> ref-occ
+ debug(!<concat-strings>["name"]);
+ a       := <nabl2-get-ast-analysis> name;debug;
+ref-occ := <nabl2-mk-occurrence(|"Var")> name;debug
+//dec-occ := <nabl2-get-resolved-name(|a);  Fst> ref-occ;debug;
+// debug(!<concat-strings>["dec-occ"])
+//index* := <get-term-index> ref-occ
 //TODO replace when nabl2 is fixed.
-get-term-index: Occurrence(_,_,TermIndex(_,index)) -> index
+//get-term-index: Occurrence(_,_,TermIndex(_,index)) -> index
  
  literal-to-jbc: StringLit(val) ->  
  	LDC(val)
