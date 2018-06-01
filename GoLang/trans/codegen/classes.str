@@ -42,7 +42,7 @@ rules
 ***************************************PROGRAM-TO-JBC***********************************
 **************************************************************************************/ 
  
-  program-to-jbc : SourceFile(packageClause, _, functionDecls) -> 
+  program-to-jbc : SourceFile(_,packageClause, _, functionDecls) -> 
   JBCFile(
     <package-clause-to-jbc> packageClause, 
     [],

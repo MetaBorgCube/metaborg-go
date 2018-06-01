@@ -5,7 +5,7 @@ imports
   completion/completion
   pp
   outline
-  //analysis
+  analysis
   jasmin
   codegen/- 
   
