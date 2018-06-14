@@ -2,7 +2,7 @@ module codegen/build
 
 imports
 
-  //stratego/metaborg
+  //metaborg/stratego
 
   codegen/classes
   jasmin

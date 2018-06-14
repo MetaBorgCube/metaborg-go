@@ -19,15 +19,45 @@ rules
     try(desugar-sourcefile);
     desugar-short-var-decls;
     desugar-single-decls;
-    desugar-opts
+    desugar-opts;
+    desugar-test
 
+//at the start of generate -> list parameter
 rules
 
   desugar-sourcefile:
       file@SourceFile(name, imports, decls) -> SourceFile(pkg-path, name, imports, decls)
     with file-path := <origin-file> file;
+        // <collect-all(desugar-short-var-decl); make-index> decls;
          pkg-path  := <current-language-relative-source-or-include-path;dirname> file-path
 
+
+desugar-test:
+      SourceFile(pkg-path, name, imports, decls) -> SourceFile(pkg-path, name, imports, decls)
+    with 
+         <collect-all(multivardecl);make-index> decls //different strategy
+         
+make-index:
+	multivardecls -> result
+	where
+		lst1 := <map(get-var-name); concat> multivardecls; debug;
+		lst2 := <add-indices> lst1; debug;
+		result := <map(make-index2)> lst2; debug
+		
+make-index2:
+	(index, term) -> annotatedterm
+	where
+		<get-annotations> term; debug;
+		annotatedterm := <set-annotations> (term, index); debug
+		
+
+multivardecl:
+	MultiVarDecl(x) -> MultiVarDecl(x)
+	
+get-var-name:
+	MultiVarDecl([VarSpec(varlist,_)]) -> varlist
+	
+	 
 rules
 
   desugar-short-var-decls =
@@ -39,7 +69,7 @@ rules
 rules
 
   desugar-single-decls =
-    topdown(try(desugar-single-decl))
+    topdown(try(desugar-single-decl)) 
  
   desugar-single-decl:
       SingleImportDecl(import-spec) -> MultiImportDecl([import-spec])
@@ -52,6 +82,8 @@ rules
 
   desugar-single-decl:
     SingleVarDecl(var-spec) -> MultiVarDecl([var-spec])
+
+  		
 
 rules
 

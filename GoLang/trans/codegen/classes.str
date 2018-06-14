@@ -61,6 +61,7 @@ rules
       	)
   	where 
   	functions* := <map(function-declaration-to-jbc) > functionDecls
+  	
   
   
  package-clause-to-jbc: PackageClause(packageName) ->
@@ -96,7 +97,7 @@ rules
       [PUBLIC()]
     , name
     //TODO correct func signature
-    , JBCMethodDesc([], Void())
+    , JBCMethodDesc([], Void()) 
     , <block-to-jbc> block
 )
  
@@ -243,6 +244,7 @@ StringLit(toPrint) ->
  result* := <concat>[valueList,varNames];
  debug(!<concat-strings>["result*"])
  
+ 
  //TODO: Probably need some nabl2 type analysis.
  //Term indexes should reference to correct variables
  var-name-to-jbc: name -> ASTORE(VarNum("0"))
@@ -250,12 +252,20 @@ StringLit(toPrint) ->
  where
  debug(!<concat-strings>["name"]);
  a       := <nabl2-get-ast-analysis> name;debug;
-ref-occ := <nabl2-mk-occurrence(|"Var")> name;debug
+ref-occ := <nabl2-mk-occurrence(|"Var")> name;debug;
+new-iset => i;
+<iset-add(|a)> i;
+ index := <iset-get-index(|a)> ;
+ debug(!<concat-strings>["index: "])
 //dec-occ := <nabl2-get-resolved-name(|a);  Fst> ref-occ;debug;
 // debug(!<concat-strings>["dec-occ"])
 //index* := <get-term-index> ref-occ
 //TODO replace when nabl2 is fixed.
 //get-term-index: Occurrence(_,_,TermIndex(_,index)) -> index
+
+//collect
+//annotation {} set-anno
+//get-annotations
  
  literal-to-jbc: StringLit(val) ->  
  	LDC(val)
