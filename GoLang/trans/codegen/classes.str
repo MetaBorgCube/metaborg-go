@@ -112,10 +112,15 @@ block-to-jbc: Block(statements)->output*
 block-to-jbc: NoBlock()->[]
  
  stmt-to-jbc: DeclarationStmt(declaration) ->
- <declaration-stmt-to-jbc>declaration
+ <declaration-stmt-to-jbc> declaration
+ where
+ 	debug(!<concat-strings>["stmt-to-jbc (declaration): "])
  
  stmt-to-jbc: ExpressionStmt(expression) ->
  <expression-stmt-to-jbc>expression
+  where
+ 	debug(!<concat-strings>["stmt-to-jbc (expression): "])
+ 
  
  stmt-to-jbc: IfStmt((_, expr, ifblock, elseblock)) -> output*
 	where
@@ -138,10 +143,11 @@ block-to-jbc: NoBlock()->[]
 *************************EXPRESSION-STMT-TO-JBC***********************************
 **************************************************************************************/ 
 
- expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"),
- Arguments(Arguments([UnTypedArg(toPrint)]), None(), None())) -> [output*]
+ expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"),Arguments([UnTypedArg(toPrint)])) -> [output*]
   where
-   output* := <print-to-jbc> toPrint
+   output* := <print-to-jbc> toPrint;
+   debug(!<concat-strings>["expression-stmt-to-jbc (print): "])
+   
    
 // expression-stmt-to-jbc: ArgumentsPackage(methodName,_) -> [
 // 	NEW(CRef("main"))	
@@ -207,11 +213,11 @@ print-to-jbc: OperandName(name) ->
   where
 debug(!<concat-strings>["DEZE PRINTSTATEMENT: "]);
  a       := <nabl2-get-ast-analysis> name; 
-ref-occ := <nabl2-mk-occurrence(|"Var")> name; debug;
-debug(!<concat-strings>["ref-occ"]);
+ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
+debug(!<concat-strings>["ref-occ: "]);
 dec-occ := <nabl2-get-resolved-name(|a)> ref-occ;
 debug(!<concat-strings>["dec-occ: "]);
-index := <nabl2-get-property(|a,"index")> dec-occ; debug;
+index := <nabl2-get-property(|a, "index")> dec-occ; 
 debug(!<concat-strings>["index: "]);
 index* := <int-to-string> index
 //debug(!<concat-strings>["dec-occ"]);
@@ -246,13 +252,13 @@ StringLit(toPrint) ->
  varNames := <map(var-name-to-jbc)>names;
  debug(!<concat-strings>["varNames"]);
  result* := <concat>[valueList,varNames];
- debug(!<concat-strings>["result*"])
+ debug(!<concat-strings>["declaration-stmt-to-jbc: "])
  
  var-name-to-jbc: Bind(name,index) -> ASTORE(VarNum(<int-to-string>index))
  //where
  	//Var{name}.index := index
  //	nothing := <nabl2-set-ast-index(|TermIndex("helloworld.go", index))> a; debug
- 
+  
  literal-to-jbc: StringLit(val) ->  
  	LDC(val)
  literal-to-jbc: IntLit(val) -> 

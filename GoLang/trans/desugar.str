@@ -94,7 +94,7 @@ rules
   		
 
 rules
-
+ 
   desugar-opts = topdown(try(desugar-opt))
   
   desugar-opt: NoParameters() -> []
@@ -105,6 +105,10 @@ rules
  
   desugar-opt: NoIdentifiers() -> []
 
-  desugar-opt: NoExpressions() -> []
+  desugar-opt: NoExpressions() -> [] 
   
-  desugar-opt : Bind(Bind(x,int),_) -> Bind(x,int)
+  desugar-opt : Bind(Bind(x,int),_) -> Bind(x,int) 
+  
+  desugar-opt: Assignment(AssignStmt(x,y)) -> AssignStmt(x,y)
+  
+  desugar-opt: Arguments(Arguments(x),_,_) -> Arguments(x) 

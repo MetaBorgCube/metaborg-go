@@ -17,6 +17,10 @@ imports
   desugar
   pp 
 
+signature
+	constructors
+		Int : IntLit -> index
+		
 rules // Analysis 
  
   editor-analyze = nabl2-analyze(desugar-all)
