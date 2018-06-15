@@ -12,21 +12,59 @@ signature
     SourceFile : ImportPath * PackageName * ImportDecls * TopLevelDecls -> SourceFile
     Elements   : ElementList -> LiteralValue-Inner
     Parameters : ParameterList -> Parameters-Inner
+    Bind	   : StringLit * IntLit -> Bind
+    ArgumentsPackage : QualifiedIdent -> ArgumentsPackage
 
 rules
 
-  desugar-all =
+  desugar-all = 
     try(desugar-sourcefile);
     desugar-short-var-decls;
     desugar-single-decls;
+    desugar-test;
     desugar-opts
 
+//at the start of generate -> list parameter
 rules
 
   desugar-sourcefile:
       file@SourceFile(name, imports, decls) -> SourceFile(pkg-path, name, imports, decls)
-    with file-path := <origin-file> file;
-         pkg-path  := <current-language-relative-source-or-include-path;dirname> file-path
+    with 
+    	file-path := <origin-file> file;
+     	pkg-path  := <current-language-relative-source-or-include-path;dirname> file-path
+
+
+desugar-test:
+      SourceFile(pkg-path, name, imports, decls) -> SourceFile(pkg-path, name, imports, declsnew)
+    with 
+ 		declsnew := <annotate-var-decls> decls //different strategy
+
+annotate-var-decls: ast -> annotated-ast
+  	with
+		var-decl-list := <collect-all(multivardecl)> ast;
+		var-decl-indices := <make-index> var-decl-list; 
+		annotated-ast := <topdown(try(index-var-decl(|var-decl-indices)))> ast
+    
+make-index:
+	multivardecls -> lst1
+	where
+		lst1 := <map(get-var-name); concat> multivardecls; debug
+  
+index-var-decl(|var-decl-indices): 
+	MultiVarDecl([VarSpec(varlist,expr)]) -> MultiVarDecl([VarSpec(bindlst,expr)])
+  	with
+  		bindlst:= <map(var-index(|var-decl-indices))> varlist
+	
+var-index(|var-decl-indices):
+	varname -> Bind(varname,index)
+	where
+		index := <get-index> (varname, var-decl-indices)
+	
+multivardecl:
+	MultiVarDecl(x) -> MultiVarDecl(x)
+
+get-var-name:
+	MultiVarDecl([VarSpec(varlist,_)]) -> varlist
 
 rules
 
@@ -39,7 +77,7 @@ rules
 rules
 
   desugar-single-decls =
-    topdown(try(desugar-single-decl))
+    topdown(try(desugar-single-decl)) 
  
   desugar-single-decl:
       SingleImportDecl(import-spec) -> MultiImportDecl([import-spec])
@@ -53,8 +91,10 @@ rules
   desugar-single-decl:
     SingleVarDecl(var-spec) -> MultiVarDecl([var-spec])
 
-rules
+  		
 
+rules
+ 
   desugar-opts = topdown(try(desugar-opt))
   
   desugar-opt: NoParameters() -> []
@@ -65,4 +105,10 @@ rules
  
   desugar-opt: NoIdentifiers() -> []
 
-  desugar-opt: NoExpressions() -> []
+  desugar-opt: NoExpressions() -> [] 
+  
+  desugar-opt : Bind(Bind(x,int),_) -> Bind(x,int) 
+  
+  desugar-opt: Assignment(AssignStmt(x,y)) -> AssignStmt(x,y)
+  
+  desugar-opt: Arguments(Arguments(x),_,_) -> Arguments(x) 

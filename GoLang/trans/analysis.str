@@ -6,19 +6,37 @@ imports
   nabl2runtime
   
   static-semantics
+  statics/blocks
+  statics/declarations  
+  statics/expressions
+  statics/main
+  statics/packages
+  statics/statements  
+  statics/types
+  statics/util
+  desugar
+  pp 
 
-  pp
-
-rules // Analysis
-
-  editor-analyze = nabl2-analyze(id)
-
+signature
+	constructors
+		Int : IntLit -> index
+		
+rules // Analysis 
+ 
+  editor-analyze = nabl2-analyze(desugar-all)
+ 
 rules // Debugging
   
   // Prints the abstract syntax ATerm of a selection.
   debug-show-aterm: (selected, _, _, path, project-path) -> (filename, result)
     with filename := <guarantee-extension(|"aterm")> path
        ; result   := selected
+
+  // Prints the desugared abstract syntax ATerm of a selection.
+  debug-show-aterm-desugar:
+    (selected, _, _, path, project-path) -> (filename, result)
+    with filename := <guarantee-extension(|"aterm")> path
+       ; result   := <desugar-all> selected
 
   // Prints the analyzed annotated abstract syntax ATerm of a selection.
   debug-show-analyzed: (selected, _, _, path, project-path) -> (filename, result)

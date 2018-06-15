@@ -29,6 +29,17 @@ rules
     Var{name} |-> d,
     d : ty.
 
+
+  [[ ArgumentsPackage(QualifiedIdent(PackageName(pkg),name)) ^ (s) : ty ]] :=
+    Pkg{pkg} -> s,
+    new s_qual,
+    Pkg{pkg} <=PUB= s_qual,
+    Var{name} -> s_qual,
+    Var{name} |-> d,
+    d : ty.
+    
+    
+
 /**
  * Composite literals -- https://golang.org/ref/spec#Composite_literals
  */
@@ -59,7 +70,7 @@ rules
 /**
  * Primary expressions -- https://golang.org/ref/spec#Primary_expressions
  */
- 
+  
   [[ Selector(expr,name) ^ (s) : ty ]] :=
     [[ expr ^ (s) : ty_e ]],
     ty_e == NamedT(d_ty), // FIXME Hardcoded for this one case
@@ -68,12 +79,48 @@ rules
     s_fld ---> s_ty,
     VarRef[[ name ^ (s_fld) : ty ]],
     false | note "TODO: Selector/2".
- 
-  [[ Arguments(expr,args) ^ (s) : ty ]] :=
-    [[ expr ^ (s) : FunT(ty_params,ty) ]],
+    
+    
+[[ ArgumentsPackage(QualifiedIdent(PackageName("fmt"),"Println"),args) ^ (s) : ty ]] :=
+ //   [[ expr ^ (s) : FunT(ty_params,ty) ]],
+    [[ args ^ (s) : ty_arg ]].
+//[[ ArgumentsPackage(QualifiedIdent(PackageName(pkg),name)) ^ (s) : ty ]] :=
+//    Pkg{pkg} -> s,
+//    new s_qual,
+//    Pkg{pkg} <=PUB= s_qual,
+//    Var{name} -> s_qual,
+//    Var{name} |-> d,
+//    d : ty.
+
+[[Arguments(somelist) ^(s) : ty]] := 
+	Map1T[[somelist ^(s) :ty2]]. 
+
+[[UnTypedArg(somearg) ^(s) : ty]] :=
+	[[somearg ^(s) :ty2]].
+	
+[[OperandName(id) ^(s) :ty ]] :=
+	Var{id} -> s.
+
+
+
+//[[Arguments([UnTypedArg(OperandName(_))]) ^(s) : ty]] := true. 
+
+
+  [[ ArgumentsPackage(QualifiedIdent(PackageName(pkg),name),args) ^ (s) : ty ]] :=
+ //   [[ expr ^ (s) : FunT(ty_params,ty) ]],
     Map1T[[ args ^ (s) : ty_args ]],
+//[[ ArgumentsPackage(QualifiedIdent(PackageName(pkg),name)) ^ (s) : ty ]] :=
+    Pkg{pkg} -> s,
+    new s_qual,
+    Pkg{pkg} <=PUB= s_qual,
+    Var{name} -> s_qual,
+    Var{name} |-> d,
+    d : ty.
+    
+
+    
     // check ty_args against ty_params
-    false | note "TODO: Arguments/2".
+//    false | note "TODO: Arguments/2".
  
 /**
  * Method expressions -- https://golang.org/ref/spec#Method_expressions
