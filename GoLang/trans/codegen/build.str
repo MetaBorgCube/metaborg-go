@@ -2,8 +2,6 @@ module codegen/build
 
 imports
 
-  //metaborg/stratego
-
   codegen/classes
   jasmin
 
@@ -80,8 +78,7 @@ rules
     f@JBCFile(JBCHeader(_, _, JBCClass(_, cn), _, _, _, _, _, _, _), _, _) -> fn
     where
       fn  := $[[dir]/[cn].j];
-      <fputs; fclose> (<jasmin-pp> f, <fopen> (fn, "w"))//;
-      //; <refresh-workspace-file> fn
+      <fputs; fclose> (<jasmin-pp> f, <fopen> (fn, "w"))
 
   run-jc-trim: 
     selected -> trimmed

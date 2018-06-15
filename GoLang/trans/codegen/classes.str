@@ -194,7 +194,7 @@ print-to-jbc: OperandName(name) ->
           , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
           )
         ),
-        ALOAD(VarNum("0"))
+        ALOAD(VarNum("1"))
 //      	ALOAD(VarNum(<int-to-string>index*))
       , INVOKEVIRTUAL(
           JBCMethodRef(
@@ -210,7 +210,6 @@ ref-occ := <nabl2-mk-occurrence(|"Var")> name;
 debug(!<concat-strings>["ref-occ"])
 //dec-occ := <nabl2-get-resolved-name(|a); Fst> ref-occ;
 //debug(!<concat-strings>["dec-occ"]);
-
 //index* := <get-term-index> ref-occ
      
 print-to-jbc:
@@ -244,28 +243,7 @@ StringLit(toPrint) ->
  result* := <concat>[valueList,varNames];
  debug(!<concat-strings>["result*"])
  
- 
- //TODO: Probably need some nabl2 type analysis.
- //Term indexes should reference to correct variables
- var-name-to-jbc: name -> ASTORE(VarNum("0"))
-// ASTORE(VarNum(<int-to-string>index*))
- where
- debug(!<concat-strings>["name"]);
- a       := <nabl2-get-ast-analysis> name;debug;
-ref-occ := <nabl2-mk-occurrence(|"Var")> name;debug;
-new-iset => i;
-<iset-add(|a)> i;
- index := <iset-get-index(|a)> ;
- debug(!<concat-strings>["index: "])
-//dec-occ := <nabl2-get-resolved-name(|a);  Fst> ref-occ;debug;
-// debug(!<concat-strings>["dec-occ"])
-//index* := <get-term-index> ref-occ
-//TODO replace when nabl2 is fixed.
-//get-term-index: Occurrence(_,_,TermIndex(_,index)) -> index
-
-//collect
-//annotation {} set-anno
-//get-annotations
+ var-name-to-jbc: Bind(name,index) -> ASTORE(VarNum(<int-to-string>index))
  
  literal-to-jbc: StringLit(val) ->  
  	LDC(val)

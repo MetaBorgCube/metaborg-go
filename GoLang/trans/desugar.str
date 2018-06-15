@@ -20,78 +20,51 @@ rules
     try(desugar-sourcefile);
     desugar-short-var-decls;
     desugar-single-decls;
-     desugar-test
-  ; desugar-opts
+    desugar-test;
+    desugar-opts
 
 //at the start of generate -> list parameter
 rules
 
   desugar-sourcefile:
       file@SourceFile(name, imports, decls) -> SourceFile(pkg-path, name, imports, decls)
-    with file-path := <origin-file> file;
-        // <collect-all(desugar-short-var-decl); make-index> decls;
-         pkg-path  := <current-language-relative-source-or-include-path;dirname> file-path
+    with 
+    	file-path := <origin-file> file;
+     	pkg-path  := <current-language-relative-source-or-include-path;dirname> file-path
 
 
 desugar-test:
       SourceFile(pkg-path, name, imports, decls) -> SourceFile(pkg-path, name, imports, declsnew)
     with 
-         declsnew := <annotate-var-decls> decls; debug //different strategy
-//     
-//
-//		
-//make-index2:
-//	(index, term) -> annotatedterm
-//	where
-//		<get-annotations> term; debug;
-//		annotatedterm := <set-annotations> (term, index); debug
+ 		declsnew := <annotate-var-decls> decls; debug //different strategy
 
-
- annotate-var-decls: ast -> annotated-ast
-  with
-  	var-decl-list := <collect-all(multivardecl)> ast; debug;
-    var-decl-indices := <make-index> var-decl-list; debug;
-    annotated-ast := <topdown(try(index-var-decl(|var-decl-indices)))> ast; debug
+annotate-var-decls: ast -> annotated-ast
+  	with
+		var-decl-list := <collect-all(multivardecl)> ast; debug;
+		var-decl-indices := <make-index> var-decl-list; debug;
+		annotated-ast := <topdown(try(index-var-decl(|var-decl-indices)))> ast; debug
     
 make-index:
 	multivardecls -> lst1
 	where
-		lst1 := <map(get-var-name); concat> multivardecls; debug;
-		result := <add-indices> lst1; debug
-//		result := <map(indexvardecl)> lst2; debug
+		lst1 := <map(get-var-name); concat> multivardecls; debug
   
-
 index-var-decl(|var-decl-indices): 
-  				MultiVarDecl([VarSpec(varlist,expr)]) -> MultiVarDecl([VarSpec(bindlst,expr)])
-  with
-//  	varlist := varlist; debug;
-//  	var-decl-indices := var-decl-indices; debug;
-  	bindlst:= <map(var-index(|var-decl-indices))> varlist; debug
- //    bindlst := <try(function-index(|x))> var-decl-indices; debug
- 		
-//  function-index(|varname):
-//	(index, varname) -> index
+	MultiVarDecl([VarSpec(varlist,expr)]) -> MultiVarDecl([VarSpec(bindlst,expr)])
+  	with
+  		bindlst:= <map(var-index(|var-decl-indices))> varlist; debug
 	
 var-index(|var-decl-indices):
 	varname -> Bind(varname,index)
 	where
-	index := <get-index> (varname, var-decl-indices); debug
-	
-	
-	
+		index := <get-index> (varname, var-decl-indices); debug
 	
 multivardecl:
 	MultiVarDecl(x) -> MultiVarDecl(x)
 
-//singlevardecl:
-//	SingleVarDecl(x) -> SingleVarDecl(x)
-	
 get-var-name:
 	MultiVarDecl([VarSpec(varlist,_)]) -> varlist
-//	
-//get-var-name:
-//	SingleVarDecl(VarSpec(ids,_)) -> ids
-//	 
+
 rules
 
   desugar-short-var-decls =
@@ -133,4 +106,4 @@ rules
 
   desugar-opt: NoExpressions() -> []
   
-   	desugar-opt : Bind(Bind(x,int),_) -> Bind(x,int)
+  desugar-opt : Bind(Bind(x,int),_) -> Bind(x,int)
