@@ -13,10 +13,11 @@ signature
     Elements   : ElementList -> LiteralValue-Inner
     Parameters : ParameterList -> Parameters-Inner
     Bind	   : StringLit * IntLit -> Bind
+    ArgumentsPackage : QualifiedIdent -> ArgumentsPackage
 
 rules
 
-  desugar-all =
+  desugar-all = 
     try(desugar-sourcefile);
     desugar-short-var-decls;
     desugar-single-decls;
@@ -36,13 +37,13 @@ rules
 desugar-test:
       SourceFile(pkg-path, name, imports, decls) -> SourceFile(pkg-path, name, imports, declsnew)
     with 
- 		declsnew := <annotate-var-decls> decls; debug //different strategy
+ 		declsnew := <annotate-var-decls> decls //different strategy
 
 annotate-var-decls: ast -> annotated-ast
   	with
-		var-decl-list := <collect-all(multivardecl)> ast; debug;
-		var-decl-indices := <make-index> var-decl-list; debug;
-		annotated-ast := <topdown(try(index-var-decl(|var-decl-indices)))> ast; debug
+		var-decl-list := <collect-all(multivardecl)> ast;
+		var-decl-indices := <make-index> var-decl-list; 
+		annotated-ast := <topdown(try(index-var-decl(|var-decl-indices)))> ast
     
 make-index:
 	multivardecls -> lst1
@@ -52,12 +53,12 @@ make-index:
 index-var-decl(|var-decl-indices): 
 	MultiVarDecl([VarSpec(varlist,expr)]) -> MultiVarDecl([VarSpec(bindlst,expr)])
   	with
-  		bindlst:= <map(var-index(|var-decl-indices))> varlist; debug
+  		bindlst:= <map(var-index(|var-decl-indices))> varlist
 	
 var-index(|var-decl-indices):
 	varname -> Bind(varname,index)
 	where
-		index := <get-index> (varname, var-decl-indices); debug
+		index := <get-index> (varname, var-decl-indices)
 	
 multivardecl:
 	MultiVarDecl(x) -> MultiVarDecl(x)

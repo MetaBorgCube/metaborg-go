@@ -125,7 +125,7 @@ rules
  */
  
   [[ ContinueStmt(label) ^ (s) ]] :=
-    LabelRef[[ label ^ (s) ]].
+    LabelRef[[ label ^ (s) ]]. 
 
 /**
  * Goto statements

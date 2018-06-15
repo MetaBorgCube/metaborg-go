@@ -73,9 +73,15 @@ rules
     Map1T[[ exprs ^ (s) : tys ]].
 
 
-  VarDecl[[ name ^ (s) : ty ]] :=
-    Var{name} <- s,
-    Var{name} : ty.
+VarDecl[[Bind(name, indexlit)^ (s) : ty ]] :=
+	Var{name} <- s,
+    Var{name} : ty,
+    Var{name}.index := indexlit.
+
+
+//  VarDecl[[ name ^ (s) : ty ]] :=
+//    Var{name} <- s,
+//    Var{name} : ty.
  
   VarRef[[ name ^ (s) : ty ]] :=
     Var{name} -> s,
