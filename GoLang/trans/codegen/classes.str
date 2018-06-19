@@ -212,10 +212,11 @@ print-to-jbc: OperandName(name) ->
      ] 
   where
 debug(!<concat-strings>["DEZE PRINTSTATEMENT: "]);
- a       := <nabl2-get-ast-analysis> name; 
+ a := <nabl2-get-ast-analysis> name; 
+ debug(!<concat-strings>["A:"]);
 ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
 debug(!<concat-strings>["ref-occ: "]);
-dec-occ := <nabl2-get-resolved-name(|a)> ref-occ;
+(dec-occ, _)  := <nabl2-get-resolved-name(|a)> ref-occ;
 debug(!<concat-strings>["dec-occ: "]);
 index := <nabl2-get-property(|a, "index")> dec-occ; 
 debug(!<concat-strings>["index: "]);

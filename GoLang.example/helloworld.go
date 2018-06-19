@@ -3,7 +3,6 @@ package main;
 import "fmt";
   
 func main(){    
-		x := "5";     
-		y := "10"; 
+		y := "test";
 		fmt.Println(y);        
 };                                           

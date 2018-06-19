@@ -76,7 +76,7 @@ rules
 VarDecl[[Bind(name, indexlit)^ (s) : ty ]] :=
 	Var{name} <- s,
     Var{name} : ty,
-    Var{name}.index := Int(indexlit).
+    Var{name}.index := indexlit.
 
 
 //  VarDecl[[ name ^ (s) : ty ]] :=
