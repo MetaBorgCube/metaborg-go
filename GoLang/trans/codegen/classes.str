@@ -114,14 +114,27 @@ block-to-jbc: Block(statements)->output*
   
 block-to-jbc: NoBlock()->[]
  
-  /*************************************************************************************
+/*************************************************************************************
 *****************************STMT-TO-JBC***********************************
 **************************************************************************************/ 
 stmt-to-jbc: DeclarationStmt(declaration) ->
  <declaration-stmt-to-jbc> declaration
  
-//stmt-to-jbc: Assignment(AssignStmt(toAssign,assignment)) ->
- 
+stmt-to-jbc: AssignStmt(toAssign,assignment) -> result
+where
+expressions := <map(expression-stmt-to-jbc);concat> assignment;
+operands := <map(assignment-operand-to-jbc);concat> toAssign;
+revertedOperands := <reverse>operands;
+result :=  <concat>[expressions,revertedOperands]
+
+assignment-operand-to-jbc:  OperandName(name) -> [result]
+  where
+ 	a := <nabl2-get-ast-analysis> name; 
+	ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
+	(dec-occ, _)  := <nabl2-get-resolved-name(|a)> ref-occ;
+	index := <nabl2-get-property(|a, "index")> dec-occ; 
+	type    := <nabl2-get-type(|a)> dec-occ;
+	result := <get-store(|index)> type
  
 stmt-to-jbc: ExpressionStmt(expression) ->
  <expression-stmt-to-jbc>expression
@@ -236,7 +249,8 @@ declaration-stmt-to-jbc: MultiVarDecl([VarSpec(names,Untyped(VarAssign(values)))
  where
 	valueList := <map(literal-to-jbc)>values;
 	varNames := <map(var-decl-to-jbc)>names;
-	result* := <concat>[valueList,varNames]
+	revertedVarNames := <reverse>varNames;
+	result* := <concat>[valueList,revertedVarNames]
  
 var-decl-to-jbc: Bind(name,index) -> result*
 where 
