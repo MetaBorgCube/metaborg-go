@@ -168,13 +168,14 @@ rules
    		
 [[ForStmt(( forclause,block))^(s) ]] :=
     new s_for,
+    	s_for ---> s,
    		[[forclause^(s_for)]],
-   		[[block^(s,s_for)]].
+   		[[block^(s_for)]].
    		
-[[ForClause(vardecl,expr,increase)^(s)]] :=
-[[vardecl ^(s) ]],
-[[expr ^(s)]],
-[[increase^(s) ]].
+[[ForClause(vardecl,expr,increase)^(s_for)]] :=
+	[[vardecl ^(s_for) ]],
+	[[expr ^(s_for)]],
+	[[increase^(s_for) ]].
 
  [[ IncDecStmt(varref) ^ (s) ]] :=
  	[[varref ^(s) ]].
