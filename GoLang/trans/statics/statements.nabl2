@@ -69,9 +69,9 @@ rules
 //    Map1T[[ exprs1 ^ (s) : lhs_tys ]],
 //    Map1T[[ exprs2 ^ (s) :rhs_tys ]].
 
-  [[ SumAssignStmt(exprs1, exprs2) ^ (s) ]] :=
-    Map1T[[ exprs1 ^ (s) : _ ]],
-    Map1T[[ exprs2 ^ (s) : _ ]].
+  [[ SumAssignStmt(exprs1, exprs2) ^ (s) : ty ]] :=
+    Map1T[[ exprs1 ^ (s) : ty ]],
+    Map1T[[ exprs2 ^ (s) : ty ]].
     
   [[ DifferenceAssignStmt(exprs1, exprs2) ^ (s) ]] :=
     Map1T[[ exprs1 ^ (s) : _ ]],

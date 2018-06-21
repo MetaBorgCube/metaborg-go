@@ -183,6 +183,21 @@ firstArg := <expression-stmt-to-jbc> x;
 secondArg := <expression-stmt-to-jbc> y;
 result := <concat>[firstArg, secondArg, [IADD()]]
 
+expression-stmt-to-jbc: Less(x, y) -> result
+where 
+firstArg := <expression-stmt-to-jbc> x;
+secondArg := <expression-stmt-to-jbc> y;
+truelt := <newname> "trueltlabel";
+falselt := <newname> "endltlabel";
+result := <concat>[firstArg, secondArg, 
+					[IF_ICMPLT(LabelRef(truelt)),  				
+  						ICONST_0(),
+  						GOTO(LabelRef(falselt)),
+  						JBCLabel(truelt),
+  						ICONST_1(),
+  						JBCLabel(falselt)]
+  					]
+
 expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"),Arguments([UnTypedArg(toPrint)])) -> [output*]
   where
    output* := <print-to-jbc> toPrint
@@ -270,10 +285,13 @@ get-print-type: IntT -> Int()
 **************************************************************************************/ 
 declaration-stmt-to-jbc: MultiVarDecl([VarSpec(names,Untyped(VarAssign(values)))]) -> result*
  where
-	valueList := <map(literal-to-jbc)>values;
+	valueList := <map(expression-stmt-to-jbc);concat>values;
+	 debug(!<concat-strings>["valuelist"]);
 	varNames := <map(var-decl-to-jbc)>names;
 	revertedVarNames := <reverse>varNames;
-	result* := <concat>[valueList,revertedVarNames]
+	debug(!<concat-strings>["revertedVarNames"]);
+	result* := <concat>[valueList,revertedVarNames];
+	debug(!<concat-strings>["result"])
  
 var-decl-to-jbc: Bind(name,index) -> result*
 where 

@@ -163,9 +163,9 @@ rules
     [[ expr2 ^ (s) : _ ]].
 
   // add_op
-  [[ Sum(expr1, expr2) ^ (s) : _ ]] :=
-    [[ expr1 ^ (s) : _ ]],
-    [[ expr2 ^ (s) : _ ]].
+  [[ Sum(expr1, expr2) ^ (s) : ty ]] :=
+    [[ expr1 ^ (s) : ty ]],
+    [[ expr2 ^ (s) : ty ]].
   [[ Difference(expr1, expr2) ^ (s) : _ ]] :=
     [[ expr1 ^ (s) : _ ]],
     [[ expr2 ^ (s) : _ ]].
