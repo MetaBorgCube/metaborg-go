@@ -19,7 +19,7 @@ imports
 
 signature
 	constructors
-		Int : IntLit -> index
+		Int : index
 		
 rules // Analysis 
  
