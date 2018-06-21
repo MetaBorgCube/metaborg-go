@@ -140,7 +140,6 @@ assignment-operand-to-jbc:  OperandName(name) -> [result]
  
 stmt-to-jbc: ExpressionStmt(expression) -> result
 	where
-		debug(!<concat-strings>["expression: "]) ;
  result := <expression-stmt-to-jbc>expression
  
 stmt-to-jbc: ForStmt((Condition(expression), block)) -> output*
@@ -186,6 +185,19 @@ firstArg := <expression-stmt-to-jbc> x;
 secondArg := <expression-stmt-to-jbc> y;
 result := <concat>[firstArg, secondArg, [IADD()]]
 
+expression-stmt-to-jbc: Difference(x, y) -> result
+where 
+firstArg := <expression-stmt-to-jbc> x;
+secondArg := <expression-stmt-to-jbc> y;
+result := <concat>[firstArg, secondArg, [ISUB()]]
+
+expression-stmt-to-jbc: Product(x, y) -> result
+where 
+firstArg := <expression-stmt-to-jbc> x;
+secondArg := <expression-stmt-to-jbc> y;
+result := <concat>[firstArg, secondArg, [IMUL()]]
+
+
 expression-stmt-to-jbc: Less(x, y) -> result
 where 
 firstArg := <expression-stmt-to-jbc> x;
@@ -230,19 +242,19 @@ result := <concat>[firstArg, secondArg,
   						ICONST_1(),
   						JBCLabel(falselt)]
   					]
+  					
 expression-stmt-to-jbc: Not(x) -> result
 where 
 firstArg := <expression-stmt-to-jbc> x;
 result := <concat>[firstArg,
 					[ICONST_1(),IXOR()]
   					]
-  	  					
-  			
-
-expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"), Arguments([UnTypedArg(toPrint)])) -> [output*]
+  
+expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), printmethod), Arguments(printlist)) -> [output*]
   where
   	 debug(!<concat-strings>["print"]);
-   output* := <print-to-jbc> toPrint
+   output* := <print-multiple-to-jbc(|printmethod)> printlist;
+   debug(!<concat-strings>["output"])
    
 //method call
 expression-stmt-to-jbc: ArgumentsPackage(methodName,_) -> [
@@ -281,21 +293,45 @@ get-load(|index): IntT ->  ILOAD(VarNum(<int-to-string>index))
 get-load(|index): BoolT ->  ILOAD(VarNum(<int-to-string>index))
 
 get-load(|index): StringT ->  ALOAD(VarNum(<int-to-string>index))
-	
-print-to-jbc:
-toprint -> 
-      [GETSTATIC(
+
+print-multiple-to-jbc(|printmethod): printlist -> 
+ <concat>[prints,[GETSTATIC(
+  JBCFieldRef(
+    CRef("java/lang/System") 
+  , FRef("out")
+  , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
+  )
+),
+LDC(""),
+INVOKEVIRTUAL(
+  JBCMethodRef(
+    CRef("java/io/PrintStream")
+  , MRef(printmethod*)
+  , JBCMethodDesc([Reference(CRef("java/lang/String"))], Void())
+  )
+)]
+]
+where
+printmethod* := <lower-case> printmethod;
+debug(!<concat-strings>["build print list: "]);
+prints := <map(printlist-to-prints);concat> printlist;
+ debug(!<concat-strings>["prints"])
+
+
+
+printlist-to-prints: UnTypedArg(toprint) -> 
+ [GETSTATIC(
           JBCFieldRef(
             CRef("java/lang/System") 
           , FRef("out")
           , JBCFieldDesc(Reference(CRef("java/io/PrintStream")))
           )
         )
-      ,print* 
+      , print* 
       , INVOKEVIRTUAL(
           JBCMethodRef(
             CRef("java/io/PrintStream")
-          , MRef("println")
+          , MRef("print")
           , JBCMethodDesc([[printType*]], Void())
           )
         )
@@ -305,9 +341,8 @@ toprint ->
     debug;
     //This causes to only arrow operandnames to print at the moment
     //the question is can we deduct the type of some expression
-    printType* := <get-print-type> toprint;
-    debug
- 
+    printType* := <get-print-type> toprint
+	 
 get-print-type: OperandName(name) -> result
  where
  	a := <nabl2-get-ast-analysis> name; 
@@ -331,12 +366,9 @@ get-print-type: IntT -> Int()
 declaration-stmt-to-jbc: MultiVarDecl([VarSpec(names,Untyped(VarAssign(values)))]) -> result*
  where
 	valueList := <map(expression-stmt-to-jbc);concat>values;
-	 debug(!<concat-strings>["valuelist"]);
 	varNames := <map(var-decl-to-jbc)>names;
 	revertedVarNames := <reverse>varNames;
-	debug(!<concat-strings>["revertedVarNames"]);
-	result* := <concat>[valueList,revertedVarNames];
-	debug(!<concat-strings>["result"])
+	result* := <concat>[valueList,revertedVarNames]
  
 var-decl-to-jbc: Bind(name,index) -> result*
 where 

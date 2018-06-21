@@ -82,7 +82,7 @@ rules
     false | note "TODO: Selector/2".
     
     
-[[ ArgumentsPackage(QualifiedIdent(PackageName("fmt"),"Println"),args) ^ (s) : ty ]] :=
+[[ ArgumentsPackage(QualifiedIdent(PackageName("fmt"),_),args) ^ (s) : ty ]] :=
     [[ args ^ (s) : ty_arg ]].
 
 [[Arguments(somelist) ^(s) : ty]] := 
