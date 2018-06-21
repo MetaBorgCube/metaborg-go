@@ -83,7 +83,7 @@ package-name-to-jbc: PackageName(name) ->
  /*************************************************************************************
 *****************************FUNCTION-DECLARATION-TO-JBC***********************************
 **************************************************************************************/ 
-function-declaration-to-jbc: FunctionDecl(FunctionName("main"), Function(_,block)) ->
+function-declaration-to-jbc: FunctionDecl(FunctionName("main"), Function(Signature(parameters, _),block)) ->
  JBCMethod(
       [PUBLIC(), STATIC()]
     , "main"
@@ -92,6 +92,10 @@ function-declaration-to-jbc: FunctionDecl(FunctionName("main"), Function(_,block
     , <concat>[[JBCLimitLocals("99")
       			, JBCLimitStack("99")],<block-to-jbc> block,[RETURN()]]
 )
+where 
+debug
+//WIP
+parameter-declaration-to-jbc: ParameterDecl(vars,_,type) -> []
 
 function-declaration-to-jbc: FunctionDecl(FunctionName(name), Function(_,block)) ->
  JBCMethod(
@@ -131,6 +135,7 @@ result :=  <concat>[expressions,revertedOperands]
 
 assignment-operand-to-jbc:  OperandName(name) -> [result]
   where
+  	debug(!<concat-strings>["condition"]) ;
  	a := <nabl2-get-ast-analysis> name; 
 	ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
 	(dec-occ, _)  := <nabl2-get-resolved-name(|a)> ref-occ;
@@ -146,9 +151,7 @@ stmt-to-jbc: ForStmt((Condition(expression), block)) -> output*
 	where
 	startfor := <newname> "startfor_";
 	condition := <expression-stmt-to-jbc> expression;
-	debug(!<concat-strings>["condition"]) ;
 	forblock := <block-to-jbc> block;
-	debug(!<concat-strings>["forblock"]) ;
 	endfor := <newname> "endfor_";
 	output* := <concat>[
 		[JBCLabel(startfor)],
@@ -156,8 +159,7 @@ stmt-to-jbc: ForStmt((Condition(expression), block)) -> output*
 		[IFEQ(LabelRef(endfor))],
 		forblock,
 		[GOTO(LabelRef(startfor))],
-		[JBCLabel(endfor)]];
-		debug(!<concat-strings>["output"]) 
+		[JBCLabel(endfor)]]
  
 stmt-to-jbc: IfStmt((_, expr, ifblock, elseblock)) -> output*
 	where
@@ -368,13 +370,23 @@ get-print-type: BoolT -> Int()
 /*************************************************************************************
 *************************DECLARATION-STMT-TO-JBC***********************************
 **************************************************************************************/ 
+//TODO CHECK IF THESE WORK
+declaration-stmt-to-jbc: MultiVarDecl([ VarSpec(_,Typed(_,NoVarAssign()))]) -> []
+
+declaration-stmt-to-jbc: MultiVarDecl([VarSpec(names,Typed(_,VarAssign(values)))]) -> result*
+ where
+	valueList := <map(expression-stmt-to-jbc);concat>values;
+	varNames := <map(var-decl-to-jbc)>names;
+	revertedVarNames := <reverse>varNames;
+	result* := <concat>[valueList,revertedVarNames]
+
 declaration-stmt-to-jbc: MultiVarDecl([VarSpec(names,Untyped(VarAssign(values)))]) -> result*
  where
 	valueList := <map(expression-stmt-to-jbc);concat>values;
 	varNames := <map(var-decl-to-jbc)>names;
 	revertedVarNames := <reverse>varNames;
 	result* := <concat>[valueList,revertedVarNames]
- 
+
 var-decl-to-jbc: Bind(name,index) -> result*
 where 
 	a := <nabl2-get-ast-analysis> name; 
