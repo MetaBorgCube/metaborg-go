@@ -148,6 +148,24 @@ expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Pri
   where
    output* := <print-to-jbc> toPrint
    
+   
+expression-stmt-to-jbc: ArgumentsPackage(methodName,_) -> [
+ 	NEW(CRef("main"))	
+	,DUP()					
+	,INVOKESPECIAL(			
+      JBCMethodRef(CRef("main"), MRef(Init()), JBCMethodDesc([], Void()))
+    ),
+ 	INVOKEVIRTUAL(
+      JBCMethodRef(
+        CRef("main")
+      , MRef(methodName)
+      //second one is return type first one is params again
+      //TODO: HANDLE ARGUMENTS AND RETURNS
+      , JBCMethodDesc([], Void())
+      )
+    )
+ ]
+   
 expression-stmt-to-jbc: expression -> [<literal-to-jbc> expression]
  
  //TODO: Implement return stmt
