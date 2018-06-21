@@ -352,13 +352,18 @@ get-print-type: OperandName(name) -> result
 	type    := <nabl2-get-type(|a)> dec-occ;
 	result := <get-print-type> type
 	
+//Literals
 get-print-type: IntLit(_) -> Int()
+
+get-print-type: BoolLit(_) -> Int()
  	
 get-print-type: StringLit(_) -> Reference(CRef("java/lang/String"))
- 
+//Types 
 get-print-type: StringT -> Reference(CRef("java/lang/String"))
  
 get-print-type: IntT -> Int()
+
+get-print-type: BoolT -> Int()
      
 /*************************************************************************************
 *************************DECLARATION-STMT-TO-JBC***********************************
@@ -376,6 +381,7 @@ where
 	ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
 	type    := <nabl2-get-type(|a)> ref-occ;
 	result* := <get-store(|index)> type
+	
 	
 get-store(|index): StringT -> ASTORE(VarNum(<int-to-string>index))
 

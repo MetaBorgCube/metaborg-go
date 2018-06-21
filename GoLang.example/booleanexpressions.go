@@ -6,6 +6,7 @@ func main(){
 		j,i := 6,6;   
 		y := false;
 		y = j < i;
+		
 		if y {
 			fmt.Println("j smaller than i" );
 		}else{
