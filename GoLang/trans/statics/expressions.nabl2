@@ -6,7 +6,7 @@ rules
  * Operands -- https://golang.org/ref/spec#Operands
  */
  
-  [[ IntLit(_) ^ (s) : _ ]].
+  [[ IntLit(_) ^ (s) : IntT() ]].
   [[ FloatLit(_) ^ (s) : _ ]].
   [[ ImaginaryLit(_) ^ (s) : _ ]].
   [[ RuneLit(_) ^ (s) : _ ]].

@@ -3,6 +3,9 @@ package main;
 import "fmt";
   
 func main(){    
-		y := "test";
-		fmt.Println(y);        
-};                                           
+		x := 3;
+		fmt.Println(x);
+		y := "Hello world";
+		fmt.Println(y);    
+};       
+                            
