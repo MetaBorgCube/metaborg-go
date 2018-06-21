@@ -14,6 +14,7 @@ signature
     Parameters : ParameterList -> Parameters-Inner
     Bind	   : StringLit * IntLit -> Bind
     ArgumentsPackage : QualifiedIdent -> ArgumentsPackage
+    Index 		: IntLit -> Index
 
 rules
 
@@ -109,6 +110,5 @@ rules
   
   desugar-opt : Bind(Bind(x,int),_) -> Bind(x,int) 
   
-  desugar-opt: Assignment(AssignStmt(x,y)) -> AssignStmt(x,y)
-  
+  desugar-opt: Assignment(x) -> x 
   desugar-opt: Arguments(Arguments(x),_,_) -> Arguments(x) 

@@ -1,5 +1,6 @@
 module statics/declarations
 
+
 rules
 
 /**
@@ -58,13 +59,14 @@ rules
   [[ MultiVarDecl(varspecs) ^ (s_decl, s) ]] :=
     Map1[[ varspecs ^ (s_decl, s) ]].
 
-  [[ VarSpec(names, Typed(type, NoVarAssign())) ^ (s_decl, s) ]] :=
+  [[ (names, Typed(type, NoVarAssign())) ^ (s_decl, s)]] :=
     Map1t(VarDecl)[[ names ^ (s) : ty ]],
     [[ type ^ (s, s_ty) : ty ]], new s_ty.
 
   [[ VarSpec(names, Typed(type, VarAssign(exprs))) ^ (s_decl, s) ]] :=
     Map1t(VarDecl)[[ names ^ (s) : ty ]],
-    [[ type ^ (s, s_ty) : ty ]], new s_ty,
+    [[ type ^ (s, s_ty) : ty ]], 
+    new s_ty,
     Map1t(VarDecl)[[ exprs ^ (s) : ty ]].
 
   [[ VarSpec(names, Untyped(VarAssign(exprs))) ^ (s_decl, s) ]] :=
@@ -73,7 +75,7 @@ rules
     Map1T[[ exprs ^ (s) : tys ]].
 
 
-VarDecl[[Bind(name, indexlit)^ (s) : ty ]] :=
+VarDecl[[Bind(name, indexlit)^ (s) :ty ]] :=
 	Var{name} <- s,
     Var{name} : ty,
     Var{name}.index := indexlit.

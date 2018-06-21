@@ -2,7 +2,9 @@ module statics/statements
 
 rules
 
-  [[ DeclarationStmt(decl) ^ (s) ]] :=
+//  [[ DeclarationStmt(decl) ^ (s) : ty]] :=
+//    [[ decl ^ (s, s) : ty]].
+  [[ DeclarationStmt(decl) ^ (s)]] :=
     [[ decl ^ (s, s) ]].
 
 /**
@@ -32,8 +34,8 @@ rules
  * Expression statements -- https://golang.org/ref/spec#Expression_statements
  */
  
-  [[ ExpressionStmt(expr) ^ (s) ]] :=
-    [[ expr ^ (s) : _ ]].
+  [[ ExpressionStmt(expr) ^ (s)]] :=
+    [[ expr ^ (s) : ty ]].
     
 /**
  * Send statements -- https://golang.org/ref/spec#Send_statements
@@ -48,7 +50,7 @@ rules
  */
  
   [[ IncStmt(expr) ^ (s) ]] :=
-    [[ expr ^ (s) : _ ]].
+    [[ expr ^ (s) : IntT() ]].
  
   [[ DecStmt(expr) ^ (s) ]] :=
     [[ expr ^ (s) : _ ]].
@@ -63,9 +65,14 @@ rules
 //    lhs_tys <`assignable`? rhs_tys.
 
   // add_op
+//  [[ SumAssignStmt(exprs1, exprs2) ^ (s) ]] :=
+//    Map1T[[ exprs1 ^ (s) : lhs_tys ]],
+//    Map1T[[ exprs2 ^ (s) :rhs_tys ]].
+
   [[ SumAssignStmt(exprs1, exprs2) ^ (s) ]] :=
     Map1T[[ exprs1 ^ (s) : _ ]],
     Map1T[[ exprs2 ^ (s) : _ ]].
+    
   [[ DifferenceAssignStmt(exprs1, exprs2) ^ (s) ]] :=
     Map1T[[ exprs1 ^ (s) : _ ]],
     Map1T[[ exprs2 ^ (s) : _ ]].
@@ -146,3 +153,28 @@ rules
  
   [[ DeferStmt(expr) ^ (s) ]] :=
     [[ expr ^ (s) : _ ]].
+    
+    //if statements
+    
+   [[IfStmt(( EmptyStmt(), booleanexpr, ifexpr, elsexpr)) ^(s) ]] :=
+   		[[booleanexpr ^(s) : BoolT()]],
+   		[[ifexpr ^(s) ]],
+   		[[elsexpr ^(s)]].
+   		
+ //switch statements //needs another rule or a desugar to parse the statements inside the list of expressions and clauses
+   [[SwitchStmt(( EmptyStmt(), simplestatement, listofexpressionsandclauses)) ^(s) ]] :=
+   		[[simplestatement^(s) : _ ]],
+   		Map1T[[listofexpressionsandclauses^(s) : _]].
+   		
+[[ForStmt(( forclause,block))^(s) ]] :=
+    new s_for,
+   		[[forclause^(s_for)]],
+   		[[block^(s,s_for)]].
+   		
+[[ForClause(vardecl,expr,increase)^(s)]] :=
+[[vardecl ^(s) ]],
+[[expr ^(s)]],
+[[increase^(s) ]].
+
+ [[ IncDecStmt(varref) ^ (s) ]] :=
+ 	[[varref ^(s) ]].
