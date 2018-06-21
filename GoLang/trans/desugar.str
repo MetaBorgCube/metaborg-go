@@ -43,14 +43,18 @@ desugar-test:
 annotate-var-decls: ast -> annotated-ast
   	with
 		var-decl-list := <collect-all(multivardecl)> ast;
-		var-decl-indices := <make-index> var-decl-list; 
-		annotated-ast := <topdown(try(index-var-decl(|var-decl-indices)))> ast
-    
-make-index:
-	multivardecls -> lst1
-	where
-		lst1 := <map(get-var-name); concat> multivardecls; debug
-  
+		param-decl-list := <collect-all(paramdecl)> ast;
+		paramdecl-names := <map(get-param-decl-var-name-list);concat> param-decl-list;
+		multivar-decl-names := <map(get-multi-var-decl-name-list); concat> var-decl-list; 
+		var-decl-indices := <concat>[multivar-decl-names,paramdecl-names];
+		temp := <topdown(try(index-var-decl(|var-decl-indices)))> ast;
+		annotated-ast := <topdown(try(index-param-decl(|var-decl-indices)))> temp
+
+index-param-decl(|var-decl-indices):
+	ParameterDecl(varlist,x,type) -> ParameterDecl(bindlst,x,type)
+	where 
+	 bindlst:= <map(var-index(|var-decl-indices))> varlist
+
 index-var-decl(|var-decl-indices): 
 	MultiVarDecl([VarSpec(varlist,expr)]) -> MultiVarDecl([VarSpec(bindlst,expr)])
   	with
@@ -64,8 +68,14 @@ var-index(|var-decl-indices):
 multivardecl:
 	MultiVarDecl(x) -> MultiVarDecl(x)
 
-get-var-name:
+paramdecl:
+	ParameterDecl(x,y,z) -> ParameterDecl(x,y,z)
+
+get-multi-var-decl-name-list:
 	MultiVarDecl([VarSpec(varlist,_)]) -> varlist
+	
+get-param-decl-var-name-list:
+	ParameterDecl(x,_,_) -> x
 
 rules
 
