@@ -83,15 +83,7 @@ rules
     
     
 [[ ArgumentsPackage(QualifiedIdent(PackageName("fmt"),"Println"),args) ^ (s) : ty ]] :=
- //   [[ expr ^ (s) : FunT(ty_params,ty) ]],
     [[ args ^ (s) : ty_arg ]].
-//[[ ArgumentsPackage(QualifiedIdent(PackageName(pkg),name)) ^ (s) : ty ]] :=
-//    Pkg{pkg} -> s,
-//    new s_qual,
-//    Pkg{pkg} <=PUB= s_qual,
-//    Var{name} -> s_qual,
-//    Var{name} |-> d,
-//    d : ty.
 
 [[Arguments(somelist) ^(s) : ty]] := 
 	Map1T[[somelist ^(s) :ty2]]. 
@@ -102,15 +94,8 @@ rules
 [[OperandName(id) ^(s) :ty ]] :=
 	Var{id} -> s.
 
-
-
-//[[Arguments([UnTypedArg(OperandName(_))]) ^(s) : ty]] := true. 
-
-
   [[ ArgumentsPackage(QualifiedIdent(PackageName(pkg),name),args) ^ (s) : ty ]] :=
- //   [[ expr ^ (s) : FunT(ty_params,ty) ]],
     Map1T[[ args ^ (s) : ty_args ]],
-//[[ ArgumentsPackage(QualifiedIdent(PackageName(pkg),name)) ^ (s) : ty ]] :=
     Pkg{pkg} -> s,
     new s_qual,
     Pkg{pkg} <=PUB= s_qual,
@@ -118,10 +103,9 @@ rules
     Var{name} |-> d,
     d : ty.
     
-
-    
-    // check ty_args against ty_params
-//    false | note "TODO: Arguments/2".
+  [[ Condition(somecondition) ^ (s)  ]] :=
+  [[ somecondition ^ (s) : ty  ]].
+ 
  
 /**
  * Method expressions -- https://golang.org/ref/spec#Method_expressions
@@ -179,9 +163,9 @@ rules
     [[ expr2 ^ (s) : _ ]].
 
   // add_op
-  [[ Sum(expr1, expr2) ^ (s) : _ ]] :=
-    [[ expr1 ^ (s) : _ ]],
-    [[ expr2 ^ (s) : _ ]].
+  [[ Sum(expr1, expr2) ^ (s) : ty ]] :=
+    [[ expr1 ^ (s) : ty ]],
+    [[ expr2 ^ (s) : ty ]].
   [[ Difference(expr1, expr2) ^ (s) : _ ]] :=
     [[ expr1 ^ (s) : _ ]],
     [[ expr2 ^ (s) : _ ]].

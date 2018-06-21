@@ -17,23 +17,15 @@ func main(){
 		j := 0;
 		for i < 10 {
 			for j < 10 {
-			fmt.Println(i);
-			fmt.Println(j);
-			
-			j = j + 1;
+				fmt.Println(i);
+				fmt.Println(j);
+				
+				j = j + 1;
 			};
 			j = 0;
 			i = i + 1;
 		};
 };       
 
-func test(){
-	x := 4;
-	fmt.Println(x);
-	y := "Hello world 2";
-	fmt.Println(y);   
-	fmt.Println("yo");
-	fmt.Println(4); 
-};
 
                             
