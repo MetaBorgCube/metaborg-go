@@ -89,7 +89,8 @@ function-declaration-to-jbc: FunctionDecl(FunctionName("main"), Function(_,block
     , "main"
     //TODO correct func signature
     , JBCMethodDesc([Array(Reference(CRef("java/lang/String")))], Void())
-    , <block-to-jbc> block
+    , <concat>[[JBCLimitLocals("99")
+      			, JBCLimitStack("99")],<block-to-jbc> block,[RETURN()]]
 )
 
 function-declaration-to-jbc: FunctionDecl(FunctionName(name), Function(_,block)) ->
@@ -98,19 +99,20 @@ function-declaration-to-jbc: FunctionDecl(FunctionName(name), Function(_,block))
     , name
     //TODO correct func signature
     , JBCMethodDesc([], Void()) 
-    , <block-to-jbc> block
+    , <concat>[[JBCLimitLocals("99")
+      			, JBCLimitStack("99")],<block-to-jbc> block,[RETURN()]]
 )
 
  /*************************************************************************************
 *****************************BLOCK-TO-JBC***********************************
 **************************************************************************************/ 
-block-to-jbc: Block(statements)->output*
+block-to-jbc: Block(statements)->statementsResult
  where
   stackInit := [JBCLimitLocals("99")
       			, JBCLimitStack("99")];
   debug(!<concat-strings>["Block stmt-to-jbc"]);
   statementsResult :=    <map(stmt-to-jbc);concat > statements;
-  output* := <concat>[stackInit,statementsResult, [RETURN()]]
+  output* := <concat>[stackInit,statementsResult]
   
 block-to-jbc: NoBlock()->[]
  
@@ -139,10 +141,26 @@ assignment-operand-to-jbc:  OperandName(name) -> [result]
 stmt-to-jbc: ExpressionStmt(expression) ->
  <expression-stmt-to-jbc>expression
  
+stmt-to-jbc: ForStmt((Condition(expression), block)) -> output*
+	where
+	startfor := <newname> "startfor_";
+	condition := <expression-stmt-to-jbc> expression;
+	debug(!<concat-strings>["condition"]) ;
+	forblock := <block-to-jbc> block;
+	debug(!<concat-strings>["forblock"]) ;
+	endfor := <newname> "endfor_";
+	output* := <concat>[
+		[JBCLabel(startfor)],
+		condition,
+		[IFEQ(LabelRef(endfor))],
+		forblock,
+		[GOTO(LabelRef(startfor))],
+		[JBCLabel(endfor)]];
+		debug(!<concat-strings>["output"]) 
+ 
 stmt-to-jbc: IfStmt((_, expr, ifblock, elseblock)) -> output*
 	where
 	ifExpression := <expression-stmt-to-jbc>expr;
-	debug(!<concat-strings>["ifExpression"]) ;
 	ifBlock := <block-to-jbc>ifblock;
 	elseBlock := <block-to-jbc>elseblock;
 	elsetrue* := <newname> "elsetrue_";
@@ -159,6 +177,26 @@ stmt-to-jbc: IfStmt((_, expr, ifblock, elseblock)) -> output*
 /*************************************************************************************
 *************************EXPRESSION-STMT-TO-JBC***********************************
 **************************************************************************************/ 
+expression-stmt-to-jbc: Sum(x, y) -> result
+where 
+firstArg := <expression-stmt-to-jbc> x;
+secondArg := <expression-stmt-to-jbc> y;
+result := <concat>[firstArg, secondArg, [IADD()]]
+
+expression-stmt-to-jbc: Less(x, y) -> result
+where 
+firstArg := <expression-stmt-to-jbc> x;
+secondArg := <expression-stmt-to-jbc> y;
+truelt := <newname> "trueltlabel";
+falselt := <newname> "endltlabel";
+result := <concat>[firstArg, secondArg, 
+					[IF_ICMPLT(LabelRef(truelt)),  				
+  						ICONST_0(),
+  						GOTO(LabelRef(falselt)),
+  						JBCLabel(truelt),
+  						ICONST_1(),
+  						JBCLabel(falselt)]
+  					]
 
 expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"),Arguments([UnTypedArg(toPrint)])) -> [output*]
   where
@@ -247,10 +285,13 @@ get-print-type: IntT -> Int()
 **************************************************************************************/ 
 declaration-stmt-to-jbc: MultiVarDecl([VarSpec(names,Untyped(VarAssign(values)))]) -> result*
  where
-	valueList := <map(literal-to-jbc)>values;
+	valueList := <map(expression-stmt-to-jbc);concat>values;
+	 debug(!<concat-strings>["valuelist"]);
 	varNames := <map(var-decl-to-jbc)>names;
 	revertedVarNames := <reverse>varNames;
-	result* := <concat>[valueList,revertedVarNames]
+	debug(!<concat-strings>["revertedVarNames"]);
+	result* := <concat>[valueList,revertedVarNames];
+	debug(!<concat-strings>["result"])
  
 var-decl-to-jbc: Bind(name,index) -> result*
 where 
