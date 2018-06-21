@@ -177,6 +177,11 @@ stmt-to-jbc: IfStmt((_, expr, ifblock, elseblock)) -> output*
 /*************************************************************************************
 *************************EXPRESSION-STMT-TO-JBC***********************************
 **************************************************************************************/ 
+expression-stmt-to-jbc: Sum(x, y) -> result
+where 
+firstArg := <expression-stmt-to-jbc> x;
+secondArg := <expression-stmt-to-jbc> y;
+result := <concat>[firstArg, secondArg, [IADD()]]
 
 expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"),Arguments([UnTypedArg(toPrint)])) -> [output*]
   where
