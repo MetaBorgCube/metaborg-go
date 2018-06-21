@@ -4,7 +4,7 @@ import "fmt";
   
 func main(){    
 		x := 3;
-		z := false;
+		z := true;
 		fmt.Println(x);
 		y := "Hello world";
 		fmt.Println(y);   
@@ -14,6 +14,8 @@ func main(){
 			fmt.Println("IK BEN EEN IF");
 		};
 		for z {
+			fmt.Println("FOR");
+			z = false;
 		};
 		test();
 	

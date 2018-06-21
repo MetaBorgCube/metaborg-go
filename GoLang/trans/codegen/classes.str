@@ -139,10 +139,26 @@ assignment-operand-to-jbc:  OperandName(name) -> [result]
 stmt-to-jbc: ExpressionStmt(expression) ->
  <expression-stmt-to-jbc>expression
  
+stmt-to-jbc: ForStmt((Condition(expression), block)) -> []
+	where
+	startfor := <newname> "startfor_";
+	condition := <expression-stmt-to-jbc> expression;
+	debug(!<concat-strings>["condition"]) ;
+	forblock := <block-to-jbc> block;
+	debug(!<concat-strings>["forblock"]) ;
+	endfor := <newname> "endfor_";
+	output* := <concat>[
+		[JBCLabel(startfor)],
+		condition,
+		[IFEQ(LabelRef(endfor))],
+		forblock,
+		[LabelRef(startfor)],
+		[JBCLabel(endfor)]];
+		debug(!<concat-strings>["output"]) 
+ 
 stmt-to-jbc: IfStmt((_, expr, ifblock, elseblock)) -> output*
 	where
 	ifExpression := <expression-stmt-to-jbc>expr;
-	debug(!<concat-strings>["ifExpression"]) ;
 	ifBlock := <block-to-jbc>ifblock;
 	elseBlock := <block-to-jbc>elseblock;
 	elsetrue* := <newname> "elsetrue_";
