@@ -89,7 +89,7 @@ function-declaration-to-jbc: FunctionDecl(FunctionName("main"), Function(_,block
     , "main"
     //TODO correct func signature
     , JBCMethodDesc([Array(Reference(CRef("java/lang/String")))], Void())
-    , <block-to-jbc> block
+    , <concat>[<block-to-jbc> block,[RETURN()]]
 )
 
 function-declaration-to-jbc: FunctionDecl(FunctionName(name), Function(_,block)) ->
@@ -98,7 +98,7 @@ function-declaration-to-jbc: FunctionDecl(FunctionName(name), Function(_,block))
     , name
     //TODO correct func signature
     , JBCMethodDesc([], Void()) 
-    , <block-to-jbc> block
+    , <concat>[<block-to-jbc> block,[RETURN()]]
 )
 
  /*************************************************************************************
@@ -110,7 +110,7 @@ block-to-jbc: Block(statements)->output*
       			, JBCLimitStack("99")];
   debug(!<concat-strings>["Block stmt-to-jbc"]);
   statementsResult :=    <map(stmt-to-jbc);concat > statements;
-  output* := <concat>[stackInit,statementsResult, [RETURN()]]
+  output* := <concat>[stackInit,statementsResult]
   
 block-to-jbc: NoBlock()->[]
  
