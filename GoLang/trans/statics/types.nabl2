@@ -34,6 +34,8 @@ signature
 
     Complex64T  : Type
     Complex128T : Type
+    
+    BoolT 		: Type
 
 rules
 

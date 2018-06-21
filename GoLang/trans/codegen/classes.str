@@ -120,6 +120,9 @@ block-to-jbc: NoBlock()->[]
 stmt-to-jbc: DeclarationStmt(declaration) ->
  <declaration-stmt-to-jbc> declaration
  
+//stmt-to-jbc: Assignment(AssignStmt(toAssign,assignment)) ->
+ 
+ 
 stmt-to-jbc: ExpressionStmt(expression) ->
  <expression-stmt-to-jbc>expression
  
@@ -182,6 +185,8 @@ expression-stmt-to-jbc:  OperandName(name) -> [result]
 	
 get-load(|index): IntT ->  ILOAD(VarNum(<int-to-string>index))
 
+get-load(|index): BoolT ->  ILOAD(VarNum(<int-to-string>index))
+
 get-load(|index): StringT ->  ALOAD(VarNum(<int-to-string>index))
 	
 print-to-jbc:
@@ -243,6 +248,8 @@ where
 get-store(|index): StringT -> ASTORE(VarNum(<int-to-string>index))
 
 get-store(|index): IntT -> ISTORE(VarNum(<int-to-string>index))
+
+get-store(|index): BoolT -> ISTORE(VarNum(<int-to-string>index))
   
 /*************************************************************************************
 *************************LITERAL-TO-JBC***********************************
