@@ -215,6 +215,29 @@ result := <concat>[firstArg, secondArg,
   						ICONST_1(),
   						JBCLabel(falselt)]
   					]
+//TODO: This doesnt compare strings.
+expression-stmt-to-jbc: Equal(x, y) -> result
+where 
+firstArg := <expression-stmt-to-jbc> x;
+secondArg := <expression-stmt-to-jbc> y;
+truelt := <newname> "trueltlabel";
+falselt := <newname> "endltlabel";
+result := <concat>[firstArg, secondArg, 
+					[IF_ICMPEQ(LabelRef(truelt)),  				
+  						ICONST_0(),
+  						GOTO(LabelRef(falselt)),
+  						JBCLabel(truelt),
+  						ICONST_1(),
+  						JBCLabel(falselt)]
+  					]
+expression-stmt-to-jbc: Not(x) -> result
+where 
+firstArg := <expression-stmt-to-jbc> x;
+result := <concat>[firstArg,
+					[ICONST_1(),IXOR()]
+  					]
+  	  					
+  			
 
 expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"), Arguments([UnTypedArg(toPrint)])) -> [output*]
   where
