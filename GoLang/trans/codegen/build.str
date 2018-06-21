@@ -1,0 +1,87 @@
+module codegen/build
+
+imports
+
+  codegen/classes
+  jasmin
+
+imports // Jasmin signatures
+
+  signatures/JasminXT-Header-sig
+  signatures/jasmin-sig
+
+rules
+
+  /**
+   * Transform GoLang AST to Jasmin AST and show the resulting ATerm.
+   *
+   * @type GoLang AST -> Jasmin AST
+   */
+  show-jbc:
+    (selected, _, ast, path, project-path) -> (filename, result)
+    with
+      filename := <guarantee-extension(|$[j.aterm])> path
+    ; result := <program-to-jbc;strip-annos> ast
+	; debug(!<concat-strings>["result"])    
+
+   /**
+   * Generate Jasmin files (.j files) for each of the classes in the GoLang AST.
+   *
+   * @type GoLang AST -> None
+   */
+  generate-jbc:
+    (selected, _, ast, path, project-path) -> None()
+    with
+      dir := <remove-extension> path
+    ; <try(mkdir)> dir
+    ; <program-to-jbc; strip-annos; write-jbc(|dir)> ast
+
+  /**
+   * Generate bytecode (.class files) for each of the classes in the GoLang AST.
+   *
+   * @type GoLang AST -> None
+   */
+  generate-jc:
+    (selected, _, ast, path, project-path) -> None()
+    with
+        dir := <remove-extension> path
+    ; <try(mkdir)> dir
+	; result := <program-to-jbc;strip-annos;set-jasmin-source(|path); jasmin-generate(|project-path)> ast
+
+  /**
+   * Generate bytecode (.class files) for each of the classes in the GoLang AST
+   * and run the main class.
+   */
+  run-jc:
+    (selected, _, ast, path, project-path) -> resultExecute
+    with    
+    filename := <guarantee-extension(|"temp")> path
+    ; debug(!<concat-strings>["Try to execute run-to-jbc ", project-path])
+	;dir := <remove-extension> path
+    ; <try(mkdir)> dir
+	; debug(!<concat-strings>["path: ", path])
+	; result := <program-to-jbc;strip-annos> ast
+	; debug(!<concat-strings>["result"])
+	; jbc-class* := <set-jasmin-source(|path)> result
+	; debug(!<concat-strings>["jbc-class"])
+	; <jasmin-generate(|project-path)> jbc-class*
+	; debug(!<concat-strings>["jasmin-generate"])
+    ; <debug> jbc-class*
+	; resultExecute := <jasmin-execute(|project-path)> jbc-class*
+	; debug(!<concat-strings>["Hd"])
+    
+rules
+
+  set-jasmin-source(|path) = JBCFile(JBCHeader(id, !JBCSource(path), id, id, id, id, id, id, id, id), id, id)
+  
+  write-jbc(|dir):
+    f@JBCFile(JBCHeader(_, _, JBCClass(_, cn), _, _, _, _, _, _, _), _, _) -> fn
+    where
+      fn  := $[[dir]/[cn].j];
+      <fputs; fclose> (<jasmin-pp> f, <fopen> (fn, "w"))
+
+  run-jc-trim: 
+    selected -> trimmed
+    with
+      (_, output) := <run-jc> (selected, None(), selected, "Main.spt", <prim("SSL_EXT_projectpath")>)
+    ; trimmed     := <string-replace(|"\n", "")> output

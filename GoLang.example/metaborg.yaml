@@ -1,0 +1,14 @@
+---
+id: org.example:GoLang.example:0.1.0-SNAPSHOT
+name: GoLang
+dependencies:
+  compile:
+  - org.example:GoLang:0.1.0-SNAPSHOT
+  - org.metaborg:jasmin:1.0.0-SNAPSHOT
+debug:
+  typesmart: false
+runtime:
+  nabl2:
+    debug: analysis files
+build:
+  useBuildSystemSpec: true

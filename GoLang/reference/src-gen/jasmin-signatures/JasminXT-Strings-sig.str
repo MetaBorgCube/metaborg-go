@@ -1,0 +1,12 @@
+module signatures/JasminXT-Strings-sig
+
+signature
+  constructors
+                   : String -> String
+                   : String -> StringChar
+                   : String -> HexDigit
+    String         : String -> Constant
+    Constant-Plhdr : Constant
+    String-Plhdr   : String
+    Constant-Plhdr : COMPLETION-INSERTION -> Constant
+    String-Plhdr   : COMPLETION-INSERTION -> String

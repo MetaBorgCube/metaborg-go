@@ -1,0 +1,5 @@
+module signatures/JasminXT-Whitespace-sig
+
+signature
+  constructors
+     : String -> EOF

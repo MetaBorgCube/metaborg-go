@@ -1,0 +1,28 @@
+module signatures/JasminXT-Types-sig
+
+signature
+  constructors
+    Byte                : BaseType
+    Char                : BaseType
+    Double              : BaseType
+    Float               : BaseType
+    Int                 : BaseType
+    Long                : BaseType
+    Short               : BaseType
+    Boolean             : BaseType
+                        : BaseType -> FieldType
+                        : ArrayType -> FieldType
+                        : FieldType -> ComponentType
+    BaseType-Plhdr      : BaseType
+    ArrayType-Plhdr     : ArrayType
+    ComponentType-Plhdr : ComponentType
+    FieldType-Plhdr     : FieldType
+    BaseType-Plhdr      : COMPLETION-INSERTION -> BaseType
+    ArrayType-Plhdr     : COMPLETION-INSERTION -> ArrayType
+    ComponentType-Plhdr : COMPLETION-INSERTION -> ComponentType
+    FieldType-Plhdr     : COMPLETION-INSERTION -> FieldType
+    Array               : ComponentType -> ArrayType
+    ArrayType-Plhdr     : ArrayType
+    ComponentType-Plhdr : ComponentType
+    ArrayType-Plhdr     : COMPLETION-INSERTION -> ArrayType
+    ComponentType-Plhdr : COMPLETION-INSERTION -> ComponentType

@@ -1,0 +1,7 @@
+module signatures/JasminXT-Exceptions-sig
+
+signature
+  constructors
+    ATHROW            : Instruction
+    Instruction-Plhdr : Instruction
+    Instruction-Plhdr : COMPLETION-INSERTION -> Instruction

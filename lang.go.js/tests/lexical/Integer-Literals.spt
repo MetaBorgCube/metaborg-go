@@ -1,7 +1,0 @@
-module Tests
-
-language lep
-
-test Add [[
-	0
-]] parse succeeds

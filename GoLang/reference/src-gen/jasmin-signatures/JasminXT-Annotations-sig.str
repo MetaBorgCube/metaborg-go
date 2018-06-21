@@ -1,0 +1,34 @@
+module signatures/JasminXT-Annotations-sig
+
+imports
+  signatures/JasminXT-Strings-sig
+  signatures/JasminXT-Numbers-sig
+  signatures/JasminXT-Names-sig
+  signatures/JasminXT-Descriptors-sig
+
+
+signature
+  constructors
+    RuntimeVisible             : ClassName * List(AnnotationField) -> Annotation
+    RuntimeInvisible           : ClassName * List(AnnotationField) -> Annotation
+    RuntimeVisibleParam        : Int * ClassName * List(AnnotationField) -> Annotation
+    RuntimeInvisibleParam      : Int * ClassName * List(AnnotationField) -> Annotation
+    AnnotationDefault          : AnnotationName * List(Constant) -> Annotation
+    AnnotationField            : AnnotationName * AnnotationDescriptor * List(Constant) -> AnnotationField
+    NestedAnnotation           : AnnotationName * Annotation -> AnnotationField
+    Int-Plhdr                  : Int
+    ClassName-Plhdr            : ClassName
+    AnnotationDescriptor-Plhdr : AnnotationDescriptor
+    Constant-Plhdr             : Constant
+    AnnotationField-Plhdr      : AnnotationField
+    AnnotationName-Plhdr       : AnnotationName
+    Annotation-Plhdr           : Annotation
+    Int-Plhdr                  : COMPLETION-INSERTION -> Int
+    ClassName-Plhdr            : COMPLETION-INSERTION -> ClassName
+    AnnotationDescriptor-Plhdr : COMPLETION-INSERTION -> AnnotationDescriptor
+    Constant-Plhdr             : COMPLETION-INSERTION -> Constant
+    AnnotationField-Plhdr      : COMPLETION-INSERTION -> AnnotationField
+    AnnotationName-Plhdr       : COMPLETION-INSERTION -> AnnotationName
+    Annotation-Plhdr           : COMPLETION-INSERTION -> Annotation
+    AnnotationField-Opt-Plhdr  : AnnotationField
+    Constant-Opt-Plhdr         : Constant

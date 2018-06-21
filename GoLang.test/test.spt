@@ -1,0 +1,8 @@
+module test
+
+language GoLang
+
+start symbol IntLit
+
+test octal integer [[0600]] parse succeeds
+
