@@ -138,8 +138,10 @@ assignment-operand-to-jbc:  OperandName(name) -> [result]
 	type    := <nabl2-get-type(|a)> dec-occ;
 	result := <get-store(|index)> type
  
-stmt-to-jbc: ExpressionStmt(expression) ->
- <expression-stmt-to-jbc>expression
+stmt-to-jbc: ExpressionStmt(expression) -> result
+	where
+		debug(!<concat-strings>["expression: "]) ;
+ result := <expression-stmt-to-jbc>expression
  
 stmt-to-jbc: ForStmt((Condition(expression), block)) -> output*
 	where
@@ -169,6 +171,7 @@ stmt-to-jbc: IfStmt((_, expr, ifblock, elseblock)) -> output*
 	ifExpression,
 	[IFEQ(LabelRef(elsetrue*))],
 	ifBlock,
+	[GOTO(LabelRef(endif*))],
 	[JBCLabel(elsetrue*)],
 	elseBlock,
 	[JBCLabel(endif*)]
@@ -197,12 +200,28 @@ result := <concat>[firstArg, secondArg,
   						ICONST_1(),
   						JBCLabel(falselt)]
   					]
+  					
+expression-stmt-to-jbc: Greater(x, y) -> result
+where 
+firstArg := <expression-stmt-to-jbc> x;
+secondArg := <expression-stmt-to-jbc> y;
+truelt := <newname> "trueltlabel";
+falselt := <newname> "endltlabel";
+result := <concat>[firstArg, secondArg, 
+					[IF_ICMPGT(LabelRef(truelt)),  				
+  						ICONST_0(),
+  						GOTO(LabelRef(falselt)),
+  						JBCLabel(truelt),
+  						ICONST_1(),
+  						JBCLabel(falselt)]
+  					]
 
-expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"),Arguments([UnTypedArg(toPrint)])) -> [output*]
+expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), "Println"), Arguments([UnTypedArg(toPrint)])) -> [output*]
   where
+  	 debug(!<concat-strings>["print"]);
    output* := <print-to-jbc> toPrint
    
-   
+//method call
 expression-stmt-to-jbc: ArgumentsPackage(methodName,_) -> [
  	NEW(CRef("main"))	
 	,DUP()					
@@ -260,6 +279,9 @@ toprint ->
      ]
     where 
     print* := <expression-stmt-to-jbc> toprint;
+    debug;
+    //This causes to only arrow operandnames to print at the moment
+    //the question is can we deduct the type of some expression
     printType* := <get-print-type> toprint;
     debug
  

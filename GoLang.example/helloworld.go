@@ -17,7 +17,7 @@ func main(){
 		j := 0;
 		for i < 10 {
 			for j < 10 {
-				fmt.Println(i);
+				fmt.Println(i+1);
 				fmt.Println(j);
 				
 				j = j + 1;
