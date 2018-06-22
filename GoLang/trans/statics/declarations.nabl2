@@ -56,30 +56,41 @@ rules
  * Var declarations -- https://golang.org/ref/spec#Variable_declarations
  */
 
-  [[ MultiVarDecl(varspecs) ^ (s_decl, s) ]] :=
+  [[ MultiVarDecl(varspecs) ^ (s_decl, s) ]] := 
     Map1[[ varspecs ^ (s_decl, s) ]].
+    
 
 [[VarSpec(names,Typed(typename, NoVarAssign()))^(s_decl, s) ]] :=
 	Map1T(VarDecl)[[ names ^ (s) : ty1 ]],
 	new s_ty,
-	[[ typename ^ (s, s_ty) : ty2 ]].
-//	ty1 == ty2.
+	Map1T[[ typename ^ (s, s_ty) : ty2 ]],
+	ty1 == ty2.
+	
+[[VarSpec(names,Typed(typename, VarAssign(exprs)))^(s_decl, s) ]] :=
+	Map1T(VarDecl)[[ names ^ (s) : tys ]],
+	new s_ty,
+	Map1T[[ typename ^ (s, s_ty) : tys ]],
+    Map1T[[ exprs ^ (s) : tys ]].
     
-    
-  [[ (names, Typed(type, NoVarAssign())) ^ (s_decl, s)]] :=
+  [[ VarSpec(names, Typed(type, NoVarAssign())) ^ (s_decl, s)]] :=
     Map1T(VarDecl)[[ names ^ (s) : ty ]],
     [[ type ^ (s, s_ty) : ty ]], new s_ty.
 
-  [[ VarSpec(names, Typed(type, VarAssign(exprs))) ^ (s_decl, s) ]] :=
-    Map1t(VarDecl)[[ names ^ (s) : ty ]],
-    [[ type ^ (s, s_ty) : ty ]], 
-    new s_ty,
-    Map1T[[ exprs ^ (s) : ty ]]. 
+ // [[ VarSpec(names, types) ^ (s_decl, s) ]] :=
+ //   Map1t(VarDecl)[[ names ^ (s) : tys ]].
+ //   [[types ^(s_decl, s) : tys]].
 
-
+//[[ Typed(type, VarAssign(exprs)) ^(s_decl, s) ]] :=
+//	    Map1T[[ type ^ (s, s_ty) : ty ]], 
+//    	new s_ty,
+//    	Map1T[[ exprs ^ (s) : tys ]].
+    	
+//[[Untyped(VarAssign(exprs))^(s_decl, s): tys]] :=
+//	 Map1T[[ exprs ^ (s) : tys ]].
+	 
   [[ VarSpec(names, Untyped(VarAssign(exprs))) ^ (s_decl, s) ]] :=
     // FIXME weird errors if lists are different length
-    Map1T(VarDecl)[[ names ^ (s) : tys ]],
+    Map1T(VarDecl)[[ names ^ (s) :tys ]],
     Map1T[[ exprs ^ (s) : tys ]].
 
 

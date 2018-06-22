@@ -39,9 +39,14 @@ signature
 
 rules
 
-  [[ TypeName(name) ^ (s, _) : NamedT(d_ty) ]] :=
+//  [[ TypeName(name) ^ (s, _) : NamedT(d_ty) ]] :=
+//    Type{name} -> s,
+//    Type{name} |-> d_ty.
+    
+    [[ TypeName(name) ^ (s, _) : ty ]] :=
     Type{name} -> s,
-    Type{name} |-> d_ty.
+    Type{name} |-> d_ty,
+    d_ty : ty.
 
   [[ QualifiedTypeName(QualifiedIdent(PackageName(pkg),name)) ^ (s, _) : NamedT(d_ty) ]] :=
     Pkg{pkg} -> s,
@@ -73,13 +78,24 @@ rules
   [[ StructType(fields) ^ (s, s_ty) : StructT(s_ty) ]] :=
     Map2[[ fields ^ (s, s_ty) ]].
 
-  [[ FieldDecl(field, tag) ^ (s, s_ty) ]] :=
-    [[ field ^ (s, s_ty) ]],
+  [[ FieldDecl(Field(names,type), tag) ^ (s, s_ty) ]] :=
+  	Map1t(VarDecl)[[ names ^ (s_ty) : ty1 ]],
+    [[ type ^ (s, s_ty) : ty2 ]],
     [[ tag ^ (s) ]].
 
-  [[ Field(names, type) ^ (s, s_ty) ]] :=
-    Map1t(VarDecl)[[ names ^ (s_ty) : ty ]],
-    [[ type ^ (s, s_ty) : ty ]].
+//  [[ FieldDecl(field, tag) ^ (s, s_ty) ]] :=
+//    [[ field ^ (s, s_ty) ]],
+//    [[ tag ^ (s) ]].    
+    
+//[ FieldDecl(field), NoTag()), 
+//FieldDecl(Field(["y"{TermIndex("helloworld.go", 171)}]{TermIndex("helloworld.go", 174)}, TypeName("int"{TermIndex("helloworld.go", 175)}){TermIndex("helloworld.go", 176)}){TermIndex("helloworld.go", 177)}, NoTag(){TermIndex("helloworld.go", 178)}){TermIndex("helloworld.go", 179)}            ]
+//  [[ Field(names, type) ^ (s, s_ty) ]] :=
+//    Map1t(VarDecl)[[ names ^ (s_ty) : ty ]],
+//    [[ type ^ (s, s_ty) : ty ]]. 
+//    Field(["x"], TypeName("int")
+  [[ Field(name, type) ^ (s, s_ty) ]] :=
+    Map1T(VarDecl)[[name ^ (s_ty) : ty ]],
+    [[ type ^ (s, s_ty) : ty2 ]].
 
   // FIXME qualified types
 
