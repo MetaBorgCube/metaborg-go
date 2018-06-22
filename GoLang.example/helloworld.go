@@ -2,17 +2,11 @@ package main;
 
 import "fmt";
   
-func main(){    
-		test();
-		
+func main(){  
+		test(2, "test");
 };      
 
-func test(y int){
-	x := 2;
+func test(x int, y string){
+	fmt.Println("hello world");
 };
-//
-//func test() int{
-//	return 1;
-//};
-
                             
