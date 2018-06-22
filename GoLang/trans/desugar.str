@@ -121,4 +121,5 @@ rules
   desugar-opt : Bind(Bind(x,int),_) -> Bind(x,int) 
   
   desugar-opt: Assignment(x) -> x 
+  desugar-opt: ReturnStmt(ReturnStmt(x)) -> ReturnStmt(x)
   desugar-opt: Arguments(Arguments(x),_,_) -> Arguments(x) 

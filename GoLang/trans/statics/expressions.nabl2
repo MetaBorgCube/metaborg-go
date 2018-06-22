@@ -39,8 +39,10 @@ rules
     Var{name} |-> d,
     d : ty.
     
+    [[ ArgumentsPackage(name,args) ^ (s) : ty ]] :=
+    [[ args ^ (s) : ty_arg ]].
     
-
+[[ NoArguments() ^ (_) : _ ]].
 /**
  * Composite literals -- https://golang.org/ref/spec#Composite_literals
  */
