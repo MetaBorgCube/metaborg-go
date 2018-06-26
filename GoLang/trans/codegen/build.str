@@ -34,7 +34,7 @@ rules
     with
       dir := <remove-extension> path
     ; <try(mkdir)> dir
-    ; <program-to-jbc; strip-annos; write-jbc(|dir)> ast
+    ; <program-to-jbc; strip-annos; map(write-jbc(|dir))> ast
 
   /**
    * Generate bytecode (.class files) for each of the classes in the GoLang AST.
@@ -46,7 +46,7 @@ rules
     with
         dir := <remove-extension> path
     ; <try(mkdir)> dir
-	; result := <program-to-jbc;strip-annos;set-jasmin-source(|path); jasmin-generate(|project-path)> ast
+	; result := <program-to-jbc;strip-annos;map(set-jasmin-source(|path)); map(jasmin-generate(|project-path))> ast
 
   /**
    * Generate bytecode (.class files) for each of the classes in the GoLang AST
@@ -62,12 +62,12 @@ rules
 	; debug(!<concat-strings>["path: ", path])
 	; result := <program-to-jbc;strip-annos> ast
 	; debug(!<concat-strings>["result"])
-	; jbc-class* := <set-jasmin-source(|path)> result
+	; jbc-class* := <map(set-jasmin-source(|path))> result
 	; debug(!<concat-strings>["jbc-class"])
-	; <jasmin-generate(|project-path)> jbc-class*
+	; <map(jasmin-generate(|project-path))> jbc-class*
 	; debug(!<concat-strings>["jasmin-generate"])
     ; <debug> jbc-class*
-	; resultExecute := <jasmin-execute(|project-path)> jbc-class*
+	; resultExecute := <Hd; jasmin-execute(|project-path)> jbc-class*
 	; debug(!<concat-strings>["Hd"])
     
 rules
@@ -77,7 +77,9 @@ rules
   write-jbc(|dir):
     f@JBCFile(JBCHeader(_, _, JBCClass(_, cn), _, _, _, _, _, _, _), _, _) -> fn
     where
+      debug(!<concat-strings>["jbc: "]);
       fn  := $[[dir]/[cn].j];
+      debug(!<concat-strings>["FN: "]);
       <fputs; fclose> (<jasmin-pp> f, <fopen> (fn, "w"))
 
   run-jc-trim: 

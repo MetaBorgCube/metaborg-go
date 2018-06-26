@@ -3,10 +3,11 @@ package main;
 import "fmt";
   
 func main(){  
-		test(2, "test");
+		fmt.Println("Hi");
+		y := 2;
+		test(y);
 };      
 
-func test(x int, y string){
-	fmt.Println("hello world");
-};
-                            
+func test(x int){
+	fmt.Println(x);
+};   

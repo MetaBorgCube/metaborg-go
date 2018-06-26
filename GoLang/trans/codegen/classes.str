@@ -43,7 +43,8 @@ rules
 **************************************************************************************/ 
  
 program-to-jbc : SourceFile(_,packageClause, _, functionDecls) -> 
-  JBCFile(
+	[initialize |
+  	[JBCFile(
     <package-clause-to-jbc> packageClause, 
     [],
 	[JBCMethod(
@@ -59,9 +60,58 @@ program-to-jbc : SourceFile(_,packageClause, _, functionDecls) ->
   	functions*
   	]
       	)
+  	]]
   	where 
-  	functions* := <map(function-declaration-to-jbc) > functionDecls
-  	
+  	functions* := <map(function-declaration-to-jbc) > functionDecls;
+  	initialize := <main-func> packageClause
+
+main-func: _ -> 
+JBCFile(
+    JBCHeader(
+    None()
+  , JBCSource("")
+  , JBCClass([PUBLIC()], "main")
+  , JBCSuper("java/lang/Object")
+  , []
+  , None()
+  , None()
+  , []
+  , []
+  , []
+  )
+	, [],
+	  [JBCMethod([PUBLIC()]
+    	, Init()
+    	, JBCMethodDesc([], Void())
+    	, [ ALOAD_0()
+      	, INVOKESPECIAL(
+          JBCMethodRef(CRef("java/lang/Object"), MRef(Init()), JBCMethodDesc([], Void()))
+        )
+      	, RETURN()
+      	]),
+      	JBCMethod(
+	      [PUBLIC(), STATIC()]
+	    , "main"
+	    , JBCMethodDesc([Array(Reference(CRef("java/lang/String")))], Void())
+	    ,  [
+		    JBCLimitLocals("99") , JBCLimitStack("99")
+		    ,NEW(CRef("go"))	
+	 		,DUP()					
+	 		,INVOKESPECIAL(			
+	          JBCMethodRef(CRef("go"), MRef(Init()), JBCMethodDesc([], Void()))
+	        ),
+	        INVOKEVIRTUAL(
+		      JBCMethodRef(
+		        CRef("go")
+		      , MRef("main")
+		      , JBCMethodDesc([], Void())
+		      )
+   			)
+   			, RETURN()
+	    ]
+	    )
+	  ]
+  )  	
   
   
 package-clause-to-jbc: PackageClause(packageName) ->
@@ -71,7 +121,7 @@ package-name-to-jbc: PackageName(name) ->
  JBCHeader(
     None()
   , JBCSource("")
-  , JBCClass([PUBLIC()], name)
+  , JBCClass([PUBLIC()], "go")
   , JBCSuper("java/lang/Object")
   , []
   , None()
@@ -83,15 +133,15 @@ package-name-to-jbc: PackageName(name) ->
  /*************************************************************************************
 *****************************FUNCTION-DECLARATION-TO-JBC*******************************
 **************************************************************************************/ 
-function-declaration-to-jbc: FunctionDecl(FunctionName("main"), Function(_,block)) ->
- JBCMethod(
-      [PUBLIC(), STATIC()]
-    , "main"
-    //TODO correct func signature
-    , JBCMethodDesc([Array(Reference(CRef("java/lang/String")))], Void())
-    , <concat>[[JBCLimitLocals("99")
-      			, JBCLimitStack("99")],<block-to-jbc> block,[RETURN()]]
-)
+//function-declaration-to-jbc: FunctionDecl(FunctionName("main"), Function(_,block)) ->
+// JBCMethod(
+//      [PUBLIC(), STATIC()]
+//    , "main"
+//    //TODO correct func signature
+//    , JBCMethodDesc([Array(Reference(CRef("java/lang/String")))], Void())
+//    , <concat>[[JBCLimitLocals("99")
+//      			, JBCLimitStack("99")],<block-to-jbc> block,[RETURN()]]
+//)
 
 function-declaration-to-jbc: FunctionDecl(FunctionName(name), Function(Signature(parameterDeclarations, _),block)) ->
  JBCMethod(
@@ -160,6 +210,9 @@ block-to-jbc: NoBlock()->[]
 /*************************************************************************************
 *****************************STMT-TO-JBC***********************************
 **************************************************************************************/ 
+ //TODO: Implement return stmt
+stmt-to-jbc: ReturnStmt(_) -> [] 
+
 stmt-to-jbc: DeclarationStmt(declaration) ->
  <declaration-stmt-to-jbc> declaration
  
@@ -298,17 +351,18 @@ expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), prin
 //method call
 expression-stmt-to-jbc: ArgumentsPackage(methodName,arguments) -> <concat>[
 [
- 	NEW(CRef("main"))	
-	,DUP()				
-	,INVOKESPECIAL(			
-      JBCMethodRef(CRef("main"), MRef(Init()), JBCMethodDesc([], Void()))
-    )
+// 	NEW(CRef("main"))	
+//	,DUP()				
+//	,INVOKESPECIAL(			
+//      JBCMethodRef(CRef("main"), MRef(Init()), JBCMethodDesc([], Void()))
+//    )
+	ALOAD_0()
     ],
     [expressions* ],
     [
  	INVOKEVIRTUAL(
       JBCMethodRef(
-        CRef("main")
+        CRef("go")
       , MRef(methodName)
       //second one is return type first one is params again
       //TODO: HANDLE RETURNS
@@ -348,9 +402,6 @@ debug(!<concat-strings>["expression from arg: "])
   debug(!<concat-strings>["arg type: "]) 
    
 expression-stmt-to-jbc: expression -> [<literal-to-jbc> expression]
- 
- //TODO: Implement return stmt
-expression-stmt-to-jbc: ReturnStmt(_) -> [] 
   
 expression-stmt-to-jbc:  OperandName(name) -> [result]
   where
