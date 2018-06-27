@@ -12,7 +12,9 @@ func main(){
 	x,y = 10,"test3";
 	fmt.Println(x);
 	fmt.Println(y);
-	
+	z,a := true, false;
+	fmt.Println(z);
+	fmt.Println(a);
 };       
 
                             

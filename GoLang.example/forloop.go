@@ -5,9 +5,10 @@ import "fmt";
 func main(){    
 		i := 0;
 		j := 0;
-		for i < 10 {
+		amount := 100;
+		for i < amount {
 			j = i;
-			for j < 10 {
+			for j < amount {
 				fmt.Print("*");
 				j = j + 1;
 			};
