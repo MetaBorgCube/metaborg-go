@@ -153,7 +153,7 @@ function-declaration-to-jbc: FunctionDecl(FunctionName(name), Function(Signature
       			, JBCLimitStack("99")]
       			,[JBCLabel(startlabel)]
       			,concattedParams
-      			,<block-to-jbc> block
+      			,<block-to-jbc(|startlabel,endlabel)> block
       			,[RETURN()]
       			,[JBCLabel(endlabel)]
       			]
@@ -178,14 +178,18 @@ where
   
 decl-param(|label1,label2,type): Bind(name,index) -> 
 [JBCVarDecl(
-		  index
+		  <int-to-string>index
 		, name
 		, JBCFieldDesc(<type-to-jbc>type)
 		, LabelRef(label1)
 		, LabelRef(label2)
-		)]
-where
-debug(!<concat-strings>["decl-param: "])
+		)
+//		LDC(Int("1"))
+//		,	storeOut
+		]
+//where
+//debug(!<concat-strings>["decl-param: "]);
+//	storeOut := <get-store(|index)> type
  
 type-to-jbc: TypeName("int") -> Int()
 
@@ -193,30 +197,32 @@ type-to-jbc: TypeName("string") ->  Reference(CRef("java/lang/String"))
 
 type-to-jbc: TypeName(_) ->  Int()
 
+
+
 /*************************************************************************************
 *****************************BLOCK-TO-JBC***********************************
 **************************************************************************************/ 
-block-to-jbc: Block(statements)->statementsResult
+block-to-jbc(|startlabel,endlabel): Block(statements)->statementsResult
  where
   stackInit := [JBCLimitLocals("99")
       			, JBCLimitStack("99")];
   debug(!<concat-strings>["Block stmt-to-jbc"]);
-  statementsResult :=    <map(stmt-to-jbc);concat > statements;
+  statementsResult :=    <map(stmt-to-jbc(|startlabel,endlabel));concat > statements;
   output* := <concat>[stackInit,statementsResult]
 
 
-block-to-jbc: NoBlock()->[]
+block-to-jbc(|startlabel,endlabel): NoBlock()->[]
  
 /*************************************************************************************
 *****************************STMT-TO-JBC***********************************
 **************************************************************************************/ 
  //TODO: Implement return stmt
-stmt-to-jbc: ReturnStmt(_) -> [] 
+stmt-to-jbc(|startlabel,endlabel): ReturnStmt(_) -> [] 
 
-stmt-to-jbc: DeclarationStmt(declaration) ->
- <declaration-stmt-to-jbc> declaration
+stmt-to-jbc(|startlabel,endlabel): DeclarationStmt(declaration) ->
+ <declaration-stmt-to-jbc(|startlabel,endlabel)> declaration
  
-stmt-to-jbc: AssignStmt(toAssign,assignment) -> result
+stmt-to-jbc(|startlabel,endlabel): AssignStmt(toAssign,assignment) -> result
 where
 expressions := <map(expression-stmt-to-jbc);concat> assignment;
 operands := <map(assignment-operand-to-jbc);concat> toAssign;
@@ -233,15 +239,15 @@ assignment-operand-to-jbc:  OperandName(name) -> [result]
 	type    := <nabl2-get-type(|a)> dec-occ;
 	result := <get-store(|index)> type
  
-stmt-to-jbc: ExpressionStmt(expression) -> result
+stmt-to-jbc(|startlabel,endlabel): ExpressionStmt(expression) -> result
 	where
  result := <expression-stmt-to-jbc>expression
  
-stmt-to-jbc: ForStmt((Condition(expression), block)) -> output*
+stmt-to-jbc(|startlabel,endlabel): ForStmt((Condition(expression), block)) -> output*
 	where
 	startfor := <newname> "startfor_";
 	condition := <expression-stmt-to-jbc> expression;
-	forblock := <block-to-jbc> block;
+	forblock := <block-to-jbc(|startlabel,endlabel)> block;
 	endfor := <newname> "endfor_";
 	output* := <concat>[
 		[JBCLabel(startfor)],
@@ -251,11 +257,11 @@ stmt-to-jbc: ForStmt((Condition(expression), block)) -> output*
 		[GOTO(LabelRef(startfor))],
 		[JBCLabel(endfor)]]
  
-stmt-to-jbc: IfStmt((_, expr, ifblock, elseblock)) -> output*
+stmt-to-jbc(|startlabel,endlabel): IfStmt((_, expr, ifblock, elseblock)) -> output*
 	where
 	ifExpression := <expression-stmt-to-jbc>expr;
-	ifBlock := <block-to-jbc>ifblock;
-	elseBlock := <block-to-jbc>elseblock;
+	ifBlock := <block-to-jbc(|startlabel,endlabel)>ifblock;
+	elseBlock := <block-to-jbc(|startlabel,endlabel)>elseblock;
 	elsetrue* := <newname> "elsetrue_";
 	endif* := <newname> "endif_";
 	output* := <concat>[
@@ -351,11 +357,11 @@ expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), prin
 //method call
 expression-stmt-to-jbc: ArgumentsPackage(methodName,arguments) -> <concat>[
 [
-// 	NEW(CRef("main"))	
-//	,DUP()				
-//	,INVOKESPECIAL(			
-//      JBCMethodRef(CRef("main"), MRef(Init()), JBCMethodDesc([], Void()))
-//    )
+//// 	NEW(CRef("main"))	
+////	,DUP()				
+////	,INVOKESPECIAL(			
+////      JBCMethodRef(CRef("main"), MRef(Init()), JBCMethodDesc([], Void()))
+////    )
 	ALOAD_0()
     ],
     [expressions* ],
@@ -372,6 +378,7 @@ expression-stmt-to-jbc: ArgumentsPackage(methodName,arguments) -> <concat>[
     ]
  ]
  where
+ debug(!<concat-strings>["jemoederopeenbakfiets: "]);
  params* := <function-call-parameter-types> arguments;
 debug(!<concat-strings>["arguments of method call: "]);
 expressions* := <function-call-parameter-expressions> arguments; 
@@ -493,22 +500,40 @@ get-jbc-type: BoolT -> Int()
 *************************DECLARATION-STMT-TO-JBC***********************************
 **************************************************************************************/ 
 //TODO CHECK IF THESE WORK
-declaration-stmt-to-jbc: MultiVarDecl([ VarSpec(_,Typed(_,NoVarAssign()))]) -> []
+declaration-stmt-to-jbc(|startlabel,endlabel): MultiVarDecl([ VarSpec(_,Typed(_,NoVarAssign()))]) -> []
 
-declaration-stmt-to-jbc: MultiVarDecl([VarSpec(names,Typed(_,VarAssign(values)))]) -> result*
+declaration-stmt-to-jbc(|startlabel,endlabel): MultiVarDecl([VarSpec(names,Typed(_,VarAssign(values)))]) -> result*
  where
 	valueList := <map(expression-stmt-to-jbc);concat>values;
 	varNames := <map(var-decl-to-jbc)>names;
 	revertedVarNames := <reverse>varNames;
-	result* := <concat>[valueList,revertedVarNames]
+	declList := <map(var-decl-to-jbc-decl(|startlabel,endlabel));concat> names;
+	result* := <concat>[declList,valueList,revertedVarNames]
 
-declaration-stmt-to-jbc: MultiVarDecl([VarSpec(names,Untyped(VarAssign(values)))]) -> result*
+declaration-stmt-to-jbc(|startlabel,endlabel): MultiVarDecl([VarSpec(names,Untyped(VarAssign(values)))]) -> result*
  where
 	valueList := <map(expression-stmt-to-jbc);concat>values;
 	varNames := <map(var-decl-to-jbc)>names;
 	revertedVarNames := <reverse>varNames;
-	result* := <concat>[valueList,revertedVarNames]
-
+	declList := <map(var-decl-to-jbc-decl(|startlabel,endlabel));concat> names;
+	debug(!<concat-strings>["declList: "]);
+	result* := <concat>[declList,valueList,revertedVarNames]
+	
+	
+var-decl-to-jbc-decl(|startlabel,endlabel): Bind(name,index) ->
+[JBCVarDecl(
+		  <int-to-string>index
+		, name
+		, JBCFieldDesc(fieldType)
+		, LabelRef(startlabel)
+		, LabelRef(endlabel)
+		)]
+where
+	a := <nabl2-get-ast-analysis> name; 
+	ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
+	type    := <nabl2-get-type(|a)> ref-occ;
+	fieldType := <get-jbc-type> type;
+	debug(!<concat-strings>["fieldType: "])
 var-decl-to-jbc: Bind(name,index) -> result*
 where 
 	a := <nabl2-get-ast-analysis> name; 
@@ -516,13 +541,17 @@ where
 	type    := <nabl2-get-type(|a)> ref-occ;
 	result* := <get-store(|index)> type
 	
-	
 get-store(|index): StringT -> ASTORE(VarNum(<int-to-string>index))
 
 get-store(|index): IntT -> ISTORE(VarNum(<int-to-string>index))
 
 get-store(|index): BoolT -> ISTORE(VarNum(<int-to-string>index))
+
+get-store(|index): TypeName("int") -> ISTORE(VarNum(<int-to-string>index))
   
+get-store(|index): TypeName("string") -> ASTORE(VarNum(<int-to-string>index))
+
+get-store(|index): TypeName(_) -> ISTORE(VarNum(<int-to-string>index))
 /*************************************************************************************
 *************************LITERAL-TO-JBC***********************************
 **************************************************************************************/ 
