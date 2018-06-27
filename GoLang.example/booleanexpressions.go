@@ -3,7 +3,7 @@ package main;
 import "fmt";
   
 func main(){ 
-		j,i := 6,-1;   
+		j,i := 6,1;   
 		y := false;
 		y = j < i;
 		
