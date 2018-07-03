@@ -1,0 +1,13 @@
+module JasminTypes
+
+language GoLang
+start symbol SourceFile
+
+//Work in progress
+//test expression class type 1 [[
+//package main;
+//	  
+//	func main(){  
+//			fmt.Println([["TEST"]]);
+//	};      
+//]] run get-type to StringT()

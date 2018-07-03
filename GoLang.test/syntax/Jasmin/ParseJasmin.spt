@@ -1,0 +1,158 @@
+module ParseJasmin
+
+language GoLang
+
+test parse [[
+  	package main;
+	  
+	func main(){  
+			fmt.Println("TEST");
+	};      
+]] 0 errors
+
+test parseAssignmentsAndDeclarations [[
+  	package main;
+
+	import "fmt";
+	  
+	func main(){    
+		var a int;
+		a = 3;
+		fmt.Println("a: ", a);
+		
+		var b int = 4;
+		fmt.Println("b: ", b);
+		
+		c,d,e := 2,"test",true;
+		fmt.Println("c: ", c);
+		fmt.Println("d: " , d);
+		fmt.Println("e: ", e);
+		
+		c,d = 4,"test2";
+		fmt.Println("c: ", c);
+		fmt.Println("d: " , d);
+		
+		e,c = false,11;
+		fmt.Println("c: ", c);
+		fmt.Println("e: " , e);
+	
+	};         
+]] 0 errors
+
+test booleanExpressions [[
+  	package main;
+	
+	import "fmt";
+	  
+	func main(){ 
+			j,i := 6,9;   
+			y := false;
+			y = j < i;
+			
+			if y {
+				fmt.Println("j: ", j, " is smaller than i: ",i );
+			}else{
+				fmt.Println("j: " , j, " not smaller than i: ",i);
+			};
+			y = j > i;
+			if y {
+				fmt.Println("j: ", j, " is greater than i: ",i );
+			}else{
+				fmt.Println("j: " , j, " not greater than i:",i);
+			};
+			y = j == i;
+			if y {
+				fmt.Println("j: ", j, " equals i: ",i );
+			}else{
+				fmt.Println("j: " , j, " not equals i: ",i);
+			};
+			y = !y;
+			if y {
+				fmt.Println("j: ", j, " not equals i: ",i );
+			}else{
+				fmt.Println("j: " , j, " not not equals i:",i);
+			};
+	
+	};       
+         
+]] 0 errors
+
+test parseForloop [[
+	package main;
+
+	import "fmt";
+	  
+	func main(){    
+			i := 0;
+			j := 0;
+			amount := 50;
+			for i < amount {
+				j = i;
+				for j < amount {
+					fmt.Print("*");
+					j = j + 1;
+				};
+				fmt.Println("");
+				i = i + 1;
+			};
+			
+		
+	};         
+         
+]] 0 errors
+
+test parseFunctions [[
+	package main;
+
+	import "fmt";
+	  
+	func main(){    
+			first(0, "Hello world");
+	};       
+	
+	func first(x int, y string){
+		fmt.Println("First function");
+		fmt.Println("With param x: ", x);
+		fmt.Println("With param y: ", y);
+		for x < 10 {
+			fmt.Println("x: ", x);
+			if x > 8 {
+				second();
+			};
+		
+			x = x + 1;
+		
+		};
+	};
+	
+	func second(){
+		fmt.Println("Second function");
+	};   
+         
+]] 0 errors
+
+test parseIntegerExpressions [[
+	package main;
+
+	import "fmt";
+	  
+	func main(){    
+			x,y := 4,5;
+			fmt.Println("x: ",x," y: ",y);
+			x = x + y;
+			fmt.Println("x = x + y = ",x );
+			x = x - y;
+			fmt.Println("x = x 	- y = ",x );
+			x = x * y;
+			fmt.Println("x = x * y = " ,x);
+	};      
+         
+]] 0 errors
+
+                           
+                            
+
+
+   
+                           
+                            
