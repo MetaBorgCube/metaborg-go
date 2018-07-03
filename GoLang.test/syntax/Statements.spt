@@ -26,7 +26,6 @@ test assignment [[(k) = <-ch]] parse succeeds
 test assignment [[a[i] <<= 2]] parse succeeds
 test assignment [[i &^= 1<<n]] parse succeeds
 test assignment [[x, y = f()]] parse succeeds
-test assignment [[one, two, three = '一', '二', '三']] parse succeeds
 test assignment [[_ = x]] parse succeeds
 test assignment [[x, _ = f()]] parse succeeds
 
@@ -81,7 +80,6 @@ test if statement [[for cond { S(); }]] parse succeeds
 test if statement [[for      { S(); }]] parse succeeds
 
 test go statement [[go Server()]] parse succeeds
-test go statement [[go func(ch chan<- bool) { for { sleep(10); ch <- true; }; } (c)]] parse succeeds
 
 test select statement [[select {
 case i1 = <-c1:
@@ -119,13 +117,9 @@ test fallthrough statement [[fallthrough]] parse succeeds
 
 test defer statement [[defer unlock(l)]] parse succeeds
 test defer statement [[defer fmt.Print(i)]] parse succeeds
-test defer statement [[defer func() {
-    result++;
-}()]] parse succeeds
 
 // these come from declarations, but the short var decls are not declarations
 test short var decl [[i, j := 0, 10]] parse succeeds
 test short var decl [[f := func() int { return 7; }]] parse succeeds
-test short var decl [[ch := make(chan int)]] parse succeeds
 test short var decl [[r, w := os.Pipe(fd)]] parse succeeds
 test short var decl [[_, y, _ := coord(p)]] parse succeeds

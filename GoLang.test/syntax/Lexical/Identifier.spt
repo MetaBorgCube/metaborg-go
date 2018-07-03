@@ -7,9 +7,7 @@ start symbol Identifier
 test single letter identifier [[a]] parse succeeds
 test identifier starting with underscore [[_x9]] parse succeeds
 test captialized identifier [[ThisVariableIsExported]] parse succeeds
-test unicode identifier [[αβ]] parse succeeds
 
-test break is reserved [[break]] parse fails
 test case is reserved [[case]] parse fails
 test chan is reserved [[chan]] parse fails
 test const is reserved [[const]] parse fails

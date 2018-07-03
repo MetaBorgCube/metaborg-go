@@ -41,8 +41,6 @@ test primary expression [[f(3.1415, true)]] parse succeeds
 test primary expression [[Point{1, 2}]] parse succeeds
 test primary expression [[m["foo"] ]] parse succeeds
 test primary expression [[s[i : j + 1] ]] parse succeeds
-test primary expression [[obj.color]] parse succeeds
-test primary expression [[f.p[i].x()]] parse succeeds
 
 test method expression [[t.Mv]] parse succeeds
 test method expression [[T.Mv]] parse succeeds

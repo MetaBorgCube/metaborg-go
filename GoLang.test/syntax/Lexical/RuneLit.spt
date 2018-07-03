@@ -5,8 +5,6 @@ language GoLang
 start symbol RuneLit
 
 test rune 1 [['a']] parse succeeds
-test rune 2 [['ä']] parse succeeds
-test rune 3 [['本']] parse succeeds
 test rune 4 [['\t']] parse succeeds
 test rune 5 [['\000']] parse succeeds
 test rune 6 [['\007']] parse succeeds
@@ -19,5 +17,3 @@ test rune 12 [['\'']] parse succeeds         // rune literal containing single q
 test rune 13 [['aa']] parse fails         // illegal: too many characters
 test rune 14 [['\xa']] parse fails        // illegal: too few hexadecimal digits
 test rune 15 [['\0']] parse fails         // illegal: too few octal digits
-test rune 16 [['\uDFFF']] parse fails     // illegal: surrogate half
-test rune 17 [['\U00110000']] parse fails // illegal: invalid Unicode code point
