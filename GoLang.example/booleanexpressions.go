@@ -3,14 +3,14 @@ package main;
 import "fmt";
   
 func main(){ 
-		j,i := 6,1;   
+		j,i := 6,9;   
 		y := false;
 		y = j < i;
 		
 		if y {
 			fmt.Println("j: ", j, " is smaller than i: ",i );
 		}else{
-			fmt.Println("j: " , j, " not smaller than i:",i);
+			fmt.Println("j: " , j, " not smaller than i: ",i);
 		};
 		y = j > i;
 		if y {
@@ -22,7 +22,7 @@ func main(){
 		if y {
 			fmt.Println("j: ", j, " equals i: ",i );
 		}else{
-			fmt.Println("j: " , j, " not equals i:",i);
+			fmt.Println("j: " , j, " not equals i: ",i);
 		};
 		y = !y;
 		if y {

@@ -22,10 +22,9 @@ rules
     with
       filename := <guarantee-extension(|$[j.aterm])> path
     ; result := <program-to-jbc;strip-annos> ast
-	; debug(!<concat-strings>["result"])    
 
    /**
-   * Generate Jasmin files (.j files) for each of the classes in the GoLang AST.
+   * Generate Jasmin files (.j files) for each of the packages in the GoLang AST.
    *
    * @type GoLang AST -> None
    */
@@ -34,19 +33,19 @@ rules
     with
       dir := <remove-extension> path
     ; <try(mkdir)> dir
-    ; <program-to-jbc; strip-annos; write-jbc(|dir)> ast
+    ; <program-to-jbc; strip-annos; map(write-jbc(|dir))> ast
 
   /**
-   * Generate bytecode (.class files) for each of the classes in the GoLang AST.
+   * Generate bytecode (.class files) for each of the packages in the GoLang AST.
    *
    * @type GoLang AST -> None
    */
   generate-jc:
     (selected, _, ast, path, project-path) -> None()
     with
-        dir := <remove-extension> path
+      dir := <remove-extension> path
     ; <try(mkdir)> dir
-	; result := <program-to-jbc;strip-annos;set-jasmin-source(|path); jasmin-generate(|project-path)> ast
+	  ; result := <program-to-jbc;strip-annos;map(set-jasmin-source(|path)); map(jasmin-generate(|project-path))> ast
 
   /**
    * Generate bytecode (.class files) for each of the classes in the GoLang AST
@@ -56,19 +55,12 @@ rules
     (selected, _, ast, path, project-path) -> resultExecute
     with    
     filename := <guarantee-extension(|"temp")> path
-    ; debug(!<concat-strings>["Try to execute run-to-jbc ", project-path])
-	;dir := <remove-extension> path
-    ; <try(mkdir)> dir
-	; debug(!<concat-strings>["path: ", path])
+	; dir := <remove-extension> path
+  ; <try(mkdir)> dir
 	; result := <program-to-jbc;strip-annos> ast
-	; debug(!<concat-strings>["result"])
-	; jbc-class* := <set-jasmin-source(|path)> result
-	; debug(!<concat-strings>["jbc-class"])
-	; <jasmin-generate(|project-path)> jbc-class*
-	; debug(!<concat-strings>["jasmin-generate"])
-    ; <debug> jbc-class*
-	; resultExecute := <jasmin-execute(|project-path)> jbc-class*
-	; debug(!<concat-strings>["Hd"])
+	; jbc-class* := <map(set-jasmin-source(|path))> result
+	; <map(jasmin-generate(|project-path))> jbc-class*
+	; resultExecute := <Hd; jasmin-execute(|project-path)> jbc-class*
     
 rules
 

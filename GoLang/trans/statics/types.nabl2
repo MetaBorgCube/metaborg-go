@@ -38,12 +38,8 @@ signature
     BoolT 		: Type
 
 rules
-
-//  [[ TypeName(name) ^ (s, _) : NamedT(d_ty) ]] :=
-//    Type{name} -> s,
-//    Type{name} |-> d_ty.
     
-    [[ TypeName(name) ^ (s, _) : ty ]] :=
+  [[ TypeName(name) ^ (s, _) : ty ]] :=
     Type{name} -> s,
     Type{name} |-> d_ty,
     d_ty : ty.
@@ -83,16 +79,6 @@ rules
     [[ type ^ (s, s_ty) : ty2 ]],
     [[ tag ^ (s) ]].
 
-//  [[ FieldDecl(field, tag) ^ (s, s_ty) ]] :=
-//    [[ field ^ (s, s_ty) ]],
-//    [[ tag ^ (s) ]].    
-    
-//[ FieldDecl(field), NoTag()), 
-//FieldDecl(Field(["y"{TermIndex("helloworld.go", 171)}]{TermIndex("helloworld.go", 174)}, TypeName("int"{TermIndex("helloworld.go", 175)}){TermIndex("helloworld.go", 176)}){TermIndex("helloworld.go", 177)}, NoTag(){TermIndex("helloworld.go", 178)}){TermIndex("helloworld.go", 179)}            ]
-//  [[ Field(names, type) ^ (s, s_ty) ]] :=
-//    Map1t(VarDecl)[[ names ^ (s_ty) : ty ]],
-//    [[ type ^ (s, s_ty) : ty ]]. 
-//    Field(["x"], TypeName("int")
   [[ Field(name, type) ^ (s, s_ty) ]] :=
     Map1T(VarDecl)[[name ^ (s_ty) : ty ]],
     [[ type ^ (s, s_ty) : ty2 ]].
