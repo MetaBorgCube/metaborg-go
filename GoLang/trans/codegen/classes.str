@@ -65,6 +65,9 @@ program-to-jbc : SourceFile(_,packageClause, _, functionDecls) ->
   	functions* := <map(function-declaration-to-jbc) > functionDecls;
   	initialize := <main-func> packageClause
 
+/**
+*	Creates a main class with a main function to call main function in go class
+*/
 main-func: _ -> 
 JBCFile(
     JBCHeader(
@@ -113,7 +116,10 @@ JBCFile(
 	  ]
   )  	
   
-  
+/*************************************************************************************
+******************************PACKAGE-CLAUSE-TO-JBC***********************************
+**************************************************************************************/   
+
 package-clause-to-jbc: PackageClause(packageName) ->
  	<package-name-to-jbc> packageName
  	
@@ -130,24 +136,16 @@ package-name-to-jbc: PackageName(name) ->
   , []
   , []
   ) 
- /*************************************************************************************
-*****************************FUNCTION-DECLARATION-TO-JBC*******************************
+  
+/*************************************************************************************
+*****************************DECLARATIONS-TO-JBC**************************************
 **************************************************************************************/ 
-//function-declaration-to-jbc: FunctionDecl(FunctionName("main"), Function(_,block)) ->
-// JBCMethod(
-//      [PUBLIC(), STATIC()]
-//    , "main"
-//    //TODO correct func signature
-//    , JBCMethodDesc([Array(Reference(CRef("java/lang/String")))], Void())
-//    , <concat>[[JBCLimitLocals("99")
-//      			, JBCLimitStack("99")],<block-to-jbc> block,[RETURN()]]
-//)
 
 function-declaration-to-jbc: FunctionDecl(FunctionName(name), Function(Signature(parameterDeclarations, _),block)) ->
  JBCMethod(
       [PUBLIC()]
     , name
-    //TODO correct func signature
+    //TODO correct func return type signature
     , JBCMethodDesc(paramsOut, Void()) 
     , <concat>[[JBCLimitLocals("99")
       			, JBCLimitStack("99")]
@@ -162,19 +160,14 @@ where
 startlabel := <newname> "startmethod_";
 endlabel := <newname> "endmethod_";
 params := <map(parameter-declaration-to-jbc(|startlabel,endlabel))> parameterDeclarations;
- concattedParams := <concat> params;
-  debug(!<concat-strings>["params: "]);
-  paramsOut := <map(parameter-declaration-to-jbc-method-desc)> parameterDeclarations;
-  debug(!<concat-strings>["types: "])
+concattedParams := <concat> params;
+paramsOut := <map(parameter-declaration-to-jbc-method-desc)> parameterDeclarations
 
 parameter-declaration-to-jbc-method-desc: ParameterDecl(_,_,type) -> <type-to-jbc> type
-where 
- debug(!<concat-strings>["parameter-declaration-to-jbc-method-desc: "])
 
 parameter-declaration-to-jbc(|label1,label2): ParameterDecl(vars,_,type) -> result
 where
- result := <map(decl-param(|label1,label2,type));concat> vars;
- debug(!<concat-strings>["ParameterDecl: "])
+ result := <map(decl-param(|label1,label2,type));concat> vars
   
 decl-param(|label1,label2,type): Bind(name,index) -> 
 [JBCVarDecl(
@@ -184,37 +177,23 @@ decl-param(|label1,label2,type): Bind(name,index) ->
 		, LabelRef(label1)
 		, LabelRef(label2)
 		)
-//		LDC(Int("1"))
-//		,	storeOut
 		]
-//where
-//debug(!<concat-strings>["decl-param: "]);
-//	storeOut := <get-store(|index)> type
  
-type-to-jbc: TypeName("int") -> Int()
-
-type-to-jbc: TypeName("string") ->  Reference(CRef("java/lang/String"))
-
-type-to-jbc: TypeName(_) ->  Int()
-
-
-
 /*************************************************************************************
-*****************************BLOCK-TO-JBC***********************************
+*****************************BLOCK-TO-JBC*********************************************
 **************************************************************************************/ 
+
 block-to-jbc(|startlabel,endlabel): Block(statements)->statementsResult
  where
   stackInit := [JBCLimitLocals("99")
       			, JBCLimitStack("99")];
-  debug(!<concat-strings>["Block stmt-to-jbc"]);
   statementsResult :=    <map(stmt-to-jbc(|startlabel,endlabel));concat > statements;
   output* := <concat>[stackInit,statementsResult]
-
 
 block-to-jbc(|startlabel,endlabel): NoBlock()->[]
  
 /*************************************************************************************
-*****************************STMT-TO-JBC***********************************
+*****************************STMT-TO-JBC**********************************************
 **************************************************************************************/ 
  //TODO: Implement return stmt
 stmt-to-jbc(|startlabel,endlabel): ReturnStmt(_) -> [] 
@@ -229,19 +208,9 @@ operands := <map(assignment-operand-to-jbc);concat> toAssign;
 revertedOperands := <reverse>operands;
 result :=  <concat>[expressions,revertedOperands]
 
-assignment-operand-to-jbc:  OperandName(name) -> [result]
-  where
-  	debug(!<concat-strings>["condition"]) ;
- 	a := <nabl2-get-ast-analysis> name; 
-	ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
-	(dec-occ, _)  := <nabl2-get-resolved-name(|a)> ref-occ;
-	index := <nabl2-get-property(|a, "index")> dec-occ; 
-	type    := <nabl2-get-type(|a)> dec-occ;
-	result := <get-store(|index)> type
- 
 stmt-to-jbc(|startlabel,endlabel): ExpressionStmt(expression) -> result
 	where
- result := <expression-stmt-to-jbc>expression
+ 	result := <expression-stmt-to-jbc>expression
  
 stmt-to-jbc(|startlabel,endlabel): ForStmt((Condition(expression), block)) -> output*
 	where
@@ -273,10 +242,20 @@ stmt-to-jbc(|startlabel,endlabel): IfStmt((_, expr, ifblock, elseblock)) -> outp
 	elseBlock,
 	[JBCLabel(endif*)]
 	]
+	
+assignment-operand-to-jbc:  OperandName(name) -> [result]
+  where
+ 	a := <nabl2-get-ast-analysis> name; 
+	ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
+	(dec-occ, _)  := <nabl2-get-resolved-name(|a)> ref-occ;
+	index := <nabl2-get-property(|a, "index")> dec-occ; 
+	type    := <nabl2-get-type(|a)> dec-occ;
+	result := <get-store(|index)> type
  
 /*************************************************************************************
 *************************EXPRESSION-STMT-TO-JBC***********************************
 **************************************************************************************/ 
+
 expression-stmt-to-jbc: Sum(x, y) -> result
 where 
 firstArg := <expression-stmt-to-jbc> x;
@@ -294,7 +273,6 @@ where
 firstArg := <expression-stmt-to-jbc> x;
 secondArg := <expression-stmt-to-jbc> y;
 result := <concat>[firstArg, secondArg, [IMUL()]]
-
 
 expression-stmt-to-jbc: Less(x, y) -> result
 where 
@@ -350,27 +328,16 @@ result := <concat>[firstArg,
   
 expression-stmt-to-jbc: ArgumentsPackage(QualifiedIdent(PackageName("fmt"), printmethod), Arguments(printlist)) -> [output*]
   where
-  	 debug(!<concat-strings>["print"]);
-   output* := <print-multiple-to-jbc(|printmethod)> printlist;
-   debug(!<concat-strings>["output"])
+   output* := <print-multiple-to-jbc(|printmethod)> printlist
    
 //method call
 expression-stmt-to-jbc: ArgumentsPackage(methodName,arguments) -> <concat>[
-[
-//// 	NEW(CRef("main"))	
-////	,DUP()				
-////	,INVOKESPECIAL(			
-////      JBCMethodRef(CRef("main"), MRef(Init()), JBCMethodDesc([], Void()))
-////    )
-	ALOAD_0()
-    ],
-    [expressions* ],
-    [
- 	INVOKEVIRTUAL(
+	[ALOAD_0()],
+    [expressions*],
+    [INVOKEVIRTUAL(
       JBCMethodRef(
         CRef("go")
       , MRef(methodName)
-      //second one is return type first one is params again
       //TODO: HANDLE RETURNS
       , JBCMethodDesc(params*, Void())
       )
@@ -378,35 +345,8 @@ expression-stmt-to-jbc: ArgumentsPackage(methodName,arguments) -> <concat>[
     ]
  ]
  where
- debug(!<concat-strings>["jemoederopeenbakfiets: "]);
  params* := <function-call-parameter-types> arguments;
-debug(!<concat-strings>["arguments of method call: "]);
-expressions* := <function-call-parameter-expressions> arguments; 
-debug(!<concat-strings>["arguments expressions result: "])
-
-function-call-parameter-expressions: NoArguments() -> []
-
-function-call-parameter-expressions: Arguments(argumentsList) -> result
-where
-result := <map(parameter-args-to-expressions);concat> argumentsList;
-debug(!<concat-strings>["arguments expressions: "]) 
-
-parameter-args-to-expressions: UnTypedArg(arg) -> result
-where
-result :=  <expression-stmt-to-jbc> arg;
-debug(!<concat-strings>["expression from arg: "]) 
- 
- function-call-parameter-types: NoArguments() -> []
- 
- function-call-parameter-types: Arguments(argumentsList) -> result
- where
- result := <map(untyped-arg-to-type)> argumentsList;
- debug(!<concat-strings>["arguments"]) 
- 
- untyped-arg-to-type: UnTypedArg(arg) -> type
- where
- type := <get-jbc-type> arg;
-  debug(!<concat-strings>["arg type: "]) 
+expressions* := <function-call-parameter-expressions> arguments
    
 expression-stmt-to-jbc: expression -> [<literal-to-jbc> expression]
   
@@ -418,12 +358,34 @@ expression-stmt-to-jbc:  OperandName(name) -> [result]
 	index := <nabl2-get-property(|a, "index")> dec-occ; 
 	type    := <nabl2-get-type(|a)> dec-occ;
 	result := <get-load(|index)> type
-	
-get-load(|index): IntT ->  ILOAD(VarNum(<int-to-string>index))
 
-get-load(|index): BoolT ->  ILOAD(VarNum(<int-to-string>index))
+/*************************************************************************************
+*************************************FUNCTION-CALLS***********************************
+**************************************************************************************/ 
 
-get-load(|index): StringT ->  ALOAD(VarNum(<int-to-string>index))
+function-call-parameter-expressions: NoArguments() -> []
+
+function-call-parameter-expressions: Arguments(argumentsList) -> result
+where
+result := <map(parameter-args-to-expressions);concat> argumentsList
+
+parameter-args-to-expressions: UnTypedArg(arg) -> result
+where
+result :=  <expression-stmt-to-jbc> arg
+ 
+function-call-parameter-types: NoArguments() -> []
+
+function-call-parameter-types: Arguments(argumentsList) -> result
+where
+result := <map(untyped-arg-to-type)> argumentsList
+
+untyped-arg-to-type: UnTypedArg(arg) -> type
+where
+type := <get-jbc-type> arg
+
+/*************************************************************************************
+*************************************PRINTS*******************************************
+**************************************************************************************/ 
 
 print-multiple-to-jbc(|printmethod): printlist -> 
  <concat>[prints,[GETSTATIC(
@@ -444,11 +406,7 @@ INVOKEVIRTUAL(
 ]
 where
 printmethod* := <lower-case> printmethod;
-debug(!<concat-strings>["build print list: "]);
-prints := <map(printlist-to-prints);concat> printlist;
- debug(!<concat-strings>["prints"])
-
-
+prints := <map(printlist-to-prints);concat> printlist
 
 printlist-to-prints: UnTypedArg(toprint) -> 
  [GETSTATIC(
@@ -469,37 +427,14 @@ printlist-to-prints: UnTypedArg(toprint) ->
      ]
     where 
     print* := <expression-stmt-to-jbc> toprint;
-    debug;
     //This causes to only arrow operandnames to print at the moment
     //the question is can we deduct the type of some expression
     printType* := <get-jbc-type> toprint
 	 
-get-jbc-type: OperandName(name) -> result
- where
- 	a := <nabl2-get-ast-analysis> name; 
-	ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
-	(dec-occ, _)  := <nabl2-get-resolved-name(|a)> ref-occ;
-	index := <nabl2-get-property(|a, "index")> dec-occ; 
-	type    := <nabl2-get-type(|a)> dec-occ;
-	result := <get-jbc-type> type
-	
-//Literals
-get-jbc-type: IntLit(_) -> Int()
-
-get-jbc-type: BoolLit(_) -> Int()
- 	
-get-jbc-type: StringLit(_) -> Reference(CRef("java/lang/String"))
-//Types 
-get-jbc-type: StringT -> Reference(CRef("java/lang/String"))
- 
-get-jbc-type: IntT -> Int()
-
-get-jbc-type: BoolT -> Int()
-     
 /*************************************************************************************
 *************************DECLARATION-STMT-TO-JBC***********************************
 **************************************************************************************/ 
-//TODO CHECK IF THESE WORK
+
 declaration-stmt-to-jbc(|startlabel,endlabel): MultiVarDecl([ VarSpec(_,Typed(_,NoVarAssign()))]) -> []
 
 declaration-stmt-to-jbc(|startlabel,endlabel): MultiVarDecl([VarSpec(names,Typed(_,VarAssign(values)))]) -> result*
@@ -516,9 +451,7 @@ declaration-stmt-to-jbc(|startlabel,endlabel): MultiVarDecl([VarSpec(names,Untyp
 	varNames := <map(var-decl-to-jbc)>names;
 	revertedVarNames := <reverse>varNames;
 	declList := <map(var-decl-to-jbc-decl(|startlabel,endlabel));concat> names;
-	debug(!<concat-strings>["declList: "]);
 	result* := <concat>[declList,valueList,revertedVarNames]
-	
 	
 var-decl-to-jbc-decl(|startlabel,endlabel): Bind(name,index) ->
 [JBCVarDecl(
@@ -532,14 +465,64 @@ where
 	a := <nabl2-get-ast-analysis> name; 
 	ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
 	type    := <nabl2-get-type(|a)> ref-occ;
-	fieldType := <get-jbc-type> type;
-	debug(!<concat-strings>["fieldType: "])
+	fieldType := <get-jbc-type> type
+
 var-decl-to-jbc: Bind(name,index) -> result*
 where 
 	a := <nabl2-get-ast-analysis> name; 
 	ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
 	type    := <nabl2-get-type(|a)> ref-occ;
 	result* := <get-store(|index)> type
+
+
+/*************************************************************************************
+*************************************LITERAL-TO-JBC***********************************
+**************************************************************************************/ 
+
+literal-to-jbc: StringLit(val) ->  
+ 	LDC(val)
+literal-to-jbc: IntLit(val) -> 
+ 	LDC(Int(val))
+literal-to-jbc: BoolLit("false") -> 
+ 	LDC(Int("0"))
+literal-to-jbc: BoolLit("true") -> 
+ 	LDC(Int("1"))
+ 
+/*************************************************************************************
+**********************************************TYPES***********************************
+**************************************************************************************/ 
+
+type-to-jbc: TypeName("int") -> Int()
+
+type-to-jbc: TypeName("string") ->  Reference(CRef("java/lang/String"))
+
+type-to-jbc: TypeName(_) ->  Int()
+	
+//Literals
+get-jbc-type: IntLit(_) -> Int()
+
+get-jbc-type: BoolLit(_) -> Int()
+ 	
+get-jbc-type: StringLit(_) -> Reference(CRef("java/lang/String"))
+//Types 
+get-jbc-type: StringT -> Reference(CRef("java/lang/String"))
+ 
+get-jbc-type: IntT -> Int()
+
+get-jbc-type: BoolT -> Int()
+
+get-jbc-type: OperandName(name) -> result
+ where
+ 	a := <nabl2-get-ast-analysis> name; 
+	ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
+	(dec-occ, _)  := <nabl2-get-resolved-name(|a)> ref-occ;
+	index := <nabl2-get-property(|a, "index")> dec-occ; 
+	type    := <nabl2-get-type(|a)> dec-occ;
+	result := <get-jbc-type> type
+
+/*************************************************************************************
+*************************************LOAD AND STORE***********************************
+**************************************************************************************/ 
 	
 get-store(|index): StringT -> ASTORE(VarNum(<int-to-string>index))
 
@@ -552,17 +535,9 @@ get-store(|index): TypeName("int") -> ISTORE(VarNum(<int-to-string>index))
 get-store(|index): TypeName("string") -> ASTORE(VarNum(<int-to-string>index))
 
 get-store(|index): TypeName(_) -> ISTORE(VarNum(<int-to-string>index))
-/*************************************************************************************
-*************************LITERAL-TO-JBC***********************************
-**************************************************************************************/ 
-literal-to-jbc: StringLit(val) ->  
- 	LDC(val)
-literal-to-jbc: IntLit(val) -> 
- 	LDC(Int(val))
-literal-to-jbc: BoolLit("false") -> 
- 	LDC(Int("0"))
-literal-to-jbc: BoolLit("true") -> 
- 	LDC(Int("1"))
- 
- 
- 
+
+get-load(|index): IntT ->  ILOAD(VarNum(<int-to-string>index))
+
+get-load(|index): BoolT ->  ILOAD(VarNum(<int-to-string>index))
+
+get-load(|index): StringT ->  ALOAD(VarNum(<int-to-string>index))

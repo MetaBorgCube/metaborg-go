@@ -2,8 +2,6 @@ module statics/statements
 
 rules
 
-//  [[ DeclarationStmt(decl) ^ (s) : ty]] :=
-//    [[ decl ^ (s, s) : ty]].
   [[ DeclarationStmt(decl) ^ (s)]] :=
     [[ decl ^ (s, s) ]].
 
@@ -61,14 +59,9 @@ rules
  
   [[ AssignStmt(exprs1, exprs2) ^ (s) ]] :=
     Map1T[[ exprs1 ^ (s) : lhs_tys ]],
-    Map1T[[ exprs2 ^ (s) : rhs_tys ]].//,
-//    lhs_tys <`assignable`? rhs_tys.
+    Map1T[[ exprs2 ^ (s) : rhs_tys ]].
 
   // add_op
-//  [[ SumAssignStmt(exprs1, exprs2) ^ (s) ]] :=
-//    Map1T[[ exprs1 ^ (s) : lhs_tys ]],
-//    Map1T[[ exprs2 ^ (s) :rhs_tys ]].
-
   [[ SumAssignStmt(exprs1, exprs2) ^ (s) : ty ]] :=
     Map1T[[ exprs1 ^ (s) : ty ]],
     Map1T[[ exprs2 ^ (s) : ty ]].
