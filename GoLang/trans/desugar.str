@@ -42,16 +42,24 @@ desugar-test:
 
 annotate-var-decls: ast -> annotated-ast
   	with
-		var-decl-list := <collect-all(multivardecl)> ast;
-		param-decl-list := <collect-all(paramdecl)> ast;
-		field-decl-list := <collect-all(fielddecl)> ast;
-		paramdecl-names := <map(get-param-decl-var-name-list);concat> param-decl-list;
-		multivardecl-names := <map(get-multi-var-decl-name-list); concat> var-decl-list;
-		fielddecl-names:= <map(get-field-decl-name-list); concat> field-decl-list ;
-		var-decl-indices := <concat>[multivardecl-names,paramdecl-names,fielddecl-names];
-		temp := <topdown(try(index-var-decl(|var-decl-indices)))> ast;
-		temp-paramdecl := <topdown(try(index-param-decl(|var-decl-indices)))> temp;
-		annotated-ast := <topdown(try(index-field-decl(|var-decl-indices)))> temp-paramdecl
+		annotated-ast := <topdown(try(index-functions))> ast
+			
+index-functions: FunctionDecl(name,functionBody) ->FunctionDecl(name,annotated-functions) 
+where
+var-decl-indices := <get-indexed-var-list-for-element> functionBody
+; temp := <topdown(try(index-var-decl(|var-decl-indices)))> functionBody
+; annotated-functions := <topdown(try(index-param-decl(|var-decl-indices)))> temp
+
+
+get-indexed-var-list-for-element: elem -> var-decl-indices
+where
+	var-decl-list := <collect-all(multivardecl)> elem;
+	param-decl-list := <collect-all(paramdecl)> elem;
+	field-decl-list := <collect-all(fielddecl)> elem;
+	paramdecl-names := <map(get-param-decl-var-name-list);concat> param-decl-list;
+	multivardecl-names := <map(get-multi-var-decl-name-list); concat> var-decl-list;
+	fielddecl-names:= <map(get-field-decl-name-list); concat> field-decl-list ;
+	var-decl-indices := <concat>[paramdecl-names,multivardecl-names,fielddecl-names]
 
 index-param-decl(|var-decl-indices):
 	ParameterDecl(varlist,x,type) -> ParameterDecl(bindlst,x,type)

@@ -3,7 +3,8 @@ package main;
 import "fmt";
   
 func main(){    
-		first(0, "Hello world");
+		start := 0;
+		first(start, "Hello world");
 };       
 
 func first(x int, y string){
@@ -13,7 +14,7 @@ func first(x int, y string){
 	for x < 10 {
 		fmt.Println("x: ", x);
 		if x > 8 {
-			second();
+			second(x);
 		};
 	
 		x = x + 1;
@@ -21,6 +22,6 @@ func first(x int, y string){
 	};
 };
 
-func second(){
-	fmt.Println("Second function");
+func second(num int){ 
+	fmt.Println("Second function num: ",num);
 };
