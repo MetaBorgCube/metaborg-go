@@ -22,8 +22,9 @@ rules
     try(desugar-sourcefile);
     desugar-short-var-decls;
     desugar-single-decls;
-    desugar-test;
-    desugar-opts
+    desugar-annotated-variables;
+    desugar-opts;
+    desugar-typed-mult-var-declare
 
 //at the start of generate -> list parameter
 rules
@@ -34,11 +35,28 @@ rules
     	file-path := <origin-file> file;
      	pkg-path  := <current-language-relative-source-or-include-path;dirname> file-path
 
-
-desugar-test:
+desugar-typed-mult-var-declare:
       SourceFile(pkg-path, name, imports, decls) -> SourceFile(pkg-path, name, imports, declsnew)
     with 
- 		declsnew := <annotate-var-decls> decls //different strategy
+ 		declsnew := <topdown(try(typed-multi-vars))>  decls
+ 		
+typed-multi-vars: MultiVarDecl([VarSpec(varlist,Typed(typeList,VarAssign(assignList)))]) -> 
+MultiVarDecl([VarSpec(varlist,Typed(newTypeList,VarAssign(newAssignList)))])
+where
+newTypeList := <map(expand-type-list(|typeList));concat> varlist;
+newAssignList := <map(expand-type-list(|assignList));concat> varlist
+
+typed-multi-vars: MultiVarDecl([VarSpec(varlist,Typed(typeList,NoVarAssign()))]) -> 
+MultiVarDecl([VarSpec(varlist,Typed(newTypeList,NoVarAssign()))])
+where
+newTypeList := <map(expand-type-list(|typeList));concat> varlist
+
+expand-type-list(|list): _ -> list
+
+desugar-annotated-variables:
+      SourceFile(pkg-path, name, imports, decls) -> SourceFile(pkg-path, name, imports, declsnew)
+    with 
+ 		declsnew := <annotate-var-decls> decls
 
 annotate-var-decls: ast -> annotated-ast
   	with

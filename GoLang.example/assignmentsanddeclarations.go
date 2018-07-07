@@ -22,6 +22,14 @@ func main(){
 	e,c = false,11;
 	fmt.Println("c: ", c);
 	fmt.Println("e: " , e);
+	
+	var f,g string;
+	f = "Hello";
+	g = "world";
+	fmt.Println(f, " ", g);
+	
+	var h,i int = 2;
+	fmt.Println("h: ", h, " i: ", i);
 
 };       
 
