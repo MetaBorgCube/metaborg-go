@@ -10,6 +10,12 @@ imports
 
   signatures/-
 
+signature
+  constructors
+  	IntT: IntT
+  	StringT: StringT
+  	BoolT: BoolT
+
 rules 
 
 get-type: IntLit(_) -> IntT()
