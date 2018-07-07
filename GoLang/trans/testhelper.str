@@ -1,0 +1,25 @@
+module testhelper
+
+imports
+
+  libspoofax/resource/path
+  libspoofax/term/origin
+  nabl2/api
+  reference/desugar-signatures
+  src-gen/signatures/-
+
+  signatures/-
+
+rules 
+
+get-type: IntLit(_) -> IntT()
+
+get-type: StringLit(_) -> StringT() 
+
+get-type: BoolLit(_) -> BoolT() 
+  
+get-type: Bind(name,index) -> type
+where 
+	a := <nabl2-get-ast-analysis> name; 
+	ref-occ := <nabl2-mk-occurrence(|"Var")> name; 
+	type    := <nabl2-get-type(|a)> ref-occ
