@@ -58,8 +58,8 @@ rules
  */
  
   [[ AssignStmt(exprs1, exprs2) ^ (s) ]] :=
-    Map1T[[ exprs1 ^ (s) : lhs_tys ]],
-    Map1T[[ exprs2 ^ (s) : rhs_tys ]].
+    Map1T[[ exprs1 ^ (s) : ty ]],
+    Map1T[[ exprs2 ^ (s) : ty ]].
 
   // add_op
   [[ SumAssignStmt(exprs1, exprs2) ^ (s) : ty ]] :=

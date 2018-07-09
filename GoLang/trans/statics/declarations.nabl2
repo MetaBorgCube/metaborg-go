@@ -61,28 +61,32 @@ rules
     
 
 [[VarSpec(names,Typed(typename, NoVarAssign()))^(s_decl, s) ]] :=
-	Map1T(VarDecl)[[ names ^ (s) : ty1 ]],
 	new s_ty,
-	Map1T[[ typename ^ (s, s_ty) : ty2 ]],
-	ty1 == ty2.
+	Map1T[[ typename ^ (s, s_ty) : tys ]],
+	Map1T(VarDecl)[[ names ^ (s) : tys ]].
 	
-[[VarSpec(names,Typed(typename, VarAssign(exprs)))^(s_decl, s) ]] :=
+	
+[[VarSpec(names,type)^(s_decl, s) ]] :=
 	Map1T(VarDecl)[[ names ^ (s) : tys ]],
+	[[type ^(s) : tys]].
+    
+[[Typed(typename, VarAssign(exprs)) ^(s) : tys]] :=
 	new s_ty,
 	Map1T[[ typename ^ (s, s_ty) : tys ]],
     Map1T[[ exprs ^ (s) : tys ]].
     
-  [[ VarSpec(names, Typed(type, NoVarAssign())) ^ (s_decl, s)]] :=
-    Map1T(VarDecl)[[ names ^ (s) : ty ]],
-    [[ type ^ (s, s_ty) : ty ]], new s_ty.
-	 
-  [[ VarSpec(names, Untyped(VarAssign(exprs))) ^ (s_decl, s) ]] :=
-    // FIXME weird errors if lists are different length
-    Map1T(VarDecl)[[ names ^ (s) :tys ]],
+[[Untyped(VarAssign(exprs)) ^(s) : tys]] :=
+	new s_ty,
     Map1T[[ exprs ^ (s) : tys ]].
+	 
+//  [[ VarSpec(names, Untyped(VarAssign(exprs))) ^ (s_decl, s) ]] :=
+//    // FIXME weird errors if lists are different length
+//    Map1T(VarDecl)[[ names ^ (s) : tys1 ]],
+//    Map1T[[ exprs ^ (s) : tys2 ]],
+//    tys1==tys2.
 
 
-VarDecl[[Bind(name, indexlit)^ (s) :ty ]] :=
+VarDecl[[Bind(name, indexlit)^ (s) : ty ]] :=
 	Var{name} <- s,
     Var{name} : ty,
     Var{name}.index := indexlit.
