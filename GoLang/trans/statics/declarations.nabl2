@@ -101,10 +101,10 @@ VarDecl[[Bind(name, indexlit)^ (s) :ty ]] :=
       [[ function_inner ^ (s) : ty ]].
  
     [[ Function(sig, body) ^ (s) : ty ]] :=
-      [[ sig ^ (s) : ty ]],
-      [[ body ^ (s_fun) ]],
       new s_fun,
-      s_fun ---> s.
+      s_fun ---> s,
+      [[ sig ^ (s_fun) : ty ]],
+      [[ body ^ (s_fun) ]].
 
 /**
  * Method declarations -- https://golang.org/ref/spec#Method_declarations
