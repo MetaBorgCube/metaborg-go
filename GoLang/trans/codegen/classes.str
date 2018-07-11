@@ -368,7 +368,7 @@ expression-stmt-to-jbc: ArgumentsPackage(methodName,arguments) -> <concat>[
         CRef("go")
       , MRef(methodName)
       //TODO: HANDLE RETURNS
-      , JBCMethodDesc(paramsjbc, returnjbc)
+      , JBCMethodDesc(params*, returnjbc)
       )
     )
     ]
@@ -379,8 +379,8 @@ expressions* := <function-call-parameter-expressions> arguments;
  a            := <nabl2-get-ast-analysis> methodName;
 ref-occ      := <nabl2-mk-occurrence(|"Var")> methodName
  ; (dec-occ,_) := <nabl2-get-resolved-name(|a)> ref-occ
- ;FunT(params,return) := <nabl2-get-type(|a)> dec-occ
- ; paramsjbc := <map(get-jbc-type)> params
+ ;return := <nabl2-get-type(|a)> dec-occ
+// ; paramsjbc := <map(get-jbc-type)> params
  ; returnjbc := <get-jbc-type> return
 //;returntype := <type-to-jbc> returntype1; 
 //return := Void()
@@ -562,9 +562,6 @@ get-jbc-type: OperandName(name) -> result
 	type    := <nabl2-get-type(|a)> dec-occ;
 	result := <get-jbc-type> type
 	
-get-jbc-type: FunT(_,type) -> result
-	where
-	result := <get-jbc-type> type
 	
 
 /*************************************************************************************
@@ -575,7 +572,6 @@ get-store(|index): StringT() -> ASTORE(VarNum(<int-to-string>index))
 
 get-store(|index): IntT() -> ISTORE(VarNum(<int-to-string>index))
 
-get-store(|index): FunT(_,type) -> <get-store(|index)> type
 
 get-store(|index): BoolT() -> ISTORE(VarNum(<int-to-string>index))
 
@@ -588,8 +584,6 @@ get-store(|index): TypeName("bool") -> ISTORE(VarNum(<int-to-string>index))
 get-store(|index): TypeName(_) -> ISTORE(VarNum(<int-to-string>index))
 
 get-load(|index): IntT() ->  ILOAD(VarNum(<int-to-string>index))
-
-get-load(|index): FunT(_,type) ->  <get-load(|index)> type
 
 get-load(|index): BoolT() ->  ILOAD(VarNum(<int-to-string>index))
 

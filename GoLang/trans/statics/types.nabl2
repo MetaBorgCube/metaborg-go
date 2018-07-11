@@ -115,7 +115,7 @@ rules
   [[ FunctionType(sig) ^ (s, s_ty) : ty ]] :=
     [[ sig ^ (s) : ty ]]. 
  
-  [[ Signature(params, result) ^ (s) : FunT(typaram,tysig) ]] :=
+  [[ Signature(params, result) ^ (s) : tysig ]] :=
     Map2T[[ params ^ (s, s_ty) :typaram]],
     [[ result ^ (s, s_ty) : tysig ]].
  
