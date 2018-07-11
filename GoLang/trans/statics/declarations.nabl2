@@ -102,6 +102,7 @@ VarDecl[[Bind(name, indexlit)^ (s) : ty ]] :=
 
     [[ FunctionDecl(FunctionName(name), function_inner) ^ (s_decl, s) ]] :=
       Var{name} <- s_decl,
+      Var{name} : ty,
       [[ function_inner ^ (s) : ty ]].
  
     [[ Function(sig, body) ^ (s) : ty ]] :=

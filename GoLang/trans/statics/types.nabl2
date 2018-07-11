@@ -115,11 +115,11 @@ rules
   [[ FunctionType(sig) ^ (s, s_ty) : ty ]] :=
     [[ sig ^ (s) : ty ]]. 
  
-  [[ Signature(params, result) ^ (s) : FunT(_,_) ]] :=
-    Map2[[ params ^ (s, s_ty) ]],
-    [[ result ^ (s, s_ty) : ty ]].
+  [[ Signature(params, result) ^ (s) : FunT(typaram,tysig) ]] :=
+    Map2T[[ params ^ (s, s_ty) :typaram]],
+    [[ result ^ (s, s_ty) : tysig ]].
  
-  [[ ParameterDecl(names, dots, type) ^ (s, s_ty) ]] :=
+  [[ ParameterDecl(names, dots, type) ^ (s, s_ty) :ty]] :=
     Map1t(VarDecl)[[ names ^ (s) : ty ]],
     [[ type ^ (s, s_ty) : ty ]].
 

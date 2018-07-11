@@ -66,5 +66,8 @@ rules
 
     Type{"string"} <- s_univ,
     Type{"string"} : StringT(),
+    
+    Type{"bool"} <- s_univ,
+    Type{"bool"} : BoolT(),
 
     true.

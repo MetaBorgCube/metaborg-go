@@ -23,6 +23,7 @@ rules
     d : ty.
 
   [[ QualifiedOperandName(QualifiedIdent(PackageName(pkg),name)) ^ (s) : ty ]] :=
+  [[ args ^ (s) : ty_arg ]],
     Pkg{pkg} -> s,
     new s_qual,
     Pkg{pkg} <=PUB= s_qual,
@@ -31,15 +32,19 @@ rules
     d : ty.
 
 
-  [[ ArgumentsPackage(QualifiedIdent(PackageName(pkg),name)) ^ (s) : ty ]] :=
+  [[ ArgumentsPackage(QualifiedIdent(PackageName(pkg),name), args) ^ (s) : ty ]] :=
+  	[[ args ^ (s) : ty_arg ]],
     Pkg{pkg} -> s,
     new s_qual,
-    Pkg{pkg} <=PUB= s_qual,
-    Var{name} -> s_qual,
-    Var{name} |-> d,
-    d : ty.
+    Pkg{pkg} <=PUB= s_qual.
+    //Var{name} -> s_qual,
+    //Var{name} |-> d,
+    //d : ty.
     
     [[ ArgumentsPackage(name,args) ^ (s) : ty ]] :=
+    Var{name} -> s,
+    Var{name} |-> d,
+    d : ty,
     [[ args ^ (s) : ty_arg ]].
     
 [[ NoArguments() ^ (_) : _ ]].
@@ -88,13 +93,15 @@ rules
     [[ args ^ (s) : ty_arg ]].
 
 [[Arguments(somelist) ^(s) : ty]] := 
-	Map1T[[somelist ^(s) :ty2]]. 
+	Map1T[[somelist ^(s) :ty]]. 
 
 [[UnTypedArg(somearg) ^(s) : ty]] :=
-	[[somearg ^(s) :ty2]].
+	[[somearg ^(s) :ty]].
 	
-[[OperandName(id) ^(s) :ty ]] :=
-	Var{id} -> s.
+//[[OperandName(id) ^(s) :ty ]] :=
+//	Var{id} -> s,
+//	Var{id} |-> d,
+//	d : ty.
 
   [[ ArgumentsPackage(QualifiedIdent(PackageName(pkg),name),args) ^ (s) : ty ]] :=
     Map1T[[ args ^ (s) : ty_args ]],
