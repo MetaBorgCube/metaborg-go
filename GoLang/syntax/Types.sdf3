@@ -1,0 +1,163 @@
+module Types // https://golang.org/ref/spec#Types
+
+imports
+ 
+  Lexical
+  Declarations
+  Expressions
+  Representation
+
+context-free start-symbols
+
+  Type
+
+template options
+
+  newlines : separating
+
+context-free syntax
+
+  Type        = TypeName
+  Type        = TypeLit
+  Type        = <( <Type> )> {bracket}
+
+  TypeName.TypeName          = Identifier
+  TypeName.QualifiedTypeName = QualifiedIdent
+
+  TypeLit     = ArrayType
+  TypeLit     = StructType
+  TypeLit     = PointerType
+  TypeLit     = FunctionType
+  TypeLit     = InterfaceType
+  TypeLit     = SliceType
+  TypeLit     = MapType
+  TypeLit     = ChannelType
+
+
+/**
+ * Boolean types -- https://golang.org/ref/spec#Boolean_types
+ */
+ 
+
+/**
+ * Numeric types -- https://golang.org/ref/spec#Numeric_types
+ */
+
+
+/**
+ * String types -- https://golang.org/ref/spec#String_types
+ */
+ 
+ 
+/**
+ * Array types -- https://golang.org/ref/spec#Array_types
+ */
+ 
+  context-free syntax
+
+  ArrayType.ArrayType = <[<ArrayLength>]<ElementType>> {left}
+ 
+  ArrayLength         = Expression
+  
+  ElementType         = Type
+ 
+ 
+/**
+ * Slice types -- https://golang.org/ref/spec#Slice_types
+ */
+ 
+  context-free syntax
+  
+  SliceType.SliceType = <[]<ElementType>> {left}
+ 
+ 
+/**
+ * Struct types -- https://golang.org/ref/spec#Struct_types
+ */
+ 
+  context-free syntax
+  
+  StructType.StructType   = <struct { <StructType-Inner*> }>
+  StructType-Inner        = <<FieldDecl>;>
+ 
+  FieldDecl.FieldDecl     = <<Field> <Tag-OPT>>
+ 
+  Field.Field             = <<IdentifierList> <Type>>
+
+  Field.AnonymousPtrField = <*<TypeName>>
+  Field.AnonymousField    = TypeName
+
+  Tag-OPT.NoTag = <>
+  Tag-OPT       = Tag
+  Tag           = StringLit
+
+
+/**
+ * Pointer types -- https://golang.org/ref/spec#Pointer_types
+ */
+  
+  context-free syntax
+  
+  PointerType.PointerType = <*<BaseType>>
+  
+  BaseType                = Type
+
+
+/**
+ * Function types -- https://golang.org/ref/spec#Function_types
+ */
+
+  context-free syntax
+
+  FunctionType.FunctionType   = <func <Signature>>
+
+  Signature.Signature         = <<Parameters> <Result-OPT>>
+  Result-OPT.NoResult         = <>
+  Result-OPT                  = Result
+  Result                      = Parameters
+  Result                      = Type
+
+  Parameters                        = <(<Parameters-Inner-OPT>)> {brackets}
+  Parameters-Inner-OPT.NoParameters = <>
+  Parameters-Inner-OPT.Parameters   = <<ParameterList> <Comma?>>
+
+  ParameterList               = {ParameterDecl ","}+
+
+  ParameterDecl.ParameterDecl = <<IdentifierList-OPT> <Dots?><Type>>
+
+/**
+ * Interface types -- https://golang.org/ref/spec#Interface_types
+ */
+ 
+  context-free syntax
+  
+  InterfaceType.InterfaceType = <interface { <InterfaceType-Inner*> }>
+  InterfaceType-Inner         = <<MethodSpec>;>
+ 
+  MethodSpec.MethodSpec   = <<MethodName> <Signature>>
+  MethodSpec              = InterfaceTypeName
+  
+  MethodName.MethodName   = Identifier
+  InterfaceTypeName       = TypeName
+ 
+
+/**
+ * Map types -- https://golang.org/ref/spec#Map_types
+ */
+ 
+  context-free syntax
+  
+  MapType.MapType = <map[<KeyType>]<ElementType>>
+
+  KeyType         = Type
+
+
+/**
+ * Channel types -- https://golang.org/ref/spec#Channel_types
+ */
+ 
+  context-free syntax
+
+  ChannelType.BidirectionalChannelType = [chan [ElementType]]
+  ChannelType.SendingChannelType       = [chan<- [ElementType]]
+  ChannelType.ReceivingChannelType     = [<-chan [ElementType]]

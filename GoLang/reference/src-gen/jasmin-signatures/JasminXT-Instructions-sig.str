@@ -1,0 +1,27 @@
+module signatures/JasminXT-Instructions-sig
+
+imports
+  signatures/JasminXT-Arithmetic-sig
+  signatures/JasminXT-Control-sig
+  signatures/JasminXT-Conversion-sig
+  signatures/JasminXT-Exceptions-sig
+  signatures/JasminXT-LoadStore-sig
+  signatures/JasminXT-InvokeReturn-sig
+  signatures/JasminXT-Objects-sig
+  signatures/JasminXT-Stack-sig
+  signatures/JasminXT-Synchronisation-sig
+  signatures/JasminXT-Numbers-sig
+
+
+signature
+  constructors
+    NOP                 : Instruction
+    BREAKPOINT          : Instruction
+    PC                  : Int * Instruction -> PCInstruction
+                        : Instruction -> PCInstruction
+    Int-Plhdr           : Int
+    PCInstruction-Plhdr : PCInstruction
+    Instruction-Plhdr   : Instruction
+    Int-Plhdr           : COMPLETION-INSERTION -> Int
+    PCInstruction-Plhdr : COMPLETION-INSERTION -> PCInstruction
+    Instruction-Plhdr   : COMPLETION-INSERTION -> Instruction

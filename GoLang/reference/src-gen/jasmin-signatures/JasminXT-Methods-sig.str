@@ -1,0 +1,48 @@
+module signatures/JasminXT-Methods-sig
+
+imports
+  signatures/JasminXT-Names-sig
+  signatures/JasminXT-Numbers-sig
+  signatures/JasminXT-Strings-sig
+  signatures/JasminXT-Descriptors-sig
+  signatures/JasminXT-Instructions-sig
+  signatures/JasminXT-Directives-sig
+
+
+signature
+  constructors
+    JBCMethod              : List(MethodAccess) * MethodName * MethodDescriptor * List(Statement) -> Method
+    PUBLIC                 : MethodAccess
+    PRIVATE                : MethodAccess
+    PROTECTED              : MethodAccess
+    STATIC                 : MethodAccess
+    FINAL                  : MethodAccess
+    SYNCHRONIZED           : MethodAccess
+    NATIVE                 : MethodAccess
+    ABSTRACT               : MethodAccess
+    Method-Plhdr           : Method
+    MethodName-Plhdr       : MethodName
+    MethodDescriptor-Plhdr : MethodDescriptor
+    Statement-Plhdr        : Statement
+    MethodAccess-Plhdr     : MethodAccess
+    Method-Plhdr           : COMPLETION-INSERTION -> Method
+    MethodName-Plhdr       : COMPLETION-INSERTION -> MethodName
+    MethodDescriptor-Plhdr : COMPLETION-INSERTION -> MethodDescriptor
+    Statement-Plhdr        : COMPLETION-INSERTION -> Statement
+    MethodAccess-Plhdr     : COMPLETION-INSERTION -> MethodAccess
+    MethodAccess-Opt-Plhdr : MethodAccess
+    Statement-Opt-Plhdr    : Statement
+                           : PCInstruction -> Statement
+                           : Directive -> Statement
+                           : Label -> Statement
+    JBCLabel               : LabelName -> Label
+    PCInstruction-Plhdr    : PCInstruction
+    Directive-Plhdr        : Directive
+    Statement-Plhdr        : Statement
+    Label-Plhdr            : Label
+    LabelName-Plhdr        : LabelName
+    PCInstruction-Plhdr    : COMPLETION-INSERTION -> PCInstruction
+    Directive-Plhdr        : COMPLETION-INSERTION -> Directive
+    Statement-Plhdr        : COMPLETION-INSERTION -> Statement
+    Label-Plhdr            : COMPLETION-INSERTION -> Label
+    LabelName-Plhdr        : COMPLETION-INSERTION -> LabelName

@@ -1,0 +1,131 @@
+module nameanalysis
+language GoLang 
+start symbol SourceFile
+
+test nameresulutionshortdecl [[
+package main; 
+
+import "fmt";
+  
+func main(){   
+		[[x]] := 3;
+		fmt.Println([[x]]);
+}; ]] resolve #2 to #1  
+ 
+test nameresulutionfail [[
+package main; 
+
+import "fmt";
+  
+func main(){   
+		x = 3;
+}; ]] >= 1 errors
+
+test nameresulutionexplicitdecl [[
+package main;
+
+import "fmt";
+  
+func main(){  
+		var [[x]] int; 
+		fmt.Println([[x]]);  
+}; ]] resolve #2 to #1  
+
+test nameresulutionlongdecl [[
+package main;
+
+import "fmt";
+  
+func main(){  
+		var [[x]] int = 3;
+		fmt.Println([[x]]);
+}; ]] resolve #2 to #1  
+
+test nameresulutionmultivardecl [[
+package main;
+
+import "fmt";
+  
+func main(){  
+		var [[y]],[[x]] int = 3,4;
+		fmt.Println([[x]]);
+		fmt.Println([[y]]);
+}; ]] resolve #4 to #1 
+
+test nameresulutionpackage [[
+package main;
+
+import "fmt";
+import "[[package]]";
+  
+func main(){  
+		[[package]].Method(1);
+}; ]] resolve #2 to #1  
+
+test nameresultionmethod [[
+package main;
+
+import "fmt";
+  
+func main(){  
+		[[test]] ();
+};
+
+func [[test]] (){
+fmt.Println(1);
+}; ]]resolve #2 to #1  
+
+
+test nameresultionmethodwithparams [[
+package main;
+
+import "fmt";
+  
+func main(){  
+		[[test]] (2);
+};
+
+func [[test]] (x int){
+fmt.Println(x);
+}; ]]resolve #2 to #1 
+
+test nameresultionparams [[
+package main;
+
+import "fmt";
+  
+func main(){  
+		test (2);
+};
+
+func test ([[x]] int){
+fmt.Println([[x]]);
+}; ]]resolve #2 to #1 
+
+test nameresultionfields [[
+package main;
+
+import "fmt";
+  
+func main(){  
+	test.[[x]] = 4;
+};
+
+
+type test struct {
+	[[x]] int;
+}; ]]resolve #2 to #1
+
+test nameresultionstrucst [[
+package main;
+
+import "fmt";
+  
+func main(){  
+	[[test]].x = 4;
+};
+
+
+type [[test]] struct {
+	x int;
+};]] resolve #2 to #1

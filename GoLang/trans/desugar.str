@@ -1,0 +1,168 @@
+module desugar
+
+imports
+
+  libspoofax/resource/path
+  libspoofax/term/origin
+
+  signatures/-
+
+signature
+  constructors
+    SourceFile : ImportPath * PackageName * ImportDecls * TopLevelDecls -> SourceFile
+    Elements   : ElementList -> LiteralValue-Inner
+    Parameters : ParameterList -> Parameters-Inner
+    Bind	   : StringLit * IntLit -> Bind
+    ArgumentsPackage : QualifiedIdent -> ArgumentsPackage
+    Index 		: IntLit -> Index
+
+rules
+
+  desugar-all = 
+    try(desugar-sourcefile);
+    desugar-short-var-decls;
+    desugar-single-decls;
+    desugar-annotated-variables;
+    desugar-opts;
+    desugar-typed-mult-var-declare
+
+//at the start of generate -> list parameter
+rules
+
+  desugar-sourcefile:
+      file@SourceFile(name, imports, decls) -> SourceFile(pkg-path, name, imports, decls)
+    with 
+    	file-path := <origin-file> file;
+     	pkg-path  := <current-language-relative-source-or-include-path;dirname> file-path
+
+desugar-typed-mult-var-declare:
+      SourceFile(pkg-path, name, imports, decls) -> SourceFile(pkg-path, name, imports, declsnew)
+    with 
+ 		declsnew := <topdown(try(typed-multi-vars))>  decls
+ 		
+typed-multi-vars: MultiVarDecl([VarSpec(varlist,Typed(typeList,VarAssign(assignList)))]) -> 
+MultiVarDecl([VarSpec(varlist,Typed(newTypeList,VarAssign(newAssignList)))])
+where
+newTypeList := <map(expand-type-list(|typeList));concat> varlist;
+newAssignList := <map(expand-type-list(|assignList));concat> varlist
+
+typed-multi-vars: MultiVarDecl([VarSpec(varlist,Typed(typeList,NoVarAssign()))]) -> 
+MultiVarDecl([VarSpec(varlist,Typed(newTypeList,NoVarAssign()))])
+where
+newTypeList := <map(expand-type-list(|typeList));concat> varlist
+
+expand-type-list(|list): _ -> list
+
+desugar-annotated-variables:
+      SourceFile(pkg-path, name, imports, decls) -> SourceFile(pkg-path, name, imports, declsnew)
+    with 
+ 		declsnew := <annotate-var-decls> decls
+
+annotate-var-decls: ast -> annotated-ast
+  	with
+		annotated-ast := <topdown(try(index-functions))> ast
+			
+index-functions: FunctionDecl(name,functionBody) ->FunctionDecl(name,annotated-functions) 
+where
+var-decl-indices := <get-indexed-var-list-for-element> functionBody
+; temp := <topdown(try(index-var-decl(|var-decl-indices)))> functionBody
+; annotated-functions := <topdown(try(index-param-decl(|var-decl-indices)))> temp
+
+
+get-indexed-var-list-for-element: elem -> var-decl-indices
+where
+	var-decl-list := <collect-all(multivardecl)> elem;
+	param-decl-list := <collect-all(paramdecl)> elem;
+	field-decl-list := <collect-all(fielddecl)> elem;
+	paramdecl-names := <map(get-param-decl-var-name-list);concat> param-decl-list;
+	multivardecl-names := <map(get-multi-var-decl-name-list); concat> var-decl-list;
+	fielddecl-names:= <map(get-field-decl-name-list); concat> field-decl-list ;
+	var-decl-indices := <concat>[paramdecl-names,multivardecl-names,fielddecl-names]
+
+index-param-decl(|var-decl-indices):
+	ParameterDecl(varlist,x,type) -> ParameterDecl(bindlst,x,type)
+	where 
+	 bindlst:= <map(var-index(|var-decl-indices))> varlist
+
+index-field-decl(|var-decl-indices):
+	FieldDecl(Field(varlist,type),tag) -> FieldDecl(Field(bindlst,type),tag)
+		where 
+	 bindlst:= <map(var-index(|var-decl-indices))> varlist
+
+index-var-decl(|var-decl-indices): 
+	MultiVarDecl([VarSpec(varlist,expr)]) -> MultiVarDecl([VarSpec(bindlst,expr)])
+  	with
+  		bindlst:= <map(var-index(|var-decl-indices))> varlist
+	
+var-index(|var-decl-indices):
+	varname -> Bind(varname,index)
+	where
+		index := <get-index> (varname, var-decl-indices)
+	
+multivardecl:
+	MultiVarDecl(x) -> MultiVarDecl(x)
+
+paramdecl:
+	ParameterDecl(x,y,z) -> ParameterDecl(x,y,z)
+fielddecl:
+	FieldDecl(x,y) -> FieldDecl(x,y)
+
+get-multi-var-decl-name-list:
+	MultiVarDecl([VarSpec(varlist,_)]) -> varlist
+	
+get-param-decl-var-name-list:
+	ParameterDecl(x,_,_) -> x
+	
+get-field-decl-name-list:
+	FieldDecl(Field(x,_),_) -> x
+
+rules
+
+  desugar-short-var-decls =
+    topdown(try(desugar-short-var-decl))
+  
+  desugar-short-var-decl:
+      ShortVarDecl(ids, exprs) -> SingleVarDecl(VarSpec(ids,Untyped(VarAssign(exprs))))
+
+rules
+
+  desugar-single-decls =
+    topdown(try(desugar-single-decl)) 
+ 
+  desugar-single-decl:
+      SingleImportDecl(import-spec) -> MultiImportDecl([import-spec])
+
+  desugar-single-decl:
+    SingleConstDecl(const-spec) -> MultiConstDecl([const-spec])
+
+  desugar-single-decl:
+    SingleTypeDecl(type-spec) -> MultiTypeDecl([type-spec])
+
+  desugar-single-decl:
+    SingleVarDecl(var-spec) -> MultiVarDecl([var-spec])
+
+  		
+
+rules
+ 
+  desugar-opts = topdown(try(desugar-opt))
+  
+  desugar-opt: NoParameters() -> []
+  desugar-opt: Parameters(params,_) -> params
+  
+  desugar-opt: NoElements() -> []
+  desugar-opt: Elements(elems,_) -> elems
+ 
+  desugar-opt: NoIdentifiers() -> []
+
+  desugar-opt: NoExpressions() -> [] 
+  
+  desugar-opt : Bind(Bind(x,int),_) -> Bind(x,int) 
+  
+  desugar-opt: Assignment(x) -> x 
+  desugar-opt: ReturnStmt(ReturnStmt(x)) -> ReturnStmt(x)
+  desugar-opt: Arguments(Arguments(x),_,_) -> Arguments(x)
+  desugar-opt: VarSpec(x,Typed(TypeName(y),z)) -> VarSpec(x,Typed([TypeName(y)],z))
+ 
+  
+               

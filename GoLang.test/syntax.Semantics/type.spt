@@ -1,0 +1,57 @@
+module type
+language GoLang
+start symbol SourceFile
+
+test typevardeclint [[
+package main;
+
+import "fmt";
+  
+func main(){   
+		[[x]] := 3;
+}; ]] run get-type on #1 to IntT()  
+
+test typevardeclintlit [[
+package main;
+ 
+import "fmt"; 
+  
+func main(){   
+		x := [[3]];
+}; ]] run get-type on #1 to IntT()  
+
+test typevardeclboolvar [[
+package main;
+
+import "fmt";
+  
+func main(){   
+		[[x]] := true;
+}; ]] run get-type on #1 to BoolT()  
+
+test typevardeclboollit [[
+package main;
+
+import "fmt";
+  
+func main(){   
+		x := [[true]];
+}; ]] run get-type on #1 to BoolT()  
+
+test typevardeclstringvar [[
+package main;
+
+import "fmt";
+  
+func main(){   
+		[[x]] := "test";
+}; ]] run get-type on #1 to StringT()  
+
+test typevardeclstringlit [[
+package main;
+
+import "fmt";
+  
+func main(){   
+		x := [["test"]];
+}; ]] run get-type on #1 to StringT()  

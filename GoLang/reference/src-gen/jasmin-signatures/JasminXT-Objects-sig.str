@@ -1,0 +1,53 @@
+module signatures/JasminXT-Objects-sig
+
+imports
+  signatures/JasminXT-Names-sig
+  signatures/JasminXT-Numbers-sig
+  signatures/JasminXT-Types-sig
+
+
+signature
+  constructors
+    NEW                : ClassRef -> Instruction
+    NEWARRAY           : BaseTypeName -> Instruction
+    ANEWARRAY          : ANewArrayArg -> Instruction
+                       : ClassRef -> ANewArrayArg
+                       : ArrayType -> ANewArrayArg
+    MULTIANEWARRAY     : ArrayType * Int -> Instruction
+    GETFIELD           : FieldRef -> Instruction
+    PUTFIELD           : FieldRef -> Instruction
+    GETSTATIC          : FieldRef -> Instruction
+    PUTSTATIC          : FieldRef -> Instruction
+    IALOAD             : Instruction
+    LALOAD             : Instruction
+    BALOAD             : Instruction
+    CALOAD             : Instruction
+    SALOAD             : Instruction
+    FALOAD             : Instruction
+    DALOAD             : Instruction
+    AALOAD             : Instruction
+    IASTORE            : Instruction
+    LASTORE            : Instruction
+    BASTORE            : Instruction
+    CASTORE            : Instruction
+    SASTORE            : Instruction
+    FASTORE            : Instruction
+    DASTORE            : Instruction
+    AASTORE            : Instruction
+    ARRAYLENGTH        : Instruction
+    CHECKCAST          : ClassRef -> Instruction
+    INSTANCEOF         : ClassRef -> Instruction
+    BaseTypeName-Plhdr : BaseTypeName
+    ANewArrayArg-Plhdr : ANewArrayArg
+    ArrayType-Plhdr    : ArrayType
+    Int-Plhdr          : Int
+    FieldRef-Plhdr     : FieldRef
+    Instruction-Plhdr  : Instruction
+    ClassRef-Plhdr     : ClassRef
+    BaseTypeName-Plhdr : COMPLETION-INSERTION -> BaseTypeName
+    ANewArrayArg-Plhdr : COMPLETION-INSERTION -> ANewArrayArg
+    ArrayType-Plhdr    : COMPLETION-INSERTION -> ArrayType
+    Int-Plhdr          : COMPLETION-INSERTION -> Int
+    FieldRef-Plhdr     : COMPLETION-INSERTION -> FieldRef
+    Instruction-Plhdr  : COMPLETION-INSERTION -> Instruction
+    ClassRef-Plhdr     : COMPLETION-INSERTION -> ClassRef

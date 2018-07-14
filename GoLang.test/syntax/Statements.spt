@@ -1,0 +1,125 @@
+module Statements
+
+language GoLang
+
+start symbol Statement
+
+test empty statement [[ ]] parse succeeds
+
+test labeled statement [[Error: log.Panic("error encountered")]] parse succeeds
+
+test expression statement [[h(x+y)]] parse succeeds
+test expression statement [[f.Close()]] parse succeeds
+test expression statement [[<-ch]] parse succeeds
+test expression statement [[(<-ch)]] parse succeeds
+test expression statement [[len("foo")]] parse succeeds
+
+test send statement [[ch <- 3]] parse succeeds
+
+test incdec statement [[x++]] parse succeeds
+test incdec statement [[x--]] parse succeeds
+
+test assignment [[x = 1]] parse succeeds
+test assignment [[*p = f()]] parse succeeds
+test assignment [[a[i] = 23]] parse succeeds
+test assignment [[(k) = <-ch]] parse succeeds
+test assignment [[a[i] <<= 2]] parse succeeds
+test assignment [[i &^= 1<<n]] parse succeeds
+test assignment [[x, y = f()]] parse succeeds
+test assignment [[_ = x]] parse succeeds
+test assignment [[x, _ = f()]] parse succeeds
+
+test if statement [[if x > max {
+  x = max;
+}]] parse succeeds
+test if statement [[if x := f(); x < y {
+  return x;
+} else if x > z {
+  return z;
+} else {
+  return y;
+}]] parse succeeds
+
+test expression switch statement [[switch tag {
+default: s3();
+case 0, 1, 2, 3: s1();
+case 4, 5, 6, 7: s2();
+}]] parse succeeds
+test expression switch statement [[switch x := f(); {
+case x < 0: return -x;
+default: return x;
+}]] parse succeeds
+test expression switch statement [[switch {
+case x < y: f1();
+case x < z: f2();
+case x == 4: f3();
+}]] parse succeeds
+
+test type switch [[switch i := x.(type) {
+case nil:
+  printString("x is nil");
+case int:
+  printInt(i);
+case float64:
+  printFloat64(i);
+case func(int) float64:
+  printFunction(i);
+case bool, string:
+  printString("type is bool or string");
+default:
+  printString("don't know the type");
+}]] parse succeeds
+
+test if statement [[for a < b {
+  a *= 2;
+}]] parse succeeds
+test if statement [[for i := 0; i < 10; i++ {
+  f(i);
+}]] parse succeeds
+test if statement [[for cond { S(); }]] parse succeeds
+test if statement [[for      { S(); }]] parse succeeds
+
+test go statement [[go Server()]] parse succeeds
+
+test select statement [[select {
+case i1 = <-c1:
+  print("received ", i1, " from c1\n");
+case c2 <- i2:
+  print("sent ", i2, " to c2\n");
+case i3, ok := (<-c3):  // same as: i3, ok := <-c3
+  if ok {
+    print("received ", i3, " from c3\n");
+  } else {
+    print("c3 is closed\n");
+  };
+case a[f()] = <-c4:
+  // same as:
+  // case t := <-c4
+  //  a[f()] = t
+default:
+  print("no communication\n");
+}]] parse succeeds
+
+test return statement [[return]] parse succeeds
+test return statement [[return 2]] parse succeeds
+test return statement [[return -7.0, -4.0]] parse succeeds
+test return statement [[return complexF1()]] parse succeeds
+
+test break statement [[break]] parse succeeds
+test break statement [[break OuterLoop]] parse succeeds
+
+test continue statement [[continue]] parse succeeds
+test continue statement [[continue RowLoop]] parse succeeds
+
+test goto statement [[goto Error]] parse succeeds
+
+test fallthrough statement [[fallthrough]] parse succeeds
+
+test defer statement [[defer unlock(l)]] parse succeeds
+test defer statement [[defer fmt.Print(i)]] parse succeeds
+
+// these come from declarations, but the short var decls are not declarations
+test short var decl [[i, j := 0, 10]] parse succeeds
+test short var decl [[f := func() int { return 7; }]] parse succeeds
+test short var decl [[r, w := os.Pipe(fd)]] parse succeeds
+test short var decl [[_, y, _ := coord(p)]] parse succeeds

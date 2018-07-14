@@ -1,0 +1,8 @@
+module StringLit
+
+language GoLang
+
+start symbol StringLit
+
+test string 9 [["\uD800"]] parse fails                // illegal: surrogate half
+test string 10 [["\U00110000"]] parse fails           // illegal: invalid Unicode code point

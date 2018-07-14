@@ -1,0 +1,30 @@
+module signatures/JasminXT-InvokeReturn-sig
+
+imports
+  signatures/JasminXT-Names-sig
+  signatures/JasminXT-Descriptors-sig
+  signatures/JasminXT-Numbers-sig
+
+
+signature
+  constructors
+    INVOKESPECIAL     : MethodRef -> Instruction
+    INVOKEVIRTUAL     : MethodRef -> Instruction
+    INVOKESTATIC      : MethodRef -> Instruction
+    INVOKEINTERFACE   : MethodRef * Int -> Instruction
+    RETURN            : Instruction
+    IRETURN           : Instruction
+    LRETURN           : Instruction
+    FRETURN           : Instruction
+    DRETURN           : Instruction
+    ARETURN           : Instruction
+    RET               : VarRef -> Instruction
+    RET_W             : VarRef -> Instruction
+    MethodRef-Plhdr   : MethodRef
+    Int-Plhdr         : Int
+    Instruction-Plhdr : Instruction
+    VarRef-Plhdr      : VarRef
+    MethodRef-Plhdr   : COMPLETION-INSERTION -> MethodRef
+    Int-Plhdr         : COMPLETION-INSERTION -> Int
+    Instruction-Plhdr : COMPLETION-INSERTION -> Instruction
+    VarRef-Plhdr      : COMPLETION-INSERTION -> VarRef
