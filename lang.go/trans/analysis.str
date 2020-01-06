@@ -2,12 +2,16 @@ module analysis
 
 imports
   
-  nabl2shared
-  nabl2runtime
+  statixruntime
+  statix/api
+  statix/runtime/analysis // private, for get-type
+  statix/runtime/ast // private, for get-type
   
   desugar
-  statics/-
+  
   pp
+  
+  analysis/-
 
 rules // Analysis
 
@@ -17,13 +21,17 @@ rules // Analysis
 rules // Debugging
   
   // Prints the abstract syntax ATerm of a selection.
-  debug-show-aterm:
-      (selected, _, _, path, project-path) -> (filename, result)
+  debug-show-aterm: (selected, _, _, path, project-path) -> (filename, result)
     with filename := <guarantee-extension(|"aterm")> path
        ; result   := selected
 
+  // Prints the desugared abstract syntax ATerm of a selection.
+  debug-show-aterm-desugar:
+    (selected, _, _, path, project-path) -> (filename, result)
+    with filename := <guarantee-extension(|"aterm")> path
+       ; result   := <desugar-all> selected
+
   // Prints the analyzed annotated abstract syntax ATerm of a selection.
-  debug-show-analyzed:
-      (selected, _, _, path, project-path) -> (filename, result)
+  debug-show-analyzed: (selected, _, _, path, project-path) -> (filename, result)
     with filename := <guarantee-extension(|"analyzed.aterm")> path
        ; result   := selected

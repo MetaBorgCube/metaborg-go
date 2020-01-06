@@ -1,0 +1,7 @@
+module analysis/statics
+
+
+rules
+
+	programOK : scope * ()
+	programOK(s, t) :- true.
