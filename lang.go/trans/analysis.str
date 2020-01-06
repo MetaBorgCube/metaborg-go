@@ -16,7 +16,20 @@ imports
 rules // Analysis
 
   editor-analyze =
-    nabl2-analyze(desugar-all)
+    stx-editor-analyze(explicate-injections;desugar-all|"statics", "programOk")
+
+  explicate-injections =
+    explicate-injections(inj-name)
+
+  inj-name: (sort, into-sort) -> $[[sort']2[into-sort']]
+    with sort' := <camel-abbr> sort
+    with into-sort' := <camel-abbr> into-sort
+
+  camel-abbr = explode-string; filter(is-upper); implode-string
+  
+//  get-type: node -> type
+//    where a := <stx--get-ast-analysis> node
+//        ; type := <stx--get-ast-property(|a,Prop("type"))> node
 
 rules // Debugging
   
