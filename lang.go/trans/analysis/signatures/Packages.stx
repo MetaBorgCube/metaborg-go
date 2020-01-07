@@ -1,0 +1,40 @@
+module analysis/signatures/Packages
+
+imports
+	analysis/signatures/Declarations
+	analysis/signatures/Lexical
+
+signature
+	sorts SourceFile constructors
+		SourceFile : PackageClause * list(SourceFile-Imports) * list(SourceFile-Decls) -> SourceFile
+	sorts SourceFile-Imports constructors
+		ID2SFI : ImportDecl -> SourceFile-Imports
+	sorts SourceFile-Decls constructors
+		TLD2SFD : TopLevelDecl -> SourceFile-Decls
+	
+signature
+	sorts PackageClause constructors
+		PackageClause : PackageName -> PackageClause
+	sorts PackageName = string
+	
+signature
+	sorts ImportDecl constructors
+		SingleImportDecl : ImportSpec -> ImportDecl
+		MultiImportDecl : list(MultiImportDecl-Inner) -> ImportDecl
+	sorts MultiImportDecl-Inner constructors
+		IS2MIDI : ImportSpec -> MultiImportDecl-Inner
+		
+	sorts ImportSpec constructors
+		ImportSpec : ImportSpec-Qual * ImportPath -> ImportSpec
+	sorts ImportSpec-Qual constructors
+		Qual : ImportSpec-Qual
+		Unqual : ImportSpec-Qual
+		Alias : PackageName -> ImportSpec-Qual
+	sorts ImportPath = string
+
+signature
+	sorts TestSources constructors
+		TestSources : list(TestSource) -> TestSources
+	sorts TestSource constructors
+		SourceFile : ImportPath * PackageClause * list(SourceFile-Imports) * list(SourceFile-Decls) -> TestSource
+	

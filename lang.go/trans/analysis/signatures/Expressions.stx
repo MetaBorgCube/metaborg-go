@@ -1,0 +1,149 @@
+module analysis/signatures/Expressions
+
+imports
+	analysis/signatures/Declarations
+	analysis/signatures/Lexical
+	analysis/signatures/Packages
+	analysis/signatures/Representation
+	analysis/signatures/Types
+	
+signature
+	sorts Operand constructors
+		L2O : Literal -> Operand
+		ON2O : OperandName -> Operand
+		ME2O : MethodExpr -> Operand
+		E2O : Expression -> Operand
+	
+	sorts Literal constructors
+		BL2L : BasicLit -> Literal
+		CL2L : CompositeLit -> Literal
+		FL2L : FunctionLit -> Literal
+	
+	sorts BasicLit constructors
+		IntLit : IntLit -> BasicLit
+		FloatLit : FloatLit -> BasicLit
+		ImaginaryLit : ImaginaryLit -> BasicLit
+		RuneLit : RuneLit -> BasicLit
+		StringLit : StringLit -> BasicLit
+	
+	sorts OperandName constructors
+		OperandName : Identifier -> OperandName
+		QualifiedOperandName : QualifiedIdent -> OperandName
+	
+signature
+	sorts QualifiedIdent constructors
+		QualifiedIdent : PackageName * Identifier -> QualifiedIdent
+
+signature
+	sorts CompositeLit constructors
+		CompositeLit : LiteralType * LiteralValue -> CompositeLit
+	
+	sorts LiteralType constructors
+		ST2LT : StructType -> LiteralType
+		ST2LT : ArrayType -> LiteralType
+		AutoArrayType : ElementType -> LiteralType
+		ST2LT : SliceType -> LiteralType
+		MT2LT : MapType -> LiteralType
+		TN2LT : TypeName -> LiteralType
+		
+	sorts LiteralValue constructors
+		LiteralValue : LiteralValue-Inner-OPT -> LiteralValue
+	sorts LiteralValue-Inner-OPT constructors
+		NoElements : LiteralValue-Inner-OPT
+		Elements : ElementList * Comma -> LiteralValue-Inner-OPT
+	
+	sorts ElementList constructors
+		KE2EL : list(KeyedElement) -> ElementList
+	sorts KeyedElement constructors
+		KeyedElement : KeyedElement-Key-OPT * Element -> KeyedElement
+	sorts KeyedElement-Key-OPT constructors
+		NoKey : KeyedElement-Key-OPT
+		K2KEKOPT : Key -> KeyedElement-Key-OPT
+	
+	sorts Key constructors
+		FN2K : FieldName -> Key
+		E2K : Expression -> Key
+		LV2K : LiteralValue -> Key
+	sorts FieldName constructors
+		I2FN : Identifier -> FieldName
+	sorts Element constructors
+		E2E : Expression -> Element
+		LV2E : LiteralValue -> Element
+	
+signature
+	sorts FunctionLit constructors
+		FunctionLit : Function -> FunctionLit
+	
+signature
+	sorts PrimaryExpr constructors
+		O2PE : Operand -> PrimaryExpr
+		C2PE : Conversion -> PrimaryExpr
+		
+		Selector : PrimaryExpr * Identifier -> PrimaryExpr
+		Index : PrimaryExpr * Expression -> PrimaryExpr
+		Slice : PrimaryExpr * Expression-OPT * Expression-OPT -> PrimaryExpr
+		Slice : PrimaryExpr * Expression-OPT * Expression-OPT * Expression-OPT -> PrimaryExpr
+		TypeAssertion : PrimaryExpr * Type -> PrimaryExpr
+		Arguments : PrimaryExpr * Arguments-Inner-OPT -> PrimaryExpr
+		
+	sorts Arguments-Inner-OPT constructors
+		NoArguments : Arguments-Inner-OPT
+		Arguments : Arguments-Inner-Inner * Dots * Comma -> Arguments-Inner-OPT
+	sorts Arguments-Inner-Inner constructors
+		Arguments : ExpressionList -> Arguments-Inner-Inner
+		TypeArgument : Type -> Arguments-Inner-Inner
+		TypedArguments : Type * ExpressionList -> Arguments-Inner-Inner
+
+signature
+	sorts MethodExpr constructors
+		MethodExpr : ReceiverType * MethodName -> MethodExpr
+	sorts ReceiverType constructors
+		ValueReceiver : TypeName -> ReceiverType
+		PointerReceiver : TypeName -> ReceiverType
+		RT2RT : ReceiverType -> ReceiverType
+
+signature
+	sorts Expression constructors
+		UE2E : UnaryExpr -> Expression
+		BE2E : BinaryExpr -> Expression
+	sorts Expression-OPT constructors
+		NoExpression : Expression-OPT
+		E2EOPT : Expression -> Expression-OPT
+	sorts BinaryExpr constructors
+		LogicalOr : Expression * Expression -> BinaryExpr
+		LogicalAnd : Expression * Expression -> BinaryExpr
+		
+		Equal : Expression * Expression -> BinaryExpr
+		NotEqual : Expression * Expression -> BinaryExpr
+		Less : Expression * Expression -> BinaryExpr
+		LessOrEqual : Expression * Expression -> BinaryExpr
+		Greater : Expression * Expression -> BinaryExpr
+		GreaterOrEqual : Expression * Expression -> BinaryExpr
+		
+		Sum : Expression * Expression -> BinaryExpr
+		Difference : Expression * Expression -> BinaryExpr
+		BitwiseOr : Expression * Expression -> BinaryExpr
+		BitwiseXor : Expression * Expression -> BinaryExpr
+		
+		Product : Expression * Expression -> BinaryExpr
+		Quotient : Expression * Expression -> BinaryExpr
+		Remainder : Expression * Expression -> BinaryExpr
+		LeftShift : Expression * Expression -> BinaryExpr
+		RightShift : Expression * Expression -> BinaryExpr
+		BitwiseAnd : Expression * Expression -> BinaryExpr
+		BitClear : Expression * Expression -> BinaryExpr
+		
+	sorts UnaryExpr constructors
+		PE2UE : PrimaryExpr -> UnaryExpr
+		Positive : UnaryExpr -> UnaryExpr
+		Negation : UnaryExpr -> UnaryExpr
+		Not : UnaryExpr -> UnaryExpr
+		BitwiseComplement : UnaryExpr -> UnaryExpr
+		AddressOf : UnaryExpr -> UnaryExpr
+		ValueAt : UnaryExpr -> UnaryExpr
+		Recieve : UnaryExpr -> UnaryExpr
+		
+signature
+	sorts Conversion constructors
+		Conversion : Type * Expression * Comma -> Conversion
+	

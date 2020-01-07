@@ -1,0 +1,112 @@
+module analysis/signatures/Declarations
+
+imports
+	analysis/signatures/Blocks
+	analysis/signatures/Lexical
+	analysis/signatures/Expressions
+	analysis/signatures/Types
+
+signature
+	sorts Declaration constructors
+		CD2D : ConstDecl -> Declaration
+		TD2D : TypeDecl -> Declaration
+		VD2D : VarDecl -> Declaration
+	sorts TopLevelDecl constructors
+		D2TLD : Declaration -> TopLevelDecl
+		FD2TLD : FunctionDecl -> TopLevelDecl
+		MD2TLD : MethodDecl -> TopLevelDecl
+		
+signature
+	sorts ConstDecl constructors
+		SingleConstDecl : ConstSpec -> ConstDecl
+		MultiConstDecl : list(MultiConstDecl-Inner) -> ConstDecl
+	sorts MultiConstDecl-Inner constructors
+		CS2MCDI : ConstSpec -> MultiConstDecl-Inner
+	
+	sorts ConstSpec constructors
+		ConstSpec : IdentifierList * ConstSpec-Assignment -> ConstSpec
+	sorts ConstSpec-Assignment constructors
+		ConstAssign : ConstSpec-Type-OPT * ExpressionList -> ConstSpec-Assignment
+	sorts ConstSpec-Type-OPT constructors
+		NoType : ConstSpec-Type-OPT
+		T2CSTOPT : Type -> ConstSpec-Type-OPT
+	
+	sorts IdentifierList constructors
+		I2IL : list(Identifier) -> IdentifierList
+	sorts IdentifierList-OPT constructors
+		NoIdentifiers : IdentifierList-OPT
+		IL2ILOPT : IdentifierList -> IdentifierList-OPT
+		
+	sorts ExpressionList constructors
+		E2EL : list(Expression) -> ExpressionList
+	sorts ExpressionList-OPT constructors
+		NoExpressions : ExpressionList-OPT
+		EL2ELOPT : ExpressionList -> ExpressionList-OPT
+	
+signature
+	sorts TypeDecl constructors
+		SingleTypeDecl : TypeSpec -> TypeDecl
+		MultiTypeDecl : list(MultiTypeDecl-Inner) -> TypeDecl
+	sorts MultiTypeDecl-Inner constructors
+		MTDI2TS : TypeSpec -> MultiTypeDecl-Inner
+	
+	sorts TypeSpec constructors
+		AD2TS : AliasDecl -> TypeSpec
+		TD2TS : TypeDef -> TypeSpec
+		
+	sorts AliasDecl constructors
+		AliasDecl : Identifier * Type -> AliasDecl
+	
+	sorts TypeDef constructors
+		TypeDef : Identifier * Type -> TypeDef
+	
+	sorts VarDecl constructors
+		SingleVarDecl : VarSpec -> VarDecl
+		MultiVarDecl : list(MultiVarDecl-Inner) -> VarDecl
+	sorts MultiVarDecl-Inner constructors
+		MVDI2VS : VarSpec -> MultiVarDecl-Inner
+	
+	sorts VarSpec constructors
+		VarSpec : IdentifierList * VarSpec-Inner -> VarSpec
+	sorts VarSpec-Inner constructors
+		Typed : Type * VarSpec-Assign-OPT -> VarSpec-Inner
+		Untyped : VarSpecAssign -> VarSpec-Inner
+	sorts VarSpec-Assign-OPT constructors
+		NoVarAssign : VarSpec-Assign-OPT
+		VSA2VSAOPT : VarSpec-Assign -> VarSpec-Assign-OPT
+	sorts VarSpec-Assign constructors
+		VarAssign : ExpressionList -> VarSpec-Assign
+
+signature
+	sorts ShortVarDecl constructors
+		ShortVarDecl : IdentifierList * ExpressionList -> ShortVarDecl
+
+signature
+	sorts FunctionDecl constructors
+		FunctionDecl : FunctionName * FunctionDecl-Inner -> FunctionDecl
+	sorts FunctionDecl-Inner constructors
+		F2FDI : Function -> FunctionDecl-Inner
+		S2FDI : Signature -> FunctionDecl-Inner
+	
+	sorts FunctionName constructors
+		FunctionName : Identifier -> FunctionName
+	sorts Function constructors
+		Function : Signature * FunctionBody -> Function
+	sorts FunctionBody constructors
+		B2FB : Block -> FunctionBody
+
+signature
+	sorts MethodDecl constructors
+		MethodDecl : Receiver * MethodName * MethodDecl-Inner -> MethodDecl
+	sorts MethodDecl-Inner constructors
+		F2MDI : Function -> MethodDecl-Inner
+		S2MDI : Signature -> MethodDecl-Inner
+		
+	sorts Receiver constructors
+		Receiver : Identifier * Receiver-Inner -> Receiver
+		AnonymousReceiver : Receiver-Inner -> Receiver
+	sorts Receiver-Inner constructors
+		TN2RI : TypeName -> Receiver-Inner
+	
+		
+		

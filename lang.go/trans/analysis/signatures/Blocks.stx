@@ -1,0 +1,14 @@
+module analysis/signatures/Blocks
+
+imports
+	analysis/signatures/Statements
+	
+signature
+	sorts Block constructors
+		Block : StatementList -> Block
+	
+	sorts StatementList constructors
+		SLI2SL : list(StatementList-Inner) -> StatementList
+	sorts StatementList-Inner constructors
+		S2SLI : Statement -> StatementList-Inner
+

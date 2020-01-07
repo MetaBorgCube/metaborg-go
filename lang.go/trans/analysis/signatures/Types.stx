@@ -1,0 +1,116 @@
+module analysis/signatures/Types
+
+imports
+	analysis/signatures/Lexical
+	analysis/signatures/Declarations
+	analysis/signatures/Expressions
+	analysis/signatures/Representation
+	
+signature
+	sorts Type constructors
+		TN2T : TypeName -> Type
+		TL2T : TypeLit -> Type
+		T2T : Type -> Type
+		
+	sorts TypeName constructors
+		TypeName : Identifier -> TypeName
+		QualifiedTypeName : QualifiedIdent -> TypeName
+		
+	sorts TypeLit constructors
+		AT2TL : ArrayType -> TypeLit
+		ST2TL : StructType -> TypeLit
+		PT2TL : PointerType -> TypeLit
+		FT2TL : FunctionType -> TypeLit
+		IT2TL : InterfaceType -> TypeLit
+		ST2TL : SliceType -> TypeLit
+		MT2TL : MapType -> TypeLit
+		CT2TL : ChannelType -> TypeLit
+		
+signature
+	sorts ArrayType constructors
+		ArrayType : ArrayLength * ElementType -> ArrayType
+	sorts ArrayLength constructors
+		E2AL : Expression -> ArrayLength
+	sorts ElementType constructors
+		T2ET : Type -> ElementType
+		
+signature
+	sorts SliceType constructors
+		SliceType : ElementType -> SliceType
+
+signature
+	sorts StructType constructors
+		StructType : list(StructType-Inner) -> StructType
+	sorts StructType-Inner constructors
+		FD2STI : FieldDecl -> StructType-Inner
+		
+	sorts FieldDecl constructors
+		FieldDecl : Field * Tag-OPT -> FieldDecl
+		
+	sorts Field constructors
+		Field : IdentifierList * Type -> Field
+		AnonymousPtrField : TypeName -> Field
+		AnonymousField : TypeName -> Field
+	
+	sorts Tag-OPT constructors
+		NoTag : Tag-OPT
+		T2TOPT : Tag -> Tag-OPT
+	sorts Tag constructors
+		SL2Tag : StringLit -> Tag
+
+signature
+	sorts PointerType constructors
+		PointerType : BaseType -> PointerType
+	sorts BaseType constructors
+		T2BT : Type -> BaseType
+
+signature
+	sorts FunctionType constructors
+		FunctionType : Signature -> FunctionType
+	sorts Signature constructors
+		Signature : Parameters * Result-OPT -> Signature
+	sorts Result-OPT constructors
+		NoResult : Result-OPT
+		R2ROPT : Result -> Result-OPT
+	sorts Result constructors
+		P2R : Parameters -> Result
+		T2R : Type -> Result
+	
+	sorts Parameters constructors
+		PIOPT2P : Parameters-Inner-OPT -> Parameters
+	sorts Parameters-Inner-OPT constructors
+		NoParameters : Parameters-Inner-OPT
+		Parameters : ParameterList * Comma -> Parameters-Inner-OPT
+	
+	sorts ParameterList constructors
+		PD2PL : list(ParameterDecl) -> ParameterList
+	
+	sorts ParameterDecl constructors
+		ParameterDecl : IdentifierList-OPT * Dots_ * Type -> ParameterDecl	// TODO: Desugar 'Dots?'
+	
+signature
+	sorts InterfaceType constructors
+		InterfaceType : list(InterfaceType-Inner) -> InterfaceType
+	sorts InterfaceType-Inner constructors
+		MS2ITI : MethodSpec -> InterfaceType-Inner
+	
+	sorts MethodSpec constructors
+		MethodSpec : MethodName * Signature -> MethodSpec
+		ITN2MS : InterfaceTypeName -> MethodSpec
+	
+	sorts MethodName constructors
+		MethodName : Identifier -> MethodName
+	sorts InterfaceTypeName constructors
+		TN2ITN : TypeName -> InterfaceTypeName
+
+signature
+	sorts MapType constructors
+		MapType : KeyType * ElementType -> MapType
+	sorts KeyType constructors
+		T2KT : Type -> KeyType
+
+signature
+	sorts ChannelType constructors
+		BidirectionalChannelType : ElementType -> ChannelType
+		SendingChannelType : ElementType -> ChannelType
+		ReceivingChannelType : ElementType -> ChannelType
