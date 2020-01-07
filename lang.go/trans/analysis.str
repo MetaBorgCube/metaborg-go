@@ -16,7 +16,9 @@ imports
 rules // Analysis
 
   editor-analyze =
-    stx-editor-analyze(explicate-injections;desugar-all|"statics", "programOk")
+    stx-editor-analyze(desugar-and-explicate|"statics", "programOk")
+    
+  desugar-and-explicate = explicate-injections;desugar-all
 
   explicate-injections =
     explicate-injections(inj-name)
@@ -43,6 +45,12 @@ rules // Debugging
     (selected, _, _, path, project-path) -> (filename, result)
     with filename := <guarantee-extension(|"aterm")> path
        ; result   := <desugar-all> selected
+
+
+  // Prints the pre-analyzed abstract syntax ATerm of a selection.
+  debug-show-pre-analyzed: (selected, _, _, path, project-path) -> (filename, result)
+    with filename := <guarantee-extension(|"pre-analyzed.aterm")> path
+       ; result   := <desugar-and-explicate> selected
 
   // Prints the analyzed annotated abstract syntax ATerm of a selection.
   debug-show-analyzed: (selected, _, _, path, project-path) -> (filename, result)

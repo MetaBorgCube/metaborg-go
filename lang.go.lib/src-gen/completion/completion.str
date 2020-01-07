@@ -9,6 +9,14 @@ imports
  
   
 rules
+
+  pp-partial-GoLang-string(|sort) = fail
+  pp-partial-GoLang-string = fail
+  parenthesize-GoLang = fail
+  GoLang-get-indent = fail
+  GoLang-get-leading-ws = fail
+  GoLang-get-separator = fail
+
   
   get-proposals-empty-program-GoLang                         = ?(sort, _); 
                                                                  get-proposals-empty-program(pp-partial-GoLang-string(|sort), parenthesize-GoLang, 

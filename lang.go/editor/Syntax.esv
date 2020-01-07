@@ -20,6 +20,7 @@ menus
     
     action: "Format"          = editor-format (source)
     action: "Show parsed AST" = debug-show-aterm (source)
+    action: "Show pre-analyzed AST" = debug-show-pre-analyzed (source)
     action: "Show analyzed AST" = debug-show-analyzed
 
 views

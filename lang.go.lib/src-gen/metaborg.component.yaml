@@ -1,5 +1,5 @@
 ---
-metaborgVersion: "2.3.0-SNAPSHOT"
+metaborgVersion: "2.6.0-SNAPSHOT"
 sources:
   language: "GoLang"
   directory: "src"

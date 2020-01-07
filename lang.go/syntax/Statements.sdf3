@@ -193,10 +193,10 @@ context-free syntax
   
   SelectStmt     = <select { <CommClause*> }>
   CommClause     = <<CommCase>: <StatementList>>
+  CommCase       = <default>
   CommCase       = <case <CommCase-Inner>>
   CommCase-Inner = SendStmt
   CommCase-Inner = RecvStmt
-  CommCase       = <default>
   RecvStmt       = <<RecvStmt-Inner?> <RecvExpr>>
   RecvStmt-Inner = <<ExpressionList> =>
   RecvStmt-Inner = <<IdentifierList> :=>
