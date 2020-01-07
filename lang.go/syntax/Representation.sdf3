@@ -3,8 +3,7 @@ module Representation // https://golang.org/ref/spec#Source_code_representation
 /**
  * Syntactic elements -- (not separate in the spec)
  */
- 
-  lexical syntax
+lexical syntax
 
   Semicolon = ";"
   Comma     = ","
@@ -13,8 +12,7 @@ module Representation // https://golang.org/ref/spec#Source_code_representation
 /**
  * Characters -- https://golang.org/ref/spec#Characters
  */
-
-  lexical syntax
+lexical syntax
   
   Newline        = "\\n"      // newline
   UnicodeChar    = ~[\n]      // unicode_char
@@ -25,8 +23,7 @@ module Representation // https://golang.org/ref/spec#Source_code_representation
 /**
  * Letters and digits -- https://golang.org/ref/spec#Letters_and_digits
  */
-
-  lexical syntax
+lexical syntax
 
   Letter         = UnicodeLetter  // letter
                  | "_"            // letter

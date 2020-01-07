@@ -11,7 +11,6 @@ signature
 	sorts Operand constructors
 		L2O : Literal -> Operand
 		ON2O : OperandName -> Operand
-		ME2O : MethodExpr -> Operand
 		E2O : Expression -> Operand
 	
 	sorts Literal constructors
@@ -78,6 +77,7 @@ signature
 	sorts PrimaryExpr constructors
 		O2PE : Operand -> PrimaryExpr
 		C2PE : Conversion -> PrimaryExpr
+		ME2PE : MethodExpr -> PrimaryExpr
 		
 		Selector : PrimaryExpr * Identifier -> PrimaryExpr
 		Index : PrimaryExpr * Expression -> PrimaryExpr

@@ -20,7 +20,6 @@ context-free start-symbols
  
   Operand = Literal
   Operand = OperandName
-  Operand = MethodExpr
   Operand = <(<Expression>)>
 
   Literal = BasicLit
@@ -94,8 +93,9 @@ context-free start-symbols
  
   context-free syntax 
 
-  PrimaryExpr = Operand
-  PrimaryExpr = Conversion
+  PrimaryExpr                 = Operand
+  PrimaryExpr                 = Conversion
+  PrimaryExpr                 = MethodExpr
   
   // inlined
   PrimaryExpr.Selector      = [[PrimaryExpr].s#[Identifier]] {left}
@@ -126,7 +126,7 @@ context-free start-symbols
 
   context-free syntax 
 
-  MethodExpr.MethodExpr        = [[ReceiverType].m#[MethodName]]
+  MethodExpr.MethodExpr        = [[ReceiverType].m#[MethodName]]	// For manual disambiguation
   MethodExpr.MethodExpr        = <<ReceiverType>.<MethodName>>
   ReceiverType.ValueReceiver   = TypeName
   ReceiverType.PointerReceiver = <(*<TypeName>)>

@@ -1,5 +1,14 @@
 module Packages // https://golang.org/ref/spec#Packages
 
+/**
+ * Go language syntax
+ *
+ * This syntax is derived from the Go language specification at https://golang.org/ref/spec.
+ * The sort names reflect the names used in the specification, where possible.
+ * Nested syntax rules in the specification are split up in the SDF3 specification
+ * and get the "-Inner" suffix. An optional syntax rule gets the "-OPT" suffix.
+ */
+
 imports
 
   Declarations
@@ -13,8 +22,7 @@ context-free start-symbols
 /**
  * Source file -- https://golang.org/ref/spec#Source_file_organization
  */
-
-  context-free syntax
+context-free syntax
 
   SourceFile.SourceFile = <
     <PackageClause>;
@@ -29,8 +37,7 @@ context-free start-symbols
 /**
  * Package clause -- https://golang.org/ref/spec#Package_clause
  */
- 
-  context-free syntax
+context-free syntax
 
   PackageClause.PackageClause = <package <PackageName>>
   PackageName.PackageName     = Identifier
@@ -38,8 +45,7 @@ context-free start-symbols
 /**
  * Import declarations -- https://golang.org/ref/spec#Import_declarations
  */
- 
-  context-free syntax
+context-free syntax
 
   ImportDecl.SingleImportDecl = <import <ImportSpec>>
   ImportDecl.MultiImportDecl  = <import (<MultiImportDecl-Inner*>)>
@@ -54,8 +60,7 @@ context-free start-symbols
 /**
  * Source files for testing
  */
-
-  context-free syntax
+context-free syntax
   
   TestSources.TestSources = TestSource*
 
