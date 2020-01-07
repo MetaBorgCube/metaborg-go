@@ -15,8 +15,7 @@ context-free start-symbols
 /**
  * Operands -- https://golang.org/ref/spec#Operands
  */
- 
-  context-free syntax
+ context-free syntax
  
   Operand = Literal
   Operand = OperandName
@@ -39,8 +38,7 @@ context-free start-symbols
 /**
  * Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
  */
-
-  context-free syntax 
+context-free syntax 
 
   QualifiedIdent.QualifiedIdent-DISAMB = [[PackageName].q#[Identifier]]   // For manual disambiguation
   QualifiedIdent.QualifiedIdent = <<PackageName>.<Identifier>>
@@ -49,8 +47,7 @@ context-free start-symbols
 /**
  * Composite literals -- https://golang.org/ref/spec#Composite_literals
  */
-
-  context-free syntax 
+context-free syntax 
 
   CompositeLit.CompositeLit = <<LiteralType> <LiteralValue>>
 
@@ -81,8 +78,7 @@ context-free start-symbols
 /**
  * Function literals -- https://golang.org/ref/spec#Function_literals
  */
-
-  context-free syntax 
+context-free syntax 
 
   FunctionLit.FunctionLit = <func <Function>>
 
@@ -90,8 +86,7 @@ context-free start-symbols
 /**
  * Primary expressions -- https://golang.org/ref/spec#Primary_expressions
  */
- 
-  context-free syntax 
+context-free syntax 
 
   PrimaryExpr                 = Operand
   PrimaryExpr                 = Conversion
@@ -123,8 +118,7 @@ context-free start-symbols
 /**
  * Method expressions -- https://golang.org/ref/spec#Method_expressions
  */
-
-  context-free syntax 
+context-free syntax 
 
   MethodExpr.MethodExpr-DISAMB = [[ReceiverType].m#[MethodName]]	// For manual disambiguation
   MethodExpr.MethodExpr        = <<ReceiverType>.<MethodName>>
@@ -172,8 +166,7 @@ context-free start-symbols
 /**
  * Operators -- https://golang.org/ref/spec#Operators
  */
- 
-  context-free syntax 
+context-free syntax 
 
   Expression = UnaryExpr
   Expression = BinaryExpr
@@ -285,8 +278,7 @@ context-free start-symbols
 /**
  * Conversions -- https://golang.org/ref/spec#Conversions
  */
- 
-  context-free syntax 
+context-free syntax 
 
   Conversion.Conversion-DISAMB = [[Type](t#[Expression] [Comma?])]	// For manual disambiguation
   Conversion.Conversion = <<Type>(<Expression> <Comma?>)>
@@ -296,7 +288,7 @@ context-free start-symbols
  * Constant expressions -- https://golang.org/ref/spec#Constant_expressions
  */
  
-  context-free syntax 
+  // no syntax
 
 
 /**

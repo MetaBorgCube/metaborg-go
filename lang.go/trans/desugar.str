@@ -71,7 +71,7 @@ rules
 rules
 
 	desugar-disamb: Selector-DISAMB(e, i) -> Selector(e, i)
-	desugar-disamb: Arguments-DISAMB(e, args) -> Arguments(e, args)
+	desugar-disamb: Call-DISAMB(e, args) -> Call(e, args)
 	desugar-disamb: MethodExpr-DISAMB(e, m) -> MethodExpr(e, m)
 	desugar-disamb: Conversion-DISAMB(t, e, c) -> Conversion(t, e, c)
 	desugar-disamb: QualifiedIdent-DISAMB(p, i) -> QualifiedIdent(p, i)
