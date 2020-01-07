@@ -19,7 +19,8 @@ rules
     try(desugar-sourcefile);
     desugar-short-var-decls;
     desugar-single-decls;
-    desugar-opts
+    desugar-opts;
+    desugar-disamb
 
 rules
 
@@ -66,3 +67,11 @@ rules
   desugar-opt: NoIdentifiers() -> []
 
   desugar-opt: NoExpressions() -> []
+  
+rules
+
+	desugar-disamb: Selector-DISAMB(e, i) -> Selector(e, i)
+	desugar-disamb: Arguments-DISAMB(e, args) -> Arguments(e, args)
+	desugar-disamb: MethodExpr-DISAMB(e, m) -> MethodExpr(e, m)
+	desugar-disamb: Conversion-DISAMB(t, e, c) -> Conversion(t, e, c)
+	desugar-disamb: QualifiedIdent-DISAMB(p, i) -> QualifiedIdent(p, i)

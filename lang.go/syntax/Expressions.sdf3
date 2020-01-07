@@ -42,7 +42,7 @@ context-free start-symbols
 
   context-free syntax 
 
-  QualifiedIdent.QualifiedIdent = [[PackageName].q#[Identifier]]
+  QualifiedIdent.QualifiedIdent-DISAMB = [[PackageName].q#[Identifier]]   // For manual disambiguation
   QualifiedIdent.QualifiedIdent = <<PackageName>.<Identifier>>
 
 
@@ -98,14 +98,14 @@ context-free start-symbols
   PrimaryExpr                 = MethodExpr
   
   // inlined
-  PrimaryExpr.Selector      = [[PrimaryExpr].s#[Identifier]] {left}
-  PrimaryExpr.Selector      = <<PrimaryExpr>.<Identifier>> {left}
-  PrimaryExpr.Index         = <<PrimaryExpr>[<Expression>]>
-  PrimaryExpr.Slice         = <<PrimaryExpr>[<Expression-OPT>:<Expression-OPT>]>
-  PrimaryExpr.Slice         = <<PrimaryExpr>[<Expression-OPT>:<Expression-OPT>:<Expression-OPT>]>
-  PrimaryExpr.TypeAssertion = <<PrimaryExpr>.(<Type>)>
-  PrimaryExpr.Arguments     = [[PrimaryExpr](c#[Arguments-Inner-OPT])]
-  PrimaryExpr.Arguments     = <<PrimaryExpr>(<Arguments-Inner-OPT>)>
+  PrimaryExpr.Selector-DISAMB  = [[PrimaryExpr].s#[Identifier]] {left}	// For manual disambiguation
+  PrimaryExpr.Selector         = <<PrimaryExpr>.<Identifier>> {left}
+  PrimaryExpr.Index            = <<PrimaryExpr>[<Expression>]>
+  PrimaryExpr.Slice            = <<PrimaryExpr>[<Expression-OPT>:<Expression-OPT>]>
+  PrimaryExpr.Slice            = <<PrimaryExpr>[<Expression-OPT>:<Expression>:<Expression>]>
+  PrimaryExpr.TypeAssertion    = <<PrimaryExpr>.(<Type>)>
+  PrimaryExpr.Arguments-DISAMB = [[PrimaryExpr](c#[Arguments-Inner-OPT])]	// For manual disambiguation
+  PrimaryExpr.Arguments        = <<PrimaryExpr>(<Arguments-Inner-OPT>)>
   
   Arguments-Inner-OPT.NoArguments        = <>
   Arguments-Inner-OPT.Arguments          = <<Arguments-Inner-Inner> <Dots?> <Comma?>>
@@ -126,7 +126,7 @@ context-free start-symbols
 
   context-free syntax 
 
-  MethodExpr.MethodExpr        = [[ReceiverType].m#[MethodName]]	// For manual disambiguation
+  MethodExpr.MethodExpr-DISAMB = [[ReceiverType].m#[MethodName]]	// For manual disambiguation
   MethodExpr.MethodExpr        = <<ReceiverType>.<MethodName>>
   ReceiverType.ValueReceiver   = TypeName
   ReceiverType.PointerReceiver = <(*<TypeName>)>
@@ -288,7 +288,7 @@ context-free start-symbols
  
   context-free syntax 
 
-  Conversion.Conversion = [[Type](t#[Expression] [Comma?])]
+  Conversion.Conversion-DISAMB = [[Type](t#[Expression] [Comma?])]	// For manual disambiguation
   Conversion.Conversion = <<Type>(<Expression> <Comma?>)>
 
 
