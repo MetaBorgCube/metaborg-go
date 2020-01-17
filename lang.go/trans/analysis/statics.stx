@@ -1,5 +1,15 @@
 module analysis/statics
 
+imports
+
+//	analysis/signatures/Blocks
+//	analysis/signatures/Declarations
+//	analysis/signatures/Expressions
+//	analysis/signatures/Lexical
+//	analysis/signatures/Packages
+//	analysis/signatures/Representation
+//	analysis/signatures/Statements
+//	analysis/signatures/Types
 
 rules
 

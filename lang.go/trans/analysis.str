@@ -16,7 +16,7 @@ imports
 rules // Analysis
 
   editor-analyze =
-    stx-editor-analyze(desugar-and-explicate|"statics", "programOk")
+    stx-editor-analyze(desugar-and-explicate|"analysis/statics", "programOK")
     
   desugar-and-explicate = explicate-injections;desugar-all
 
