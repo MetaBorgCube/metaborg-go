@@ -2,6 +2,7 @@ module analysis/signatures/Blocks
 
 imports
 	analysis/signatures/Statements
+	analysis/signatures/Representation
 	
 signature
 	sorts Block constructors

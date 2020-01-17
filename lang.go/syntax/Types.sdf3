@@ -68,7 +68,7 @@ context-free syntax
  
   context-free syntax
   
-  SliceType.SliceType = <[]<ElementType>> {left}
+  SliceType.SliceType = <[<>]<ElementType>> {left}
  
  
 /**
@@ -76,7 +76,6 @@ context-free syntax
  */
  
   context-free syntax
-  
   StructType.StructType   = <struct { <StructType-Inner*> }>
   StructType-Inner        = <<FieldDecl>;>
  

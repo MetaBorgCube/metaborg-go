@@ -99,14 +99,14 @@ context-free syntax
   PrimaryExpr.Slice            = <<PrimaryExpr>[<Expression-OPT>:<Expression-OPT>]>
   PrimaryExpr.Slice            = <<PrimaryExpr>[<Expression-OPT>:<Expression>:<Expression>]>
   PrimaryExpr.TypeAssertion    = <<PrimaryExpr>.(<Type>)>
-  PrimaryExpr.Arguments-DISAMB = [[PrimaryExpr](c#[Arguments-Inner-OPT])]	// For manual disambiguation
-  PrimaryExpr.Arguments        = <<PrimaryExpr>(<Arguments-Inner-OPT>)>
+  PrimaryExpr.Call-DISAMB      = [[PrimaryExpr](c#[Arguments-OPT])]	// For manual disambiguation
+  PrimaryExpr.Call             = <<PrimaryExpr>(<Arguments-OPT>)>
   
-  Arguments-Inner-OPT.NoArguments        = <>
-  Arguments-Inner-OPT.Arguments          = <<Arguments-Inner-Inner> <Dots?> <Comma?>>
-  Arguments-Inner-Inner.Arguments        = ExpressionList
-  Arguments-Inner-Inner.TypeArgument     = Type
-  Arguments-Inner-Inner.TypedArguments   = <<Type>, <ExpressionList>>
+  Arguments-OPT.NoArguments    = <>
+  Arguments-OPT.Arguments      = <<Arguments> <Dots?> <Comma?>>
+  Arguments.Arguments          = ExpressionList
+  Arguments.TypeArgument       = Type
+  Arguments.TypedArguments     = <<Type>, <ExpressionList>>
 
 
 /**
