@@ -9,5 +9,5 @@ context-free syntax
 
   Block.Block   = <{ <StatementList> }>
   
-  StatementList = StatementList-Inner*
-  StatementList-Inner = <<Statement>;>
+  StatementList.StatementList         = StatementListElem*
+  StatementListElem.StatementListElem = <<Statement>;>

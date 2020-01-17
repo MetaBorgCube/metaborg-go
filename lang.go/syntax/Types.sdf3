@@ -20,6 +20,9 @@ context-free syntax
   Type        = TypeName
   Type        = TypeLit
   Type        = <( <Type> )> {bracket}
+  
+  Type-OPT.NoType = <>
+  Type-OPT        = Type
 
   TypeName.TypeName          = Identifier
   TypeName.QualifiedTypeName = QualifiedIdent
@@ -52,8 +55,7 @@ context-free syntax
 /**
  * Array types -- https://golang.org/ref/spec#Array_types
  */
- 
-  context-free syntax
+context-free syntax
 
   ArrayType.ArrayType = <[<ArrayLength>]<ElementType>> {left}
  
@@ -65,17 +67,15 @@ context-free syntax
 /**
  * Slice types -- https://golang.org/ref/spec#Slice_types
  */
- 
-  context-free syntax
+context-free syntax
   
-  SliceType.SliceType = <[<>]<ElementType>> {left}
+  SliceType.SliceType = <[ ]<ElementType>> {left}
  
  
 /**
  * Struct types -- https://golang.org/ref/spec#Struct_types
  */
- 
-  context-free syntax
+context-free syntax
   StructType.StructType   = <struct { <StructType-Inner*> }>
   StructType-Inner        = <<FieldDecl>;>
  
@@ -94,8 +94,7 @@ context-free syntax
 /**
  * Pointer types -- https://golang.org/ref/spec#Pointer_types
  */
-  
-  context-free syntax
+context-free syntax
   
   PointerType.PointerType = <*<BaseType>>
   
@@ -105,8 +104,7 @@ context-free syntax
 /**
  * Function types -- https://golang.org/ref/spec#Function_types
  */
-
-  context-free syntax
+context-free syntax
 
   FunctionType.FunctionType   = <func <Signature>>
 
@@ -127,8 +125,7 @@ context-free syntax
 /**
  * Interface types -- https://golang.org/ref/spec#Interface_types
  */
- 
-  context-free syntax
+context-free syntax
   
   InterfaceType.InterfaceType = <interface { <InterfaceType-Inner*> }>
   InterfaceType-Inner         = <<MethodSpec>;>
@@ -143,8 +140,7 @@ context-free syntax
 /**
  * Map types -- https://golang.org/ref/spec#Map_types
  */
- 
-  context-free syntax
+context-free syntax
   
   MapType.MapType = <map[<KeyType>]<ElementType>>
 
@@ -154,8 +150,7 @@ context-free syntax
 /**
  * Channel types -- https://golang.org/ref/spec#Channel_types
  */
- 
-  context-free syntax
+context-free syntax
 
   ChannelType.BidirectionalChannelType = [chan [ElementType]]
   ChannelType.SendingChannelType       = [chan<- [ElementType]]

@@ -17,22 +17,16 @@ context-free start-symbols
  */
  context-free syntax
  
-  Operand = Literal
-  Operand = OperandName
-  Operand = <(<Expression>)>
-
-  Literal = BasicLit
-  Literal = CompositeLit
-  Literal = FunctionLit
+  PrimaryExpr = <(<Expression>)>	{bracket}
   
-  BasicLit.IntLit       = IntLit
-  BasicLit.FloatLit     = FloatLit
-  BasicLit.ImaginaryLit = ImaginaryLit
-  BasicLit.RuneLit      = RuneLit
-  BasicLit.StringLit    = StringLit
+  PrimaryExpr.IntLit       = IntLit
+  PrimaryExpr.FloatLit     = FloatLit
+  PrimaryExpr.ImaginaryLit = ImaginaryLit
+  PrimaryExpr.RuneLit      = RuneLit
+  PrimaryExpr.StringLit    = StringLit
 
-  OperandName.OperandName          = Identifier
-  OperandName.QualifiedOperandName = QualifiedIdent
+  PrimaryExpr.OperandName          = Identifier
+  PrimaryExpr.QualifiedOperandName = QualifiedIdent
 
 
 /**
@@ -49,7 +43,7 @@ context-free syntax
  */
 context-free syntax 
 
-  CompositeLit.CompositeLit = <<LiteralType> <LiteralValue>>
+  PrimaryExpr.CompositeLit = <<LiteralType> <LiteralValue>>
 
   LiteralType               = StructType
   LiteralType               = ArrayType
@@ -58,19 +52,18 @@ context-free syntax
   LiteralType               = MapType
   LiteralType               = TypeName
 
-  LiteralValue.LiteralValue         = <{ <LiteralValue-Inner-OPT> }>
-  LiteralValue-Inner-OPT.NoElements = <>
-  LiteralValue-Inner-OPT.Elements   = <<ElementList> <Comma?>>
+  LiteralValue.LiteralValue                 = <{ <KeyedElement-LIST> }>
+  KeyedElement-LIST.KeyedElement-LIST-Empty = <>
+  KeyedElement-LIST.KeyedElement-LIST       = <<{KeyedElement ","}+>>
+  KeyedElement-LIST.KeyedElement-LIST-ALT   = <<{KeyedElement ","}+> ','>
 
-  ElementList                = {KeyedElement ","}+
-  KeyedElement.KeyedElement  = <<KeyedElement-Key-OPT> <Element>>
-  KeyedElement-Key-OPT.NoKey = <>
-  KeyedElement-Key-OPT       = <<Key>:>
+  KeyedElement.KeyedElement        = <<Key-OPT> <Element>>
 
-  Key                = FieldName
-  Key                = Expression
-  Key                = LiteralValue
-  FieldName          = Identifier
+  Key-OPT.NoKey          = <>
+  Key-OPT.FieldNameKey   = <<Identifier>:>
+  Key-OPT.ExpressionKey  = <<Expression>:>
+  Key-OPT.LiteralKey     = <<LiteralValue>:>
+  
   Element            = Expression
   Element            = LiteralValue
 
@@ -80,7 +73,7 @@ context-free syntax
  */
 context-free syntax 
 
-  FunctionLit.FunctionLit = <func <Function>>
+  PrimaryExpr.FunctionLit = <func <Function>>
 
 
 /**
@@ -88,78 +81,84 @@ context-free syntax
  */
 context-free syntax 
 
-  PrimaryExpr                 = Operand
-  PrimaryExpr                 = Conversion
-  PrimaryExpr                 = MethodExpr
-  
   // inlined
   PrimaryExpr.Selector-DISAMB  = [[PrimaryExpr].s#[Identifier]] {left}	// For manual disambiguation
   PrimaryExpr.Selector         = <<PrimaryExpr>.<Identifier>> {left}
   PrimaryExpr.Index            = <<PrimaryExpr>[<Expression>]>
-  PrimaryExpr.Slice            = <<PrimaryExpr>[<Expression-OPT>:<Expression-OPT>]>
-  PrimaryExpr.Slice            = <<PrimaryExpr>[<Expression-OPT>:<Expression>:<Expression>]>
+  PrimaryExpr.SliceLH          = <<PrimaryExpr>[<Expression-OPT>:<Expression-OPT>]>				// low-high
+  PrimaryExpr.SliceLHM         = <<PrimaryExpr>[<Expression-OPT>:<Expression>:<Expression>]>	// low-high-max
   PrimaryExpr.TypeAssertion    = <<PrimaryExpr>.(<Type>)>
-  PrimaryExpr.Call-DISAMB      = [[PrimaryExpr](c#[Arguments-OPT])]	// For manual disambiguation
+  PrimaryExpr.Call-DISAMB      = [[PrimaryExpr](c#[Arguments-OPT])]	   // For manual disambiguation
   PrimaryExpr.Call             = <<PrimaryExpr>(<Arguments-OPT>)>
   
-  Arguments-OPT.NoArguments    = <>
-  Arguments-OPT.Arguments      = <<Arguments> <Dots?> <Comma?>>
-  Arguments.Arguments          = ExpressionList
-  Arguments.TypeArgument       = Type
-  Arguments.TypedArguments     = <<Type>, <ExpressionList>>
+  Arguments-OPT.NoArguments          = <>
+  Arguments-OPT.Arguments            = <<Arguments>>
+  Arguments-OPT.Arguments-ALT        = <<Arguments>,>
+  Arguments-OPT.ArgumentsExplode     = <<Arguments>...>
+  Arguments-OPT.ArgumentsExplode-ALT = <<Arguments>... ,>
+  Arguments.Arguments                = ExpressionList
+  Arguments.TypeArgument             = Type
+  Arguments.TypedArguments           = <<Type>, <ExpressionList>>
 
 
 /**
  * Selectors -- https://golang.org/ref/spec#Selectors
  */
+context-free syntax
 
   // no extra syntax
 
 /**
  * Method expressions -- https://golang.org/ref/spec#Method_expressions
  */
-context-free syntax 
+context-free syntax
 
-  MethodExpr.MethodExpr-DISAMB = [[ReceiverType].m#[MethodName]]	// For manual disambiguation
-  MethodExpr.MethodExpr        = <<ReceiverType>.<MethodName>>
-  ReceiverType.ValueReceiver   = TypeName
-  ReceiverType.PointerReceiver = <(*<TypeName>)>
-  ReceiverType                 = <(<ReceiverType>)> {bracket}
+  PrimaryExpr.MethodExpr-DISAMB = [[Type].m#[MethodName]]	// For manual disambiguation
+  PrimaryExpr.MethodExpr        = <<Type>.<MethodName>>
+//  ReceiverType.ValueReceiver   = TypeName
+//  ReceiverType.PointerReceiver = <(*<TypeName>)>
+//  ReceiverType                 = <(<ReceiverType>)> {bracket}
 
 
 /**
  * Method values -- https://golang.org/ref/spec#Method_values
  */
+context-free syntax
 
   // no syntax
 
 /**
  * Index expressions -- https://golang.org/ref/spec#Index_expressions
  */
+context-free syntax
 
   // no syntax
 
 /**
  * Slice expressions -- https://golang.org/ref/spec#Slice_expressions
  */
+context-free syntax
  
   // no syntax
 
 /**
  * Type assertions -- https://golang.org/ref/spec#Type_assertions
  */
+context-free syntax
 
   // no syntax
 
 /**
  * Calls -- https://golang.org/ref/spec#Calls
  */
+context-free syntax
  
   // no syntax
 
 /**
  * Passing arguments to ... parameters -- https://golang.org/ref/spec#Passing_arguments_to_..._parameters
  */
+context-free syntax
  
   // no syntax
 
@@ -280,8 +279,8 @@ context-free syntax
  */
 context-free syntax 
 
-  Conversion.Conversion-DISAMB = [[Type](t#[Expression] [Comma?])]	// For manual disambiguation
-  Conversion.Conversion = <<Type>(<Expression> <Comma?>)>
+  PrimaryExpr.Conversion-DISAMB = [[Type](t#[Expression] [Comma?])]	// For manual disambiguation
+  PrimaryExpr.Conversion = <<Type>(<Expression> <Comma?>)>
 
 
 /**
