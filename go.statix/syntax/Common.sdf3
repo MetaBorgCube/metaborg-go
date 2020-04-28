@@ -1,0 +1,155 @@
+module Common
+
+// Comments
+lexical syntax
+  CommentChar    = [\*]
+  LAYOUT         = "//" ~[\n\r]* NLEOF
+  LAYOUT         = "/*" InsideComment* "*/"
+  InsideComment  = ~[\*]
+  InsideComment  = CommentChar
+  NLEOF          = EOF
+  NL             = [\n\r]
+  EOF            =
+
+lexical restrictions
+  CommentChar   -/- [\/]
+  EOF           -/- ~[]
+
+
+// Layout
+lexical syntax
+  LAYOUT         = [\ \t\n\r]
+
+context-free restrictions
+  LAYOUT? -/- [\ \t\n\r]
+  LAYOUT? -/- [\/].[\/]
+  LAYOUT? -/- [\/].[\*]
+
+
+// Identifiers
+lexical syntax
+  ID             = [a-zA-Z] [a-zA-Z0-9]*
+
+lexical restrictions
+  ID            -/- [a-zA-Z0-9\_]
+
+lexical syntax
+  ID = "break" {reject}
+  ID = "case" {reject}
+  ID = "chan" {reject}
+  ID = "const" {reject}
+  ID = "continue" {reject}
+  ID = "default" {reject}
+  ID = "defer" {reject}
+  ID = "else" {reject}
+  ID = "fallthrough" {reject}
+  ID = "for" {reject}
+  ID = "func" {reject}
+  ID = "go" {reject}
+  ID = "goto" {reject}
+  ID = "if" {reject}
+  ID = "import" {reject}
+  ID = "interface" {reject}
+  ID = "map" {reject}
+  ID = "package" {reject}
+  ID = "range" {reject}
+  ID = "return" {reject}
+  ID = "select" {reject}
+  ID = "struct" {reject}
+  ID = "switch" {reject}
+  ID = "type" {reject}
+  ID = "var" {reject}
+
+
+// Integer literals
+lexical syntax
+  INT            = DEC
+  INT            = BIN
+  INT            = OCT
+  INT            = HEX
+
+  // TODO: Support underscores
+  DEC            = "0" | ([1-9] DECDIGIT*)
+  BIN            = "0" ("b"|"B")  BINDIGIT+
+  OCT            = "0" ("o"|"O")? OCTDIGIT+
+  HEX            = "0" ("x"|"X")  HEXDIGIT+
+
+  DECDIGIT      = [0-9]
+  BINDIGIT      = [0-1]
+  OCTDIGIT      = [0-7]
+  HEXDIGIT      = [0-9a-fA-F]
+
+lexical restrictions
+  DEC           -/- [0-9\_]
+  OCT           -/- [0-7\_]
+  HEX           -/- [0-9a-fa-F\_]
+
+
+// Floating-point literals
+lexical syntax
+  FLOAT          = DECFLOAT | HEXFLOAT
+  
+  DECFLOAT      = DECDIGIT+ "." DECDIGIT* DECEXP
+  DECFLOAT      = DECDIGIT+ DECEXP
+  DECFLOAT      = "." DECDIGIT+ DECEXP?
+  DECEXP        = ("e"|"E") ("+"|"-")? DECDIGIT+
+
+  HEXFLOAT      = "0" ("x"|"X") HEXMANTISSA HEXEXP
+  HEXMANTISSA   = HEXDIGIT+ "." HEXDIGIT*
+  HEXMANTISSA   = HEXDIGIT+
+  HEXMANTISSA   = "." HEXDIGIT+
+  HEXEXP        = ("p"|"P") ("+"|"-")? DECDIGIT+
+
+lexical restrictions
+  DECFLOAT     -/- [0-9\_]
+  HEXFLOAT     -/- [0-9a-fA-F\_]
+
+
+// Imaginary literals
+lexical syntax
+  IMG            = INT "i"
+  IMG            = FLOAT "i"
+
+
+// Rune
+lexical syntax
+  RUNELIT        = "'" (BYTERUNE | UNICODERUNE) "'"
+  BYTERUNE      = "\\" OCTDIGIT OCTDIGIT OCTDIGIT
+  BYTERUNE      = "\\x" HEXDIGIT HEXDIGIT
+  UNICODERUNE   = UNICODECHAR
+  UNICODERUNE   = "\\u" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
+  UNICODERUNE   = "\\U" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
+  UNICODERUNE   = "\\a"
+  UNICODERUNE   = "\\b"
+  UNICODERUNE   = "\\f"
+  UNICODERUNE   = "\\n"
+  UNICODERUNE   = "\\r"
+  UNICODERUNE   = "\\t"
+  UNICODERUNE   = "\\v"
+  UNICODERUNE   = "\\\\"
+  UNICODERUNE   = "\\'"
+  UNICODERUNE   = "\\\""
+  UNICODERUNE   = "\\"           { reject }
+  UNICODECHAR   = ~[\n]
+
+
+// Strings
+context-free syntax
+  StringLit       = RawStringLit
+  StringLit       = InterpStringLit
+
+syntax
+  RawStringLit-CF          = "`" RAWSTRINGCHARS-LEX "`"
+  InterpStringLit-CF       = "\"" INTERPSTRINGCHARS-LEX "\""
+
+lexical syntax
+  RAWSTRINGCHARS  = RAWSTRINGCHAR*
+  RAWSTRINGCHAR   = UNICODECHAR
+  RAWSTRINGCHAR   = NL
+  RAWSTRINGCHAR   = "`"     {reject}
+
+lexical syntax
+  INTERPSTRINGCHARS  = INTERPSTRINGCHAR*
+  INTERPSTRINGCHAR   = UNICODERUNE
+  INTERPSTRINGCHAR   = BYTERUNE
+  INTERPSTRINGCHAR   = "\""     {reject}
