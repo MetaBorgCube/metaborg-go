@@ -16,8 +16,7 @@ lexical start-symbols
 /**
  * Comments -- https://golang.org/ref/spec#Comments
  */
-
-  lexical syntax
+lexical syntax
 
   LAYOUT         = "//" ~[\n\r]* NewLineEOF
 
@@ -30,22 +29,20 @@ lexical start-symbols
   NewLineEOF     = EOF
   EOF            =  
 
-  lexical restrictions
+lexical restrictions
 
   CommentChar   -/- [\/]
-
   EOF           -/- ~[]
 
 
 /**
  * Tokens -- https://golang.org/ref/spec#Tokens
  */
-
-  lexical syntax
+lexical syntax
   
   LAYOUT   =  [\ \t\n\r]
 
-  context-free restrictions
+context-free restrictions
 
   LAYOUT? -/- [\ \t\n\r]
 
@@ -53,12 +50,11 @@ lexical start-symbols
 /**
  * Identifiers -- https://golang.org/ref/spec#Identifiers
  */
-
-  lexical syntax
+lexical syntax
 
   Identifier  =  Letter (Letter | UnicodeDigit)*
 
-  lexical restrictions
+lexical restrictions
 
   Identifier -/- [A-Za-z\_0-9] // Letter | UnicodeDigit
 
@@ -66,8 +62,7 @@ lexical start-symbols
 /**
  * Keywords -- https://golang.org/ref/spec#Keywords
  */
-
-  lexical syntax
+lexical syntax
 
   Identifier = "break" {reject}
   Identifier = "case" {reject}
@@ -99,8 +94,7 @@ lexical start-symbols
 /**
  * Integer literals -- https://golang.org/ref/spec#Integer_literals
  */
-
-  lexical syntax
+lexical syntax
 
   IntLit      = DecimalLit
   IntLit      = OctalLit
@@ -110,7 +104,7 @@ lexical start-symbols
   OctalLit    = "0" OctalDigit*
   HexLit      = "0" ("x" | "X") HexDigit+
 
-  lexical restrictions
+lexical restrictions
   
   DecimalLit -/- [A-Za-z0-9\.]
   OctalLit   -/- [A-Za-z0-9\.]
@@ -120,8 +114,7 @@ lexical start-symbols
 /**
  * Floating-point literals
  */
- 
-  lexical syntax
+lexical syntax
 
   FloatLit  = Decimals "." Decimals? Exponent?
   FloatLit  = Decimals Exponent
@@ -130,7 +123,7 @@ lexical start-symbols
   Decimals  = DecimalDigit+
   Exponent  = ("e" | "E") ("+" | "-")? Decimals
 
-  lexical restrictions
+lexical restrictions
 
   FloatLit -/- [0-9\.]
 
@@ -138,8 +131,7 @@ lexical start-symbols
 /**
  * Imaginary literals -- https://golang.org/ref/spec#Imaginary_literals
  */
-
-  lexical syntax
+lexical syntax
 
   ImaginaryLit = (Decimals | FloatLit) "i"
 
@@ -147,8 +139,7 @@ lexical start-symbols
 /**
  * Rune literals -- https://golang.org/ref/spec#Rune_literals
  */
- 
-  lexical syntax
+lexical syntax
 
   RuneLit        = "'" (UnicodeValue | ByteValue) "'"
   UnicodeValue   = UnicodeChar
@@ -177,18 +168,17 @@ lexical start-symbols
 /**
  * String literals -- https://golang.org/ref/spec#String_literals
  */
- 
-  context-free syntax
+context-free syntax
 
   StringLit                  = RawStringLit
   StringLit                  = InterpretedStringLit
 
-  syntax
+syntax
 
   RawStringLit-CF            = "`" RawStringLit-Chars-LEX "`"
   InterpretedStringLit-CF    = "\"" InterpretedStringLit-Chars-LEX "\""
 
-  lexical syntax
+lexical syntax
   
   RawStringLit-Chars = RawStringLit-Char*
   RawStringLit-Char  = UnicodeChar

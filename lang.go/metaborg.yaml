@@ -6,7 +6,7 @@ dependencies:
   - org.metaborg:org.metaborg.meta.lang.esv:${metaborgVersion}
   - org.metaborg:org.metaborg.meta.lang.template:${metaborgVersion}
   - org.metaborg:statix.lang:${metaborgVersion}
-  - org.metaborg:dynsem:${metaborgVersion}
+  - org.metaborg:sdf3.ext.statix:${metaborgVersion}
   source:
   - org.metaborg:meta.lib.spoofax:${metaborgVersion}
   - org.metaborg:statix.runtime:${metaborgVersion}
@@ -14,7 +14,7 @@ language:
   sdf:
     pretty-print: GoLang
     # If set to java, set the table in editor/Syntax.esv to target/metaborg/sdf-new.tbl
-    sdf2table: c
+    sdf2table: java
     placeholder:
       prefix: "$"
   stratego:
