@@ -1,155 +1,188 @@
 module Common
 
+sorts ID QualifiedID
+sorts INT FLOAT IMAGINARYINT IMAGINARYFLOAT
+sorts RUNELIT
+sorts StringLit
+
+// Characters, Letters, Digits
+lexical syntax
+  NL                  = [\n\r]
+  EOF                 =
+  NLEOF               = EOF
+
+  UNICODECHAR         = ~[\n]
+  UNICODELETTER       = [a-zA-Z]  // TODO: Expand to include all from Unicode `Letter`.
+  UNICODEDIGIT        = [0-9]     // TODO: Expand to include all from Unicode `Number, decimal digit`
+
+  DECDIGIT            = [0-9]
+  BINDIGIT            = [0-1]
+  OCTDIGIT            = [0-7]
+  HEXDIGIT            = [0-9a-fA-F]
+
+  DECDIGITS           = DECDIGIT DECDIGITUNSC*
+  BINDIGITS           = DECDIGIT BINDIGITUNSC*
+  OCTDIGITS           = DECDIGIT OCTDIGITUNSC*
+  HEXDIGITS           = DECDIGIT HEXDIGITUNSC*
+
+  DECDIGITUNSC        = "_" | DECDIGIT
+  BINDIGITUNSC        = "_" | BINDIGIT
+  OCTDIGITUNSC        = "_" | OCTDIGIT
+  HEXDIGITUNSC        = "_" | HEXDIGIT
+
+  LETTER              = UNICODELETTER | "_"
+
+
 // Comments
 lexical syntax
-  CommentChar    = [\*]
-  LAYOUT         = "//" ~[\n\r]* NLEOF
-  LAYOUT         = "/*" InsideComment* "*/"
-  InsideComment  = ~[\*]
-  InsideComment  = CommentChar
-  NLEOF          = EOF
-  NL             = [\n\r]
-  EOF            =
+  COMMENTCHAR         = [\*]
+  LAYOUT              = "//" ~[\n\r]* NLEOF
+  LAYOUT              = "/*" INCOMMENT* "*/"
+  INCOMMENT           = ~[\*]
+  INCOMMENT           = COMMENTCHAR
 
 lexical restrictions
-  CommentChar   -/- [\/]
-  EOF           -/- ~[]
+  COMMENTCHAR         -/- [\/]
+  EOF                 -/- ~[]
 
 
 // Layout
 lexical syntax
-  LAYOUT         = [\ \t\n\r]
+  LAYOUT              = [\ \t\n\r]
 
 context-free restrictions
-  LAYOUT? -/- [\ \t\n\r]
-  LAYOUT? -/- [\/].[\/]
-  LAYOUT? -/- [\/].[\*]
+  LAYOUT?             -/- [\ \t\n\r]
+  LAYOUT?             -/- [\/].[\/]
+  LAYOUT?             -/- [\/].[\*]
 
 
 // Identifiers
+context-free syntax
+  // REPLACE:
+//  IDList = <<{ID ", "}+>>
+
 lexical syntax
-  ID             = [a-zA-Z] [a-zA-Z0-9]*
+  ID                  = [a-zA-Z] [a-zA-Z0-9]*
 
 lexical restrictions
-  ID            -/- [a-zA-Z0-9\_]
+  ID                  -/- [a-zA-Z0-9\_]
 
 lexical syntax
-  ID = "break" {reject}
-  ID = "case" {reject}
-  ID = "chan" {reject}
-  ID = "const" {reject}
-  ID = "continue" {reject}
-  ID = "default" {reject}
-  ID = "defer" {reject}
-  ID = "else" {reject}
-  ID = "fallthrough" {reject}
-  ID = "for" {reject}
-  ID = "func" {reject}
-  ID = "go" {reject}
-  ID = "goto" {reject}
-  ID = "if" {reject}
-  ID = "import" {reject}
-  ID = "interface" {reject}
-  ID = "map" {reject}
-  ID = "package" {reject}
-  ID = "range" {reject}
-  ID = "return" {reject}
-  ID = "select" {reject}
-  ID = "struct" {reject}
-  ID = "switch" {reject}
-  ID = "type" {reject}
-  ID = "var" {reject}
+  ID                  = "break"       {reject}
+  ID                  = "case"        {reject}
+  ID                  = "chan"        {reject}
+  ID                  = "const"       {reject}
+  ID                  = "continue"    {reject}
+  ID                  = "default"     {reject}
+  ID                  = "defer"       {reject}
+  ID                  = "else"        {reject}
+  ID                  = "fallthrough" {reject}
+  ID                  = "for"         {reject}
+  ID                  = "func"        {reject}
+  ID                  = "go"          {reject}
+  ID                  = "goto"        {reject}
+  ID                  = "if"          {reject}
+  ID                  = "import"      {reject}
+  ID                  = "interface"   {reject}
+  ID                  = "map"         {reject}
+  ID                  = "package"     {reject}
+  ID                  = "range"       {reject}
+  ID                  = "return"      {reject}
+  ID                  = "select"      {reject}
+  ID                  = "struct"      {reject}
+  ID                  = "switch"      {reject}
+  ID                  = "type"        {reject}
+  ID                  = "var"         {reject}
+
+// Qualified identifiers
+context-free syntax
+  QualifiedID.QualifiedID = ID "." ID
+
 
 
 // Integer literals
 lexical syntax
-  INT            = DEC
-  INT            = BIN
-  INT            = OCT
-  INT            = HEX
+  INT                 = DEC
+  INT                 = BIN
+  INT                 = OCT
+  INT                 = HEX
 
-  // TODO: Support underscores
-  DEC            = "0" | ([1-9] DECDIGIT*)
-  BIN            = "0" ("b"|"B")  BINDIGIT+
-  OCT            = "0" ("o"|"O")? OCTDIGIT+
-  HEX            = "0" ("x"|"X")  HEXDIGIT+
-
-  DECDIGIT      = [0-9]
-  BINDIGIT      = [0-1]
-  OCTDIGIT      = [0-7]
-  HEXDIGIT      = [0-9a-fA-F]
+  DEC                 = "0" | ([1-9] DECDIGITUNSC*)
+  BIN                 = "0" ("b"|"B")  BINDIGITUNSC+
+  OCT                 = "0" ("o"|"O")? OCTDIGITUNSC+
+  HEX                 = "0" ("x"|"X")  HEXDIGITUNSC+
 
 lexical restrictions
-  DEC           -/- [0-9\_]
-  OCT           -/- [0-7\_]
-  HEX           -/- [0-9a-fa-F\_]
+  DEC                 -/- [0-9\_]
+  OCT                 -/- [0-7\_]
+  HEX                 -/- [0-9a-fa-F\_]
 
 
 // Floating-point literals
 lexical syntax
-  FLOAT          = DECFLOAT | HEXFLOAT
+  FLOAT               = DECFLOAT | HEXFLOAT
   
-  DECFLOAT      = DECDIGIT+ "." DECDIGIT* DECEXP
-  DECFLOAT      = DECDIGIT+ DECEXP
-  DECFLOAT      = "." DECDIGIT+ DECEXP?
-  DECEXP        = ("e"|"E") ("+"|"-")? DECDIGIT+
+  DECFLOAT            = DECDIGITS "." DECDIGITS? DECEXP
+  DECFLOAT            = DECDIGITS DECEXP
+  DECFLOAT            = "." DECDIGITS DECEXP?
+  DECEXP              = ("e"|"E") ("+"|"-")? DECDIGITS
 
-  HEXFLOAT      = "0" ("x"|"X") HEXMANTISSA HEXEXP
-  HEXMANTISSA   = HEXDIGIT+ "." HEXDIGIT*
-  HEXMANTISSA   = HEXDIGIT+
-  HEXMANTISSA   = "." HEXDIGIT+
-  HEXEXP        = ("p"|"P") ("+"|"-")? DECDIGIT+
+  HEXFLOAT            = "0" ("x"|"X") HEXMANTISSA HEXEXP
+  HEXMANTISSA         = HEXDIGITS "." HEXDIGITS?
+  HEXMANTISSA         = HEXDIGITS
+  HEXMANTISSA         = "." HEXDIGITS
+  HEXEXP              = ("p"|"P") ("+"|"-")? DECDIGITS
 
 lexical restrictions
-  DECFLOAT     -/- [0-9\_]
-  HEXFLOAT     -/- [0-9a-fA-F\_]
+  DECFLOAT            -/- [0-9\_]
+  HEXFLOAT            -/- [0-9a-fA-F\_]
 
 
 // Imaginary literals
 lexical syntax
-  IMG            = INT "i"
-  IMG            = FLOAT "i"
+  IMAGINARYINT        = INT "i"
+  IMAGINARYFLOAT      = FLOAT "i"
 
 
 // Rune
 lexical syntax
-  RUNELIT        = "'" (BYTERUNE | UNICODERUNE) "'"
-  BYTERUNE      = "\\" OCTDIGIT OCTDIGIT OCTDIGIT
-  BYTERUNE      = "\\x" HEXDIGIT HEXDIGIT
-  UNICODERUNE   = UNICODECHAR
-  UNICODERUNE   = "\\u" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
-  UNICODERUNE   = "\\U" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
-  UNICODERUNE   = "\\a"
-  UNICODERUNE   = "\\b"
-  UNICODERUNE   = "\\f"
-  UNICODERUNE   = "\\n"
-  UNICODERUNE   = "\\r"
-  UNICODERUNE   = "\\t"
-  UNICODERUNE   = "\\v"
-  UNICODERUNE   = "\\\\"
-  UNICODERUNE   = "\\'"
-  UNICODERUNE   = "\\\""
-  UNICODERUNE   = "\\"           { reject }
-  UNICODECHAR   = ~[\n]
+  RUNELIT             = "'" (BYTERUNE | UNICODERUNE) "'"
+  BYTERUNE            = "\\" OCTDIGIT OCTDIGIT OCTDIGIT
+  BYTERUNE            = "\\x" HEXDIGIT HEXDIGIT
+  UNICODERUNE         = UNICODECHAR
+  UNICODERUNE         = "\\u" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
+  UNICODERUNE         = "\\U" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
+  UNICODERUNE         = "\\a"
+  UNICODERUNE         = "\\b"
+  UNICODERUNE         = "\\f"
+  UNICODERUNE         = "\\n"
+  UNICODERUNE         = "\\r"
+  UNICODERUNE         = "\\t"
+  UNICODERUNE         = "\\v"
+  UNICODERUNE         = "\\\\"
+  UNICODERUNE         = "\\'"
+  UNICODERUNE         = "\\\""
+  UNICODERUNE         = "\\"        {reject}
 
 
 // Strings
+sorts RawStringLit InterpStringLit RAWSTRINGCHARS INTERPSTRINGCHARS
 context-free syntax
-  StringLit       = RawStringLit
-  StringLit       = InterpStringLit
+  StringLit           = RawStringLit
+  StringLit           = InterpStringLit
 
 syntax
-  RawStringLit-CF          = "`" RAWSTRINGCHARS-LEX "`"
-  InterpStringLit-CF       = "\"" INTERPSTRINGCHARS-LEX "\""
+  RawStringLit-CF     = "`" RAWSTRINGCHARS-LEX "`"
+  InterpStringLit-CF  = "\"" INTERPSTRINGCHARS-LEX "\""
 
 lexical syntax
-  RAWSTRINGCHARS  = RAWSTRINGCHAR*
-  RAWSTRINGCHAR   = UNICODECHAR
-  RAWSTRINGCHAR   = NL
-  RAWSTRINGCHAR   = "`"     {reject}
+  RAWSTRINGCHARS      = RAWSTRINGCHAR*
+  RAWSTRINGCHAR       = UNICODECHAR
+  RAWSTRINGCHAR       = NL
+  RAWSTRINGCHAR       = "`"         {reject}
 
 lexical syntax
-  INTERPSTRINGCHARS  = INTERPSTRINGCHAR*
-  INTERPSTRINGCHAR   = UNICODERUNE
-  INTERPSTRINGCHAR   = BYTERUNE
-  INTERPSTRINGCHAR   = "\""     {reject}
+  INTERPSTRINGCHARS   = INTERPSTRINGCHAR*
+  INTERPSTRINGCHAR    = UNICODERUNE
+  INTERPSTRINGCHAR    = BYTERUNE
+  INTERPSTRINGCHAR    = "\""        {reject}

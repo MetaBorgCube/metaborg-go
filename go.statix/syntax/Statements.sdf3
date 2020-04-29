@@ -1,0 +1,172 @@
+module Statements
+
+imports
+  Common
+  Expressions
+  SortNames
+
+// Blocks
+sorts StmtElem StmtInit-OPT
+context-free syntax
+
+  Stmt                  = Block
+  Block.Block           = <{ <StmtElem*> }>
+  StmtElem.StmtElem     = <<Stmt>;>
+
+  // REPLACE:
+  //StmtList              = StmtElem*
+
+  StmtInit-OPT.NoStmtInit           = <>
+  StmtInit-OPT.StmtInit             = <<SimpleStmt>; >
+
+// Statements
+context-free syntax
+
+  Stmt                  = Declaration
+  Stmt                  = SimpleStmt
+
+// Empty statements
+sorts SimpleStmt
+context-free syntax
+  SimpleStmt.EmptyStmt              = <>
+
+// Expression statements
+context-free syntax
+  SimpleStmt.ExpressionStmt         = <<Expr>>
+
+// Send statements
+sorts SendStmt
+context-free syntax
+  SimpleStmt.SendStmt   = SendStmt
+  SendStmt.Send         = [[Expr] <- [Expr]]
+
+// Inc/Dec statements
+context-free syntax
+  SimpleStmt.Inc        = <<Expr>++>
+  SimpleStmt.Dec        = <<Expr>-->
+
+// Assignments
+context-free syntax
+  SimpleStmt.Assign     = <<{Expr ","}+> = <{Expr ","}+>>
+  SimpleStmt.AssignAdd  = <<{Expr ","}+> += <{Expr ","}+>>
+  SimpleStmt.AssignSub  = <<{Expr ","}+> -= <{Expr ","}+>>
+  SimpleStmt.AssignOr   = <<{Expr ","}+> |= <{Expr ","}+>>
+  SimpleStmt.AssignXor  = <<{Expr ","}+> ^= <{Expr ","}+>>
+  SimpleStmt.AssignMul  = <<{Expr ","}+> *= <{Expr ","}+>>
+  SimpleStmt.AssignDiv  = <<{Expr ","}+> /= <{Expr ","}+>>
+  SimpleStmt.AssignMod  = <<{Expr ","}+> %= <{Expr ","}+>>
+  SimpleStmt.AssignLsh  = [[{Expr ","}+] <<= [{Expr ","}+]]
+  SimpleStmt.AssignRsh  = [[{Expr ","}+] >>= [{Expr ","}+]]
+  SimpleStmt.AssignAnd  = <<{Expr ","}+> &= <{Expr ","}+>>
+  SimpleStmt.AssignClr  = <<{Expr ","}+> &^= <{Expr ","}+>>
+
+// Short variable declarations
+context-free syntax
+  SimpleStmt.ShortVarDeclExpr = <<{ID ","}+> := <{Expr ","}+>>
+
+// Labeled statements
+context-free syntax
+  Stmt.LabeledStmt      = <<ID>: <Stmt>>
+
+// Go statements
+context-free syntax
+  Stmt.Go               = <go <Expr>>
+
+// Return statements
+context-free syntax
+  Stmt.Return           = <return <{Expr ","}*>>
+
+// Break statements
+context-free syntax
+  Stmt.BreakLabel       = <break <ID>>
+  Stmt.Break            = <break>
+
+// Continue statements
+context-free syntax
+  Stmt.ContinueLabel    = <continue <ID>>
+  Stmt.Continue         = <continue>
+
+// Goto statements
+context-free syntax
+  Stmt.Goto             = <goto <ID>>
+
+// Fallthrough statements
+context-free syntax
+  Stmt.Fallthrough      = <fallthrough>
+
+// If statements
+sorts IfStmt IfElse-OPT
+context-free syntax
+  Stmt                  = IfStmt
+  IfStmt.If             = <if <StmtInit-OPT><Expr> <Block> else <IfElse-OPT>>
+  IfElse-OPT.NoIfElse               = <>
+  IfElse-OPT.IfElseBlock            = <<Block>>
+  IfElse-OPT.IfElseIf               = <<IfStmt>>
+
+// Expression switch statements
+sorts SwitchExpr-OPT ExprSwitchCaseClause ExprSwitchCase
+context-free syntax
+  Stmt.ExprSwitch       = <switch <StmtInit-OPT><SwitchExpr-OPT>{
+    ExprSwitchCaseClause*
+  }>
+
+  SwitchExpr-OPT.NoSwitchExpr       = <>
+  SwitchExpr-OPT.SwitchExpr         = <<Expr> >
+
+  ExprSwitchCaseClause.ExprSwitchCaseClause  = <<ExprSwitchCase>: <StmtElem*>>
+
+  ExprSwitchCase.ExprSwitchCase     = <case <{Expr ", "}+>>
+  ExprSwitchCase.ExprSwitchDefault  = <default>
+
+// Type switch statements
+sorts TypeSwitchID-OPT TypeSwitchCaseClause TypeSwitchCase
+context-free syntax
+  Stmt.TypeSwitch       = <switch <StmtInit-OPT><TypeSwitchID-OPT><PrimaryExpr>.(type){
+    <TypeSwitchCaseClause*>
+  }>
+
+  TypeSwitchID-OPT.NoTypeSwitchID   = <>
+  TypeSwitchID-OPT.WithTypeSwitchID = <<ID> := >
+
+  TypeSwitchCaseClause.TypeSwitchCaseClause = <<TypeSwitchCase>: <StmtElem*>>
+
+  TypeSwitchCase.TypeSwitchCase     = <case <{Type ","}+>>
+  TypeSwitchCase.TypeSwitchDefault  = <default>
+
+// Select statements
+sorts SelectCommClause SelectCommCase SelectCommSendRecv ExprOrIdListEq
+context-free syntax
+  Stmt.Select           = <select {
+    <SelectCommClause*>
+  }>
+
+  SelectCommClause.SelectCommClause = <<SelectCommCase>: <StmtElem*>>
+  SelectCommCase.SelectCommCase     = <case <SelectCommSendRecv>>
+  SelectCommCase.SelectCommDefault  = <default>
+
+  SelectCommSendRecv                = SendStmt
+  SelectCommSendRecv.RecvStmt       = <<ExprOrIdListEq> <Expr>>
+  
+  ExprOrIdListEq.ExprListEq         = <<{Expr ", "}+> =>
+  ExprOrIdListEq.IdListEq           = <<{ID ", "}+> :=>
+
+// For statements
+sorts ForClause ForInit-OPT ForCondition-OPT ForPost-OPT
+context-free syntax
+  Stmt.For                = <for <ForClause> <Block>>
+  
+  ForClause.ForCondition  = <<Expr>>
+  
+  ForClause.ForClause     = <<ForInit-OPT>; <ForCondition-OPT>; <ForPost-OPT>>
+  ForInit-OPT.NoForInit   = <>
+  ForInit-OPT.ForInit     = <<SimpleStmt>>
+  ForCondition-OPT.NoForForCondition  = <>
+  ForCondition-OPT.ForForCondition    = <<Expr>>
+  ForPost-OPT.NoForPost   = <>
+  ForPost-OPT.ForPost     = <<SimpleStmt>>
+
+  ForClause.ForRangeClause          = <<ExprOrIdListEq> range <Expr>>
+
+// Defer statements
+context-free syntax
+  Stmt.Defer              = <defer <Expr>>

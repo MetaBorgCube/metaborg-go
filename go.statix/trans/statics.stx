@@ -1,5 +1,14 @@
 module statics
 
+imports
+  signatures/Common-sig
+  signatures/Declarations-sig
+  signatures/Expressions-sig
+  signatures/GoStatix-sig
+  signatures/SortNames-sig
+//  signatures/Statements-sig
+  signatures/Types-sig
+
 // see README.md for details on how to switch to multi-file analysis
 
 rules // single-file entry point

@@ -1,0 +1,129 @@
+module Types
+
+imports
+  Common
+  SortNames
+
+template options
+
+  newlines : separating
+
+sorts TypeLit
+context-free syntax
+
+  Type        = TypeName
+  Type        = TypeLit
+  Type        = <(<Type>)> {bracket}
+  
+  Type-OPT.NoType = <>
+  Type-OPT        = Type
+
+  TypeName.TypeName          = ID
+  TypeName.QualifiedTypeName = QualifiedID
+
+  TypeLit     = ArrayType
+  TypeLit     = StructType
+  TypeLit     = PointerType
+  TypeLit     = FunctionType
+  TypeLit     = InterfaceType
+  TypeLit     = SliceType
+  TypeLit     = MapType
+  TypeLit     = ChannelType
+
+
+// Array types
+sorts ArrayType ArrayLength ElementType
+context-free syntax
+
+  ArrayType.ArrayType = <[<ArrayLength>]<ElementType>> {left}
+ 
+  ArrayLength         = Expr
+  
+  ElementType         = Type
+ 
+ 
+// Slice types
+sorts SliceType
+context-free syntax
+  
+  SliceType.SliceType = <[ ]<ElementType>> {left}
+ 
+ 
+// Struct types
+sorts StructType StructType-Inner FieldDecl Field Tag-OPT Tag
+context-free syntax
+  StructType.StructType   = <struct { <StructType-Inner*> }>
+  StructType-Inner        = <<FieldDecl>;>
+ 
+  FieldDecl.FieldDecl     = <<Field> <Tag-OPT>>
+ 
+  Field.Field             = <<{ID ", "}+> <Type>>
+
+  Field.AnonymousPtrField = <*<TypeName>>
+  Field.AnonymousField    = TypeName
+
+  Tag-OPT.NoTag = <>
+  Tag-OPT       = Tag
+  Tag           = StringLit
+
+
+// Pointer types
+sorts PointerType BaseType
+context-free syntax
+  
+  PointerType.PointerType = <*<BaseType>>
+  
+  BaseType                = Type
+
+
+// Function types
+sorts FunctionType Result-OPT Result Parameters Parameters-Inner-OPT ParameterList ParameterDecl
+context-free syntax
+
+  FunctionType.FunctionType   = <func <Signature>>
+
+  Signature.Signature         = <<Parameters> <Result-OPT>>
+  Result-OPT.NoResult         = <>
+  Result-OPT                  = Result
+  Result                      = Parameters
+  Result                      = Type
+
+  Parameters                        	= <(<Parameters-Inner-OPT>)> {brackets}
+  Parameters-Inner-OPT.NoParameters 	= <>
+  Parameters-Inner-OPT.Parameters   	= <<ParameterList>>
+  Parameters-Inner-OPT.Parameters-ALT   = <<ParameterList>,>
+
+  ParameterList               = {ParameterDecl ","}+
+
+  ParameterDecl.ParameterDecl = <<{ID ", "}*> <Type>>
+  ParameterDecl.VariadicParameterDecl = <<{ID ", "}*> ...<Type>>
+
+// Interface types
+sorts InterfaceType InterfaceType-Inner MethodSpec MethodSpec InterfaceTypeName
+context-free syntax
+  
+  InterfaceType.InterfaceType = <interface { <InterfaceType-Inner*> }>
+  InterfaceType-Inner         = <<MethodSpec>;>
+ 
+  MethodSpec.MethodSpec   = <<ID> <Signature>>
+  MethodSpec              = InterfaceTypeName
+  
+  InterfaceTypeName       = TypeName
+ 
+
+// Map types
+sorts MapType KeyType
+context-free syntax
+  
+  MapType.MapType = <map[<KeyType>]<ElementType>>
+
+  KeyType         = Type
+
+
+// Channel types
+sorts ChannelType
+context-free syntax
+
+  ChannelType.BidirectionalChannelType = [chan [ElementType]]
+  ChannelType.SendingChannelType       = [chan<- [ElementType]]
+  ChannelType.ReceivingChannelType     = [<-chan [ElementType]]

@@ -1,0 +1,13 @@
+module SortNames
+
+sorts
+  Declaration
+  Stmt
+  Block
+  Expr
+  Expr-OPT
+  Type
+  Type-OPT
+  TypeName
+  Function
+  Signature

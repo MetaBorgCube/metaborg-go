@@ -1,0 +1,84 @@
+module Declarations
+
+imports
+  Common
+  SortNames
+
+sorts TopLevelDecl
+context-free syntax
+
+  TopLevelDecl = Declaration
+
+// Constant declarations
+sorts ConstSpec-ELEM ConstSpec
+context-free syntax
+
+  Declaration.SingleConstDecl      = <const <ConstSpec>>
+  Declaration.MultiConstDecl       = <const (<ConstSpec-ELEM*>)>
+  ConstSpec-ELEM.ConstSpec-ELEM    = <<ConstSpec>;>
+
+  // spec seems wrong here, assignment is always required
+  ConstSpec.ConstSpec              = <<{ID ", "}+> <Type-OPT> = <{Expr ", "}+>>
+
+// Type declarations
+sorts TypeSpec-ELEM TypeSpec
+context-free syntax
+
+  Declaration.SingleTypeDecl   		= <type <TypeSpec>>
+  Declaration.MultiTypeDecl       	= <type (<TypeSpec-ELEM*>)>
+  TypeSpec-ELEM.TypeSpec-ELEM     	= <<TypeSpec>;>
+
+  TypeSpec.AliasDecl       			= <<ID> = <Type>>
+
+  TypeSpec.TypeDef         			= <<ID> <Type>>
+
+
+// Var declarations
+sorts VarSpec-ELEM VarSpec VarSpec-Assign-OPT
+context-free syntax
+
+ 
+  Declaration.SingleVarDecl      = <var <VarSpec>>
+  Declaration.MultiVarDecl       = <var (<VarSpec-ELEM*>)>
+  VarSpec-ELEM.VarSpec-ELEM      = <<VarSpec>;>
+  
+  // ERROR: when both Type _and_ VarSpec-Assign are not specified.
+  VarSpec.VarSpec                = <<{ID ", "}+> <Type-OPT> <VarSpec-Assign-OPT>>
+  
+  VarSpec-Assign-OPT.NoVarAssign = <>
+  VarSpec-Assign-OPT.VarAssign   = <= <{Expr ", "}+>>
+
+
+// Short variable declarations
+sorts ShortVarDecl
+context-free syntax
+
+  ShortVarDecl.ShortVarDecl = <<{ID ", "}+> := <{Expr ", "}+>>
+
+
+// Function declarations
+sorts FunctionDecl-Inner
+context-free syntax
+  
+  TopLevelDecl.FunctionDecl = <func <ID> <FunctionDecl-Inner>>
+  
+  FunctionDecl-Inner        = Signature
+  FunctionDecl-Inner        = Function
+  
+  Function.Function         = <<Signature> <Block>>
+
+
+// Method declarations
+sorts MethodDecl-Inner Receiver Receiver-Inner
+context-free syntax
+  
+  TopLevelDecl.MethodDecl = <func <Receiver> <ID> <MethodDecl-Inner>>
+  MethodDecl-Inner      = Signature
+  MethodDecl-Inner      = Function
+
+
+//Receiver.Receiver          = Parameters                   // FIXME inlined special case here
+  Receiver.Receiver          = <(<ID> <Receiver-Inner>)>
+  Receiver.AnonymousReceiver = <(<Receiver-Inner>)>
+  Receiver-Inner.ReceiverType     = TypeName
+  Receiver-Inner.ReceiverTypeStar = <*<TypeName>>
