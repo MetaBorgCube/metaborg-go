@@ -1,4 +1,4 @@
-# gostatix Language Specification
+# GoStatix Language Specification
 
 ## Using Statix for multi-file analysis
 

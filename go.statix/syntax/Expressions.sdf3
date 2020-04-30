@@ -147,7 +147,7 @@ context-free syntax
 
   LiteralType               = StructType
   LiteralType               = ArrayType
-  LiteralType.AutoArrayType = <[<>...<>]<ElementType>>
+  LiteralType.AutoArrayType = <[ ... ]<ElementType>>
   LiteralType               = SliceType
   LiteralType               = MapType
   LiteralType               = TypeName

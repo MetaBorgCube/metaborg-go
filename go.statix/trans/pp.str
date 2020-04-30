@@ -5,8 +5,8 @@ imports
   libstratego-gpp
   libspoofax/sdf/pp
   libspoofax/editor/refactoring/-
-  pp/gostatix-parenthesize
-  pp/gostatix-pp
+  pp/GoStatix-parenthesize
+  pp/GoStatix-pp
 
 rules
 
@@ -19,31 +19,31 @@ rules
 
 rules
   
-  pp-gostatix-string =
-    parenthesize-gostatix
-    ; prettyprint-gostatix-start-symbols
+  pp-GoStatix-string =
+    parenthesize-GoStatix
+    ; prettyprint-GoStatix-start-symbols
     ; !V([], <id>)
     ; box2text-string(|120)
       
-  pp-partial-gostatix-string =
-    parenthesize-gostatix
-    ; prettyprint-gostatix
+  pp-partial-GoStatix-string =
+    parenthesize-GoStatix
+    ; prettyprint-GoStatix
     ; !V([], <id>)
     ; box2text-string(|120)
     
-  pp-partial-gostatix-string(|sort) =
-    parenthesize-gostatix
-    ; prettyprint-gostatix(|sort)
+  pp-partial-GoStatix-string(|sort) =
+    parenthesize-GoStatix
+    ; prettyprint-GoStatix(|sort)
     ; !V([], <id>)
     ; box2text-string(|120)  
       
   pp-debug :
     ast -> result
     with
-       result := <pp-gostatix-string> ast
-    <+ <bottomup(try(not(is-string); not(is-list); not(pp-gostatix-string); debug(!"cannot pp ")))> ast
+       result := <pp-GoStatix-string> ast
+    <+ <bottomup(try(not(is-string); not(is-list); not(pp-GoStatix-string); debug(!"cannot pp ")))> ast
     ;  result := ""
 
 rules
   
-  construct-textual-change = construct-textual-change(pp-partial-gostatix-string, parenthesize, override-reconstruction, resugar)
+  construct-textual-change = construct-textual-change(pp-partial-GoStatix-string, parenthesize, override-reconstruction, resugar)
