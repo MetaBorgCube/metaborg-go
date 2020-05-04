@@ -3,7 +3,7 @@ id: org.metaborg:lang.go.lib:0.1.0-SNAPSHOT
 name: GoLang
 dependencies:
   compile:
-  - org.metaborg:lang.go:0.1.0-SNAPSHOT
+  - org.metaborg:go.statix:0.1.0-SNAPSHOT
 sources:
 - language: GoLang
   directory: src
