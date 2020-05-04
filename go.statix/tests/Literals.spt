@@ -13,23 +13,25 @@ test id camelcase
 //[[ αβ ]] parse to OperandName("αβ")
 
 // Integers
-test dec number
+test int zero number
+[[ 0 ]] parse to Int("0")
+test int dec number
 [[ 42 ]] parse to Int("42")
-test dec number with underscore
+test int dec number with underscore
 [[ 4_2 ]] parse to Int("4_2")
-test octal number
+test int octal number
 [[ 0600 ]] parse to Int("0600")
-test octal number with underscore
+test int octal number with underscore
 [[ 0_600 ]] parse to Int("0_600")
-test octal number with prefix
+test int octal number with prefix
 [[ 0o600 ]] parse to Int("0o600")
-test octal number with capital O
+test int octal number with capital O
 [[ 0O600 ]] parse to Int("0O600")
-test hex number
+test int hex number
 [[ 0xBadFace ]] parse to Int("0xBadFace")
-test hex number with underscore separators
+test int hex number with underscore separators
 [[ 0xBad_Face ]] parse to Int("0xBad_Face")
-test big hex number with underscore separators
+test int big hex number with underscore separators
 [[ 0x_67_7a_2f_cc_40_c6 ]] parse to Int("0x_67_7a_2f_cc_40_c6")
 
 // NOTE: These take forever in JSGLR 1
@@ -84,3 +86,29 @@ test hex float with underscore
 test invalid: hex float with exponent letter e
 [[ 0x15e-2 ]] parse to Sub(Int("0x15e"), Int("2"))
 
+// Imaginary
+test imaginary int: zero
+[[ 0i ]] parse to ImaginaryInt("0i")
+test imaginary int: is not octal
+[[ 0123i ]] parse to ImaginaryInt("0123i")
+test imaginary int: octal
+[[ 0o123i ]] parse to ImaginaryInt("0o123i")
+test imaginary int: hex
+[[ 0xabci ]] parse to ImaginaryInt("0xabci")
+
+test imaginary float: zero
+[[ 0.i ]] parse to ImaginaryFloat("0.i")
+test imaginary float
+[[ 2.71828i ]] parse to ImaginaryFloat("2.71828i")
+test imaginary float: with zero exponent
+[[ 1.e+0i ]] parse to ImaginaryFloat("1.e+0i")
+test imaginary float: with exponent
+[[ 6.67428e-11i ]] parse to ImaginaryFloat("6.67428e-11i")
+test imaginary float: with exponent
+[[ 1E6i ]] parse to ImaginaryFloat("1E6i")
+test imaginary float: fraction
+[[ .25i ]] parse to ImaginaryFloat(".25i")
+test imaginary float: small
+[[ .12345E+5i ]] parse to ImaginaryFloat(".12345E+5i")
+test imaginary float: hex
+[[ 0x1p-2i ]] parse to ImaginaryFloat("0x1p-2i")

@@ -133,7 +133,7 @@ context-free syntax
   BasicLit.Int              = <<INT>>
   BasicLit.Float            = <<FLOAT>>		{prefer}
   BasicLit.ImaginaryInt     = <<IMAGINARYINT>>
-  BasicLit.ImaginaryFloat   = <<IMAGINARYFLOAT>>
+  BasicLit.ImaginaryFloat   = <<IMAGINARYFLOAT>> {prefer}
   BasicLit.Rune             = <<RUNELIT>>
   BasicLit                  = StringLit
 
