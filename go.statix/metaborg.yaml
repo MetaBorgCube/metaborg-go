@@ -19,6 +19,7 @@ debug:
 language:
   sdf:
     pretty-print: GoStatix
+    jsglr-version: v1
     sdf2table: java
     placeholder:
       prefix: "$"
