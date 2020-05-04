@@ -1,0 +1,76 @@
+module Literals
+language GoStatix
+start symbol Expr
+
+// Integers
+test dec number
+[[ 42 ]] parse to Int("42")
+test dec number with underscore
+[[ 4_2 ]] parse to Int("4_2")
+test octal number
+[[ 0600 ]] parse to Int("0600")
+test octal number with underscore
+[[ 0_600 ]] parse to Int("0_600")
+test octal number with prefix
+[[ 0o600 ]] parse to Int("0o600")
+test octal number with capital O
+[[ 0O600 ]] parse to Int("0O600")
+test hex number
+[[ 0xBadFace ]] parse to Int("0xBadFace")
+test hex number with underscore separators
+[[ 0xBad_Face ]] parse to Int("0xBad_Face")
+test big hex number with underscore separators
+[[ 0x_67_7a_2f_cc_40_c6 ]] parse to Int("0x_67_7a_2f_cc_40_c6")
+
+// NOTE: These take forever in JSGLR 1
+//test big dec number
+//[[ 170141183460469231731687303715884105727 ]] parse to Int("170141183460469231731687303715884105727")
+//test big dec number with underscore separators
+//[[ 170_141183_460469_231731_687303_715884_105727 ]] parse to Int("170_141183_460469_231731_687303_715884_105727")
+
+test an identifier, not an integer literal
+[[ _42 ]] parse fails
+test invalid: _ must separate successive digits
+[[ 42_ ]] parse fails
+test invalid: only one _ at a time
+[[ 4__2 ]] parse fails
+test invalid: _ must separate successive digits
+[[ 0_xBadFace ]] parse fails
+
+// Float
+test dec float zero
+[[ 0. ]] parse to Float("0.")
+test dec float float number
+[[ 72.40 ]] parse to Float("72.40")
+test dec float zero prefix
+[[ 072.40 ]] parse to Float("072.40")
+test dec float many decimal digits
+[[ 2.71828 ]] parse to Float("2.71828")
+test dec float zero exponent
+[[ 1.e+0 ]] parse to Float("1.e+0")
+test dec float scientific notation 1
+[[ 6.67428e-11 ]] parse to Float("6.67428e-11")
+test dec float scientific notation 2
+[[ 1E6 ]] parse to Float("1E6")
+test dec float fraction
+[[ .25 ]] parse to Float(".25")
+test dec float fraction with exponent
+[[ .12345E+5 ]] parse to Float(".12345E+5")
+test dec float underscores in float number
+[[ 1_5. ]] parse to Float("1_5.")
+test dec float underscores in exponent
+[[ 0.15e+0_2 ]] parse to Float("0.15e+0_2")
+
+test hex float with exponent
+[[ 0x1p-2 ]] parse to Float("0x1p-2")
+test hex float with decimal dot and exponent
+[[ 0x2.p10 ]] parse to Float("0x2.p10")
+test hex float with positive exponent
+[[ 0x1.Fp+0 ]] parse to Float("0x1.Fp+0")
+test hex float with capital X and negative exponent
+[[ 0X.8p-0 ]] parse to Float("0X.8p-0")
+test hex float with underscore
+[[ 0X_1FFFP-16 ]] parse to Float("0X_1FFFP-16")
+test invalid: hex float with exponent letter e
+[[ 0x15e-2 ]] parse to Sub(Int("0x15e"), Int("2"))
+
