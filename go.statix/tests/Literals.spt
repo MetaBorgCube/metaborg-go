@@ -148,3 +148,47 @@ test rune: (illegal) surrogate half
 [[ '\uDFFF' ]] parse to Rune("'\uDFFF'")
 test rune: (illegal) invalid Unicode code point
 [[ '\U00110000' ]] parse to Rune("'\U00110000'")
+
+// String literals
+test string: abc
+[[ "abc" ]] parse to String("abc")
+test string: \\n\n\\n
+[[ "\\n\n\\n" ]] parse to String("\\n\n\\n")
+test string: \n
+[[ "\n" ]] parse to String("\n")
+test string: double quote
+[[ "\"" ]] parse to String("\\"")
+test string: hello world
+[[ "Hello, world!\n" ]] parse to String("Hello, world!\n")
+test string: chinese (1)
+[[ "日本語" ]] parse to String("日本語")
+test string: chinese (2)
+[[ "\u65e5本\U00008a9e" ]] parse to String("\u65e5本\U00008a9e")
+test string: chinese (3)
+[[ "\u65e5\u672c\u8a9e" ]] parse to String("\u65e5\u672c\u8a9e")
+test string: chinese (4)
+[[ "\U000065e5\U0000672c\U00008a9e" ]] parse to String("\U000065e5\U0000672c\U00008a9e")
+test string: chinese (5)
+[[ "\xe6\x97\xa5\xe6\x9c\xac\xe8\xaa\x9e" ]] parse to String("\xe6\x97\xa5\xe6\x9c\xac\xe8\xaa\x9e")
+test string: unicode
+[[ "\xff\u00FF" ]] parse to String("\xff\u00FF")
+test string: (illegal) surrogate half
+[[ "\uD800" ]] parse to String("\uD800")
+test string: (illegal) invalid Unicode code point
+[[ "\U00110000" ]] parse to String("\U00110000")
+
+test raw string: abc
+[[ `abc` ]] parse to RawString("abc")
+test raw string: \\n\n\\n
+[[ `\n
+\n` ]] parse to RawString("\n
+\n")
+test raw string: \n
+[[ `\n` ]] parse to RawString("\n")
+test raw string: double quote
+[[ `\"` ]] parse to RawString("\\"")
+test raw string: hello world
+[[ `Hello, world!\n` ]] parse to RawString("Hello, world!\n")
+test raw string: chinese
+[[ `日本語` ]] parse to RawString("日本語")
+

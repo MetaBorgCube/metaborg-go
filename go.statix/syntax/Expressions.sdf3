@@ -135,7 +135,8 @@ context-free syntax
   BasicLit.ImaginaryInt     = <<IMAGINARYINT>>
   BasicLit.ImaginaryFloat   = <<IMAGINARYFLOAT>> {prefer}
   BasicLit.Rune             = <<RUNELIT>>
-  BasicLit                  = StringLit
+  BasicLit.String           = InterpStringLit
+  BasicLit.RawString        = RawStringLit
 
 // Operand name
 sorts OperandName
