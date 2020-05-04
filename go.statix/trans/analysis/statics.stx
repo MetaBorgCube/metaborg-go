@@ -1,4 +1,4 @@
-module statics
+module analysis/statics
 
 imports
   signatures/Common-sig
@@ -8,14 +8,17 @@ imports
   signatures/SortNames-sig
 //  signatures/Statements-sig
   signatures/Types-sig
+imports
+  analysis/main
 
 // see README.md for details on how to switch to multi-file analysis
 
 rules // single-file entry point
 
-  programOk : Start
+  programOk : SourceFile
 
-  programOk(Empty()).
+  programOk(_) :- {s}
+    new s, init(s).
 
 rules // multi-file entry point
 
@@ -23,38 +26,6 @@ rules // multi-file entry point
 
   projectOk(s).
 
-  fileOk : scope * Start
+  fileOk : scope * SourceFile
 
-  fileOk(s, Empty()).
-
-signature
-
-  sorts Start constructors
-    Empty : Start
-  relations
-    typeOfDecl : occurrence -> TYPE
-  namespaces
-    Type : string
-  name-resolution
-    labels P
-    resolve Type filter P* min $ < P
-    
-signature
-  sorts TYPE
-  constructors
-    UNIT   : TYPE
-    INT    : TYPE
-    STRING : TYPE
-//    NIL    : TYPE
-//    RECORD : scope -> TYPE
-//    ARRAY  : TYPE * scope -> TYPE
-//    FUN    : list(TYPE) * TYPE -> TYPE
-    
-rules
-  declareType : scope * string
-
-  declareType(s, x) :-
-//    s -> Type{x} with typeOfDecl T,
-    // declaration is distinct
-    typeOfDecl of Type{x} in s |-> _.
-    //typeOfDecl of Type{x} in s |-> [(_, (_, _))].
+  fileOk(s, _).
