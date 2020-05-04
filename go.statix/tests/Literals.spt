@@ -112,3 +112,39 @@ test imaginary float: small
 [[ .12345E+5i ]] parse to ImaginaryFloat(".12345E+5i")
 test imaginary float: hex
 [[ 0x1p-2i ]] parse to ImaginaryFloat("0x1p-2i")
+
+// Rune literals
+test rune: a
+[[ 'a' ]] parse to Rune("'a'")
+test rune: ä
+[[ 'ä' ]] parse to Rune("'ä'")
+test rune: 本
+[[ '本' ]] parse to Rune("'本'")
+test rune: tab
+[[ '\t' ]] parse to Rune("'\t'")
+test rune: nul
+[[ '\000' ]] parse to Rune("'\000'")
+test rune: bel
+[[ '\007' ]] parse to Rune("'\007'")
+test rune: ß
+[[ '\377' ]] parse to Rune("'\377'")
+test rune: bel hex
+[[ '\x07' ]] parse to Rune("'\x07'")
+test rune: del
+[[ '\xff' ]] parse to Rune("'\xff'")
+test rune: ዤ
+[[ '\u12e4' ]] parse to Rune("'\u12e4'")
+test rune: invalid character
+[[ '\U00101234' ]] parse to Rune("'\U00101234'")
+test rune: single quote
+[[ '\'' ]] parse to Rune("'\''")
+test rune: invalid: too many characters
+[[ 'aa' ]] parse fails
+test rune: invalid: too few hexadecimal digits
+[[ '\xa' ]] parse fails
+test rune: invalid: too few octal digits
+[[ '\0' ]] parse fails
+test rune: (illegal) surrogate half
+[[ '\uDFFF' ]] parse to Rune("'\uDFFF'")
+test rune: (illegal) invalid Unicode code point
+[[ '\U00110000' ]] parse to Rune("'\U00110000'")
