@@ -4,6 +4,10 @@ imports
   Common
   Types
   SortNames
+  
+context-free start-symbols
+
+  Expr
 
 context-free syntax
   
@@ -97,7 +101,7 @@ context-free priorities
 // Primary expressions
 sorts PrimaryExpr Arguments-OPT Arguments
 context-free syntax
-  PrimaryExpr.Selector = <<PrimaryExpr> <ID>>
+  PrimaryExpr.Selector = <<PrimaryExpr>.<ID>> {left}
   PrimaryExpr.Index = <<PrimaryExpr>[<Expr>]>
   PrimaryExpr.SliceLH          = <<PrimaryExpr>[<Expr-OPT>:<Expr-OPT>]>				// low-high
   PrimaryExpr.SliceLHM         = <<PrimaryExpr>[<Expr-OPT>:<Expr>:<Expr>]>	// low-high-max

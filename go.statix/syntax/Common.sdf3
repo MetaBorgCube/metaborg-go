@@ -5,6 +5,10 @@ sorts INT FLOAT IMAGINARYINT IMAGINARYFLOAT
 sorts RUNELIT
 sorts StringLit
 
+lexical start-symbols
+
+  ID
+  
 // Characters, Letters, Digits
 lexical syntax
   NL                  = [\n\r]
@@ -20,15 +24,10 @@ lexical syntax
   OCTDIGIT            = [0-7]
   HEXDIGIT            = [0-9a-fA-F]
 
-  DECDIGITS           = DECDIGIT DECDIGITUNSC*
-  BINDIGITS           = DECDIGIT BINDIGITUNSC*
-  OCTDIGITS           = DECDIGIT OCTDIGITUNSC*
-  HEXDIGITS           = DECDIGIT HEXDIGITUNSC*
-
-  DECDIGITUNSC        = "_" | DECDIGIT
-  BINDIGITUNSC        = "_" | BINDIGIT
-  OCTDIGITUNSC        = "_" | OCTDIGIT
-  HEXDIGITUNSC        = "_" | HEXDIGIT
+  DECDIGITS           = DECDIGIT ("_"? DECDIGIT+)*
+  BINDIGITS           = DECDIGIT ("_"? BINDIGIT+)*
+  OCTDIGITS           = DECDIGIT ("_"? OCTDIGIT+)*
+  HEXDIGITS           = DECDIGIT ("_"? HEXDIGIT+)*
 
   LETTER              = UNICODELETTER | "_"
 
@@ -107,10 +106,10 @@ lexical syntax
   INT                 = OCT
   INT                 = HEX
 
-  DEC                 = "0" | ([1-9] DECDIGITUNSC*)
-  BIN                 = "0" ("b"|"B")  BINDIGITUNSC+
-  OCT                 = "0" ("o"|"O")? OCTDIGITUNSC+
-  HEX                 = "0" ("x"|"X")  HEXDIGITUNSC+
+  DEC                 = "0" | ([1-9] ("_"? DECDIGIT+)*)
+  BIN                 = "0" ("b"|"B")  ("_"? BINDIGIT+)+
+  OCT                 = "0" ("o"|"O")? ("_"? OCTDIGIT+)+
+  HEX                 = "0" ("x"|"X")  ("_"? HEXDIGIT+)+
 
 lexical restrictions
   DEC                 -/- [0-9\_]
@@ -122,20 +121,20 @@ lexical restrictions
 lexical syntax
   FLOAT               = DECFLOAT | HEXFLOAT
   
-  DECFLOAT            = DECDIGITS "." DECDIGITS? DECEXP
+  DECFLOAT            = DECDIGITS "." DECDIGITS? DECEXP?
   DECFLOAT            = DECDIGITS DECEXP
   DECFLOAT            = "." DECDIGITS DECEXP?
   DECEXP              = ("e"|"E") ("+"|"-")? DECDIGITS
 
   HEXFLOAT            = "0" ("x"|"X") HEXMANTISSA HEXEXP
-  HEXMANTISSA         = HEXDIGITS "." HEXDIGITS?
-  HEXMANTISSA         = HEXDIGITS
+  HEXMANTISSA         = "_"? HEXDIGITS "." HEXDIGITS?
+  HEXMANTISSA         = "_"? HEXDIGITS
   HEXMANTISSA         = "." HEXDIGITS
   HEXEXP              = ("p"|"P") ("+"|"-")? DECDIGITS
 
 lexical restrictions
-  DECFLOAT            -/- [0-9\_]
-  HEXFLOAT            -/- [0-9a-fA-F\_]
+  DECFLOAT            -/- [0-9eE\.\+\-\_]
+  HEXFLOAT            -/- [0-9a-fA-FpP\.\+\-\_]
 
 
 // Imaginary literals
