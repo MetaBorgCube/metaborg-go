@@ -1,0 +1,17 @@
+module desugar
+
+imports
+
+  signatures/-
+  
+rules
+
+  desugar-all =
+    desugar-rawstrings
+    
+  desugar-rawstrings =
+    topdown(try(desugar-rawstring))
+  // TODO:
+  desugar-rawstring: RawString(s) -> String(s)
+  
+  

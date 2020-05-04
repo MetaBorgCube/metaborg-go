@@ -14,13 +14,6 @@ language
   block comment : "/*" * "*/"
   fences        : [ ] ( ) { }
 
-menus
-  
-  menu: "Syntax" (openeditor)
-    
-    action: "Format"          = editor-format (source)
-    action: "Show parsed AST" = debug-show-aterm (source)
-
 views
   
   outline view: editor-outline (source)
