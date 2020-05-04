@@ -1,0 +1,43 @@
+module analysis/types
+
+imports
+  signatures/Common-sig
+  signatures/Declarations-sig
+  signatures/Expressions-sig
+  signatures/GoStatix-sig
+  signatures/SortNames-sig
+//  signatures/Statements-sig
+  signatures/Types-sig
+  
+signature
+  relations
+    typeOfDecl : occurrence -> TYPE
+  namespaces
+    Type : string
+    Pkg : string
+  name-resolution
+    labels P IMP PUB PRV FM
+    // TODO: Is this correct?
+    resolve Type filter P* (IMP? PUB? PUB? | PRV?) FM* min $ < P, P < PRV, P < PUB, P < FM
+
+signature
+  sorts TYPE
+
+rules
+  typeOfType : scope * Type -> TYPE
+  
+  typeOfType(s, TypeName2Type(QualifiedTypeName(QualifiedID(ID-LEX2ID(p), ID-LEX2ID(x))))) = T :-
+//    typeOfDecl of Pkg{p} in s |-> [(_, (Pkg{dp}, T))].
+//    lookupType(s, x).
+    true.
+  typeOfType(s, TypeName2Type(TypeName(ID-LEX2ID(x)))) = T :-
+    lookupType(s, x) == T.
+//  typeOfType(s, TypeLit2Type(x)) = T :-
+//    lookupType(s, x).
+    
+rules
+  lookupType : scope * string -> TYPE
+  
+  lookupType(s, x) = T :- {dx}
+    @x.ref := dx,
+    typeOfDecl of Type{x} in s |-> [(_, (Type{dx}, T))].

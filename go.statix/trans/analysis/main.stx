@@ -9,20 +9,21 @@ imports
 //  signatures/Statements-sig
   signatures/Types-sig
 
-signature
-  relations
-    typeOfDecl : occurrence -> TYPE
-  namespaces
-    Type : string
-  name-resolution
-    labels P IMP PUB PRV FM
-    // TODO: Is this correct?
-    resolve Type filter P* (IMP? PUB? PUB? | PRV?) FM* min $ < P, P < PRV, P < PUB, P < FM
+imports
+  analysis/types
 
 signature
-  sorts TYPE
   // Built-in types
   constructors
+    NAMED       : occurrence -> TYPE
+    FUN         : list(TYPE) * list(TYPE) -> TYPE
+    ARRAY       : int * TYPE -> TYPE
+    SLICE       : TYPE -> TYPE
+    STRUCT      : scope -> TYPE
+    PTR         : TYPE -> TYPE
+    MAP         : TYPE * TYPE -> TYPE
+    STRING      : TYPE
+    
     UINT        : TYPE
     UINT8       : TYPE
     UINT16      : TYPE
@@ -42,10 +43,6 @@ signature
     
     COMPLEX64   : TYPE
     COMPLEX128  : TYPE
-    
-    BYTE        : TYPE
-    RUNE        : TYPE
-    STRING      : TYPE
 
 
 rules
@@ -74,8 +71,8 @@ rules
     declareTypeRaw(s, "complex64",  COMPLEX64()),
     declareTypeRaw(s, "complex128", COMPLEX128()),
     
-    declareTypeRaw(s, "byte",       BYTE()),
-    declareTypeRaw(s, "rune",       RUNE()),
+    declareTypeRaw(s, "byte",       UINT8()),
+    declareTypeRaw(s, "rune",       INT32()),
     declareTypeRaw(s, "string",     STRING()).
     
 rules
