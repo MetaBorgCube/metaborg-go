@@ -31,3 +31,30 @@ signature
 
   sorts Start constructors
     Empty : Start
+  relations
+    typeOfDecl : occurrence -> TYPE
+  namespaces
+    Type : string
+  name-resolution
+    labels P
+    resolve Type filter P* min $ < P
+    
+signature
+  sorts TYPE
+  constructors
+    UNIT   : TYPE
+    INT    : TYPE
+    STRING : TYPE
+//    NIL    : TYPE
+//    RECORD : scope -> TYPE
+//    ARRAY  : TYPE * scope -> TYPE
+//    FUN    : list(TYPE) * TYPE -> TYPE
+    
+rules
+  declareType : scope * string
+
+  declareType(s, x) :-
+//    s -> Type{x} with typeOfDecl T,
+    // declaration is distinct
+    typeOfDecl of Type{x} in s |-> _.
+    //typeOfDecl of Type{x} in s |-> [(_, (_, _))].

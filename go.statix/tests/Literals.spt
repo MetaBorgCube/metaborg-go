@@ -2,6 +2,16 @@ module Literals
 language GoStatix
 start symbol Expr
 
+// Identifiers
+test letter
+[[ a ]] parse to OperandName("a")
+test id starts with underscore
+[[ _x9 ]] parse to OperandName("_x9")
+test id camelcase
+[[ ThisVariableIsExported ]] parse to OperandName("ThisVariableIsExported")
+//test id unicode
+//[[ αβ ]] parse to OperandName("αβ")
+
 // Integers
 test dec number
 [[ 42 ]] parse to Int("42")
@@ -29,7 +39,7 @@ test big hex number with underscore separators
 //[[ 170_141183_460469_231731_687303_715884_105727 ]] parse to Int("170_141183_460469_231731_687303_715884_105727")
 
 test an identifier, not an integer literal
-[[ _42 ]] parse fails
+[[ _42 ]] parse to OperandName("_42")
 test invalid: _ must separate successive digits
 [[ 42_ ]] parse fails
 test invalid: only one _ at a time

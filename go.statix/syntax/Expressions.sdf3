@@ -131,7 +131,7 @@ sorts BasicLit
 context-free syntax
   
   BasicLit.Int              = <<INT>>
-  BasicLit.Float            = <<FLOAT>>
+  BasicLit.Float            = <<FLOAT>>		{prefer}
   BasicLit.ImaginaryInt     = <<IMAGINARYINT>>
   BasicLit.ImaginaryFloat   = <<IMAGINARYFLOAT>>
   BasicLit.Rune             = <<RUNELIT>>
