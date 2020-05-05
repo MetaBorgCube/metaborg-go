@@ -14,6 +14,6 @@ test imaginary 7  [[1E6i]]              parse succeeds
 test imaginary 8  [[.25i]]              parse succeeds
 test imaginary 9  [[.12345E+5i]]        parse succeeds
 
-test imaginary 10 [[ 0o123i ]]          parse succeeds
-test imaginary 11 [[ 0xabci ]]          parse succeeds
-test imaginary 12 [[ 0x1p-2i ]]         parse succeeds
+test imaginary 10 [[0o123i]]            parse succeeds
+test imaginary 11 [[0xabci]]            parse succeeds
+test imaginary 12 [[0x1p-2i]]           parse succeeds

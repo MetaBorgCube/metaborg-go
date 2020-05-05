@@ -19,5 +19,5 @@ test rune 12 [['\'']]                   parse succeeds    // rune literal contai
 test rune 13 [['aa']]                   parse fails       // illegal: too many characters
 test rune 14 [['\xa']]                  parse fails       // illegal: too few hexadecimal digits
 test rune 15 [['\0']]                   parse fails       // illegal: too few octal digits
-test rune 16 [['\uDFFF']]               parse fails       // illegal: surrogate half
-test rune 17 [['\U00110000']]           parse fails       // illegal: invalid Unicode code point
+test rune 16 [['\uDFFF']]               parse succeeds    // illegal: surrogate half
+test rune 17 [['\U00110000']]           parse succeeds    // illegal: invalid Unicode code point

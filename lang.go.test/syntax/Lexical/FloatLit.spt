@@ -13,12 +13,12 @@ test float 6  [[6.67428e-11]]           parse succeeds
 test float 7  [[1E6]]                   parse succeeds
 test float 8  [[.25]]                   parse succeeds
 test float 9  [[.12345E+5]]             parse succeeds
-test float 10 [[ 1_5. ]]                parse succeeds
-test float 11 [[ 0.15e+0_2 ]]           parse succeeds
+test float 10 [[1_5.]]                  parse succeeds
+test float 11 [[0.15e+0_2]]             parse succeeds
 
-test float 12 [[ 0x1p-2 ]]              parse succeeds
-test float 13 [[ 0x2.p10 ]]             parse succeeds
-test float 14 [[ 0x1.Fp+0 ]]            parse succeeds
-test float 15 [[ 0X.8p-0 ]]             parse succeeds
-test float 16 [[ 0X_1FFFP-16 ]]         parse succeeds
-test float 17 [[ 0x15e-2 ]]             parse fails     // invalid: hex float with exponent letter e
+test float 12 [[0x1p-2]]                parse succeeds
+test float 13 [[0x2.p10]]               parse succeeds
+test float 14 [[0x1.Fp+0]]              parse succeeds
+test float 15 [[0X.8p-0]]               parse succeeds
+test float 16 [[0X_1FFFP-16]]           parse succeeds
+test float 17 [[0x15e-2]]               parse fails     // invalid: hex float with exponent letter e

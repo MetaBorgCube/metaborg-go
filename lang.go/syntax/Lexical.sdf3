@@ -100,8 +100,12 @@ lexical syntax
  */
 lexical syntax
 
-  INTLIT                      = DECIMALLIT | BINARYLIT | OCTALLIT | HEXLIT  // int_lit
-  DECIMALLIT                  = "0" | [1-9] ("_"? DECIMALDIGITS)?           // decimal_lit
+  INTLIT                      = DECIMALLIT                                  // int_lit
+  INTLIT                      = BINARYLIT
+  INTLIT                      = OCTALLIT
+  INTLIT                      = HEXLIT
+  DECIMALLIT                  = "0"                                         // decimal_lit
+  DECIMALLIT                  = [1-9] ("_"? DECIMALDIGITS)?
   BINARYLIT                   = "0" ("b"|"B")  "_"? BINARYDIGITS            // binary_lit
   OCTALLIT                    = "0" ("o"|"O")? "_"? OCTALDIGITS             // octal_lit
   HEXLIT                      = "0" ("x"|"X")  "_"? HEXDIGITS               // hex_lit
@@ -125,16 +129,17 @@ lexical restrictions
  */
 lexical syntax
 
-  FLOATLIT                    = DECIMALFLOATLIT | HEX_FLOAT_LIT             // float_lit
+  FLOATLIT                    = DECIMALFLOATLIT                             // float_lit
+  FLOATLIT                    = HEX_FLOAT_LIT
 
   DECIMALFLOATLIT             = DECIMALDIGITS "." DECIMALDIGITS? DECIMALEXPONENT?    // decimal_float_lit
-                              | DECIMALDIGITS DECIMALDIGITS
-                              | "." DECIMALDIGITS  DECIMALDIGITS?
+  DECIMALFLOATLIT             = DECIMALDIGITS DECIMALEXPONENT
+  DECIMALFLOATLIT             = "." DECIMALDIGITS  DECIMALEXPONENT?
   DECIMALEXPONENT             = ("e"|"E") ("+"|"-")? DECIMALDIGITS          // decimal_exponent
   HEX_FLOAT_LIT               = "0" ("x"|"X") HEXMANTISSA HEXEXPONENT       // hex_float_lit
   HEXMANTISSA                 = "_"? HEXDIGITS "." HEXDIGITS?               // hex_mantissa
-                              | "_"? HEXDIGITS
-                              | "." HEXDIGITS
+  HEXMANTISSA                 = "_"? HEXDIGITS
+  HEXMANTISSA                 = "." HEXDIGITS
   HEXEXPONENT                 = ("p"|"P") ("+"|"-")? DECIMALDIGITS          // hex_exponent
 
 lexical restrictions
@@ -168,17 +173,16 @@ lexical syntax
   LITTLE_U_VALUE              = "\\u" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT   // little_u_value
   BIG_U_VALUE                 = "\\U" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
                                       HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT   // big_u_value
-//  ESCAPED_CHAR                = "\\" ( "a" | "b" | "f" | "n" | "r" | "t" | "v" | "\\" | "'" | "\"" )    // escaped_char
   ESCAPED_CHAR                = "\\a"                                       // escaped_char
-                              | "\\b"
-                              | "\\f"
-                              | "\\n"
-                              | "\\r"
-                              | "\\t"
-                              | "\\v"
-                              | "\\\\"
-                              | "\\'"
-                              | "\\\""
+  ESCAPED_CHAR                = "\\b"
+  ESCAPED_CHAR                = "\\f"
+  ESCAPED_CHAR                = "\\n"
+  ESCAPED_CHAR                = "\\r"
+  ESCAPED_CHAR                = "\\t"
+  ESCAPED_CHAR                = "\\v"
+  ESCAPED_CHAR                = "\\\\"
+  ESCAPED_CHAR                = "\\'"
+  ESCAPED_CHAR                = "\\\""
 
 
 /**

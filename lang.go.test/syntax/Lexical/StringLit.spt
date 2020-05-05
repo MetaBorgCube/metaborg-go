@@ -6,7 +6,7 @@ start symbol STRINGLIT
 
 test string 1  [[`abc`]]                parse succeeds  // same as "abc"
 test string 2  [[`\n
-\n`]] parse succeeds                                    // same as "\\n\n\\n"
+\n`]]                                   parse succeeds  // same as "\\n\n\\n"
 test string 3  [["\n"]]                 parse succeeds
 test string 4  [["\""]]                 parse succeeds  // same as `"`
 test string 5  [["Hello, world!\n"]]    parse succeeds
