@@ -7,32 +7,33 @@ imports
 lexical start-symbols
 
   ID
-  IntLit
-  FloatLit
-  ImaginaryLit
-  RuneLit
-  StringLit
+  INTLIT
+  FLOATLIT
+  IMAGINARYLIT
+  RUNELIT
+  STRINGLIT
+
 
 /**
  * Comments -- https://golang.org/ref/spec#Comments
  */
 lexical syntax
 
-  LAYOUT         = "//" ~[\n\r]* NewLineEOF
-
-  LAYOUT         = "/*" InsideComment* "*/"
-  InsideComment  = ~[\*]
-  InsideComment  = CommentChar
-  CommentChar    = [\*]
-
-  NewLineEOF     = [\n\r]
-  NewLineEOF     = EOF
-  EOF            =
+  NLEOF                       = [\n\r]
+  NLEOF                       = EOF
+  LAYOUT                      = "//" ~[\n\r]* NLEOF
+  LAYOUT                      = "/*" INCOMMENT* "*/"
+  INCOMMENT                   = ~[\*]
+  INCOMMENT                   = COMMENTCHAR
+  COMMENTCHAR                 = [\*]
 
 lexical restrictions
 
-  CommentChar   -/- [\/]
-  EOF           -/- ~[]
+  COMMENTCHAR                 -/- [\/]
+
+context-free restrictions
+  LAYOUT?                     -/- [\/].[\/]
+  LAYOUT?                     -/- [\/].[\*]
 
 
 /**
@@ -40,11 +41,11 @@ lexical restrictions
  */
 lexical syntax
 
-  LAYOUT   =  [\ \t\n\r]
+  LAYOUT                      = [\ \t\n\r]
 
 context-free restrictions
 
-  LAYOUT? -/- [\ \t\n\r]
+  LAYOUT?                     -/- [\ \t\n\r]
 
 
 /**
@@ -52,11 +53,11 @@ context-free restrictions
  */
 lexical syntax
 
-  ID  =  Letter (Letter | UnicodeDigit)*
+  ID                          = LETTER (LETTER | UNICODEDIGIT)*
 
 lexical restrictions
 
-  ID -/- [A-Za-z\_0-9] // Letter | UnicodeDigit
+  ID                          -/- [A-Za-z\_0-9]   // (LETTER | UNICODEDIGIT)
 
 
 /**
@@ -64,31 +65,31 @@ lexical restrictions
  */
 lexical syntax
 
-  ID = "break" {reject}
-  ID = "case" {reject}
-  ID = "chan" {reject}
-  ID = "const" {reject}
-  ID = "continue" {reject}
-  ID = "default" {reject}
-  ID = "defer" {reject}
-  ID = "else" {reject}
-  ID = "fallthrough" {reject}
-  ID = "for" {reject}
-  ID = "func" {reject}
-  ID = "go" {reject}
-  ID = "goto" {reject}
-  ID = "if" {reject}
-  ID = "import" {reject}
-  ID = "interface" {reject}
-  ID = "map" {reject}
-  ID = "package" {reject}
-  ID = "range" {reject}
-  ID = "return" {reject}
-  ID = "select" {reject}
-  ID = "struct" {reject}
-  ID = "switch" {reject}
-  ID = "type" {reject}
-  ID = "var" {reject}
+  ID                          = "break"       {reject}
+  ID                          = "case"        {reject}
+  ID                          = "chan"        {reject}
+  ID                          = "const"       {reject}
+  ID                          = "continue"    {reject}
+  ID                          = "default"     {reject}
+  ID                          = "defer"       {reject}
+  ID                          = "else"        {reject}
+  ID                          = "fallthrough" {reject}
+  ID                          = "for"         {reject}
+  ID                          = "func"        {reject}
+  ID                          = "go"          {reject}
+  ID                          = "goto"        {reject}
+  ID                          = "if"          {reject}
+  ID                          = "import"      {reject}
+  ID                          = "interface"   {reject}
+  ID                          = "map"         {reject}
+  ID                          = "package"     {reject}
+  ID                          = "range"       {reject}
+  ID                          = "return"      {reject}
+  ID                          = "select"      {reject}
+  ID                          = "struct"      {reject}
+  ID                          = "switch"      {reject}
+  ID                          = "type"        {reject}
+  ID                          = "var"         {reject}
 
 
 /**
@@ -96,36 +97,50 @@ lexical syntax
  */
 lexical syntax
 
-  IntLit      = DecimalLit
-  IntLit      = OctalLit
-  IntLit      = HexLit
+  INTLIT                      = DECIMALLIT | BINARYLIT | OCTALLIT | HEXLIT  // int_lit
+  DECIMALLIT                  = "0" | [1-9] ("_"? DECIMALDIGITS)?           // decimal_lit
+  BINARYLIT                   = "0" ("b"|"B")  "_"? BINARYDIGITS            // binary_lit
+  OCTALLIT                    = "0" ("o"|"O")? "_"? OCTALDIGITS             // octal_lit
+  HEXLIT                      = "0" ("x"|"X")  "_"? HEXDIGITS               // hex_lit
 
-  DecimalLit  = [1-9] DecimalDigit*
-  OctalLit    = "0" OctalDigit*
-  HexLit      = "0" ("x" | "X") HexDigit+
+  DECIMALDIGITS               = DECIMALDIGIT ("_"? DECIMALDIGIT)*           // decimal_digits
+  BINARYDIGITS                = BINARYDIGIT ("_"? BINARYDIGIT)*             // binary_digits
+  OCTALDIGITS                 = OCTALDIGIT ("_"? OCTALDIGIT)*               // octal_digits
+  HEXDIGITS                   = HEXDIGIT ("_"? HEXDIGIT)*                   // hex_digits
+
 
 lexical restrictions
 
-  DecimalLit -/- [A-Za-z0-9\.]
-  OctalLit   -/- [A-Za-z0-9\.]
-  HexLit     -/- [A-Za-z0-9\.]
+  DECIMALLIT                  -/- [0-9\_\.]
+  BINARYLIT                   -/- [0-1\_\.]
+  OCTALLIT                    -/- [0-7\_\.]
+  HEXLIT                      -/- [0-9a-fa-F\_\.]
 
 
 /**
- * Floating-point literals
+ * Floating-point literals -- https://golang.org/ref/spec#Floating-point_literals
  */
 lexical syntax
 
-  FloatLit  = Decimals "." Decimals? Exponent?
-  FloatLit  = Decimals Exponent
-  FloatLit  = "." Decimals Exponent?
+  FLOATLIT                    = DECIMALFLOATLIT | HEX_FLOAT_LIT             // float_lit
 
-  Decimals  = DecimalDigit+
-  Exponent  = ("e" | "E") ("+" | "-")? Decimals
+  DECIMALFLOATLIT             = DECIMALDIGITS "." DECIMALDIGITS? DECIMALEXPONENT?    // decimal_float_lit
+                              | DECIMALDIGITS DECIMALDIGITS
+                              | "." DECIMALDIGITS  DECIMALDIGITS?
+  DECIMALEXPONENT             = ("e"|"E") ("+"|"-")? DECIMALDIGITS          // decimal_exponent
+  HEX_FLOAT_LIT               = "0" ("x"|"X") HEXMANTISSA HEXEXPONENT       // hex_float_lit
+  HEXMANTISSA                 = "_"? HEXDIGITS "." HEXDIGITS?               // hex_mantissa
+                              | "_"? HEXDIGITS
+                              | "." HEXDIGITS
+  HEXEXPONENT                 = ("p"|"P") ("+"|"-")? DECIMALDIGITS          // hex_exponent
 
 lexical restrictions
 
-  FloatLit -/- [0-9\.]
+  DECIMALFLOATLIT             -/- [0-9\_eE\.\+\-]
+  DECIMALEXPONENT             -/- [0-9\_]
+  HEX_FLOAT_LIT               -/- [0-9a-fA-F\_pP\.\+\-]
+  HEXMANTISSA                 -/- [0-9a-fA-F\_]
+  HEXEXPONENT                 -/- [0-9a-fA-F\_]
 
 
 /**
@@ -133,7 +148,7 @@ lexical restrictions
  */
 lexical syntax
 
-  ImaginaryLit = (Decimals | FloatLit) "i"
+  IMAGINARYLIT                = (DECIMALDIGITS | INTLIT | FLOATLIT) "i"     // imaginary_lit
 
 
 /**
@@ -141,51 +156,79 @@ lexical syntax
  */
 lexical syntax
 
-  RuneLit        = "'" (UnicodeValue | ByteValue) "'"
-  UnicodeValue   = UnicodeChar
-  UnicodeValue   = LittleUValue
-  UnicodeValue   = BigUValue
-  UnicodeValue   = EscapedChar
-  ByteValue      = OctalByteValue
-  ByteValue      = HexByteValue
-  OctalByteValue = "\\" OctalDigit OctalDigit OctalDigit
-  HexByteValue   = "\\x" HexDigit HexDigit
-  LittleUValue   = "\\u" HexDigit HexDigit HexDigit HexDigit
-  BigUValue      = "\\U" HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit HexDigit
-  UnicodeValue   = "\\" {reject}
-  EscapedChar    = "\\a"
-  EscapedChar    = "\\b"
-  EscapedChar    = "\\f"
-  EscapedChar    = "\\n"
-  EscapedChar    = "\\r"
-  EscapedChar    = "\\t"
-  EscapedChar    = "\\v"
-  EscapedChar    = "\\\\"
-  EscapedChar    = "\\'"
-  EscapedChar    = "\\\""
+  RUNELIT                     = "'" (UNICODEVALUE | BYTEVALUE) "'"          // rune_lit
+  UNICODEVALUE                = UNICODECHAR | LITTLE_U_VALUE | BIG_U_VALUE | ESCAPED_CHAR   // unicode_value
+  UNICODEVALUE                = "\\"        {reject}
+  BYTEVALUE                   = OCTAL_BYTE_VALUE | HEX_BYTE_VALUE           // byte_value
+  OCTAL_BYTE_VALUE            = "\\" OCTALDIGIT OCTALDIGIT OCTALDIGIT       // octal_byte_value
+  HEX_BYTE_VALUE              = "\\x" HEXDIGIT HEXDIGIT                     // hex_byte_value
+  LITTLE_U_VALUE              = "\\u" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT   // little_u_value
+  BIG_U_VALUE                 = "\\U" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
+                                      HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT   // big_u_value
+//  ESCAPED_CHAR                = "\\" ( "a" | "b" | "f" | "n" | "r" | "t" | "v" | "\\" | "'" | "\"" )    // escaped_char
+  ESCAPED_CHAR                = "\\a"                                       // escaped_char
+                              | "\\b"
+                              | "\\f"
+                              | "\\n"
+                              | "\\r"
+                              | "\\t"
+                              | "\\v"
+                              | "\\\\"
+                              | "\\'"
+                              | "\\\""
 
 
 /**
  * String literals -- https://golang.org/ref/spec#String_literals
  */
-context-free syntax
-
-  StringLit                  = RawStringLit
-  StringLit                  = InterpretedStringLit
-
-syntax
-
-  RawStringLit-CF            = "`" RawStringLit-Chars-LEX "`"
-  InterpretedStringLit-CF    = "\"" InterpretedStringLit-Chars-LEX "\""
-
 lexical syntax
 
-  RawStringLit-Chars = RawStringLit-Char*
-  RawStringLit-Char  = UnicodeChar
-  RawStringLit-Char  = Newline
-  RawStringLit-Char  = "`" {reject}
+  STRINGLIT                   = RAWSTRINGLIT | INTERPRETEDSTRINGLIT         // string_lit
+  RAWSTRINGLIT                = "`" ( UNICODECHAR | NEWLINE ) "`"           // raw_string_lit
+  INTERPRETEDSTRINGLIT        = "\"" ( UNICODEVALUE | BYTEVALUE ) "\""      // interpreted_string_lit
 
-  InterpretedStringLit-Chars = InterpretedStringLit-Char*
-  InterpretedStringLit-Char  = UnicodeValue
-  InterpretedStringLit-Char  = ByteValue
-  InterpretedStringLit-Char  = "\"" {reject}
+
+//// Strings
+//sorts RawStringLit InterpStringLit RAWSTRINGCHARS INTERPSTRINGCHARS
+//context-free syntax
+//  StringLit           = RawStringLit
+//  StringLit           = InterpStringLit
+//
+//syntax
+//  RawStringLit-CF     = "`" RAWSTRINGCHARS-LEX "`"
+//  InterpStringLit-CF  = "\"" INTERPSTRINGCHARS-LEX "\""
+//
+//lexical syntax
+//  RAWSTRINGCHARS      = RAWSTRINGCHAR*
+//  RAWSTRINGCHAR       = UNICODECHAR
+//  RAWSTRINGCHAR       = NL
+//  RAWSTRINGCHAR       = "`"         {reject}
+//
+//lexical syntax
+//  INTERPSTRINGCHARS   = INTERPSTRINGCHAR*
+//  INTERPSTRINGCHAR    = UNICODERUNE
+//  INTERPSTRINGCHAR    = BYTERUNE
+//  INTERPSTRINGCHAR    = "\""        {reject}
+
+
+//context-free syntax
+//
+//  StringLit                  = RawStringLit
+//  StringLit                  = InterpretedStringLit
+//
+//syntax
+//
+//  RawStringLit-CF            = "`" RawStringLit-Chars-LEX "`"
+//  InterpretedStringLit-CF    = "\"" InterpretedStringLit-Chars-LEX "\""
+//
+//lexical syntax
+//
+//  RawStringLit-Chars = RawStringLit-Char*
+//  RawStringLit-Char  = UNICODECHAR
+//  RawStringLit-Char  = NL
+//  RawStringLit-Char  = "`" {reject}
+//
+//  InterpretedStringLit-Chars = InterpretedStringLit-Char*
+//  InterpretedStringLit-Char  = UnicodeValue
+//  InterpretedStringLit-Char  = ByteValue
+//  InterpretedStringLit-Char  = "\"" {reject}

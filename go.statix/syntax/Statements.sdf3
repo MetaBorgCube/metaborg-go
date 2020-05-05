@@ -146,7 +146,7 @@ context-free syntax
 
   SelectCommSendRecv                = SendStmt
   SelectCommSendRecv.RecvStmt       = <<ExprOrIdListEq> <Expr>>
-  
+
   ExprOrIdListEq.ExprListEq         = <<{Expr ", "}+> =>
   ExprOrIdListEq.IdListEq           = <<{ID ", "}+> :=>
 
@@ -154,9 +154,9 @@ context-free syntax
 sorts ForClause ForInit-OPT ForCondition-OPT ForPost-OPT
 context-free syntax
   Stmt.For                = <for <ForClause> <Block>>
-  
+
   ForClause.ForCondition  = <<Expr>>
-  
+
   ForClause.ForClause     = <<ForInit-OPT>; <ForCondition-OPT>; <ForPost-OPT>>
   ForInit-OPT.NoForInit   = <>
   ForInit-OPT.ForInit     = <<SimpleStmt>>

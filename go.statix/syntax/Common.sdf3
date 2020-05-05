@@ -8,7 +8,7 @@ sorts StringLit
 lexical start-symbols
 
   ID
-  
+
 // Characters, Letters, Digits
 lexical syntax
   NL                  = [\n\r]
@@ -16,7 +16,7 @@ lexical syntax
   NLEOF               = EOF
 
   UNICODECHAR         = ~[\n]
-  UNICODELETTER       = [a-zA-Z]  // TODO: Expand to include all from Unicode `Letter`.
+  UNICODELETTER       = [a-zA-Z]  // TODO: Expand to include all from Unicode `Number, decimal digit`
   UNICODEDIGIT        = [0-9]     // TODO: Expand to include all from Unicode `Number, decimal digit`
 
   DECDIGIT            = [0-9]
@@ -126,7 +126,7 @@ lexical restrictions
 // Floating-point literals
 lexical syntax
   FLOAT               = DECFLOAT | HEXFLOAT
-  
+
   DECFLOAT            = DECDIGITS "." DECDIGITS? DECEXP?
   DECFLOAT            = DECDIGITS DECEXP
   DECFLOAT            = "." DECDIGITS DECEXP?

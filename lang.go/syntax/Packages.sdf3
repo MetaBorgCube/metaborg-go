@@ -1,14 +1,5 @@
 module Packages // https://golang.org/ref/spec#Packages
 
-/**
- * Go language syntax
- *
- * This syntax is derived from the Go language specification at https://golang.org/ref/spec.
- * The sort names reflect the names used in the specification, where possible.
- * Nested syntax rules in the specification are split up in the SDF3 specification
- * and get the "-Inner" suffix. An optional syntax rule gets the "-OPT" suffix.
- */
-
 imports
 
   Declarations
@@ -55,7 +46,7 @@ context-free syntax
   ImportSpec-Qual.Qual   = <>
   ImportSpec-Qual.Unqual = <.>
   ImportSpec-Qual.Alias  = PackageName
-  ImportPath             = StringLit
+  ImportPath             = STRINGLIT
 
 /**
  * Source files for testing

@@ -1,13 +1,17 @@
-module Blocks // https://golang.org/ref/spec#Blocks
+/**
+ * Blocks -- https://golang.org/ref/spec#Blocks
+ */
+module Blocks
 
 imports
 
   Statements
   Representation
 
+
 context-free syntax
 
-  Block.Block   = <{ <StmtList> }>
+  Block.Block                 = <{ <StmtList> }>
 
-  StmtList.StmtList         = StmtListElem*
-  StmtListElem.StmtListElem = <<Stmt>;>
+  StmtList.StmtList           = <<StmtList-ELEM*>>
+  StmtList-ELEM               = <<Stmt>;>

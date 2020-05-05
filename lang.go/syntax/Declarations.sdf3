@@ -1,4 +1,7 @@
-module Declarations // https://golang.org/ref/spec#Declarations_and_scope
+/**
+ * Declarations and scope -- https://golang.org/ref/spec#Declarations_and_scope
+ */
+module Declarations
 
 imports
 
@@ -6,6 +9,7 @@ imports
   Lexical
   Expressions
   Types
+  Statements
 
 context-free start-symbols
 
@@ -15,43 +19,50 @@ context-free syntax
 
   TopLevelDecl = Declaration
 
+context-free syntax
+
+  Declaration                 = ConstDecl
+  Declaration                 = TypeDecl
+  Declaration                 = VarDecl
+
+  TopLevelDecl                = Declaration
+  TopLevelDecl                = FunctionDecl
+  TopLevelDecl                = MethodDecl
+
+
 /**
  * Constant declarations -- https://golang.org/ref/spec#Constant_declarations
  */
 context-free syntax
 
-  Declaration.SingleConstDecl      = <const <ConstSpec>>
-  Declaration.MultiConstDecl       = <const (<ConstSpec-ELEM*>)>
-  ConstSpec-ELEM.ConstSpec-ELEM    = <<ConstSpec>;>
+  ConstDecl.SingleConstDecl   = <const <ConstSpec>>
+  ConstDecl.MultiConstDecl    = <const (<ConstSpec-ELEM*>)>
+  ConstSpec-ELEM              = <<ConstSpec>;>
 
   // spec seems wrong here, assignment is always required
-  ConstSpec.ConstSpec              = <<IDList> <Type-OPT> = <ExprList>>
+  ConstSpec.ConstSpec         = <<IDList> <Type-OPT> = <ExprList>>
 
-  IDList                           = {ID ","}+
-  IDList-OPT.NoIdentifiers         = <>
-  IDList-OPT                       = IDList
+  IDList                      = <<{ID ","}+>>
+  IDList-OPT.NoIdentifiers    = <>
+  IDList-OPT                  = IDList
 
-  ExprList                   = {Expr ","}+
-  ExprList-OPT.NoExprs = <>
-  ExprList-OPT               = ExprList
+  ExprList                    = <<{Expr ","}+>>
+  ExprList-OPT.NoExprs        = <>
+  ExprList-OPT                = ExprList
 
-/**
- * Iota -- https://golang.org/ref/spec#Iota
- */
-context-free syntax
 
 /**
  * Type declarations -- https://golang.org/ref/spec#Type_declarations
  */
 context-free syntax
 
-  Declaration.SingleTypeDecl   		= <type <TypeSpec>>
-  Declaration.MultiTypeDecl       	= <type (<TypeSpec-ELEM*>)>
-  TypeSpec-ELEM.TypeSpec-ELEM     	= <<TypeSpec>;>
+  TypeDecl.SingleTypeDecl     = <type <TypeSpec>>
+  TypeDecl.MultiTypeDecl      = <type (<TypeSpec-ELEM*>)>
+  TypeSpec-ELEM               = <<TypeSpec>;>
 
-  TypeSpec.AliasDecl       			= <<ID> = <Type>>
+  TypeSpec.AliasDecl       		= <<ID> = <Type>>
 
-  TypeSpec.TypeDef         			= <<ID> <Type>>
+  TypeSpec.TypeDef         		= <<ID> <Type>>
 
 
 /**
@@ -59,16 +70,13 @@ context-free syntax
  */
 context-free syntax
 
+  VarDecl.SingleVarDecl       = <var <VarSpec>>
+  VarDecl.MultiVarDecl        = <var (<VarSpec-ELEM*>)>
+  VarSpec-ELEM                = <<VarSpec>;>
 
-  Declaration.SingleVarDecl      = <var <VarSpec>>
-  Declaration.MultiVarDecl       = <var (<VarSpec-ELEM*>)>
-  VarSpec-ELEM.VarSpec-ELEM      = <<VarSpec>;>
-
-  // ERROR: when both Type _and_ VarSpec-Assign are not specified.
-  VarSpec.VarSpec                = <<IDList> <Type-OPT> <VarSpec-Assign-OPT>>
-
-  VarSpec-Assign-OPT.NoVarAssign = <>
-  VarSpec-Assign-OPT.VarAssign   = <= <ExprList>>
+  VarSpec.VarSpec             = <<IDList> <Type> = <ExprList>>
+  VarSpec.VarSpecNoInit       = <<IDList> <Type>>
+  VarSpec.VarSpecNoType       = <<IDList> = <ExprList>>
 
 
 /**
@@ -76,7 +84,7 @@ context-free syntax
  */
 context-free syntax
 
-  ShortVarDecl.ShortVarDecl = <<IDList> := <ExprList>>
+  ShortVarDecl.ShortVarDecl   = <<IDList> := <ExprList>>
 
 
 /**
@@ -84,12 +92,14 @@ context-free syntax
  */
 context-free syntax
 
-  TopLevelDecl.FunctionDecl = <func <ID> <FunctionDecl-Inner>>
+  FunctionDecl.FunctionDecl   = <func <FunctionName> <FunctionDecl-INNER>>
+  FunctionName                = ID
 
-  FunctionDecl-Inner        = Signature
-  FunctionDecl-Inner        = Function
+  FunctionDecl-INNER          = Signature
+  FunctionDecl-INNER          = Function
 
-  Function.Function         = <<Signature> <Block>>
+  Function.Function           = <<Signature> <FunctionBody>>
+  FunctionBody                = Block
 
 
 /**
@@ -97,13 +107,13 @@ context-free syntax
  */
 context-free syntax
 
-  TopLevelDecl.MethodDecl = <func <Receiver> <MethodName> <MethodDecl-Inner>>
-  MethodDecl-Inner      = Signature
-  MethodDecl-Inner      = Function
+  MethodDecl.MethodDecl       = <func <Receiver> <MethodName> <MethodDecl-INNER>>
+  MethodDecl-INNER            = Signature
+  MethodDecl-INNER            = Function
 
+  // Inlined case where there is only one receiver, instead of Receiver = Parameters
+  Receiver.Receiver           = <(<ID> <Receiver-INNER>)>
+  Receiver.AnonymousReceiver  = <(<Receiver-INNER>)>
+  Receiver-INNER.ReceiverType     = <<TypeName>>
+  Receiver-INNER.ReceiverPtrType  = <*<TypeName>>
 
-//Receiver.Receiver          = Parameters                   // FIXME inlined special case here
-  Receiver.Receiver          = <(<ID> <Receiver-Inner>)>
-  Receiver.AnonymousReceiver = <(<Receiver-Inner>)>
-  Receiver-Inner             = TypeName
-  Receiver-Inner             = <*<TypeName>>

@@ -1,4 +1,7 @@
-module Types // https://golang.org/ref/spec#Types
+/**
+ * Types -- https://golang.org/ref/spec#Types
+ */
+module Types
 
 imports
 
@@ -15,80 +18,69 @@ template options
 
   newlines : separating
 
+sorts TypeLit
 context-free syntax
 
-  Type        = TypeName
-  Type        = TypeLit
-  Type        = <( <Type> )> {bracket}
+  Type                        = TypeName
+  Type                        = TypeLit
+  Type                        = <( <Type> )> {bracket}
 
-  Type-OPT.NoType = <>
-  Type-OPT        = Type
+  Type-OPT.NoType             = <>
+  Type-OPT                    = Type
 
-  TypeName.TypeName          = ID
-  TypeName.QualifiedTypeName = QualifiedIdent
+  TypeName.TypeName           = ID
+  TypeName.QualifiedTypeName  = QualifiedIdent
 
-  TypeLit     = ArrayType
-  TypeLit     = StructType
-  TypeLit     = PointerType
-  TypeLit     = FunctionType
-  TypeLit     = InterfaceType
-  TypeLit     = SliceType
-  TypeLit     = MapType
-  TypeLit     = ChannelType
-
-
-/**
- * Boolean types -- https://golang.org/ref/spec#Boolean_types
- */
-
-
-/**
- * Numeric types -- https://golang.org/ref/spec#Numeric_types
- */
-
-
-/**
- * String types -- https://golang.org/ref/spec#String_types
- */
+  TypeLit                     = ArrayType
+  TypeLit                     = StructType
+  TypeLit                     = PointerType
+  TypeLit                     = FunctionType
+  TypeLit                     = InterfaceType
+  TypeLit                     = SliceType
+  TypeLit                     = MapType
+  TypeLit                     = ChannelType
 
 
 /**
  * Array types -- https://golang.org/ref/spec#Array_types
  */
+sorts ArrayType ArrayLength ElementType
 context-free syntax
 
-  ArrayType.ArrayType = <[<ArrayLength>]<ElementType>> {left}
+  ArrayType.ArrayType         = <[<ArrayLength>]<ElementType>> {left}
 
-  ArrayLength         = Expr
+  ArrayLength                 = Expr
 
-  ElementType         = Type
+  ElementType                 = Type
 
 
 /**
  * Slice types -- https://golang.org/ref/spec#Slice_types
  */
+sorts SliceType
 context-free syntax
 
-  SliceType.SliceType = <[ ]<ElementType>> {left}
+  SliceType.SliceType         = <[ ]<ElementType>> {left}
 
 
 /**
  * Struct types -- https://golang.org/ref/spec#Struct_types
  */
 context-free syntax
-  StructType.StructType   = <struct { <StructType-Inner*> }>
-  StructType-Inner        = <<FieldDecl>;>
+  StructType.StructType       = <struct { <StructType-ELEM*> }>
+  StructType-ELEM             = <<FieldDecl>;>
 
-  FieldDecl.FieldDecl     = <<Field> <Tag-OPT>>
+  FieldDecl.FieldDecl         = <<FieldDecl-INNER> <Tag-OPT>>
 
-  Field.Field             = <<IDList> <Type>>
+  FieldDecl-INNER.Field       = <<IDList> <Type>>
+  FieldDecl-INNER             = EmbeddedField
 
-  Field.AnonymousPtrField = <*<TypeName>>
-  Field.AnonymousField    = TypeName
+  EmbeddedField.AnonymousPtrField     = <*<TypeName>>
+  EmbeddedField.AnonymousField        = <<TypeName>>
 
-  Tag-OPT.NoTag = <>
-  Tag-OPT       = Tag
-  Tag           = StringLit
+  Tag-OPT.NoTag               = <>
+  Tag-OPT                     = Tag
+  Tag                         = STRINGLIT
 
 
 /**
@@ -96,9 +88,9 @@ context-free syntax
  */
 context-free syntax
 
-  PointerType.PointerType = <*<BaseType>>
+  PointerType.PointerType     = <*<BaseType>>
 
-  BaseType                = Type
+  BaseType                    = Type
 
 
 /**
@@ -114,27 +106,30 @@ context-free syntax
   Result                      = Parameters
   Result                      = Type
 
-  Parameters                        = <(<Parameters-Inner-OPT>)> {brackets}
-  Parameters-Inner-OPT.NoParameters = <>
-  Parameters-Inner-OPT.Parameters   = <<ParameterList> <Comma?>>
+  Parameters                            = <(<Parameters-INNER-OPT>)>
+  Parameters-INNER-OPT.NoParameters     = <>
+  Parameters-INNER-OPT.Parameters       = <<ParameterList>>
+  Parameters-INNER-OPT.Parameters-ALT   = <<ParameterList>,>
 
-  ParameterList               = {ParameterDecl ","}+
+  ParameterList                         = <<{ParameterDecl ","}+>>
 
-  ParameterDecl.ParameterDecl = <<IDList-OPT> <Dots?><Type>>
+  ParameterDecl.ParameterDecl           = <<IDList-OPT> <Type>>
+  ParameterDecl.VariadicParameterDecl   = <<IDList-OPT> ...<Type>>
+
 
 /**
  * Interface types -- https://golang.org/ref/spec#Interface_types
  */
 context-free syntax
 
-  InterfaceType.InterfaceType = <interface { <InterfaceType-Inner*> }>
-  InterfaceType-Inner         = <<MethodSpec>;>
+  InterfaceType.InterfaceType = <interface { <InterfaceType-ELEM*> }>
+  InterfaceType-ELEM          = <<MethodSpec>;>
+  InterfaceType-ELEM          = <<InterfaceTypeName>;>
 
-  MethodSpec.MethodSpec   = <<MethodName> <Signature>>
-  MethodSpec              = InterfaceTypeName
+  MethodSpec.MethodSpec       = <<MethodName> <Signature>>
 
-  MethodName.MethodName   = ID
-  InterfaceTypeName       = TypeName
+  MethodName.MethodName       = ID
+  InterfaceTypeName           = TypeName
 
 
 /**
@@ -142,9 +137,9 @@ context-free syntax
  */
 context-free syntax
 
-  MapType.MapType = <map[<KeyType>]<ElementType>>
+  MapType.MapType             = <map[<KeyType>]<ElementType>>
 
-  KeyType         = Type
+  KeyType                     = Type
 
 
 /**
@@ -153,5 +148,6 @@ context-free syntax
 context-free syntax
 
   ChannelType.BidirectionalChannelType = [chan [ElementType]]
+  // TODO: Separate between chan and <-
   ChannelType.SendingChannelType       = [chan<- [ElementType]]
   ChannelType.ReceivingChannelType     = [<-chan [ElementType]]

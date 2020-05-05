@@ -1,4 +1,7 @@
-module Statements // https://golang.org/ref/spec#Statements
+/**
+ * Statements -- https://golang.org/ref/spec#Statements
+ */
+module Statements
 
 imports
 
@@ -14,28 +17,28 @@ context-free start-symbols
 
 context-free syntax
 
-  Stmt.DeclarationStmt       = Declaration
-  Stmt                       = LabeledStmt
-  Stmt                       = SimpleStmt
-  Stmt                       = GoStmt
-  Stmt                       = ReturnStmt
-  Stmt                       = BreakStmt
-  Stmt                       = ContinueStmt
-  Stmt                       = GotoStmt
-  Stmt                       = FallthroughStmt
-  Stmt                       = Block
-  Stmt                       = IfStmt
-  Stmt                       = SwitchStmt
-  Stmt                       = SelectStmt
-  Stmt                       = ForStmt
-  Stmt                       = DeferStmt
+  Stmt.DeclarationStmt        = Declaration
+  Stmt                        = LabeledStmt
+  Stmt                        = SimpleStmt
+  Stmt                        = GoStmt
+  Stmt                        = ReturnStmt
+  Stmt                        = BreakStmt
+  Stmt                        = ContinueStmt
+  Stmt                        = GotoStmt
+  Stmt                        = FallthroughStmt
+  Stmt                        = Block
+  Stmt                        = IfStmt
+  Stmt                        = SwitchStmt
+  Stmt                        = SelectStmt
+  Stmt                        = ForStmt
+  Stmt                        = DeferStmt
 
-  SimpleStmt                 = EmptyStmt
-  SimpleStmt                 = ExprStmt
-  SimpleStmt                 = SendStmt
-  SimpleStmt                 = IncDecStmt
-  SimpleStmt                 = Assignment
-  SimpleStmt.DeclarationStmt = ShortVarDecl
+  SimpleStmt                  = EmptyStmt
+  SimpleStmt                  = ExprStmt
+  SimpleStmt                  = SendStmt
+  SimpleStmt                  = IncDecStmt
+  SimpleStmt                  = Assignment
+  SimpleStmt                  = ShortVarDecl
 
 
 /**
@@ -43,7 +46,7 @@ context-free syntax
  */
 context-free syntax
 
-  EmptyStmt.EmptyStmt = <>
+  EmptyStmt.EmptyStmt         = <>
 
 
 /**
@@ -51,10 +54,10 @@ context-free syntax
  */
 context-free syntax
 
-  LabeledStmt.LabeledStmt = <<Label>: <Stmt>>
-  Label.Label             = ID
-  Label-OPT.NoLabel       = <>
-  Label-OPT               = Label
+  LabeledStmt.LabeledStmt     = <<Label>: <Stmt>>
+  Label.Label                 = <<ID>>
+  Label-OPT.NoLabel           =
+  Label-OPT                   = Label
 
 
 /**
@@ -62,7 +65,7 @@ context-free syntax
  */
 context-free syntax
 
-  ExprStmt.ExprStmt = Expr
+  ExprStmt.ExprStmt           = Expr
 
 
 /**
@@ -70,8 +73,8 @@ context-free syntax
  */
 context-free syntax
 
-  SendStmt.SendStmt = [[Channel] <- [Expr]]
-  Channel           = Expr
+  SendStmt.SendStmt           = [[Channel] <- [Expr]]
+  Channel                     = Expr
 
 
 /**
@@ -79,8 +82,8 @@ context-free syntax
  */
 context-free syntax
 
-  IncDecStmt.IncStmt = <<Expr>++>
-  IncDecStmt.DecStmt = <<Expr>-->
+  IncDecStmt.IncStmt          = <<Expr>++>
+  IncDecStmt.DecStmt          = <<Expr>-->
 
 
 /**
@@ -88,7 +91,7 @@ context-free syntax
  */
 context-free syntax
 
-  Assignment.AssignStmt = <<ExprList> = <ExprList>>
+  Assignment.AssignStmt           = <<ExprList> = <ExprList>>
 
   // add_op
   Assignment.SumAssignStmt        = <<ExprList> += <ExprList>>
@@ -105,17 +108,23 @@ context-free syntax
   Assignment.BitwiseAndAssignStmt = [[ExprList] &= [ExprList]]
   Assignment.BitClearAssignStmt   = [[ExprList] &^= [ExprList]]
 
+context-free priorities
+// TODO: priorities
+
 /**
  * If statements -- https://golang.org/ref/spec#If_statements
  */
 context-free syntax
 
-  IfStmt        = <if <IfStmt-Inner1-OPT> <Expr> <Block> <IfStmt-Inner2-OPT>>
-  IfStmt-Inner1-OPT.EmptyStmt = <>
-  IfStmt-Inner1-OPT           = <<SimpleStmt>;>
-  IfStmt-Inner2-OPT.NoElse    = <>
-  IfStmt-Inner2-OPT           = <else <IfStmt>>
-  IfStmt-Inner2-OPT           = <else <Block>>
+  IfStmt.IfStmt               = <if <StmtInit-OPT> <Expr> <Block> <IfStmt-INNER-OPT>>
+  IfStmt-INNER-OPT.NoIfElse   = <>
+  IfStmt-INNER-OPT            = IfStmt-INNER
+  IfStmt-INNER                = <else <Block>>
+  IfStmt-INNER                = <else <IfStmt>>
+
+
+  StmtInit-OPT.NoStmtInit     = <>
+  StmtInit-OPT.StmtInit       = <<SimpleStmt>; >
 
 
 /**
@@ -123,48 +132,62 @@ context-free syntax
  */
 context-free syntax
 
-  SwitchStmt = ExprSwitchStmt
-  SwitchStmt = TypeSwitchStmt
+  SwitchStmt                  = ExprSwitchStmt
+  SwitchStmt                  = TypeSwitchStmt
 
-  ExprSwitchStmt       = <switch <ExprSwitchStmt-Inner-OPT> <Expr-OPT> { <ExprCaseClause*> }>
-  ExprSwitchStmt-Inner-OPT.EmptyStmt = <>
-  ExprSwitchStmt-Inner-OPT           = <<SimpleStmt>;>
-  ExprCaseClause       = <<ExprSwitchCase>: <StmtList>>
-  ExprSwitchCase       = <case <ExprList>>
-  ExprSwitchCase       = <default>
+// Expression switches
+context-free syntax
+  ExprSwitchStmt.ExprSwitch           = <switch <StmtInit-OPT> <Expr-OPT>{ <ExprCaseClause*> }>
 
-  TypeSwitchStmt                     = <switch <TypeSwitchStmt-Inner-OPT> <TypeSwitchGuard> { <TypeCaseClause*> }>
-  TypeSwitchStmt-Inner-OPT.EmptyStmt = <>
-  TypeSwitchStmt-Inner-OPT           = <<SimpleStmt>;>
+  ExprCaseClause.ExprCaseClause       = <<ExprSwitchCase>: <StmtList>>
 
-  TypeSwitchGuard                        = <<TypeSwitchGuard-Inner-OPT> <PrimaryExpr>.( type )>
-  TypeSwitchGuard-Inner-OPT.NoIdentifier = <>
-  TypeSwitchGuard-Inner-OPT              = <<ID> :=>
+  ExprSwitchCase.ExprSwitchCase       = <case <ExprList>>
+  ExprSwitchCase.ExprSwitchDefault    = <default>
 
-  TypeCaseClause = <<TypeSwitchCase>: <StmtList>>
-  TypeSwitchCase = <case <TypeList>>
-  TypeSwitchCase = <default>
-  TypeList       = {Type ","}+
+// Type switches
+context-free syntax
+  TypeSwitchStmt.TypeSwitch           = <switch <StmtInit-OPT> <TypeSwitchGuard>{ <TypeCaseClause*> }>
+
+  TypeSwitchGuard.TypeSwitchGuard     = <<ID> := <PrimaryExpr>.(type)>
+  TypeSwitchGuard.TypeSwitchGuardNoID = <<PrimaryExpr>.(type)>
+
+  TypeCaseClause.TypeCaseClause       = <<TypeSwitchCase>: <StmtList>>
+
+  TypeSwitchCase.TypeSwitchCase       = <case <TypeList>>
+  TypeSwitchCase.TypeSwitchDefault    = <default>
+
+  TypeList                            = <<{Type ","}+>>
 
 
 /**
  * For statements -- https://golang.org/ref/spec#For_statements
  */
 context-free syntax
+  ForStmt.ForStmt             = <for <ForStmt-INNER-OPT> <Block>>
 
-  ForStmt       = <for <ForStmt-Inner?> <Block>>
-  ForStmt-Inner = Condition
-  ForStmt-Inner = ForClause
-  ForStmt-Inner = RangeClause
-  Condition     = Expr
+  ForStmt-INNER-OPT.NoClause  = <>
+  ForStmt-INNER-OPT           = ForStmt-INNER
+  ForStmt-INNER               = Condition
+  ForStmt-INNER               = ForClause
+  ForStmt-INNER               = RangeClause
 
-  ForClause = <<InitStmt?>; <Condition?>; <PostStmt?>>
-  InitStmt  = SimpleStmt
-  PostStmt  = SimpleStmt
+  Condition                   = Expr
 
-  RangeClause       = <<RangeClause-Inner?> range <Expr>>
-  RangeClause-Inner = <<ExprList> =>
-  RangeClause-Inner = <<IDList> :=>
+  ForClause.ForClause         = <<InitStmt-OPT>; <Condition-OPT>; <PostStmt-OPT>>
+
+  InitStmt-OPT.NoInitStmt     = <>
+  InitStmt-OPT                = InitStmt
+  InitStmt                    = SimpleStmt
+  Condition-OPT.NoCondition   = <>
+  Condition-OPT               = Condition
+  PostStmt-OPT.NoPostStmt     = <>
+  PostStmt-OPT                = PostStmt
+  PostStmt                    = SimpleStmt
+
+  RangeClause.RangeClause     = <<ExprOrIdListEq> range <Expr>>
+
+  ExprOrIdListEq.ExprListEq   = <<ExprList> =>
+  ExprOrIdListEq.IdListEq     = <<IDList> :=>
 
 
 /**
@@ -172,24 +195,21 @@ context-free syntax
  */
 context-free syntax
 
-  GoStmt.GoStmt = <go <Expr>>
+  GoStmt.GoStmt               = <go <Expr>>
 
 
 /**
- * Select statements
+ * Select statements -- https://golang.org/ref/spec#Select_statements
  */
 context-free syntax
+  SelectStmt.Select           = <select { <CommClause*> }>
+  CommClause.CommClause       = <<CommCase>: <StmtList>>
+  CommCase.CommCaseSend       = <case <SendStmt>>
+  CommCase.CommCaseRecv       = <case <RecvStmt>>
+  CommCase.CommCaseDefault    = <default>
 
-  SelectStmt     = <select { <CommClause*> }>
-  CommClause     = <<CommCase>: <StmtList>>
-  CommCase       = <default>
-  CommCase       = <case <CommCase-Inner>>
-  CommCase-Inner = SendStmt
-  CommCase-Inner = RecvStmt
-  RecvStmt       = <<RecvStmt-Inner?> <RecvExpr>>
-  RecvStmt-Inner = <<ExprList> =>
-  RecvStmt-Inner = <<IDList> :=>
-  RecvExpr       = Expr
+  RecvStmt.RecvStmt           = <<ExprOrIdListEq> <RecvExpr>>
+  RecvExpr                    = Expr
 
 
 /**
@@ -197,7 +217,7 @@ context-free syntax
  */
 context-free syntax
 
-  ReturnStmt.ReturnStmt = <return <ExprList-OPT>>
+  ReturnStmt.ReturnStmt       = <return <ExprList-OPT>>
 
 
 /**
@@ -205,7 +225,7 @@ context-free syntax
  */
 context-free syntax
 
-  BreakStmt.BreakStmt = <break <Label-OPT>>
+  BreakStmt.BreakStmt         = <break <Label-OPT>>
 
 
 /**
@@ -213,7 +233,7 @@ context-free syntax
  */
 context-free syntax
 
-  ContinueStmt.ContinueStmt = <continue <Label-OPT>>
+  ContinueStmt.ContinueStmt   = <continue <Label-OPT>>
 
 
 /**
@@ -221,7 +241,7 @@ context-free syntax
  */
 context-free syntax
 
-  GotoStmt.GotoStmt = <goto <Label>>
+  GotoStmt.GotoStmt           = <goto <Label>>
 
 
 /**
@@ -237,5 +257,5 @@ context-free syntax
  */
 context-free syntax
 
-  DeferStmt.DeferStmt = <defer <Expr>>
+  DeferStmt.DeferStmt         = <defer <Expr>>
 

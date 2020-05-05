@@ -1,5 +1,23 @@
 module GoLang
 
+/**
+ * Go language syntax
+ *
+ * This syntax is derived from the Go language specification at https://golang.org/ref/spec,
+ * the version of Jan 14, 2020
+ *
+ * The sort names reflect the names used in the specification, where possible.
+ * Sort names may have suffixes, with the following meanings:
+ * * `-INNER` is a nested syntax that is separated into its own rule in the SDF3 specification;
+ * * `-OPT` is an optional syntax rule
+ * * `-ALT` is an alternative syntax that often gets desugared
+ * * `-DISAMB` is a syntax rule introduced for disambiguation
+ * * `-ELEM` is a syntax rule for a nested repeated element with a fixed and/or suffix
+ *
+ * All productions are template productions, except where there is a direct injection from a sort
+ * (thus without a constructor) to another sort that has no additional (lexical) syntax.
+ */
+
 imports
 
   Blocks

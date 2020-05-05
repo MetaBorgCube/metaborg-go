@@ -4,7 +4,7 @@ module Representation // https://golang.org/ref/spec#Source_code_representation
  * Syntactic elements -- (not separate in the spec)
  */
 lexical syntax
-
+// TODO: Remove/replace
   Semicolon = ";"
   Comma     = ","
   Dots      = "..."
@@ -14,10 +14,11 @@ lexical syntax
  */
 lexical syntax
 
-  Newline        = "\\n"      // newline
-  UnicodeChar    = ~[\n]      // unicode_char
-  UnicodeLetter  = [A-Za-z]   // unicode_letter
-  UnicodeDigit   = [0-9]      // unicode_digit
+  EOF                         =
+  NEWLINE                     = [\n\r]     // newline
+  UNICODECHAR                 = ~[\n\r]    // unicode_char
+  UNICODELETTER               = [A-Za-z]   // unicode_letter  // TODO: Expand to include all from Unicode `Number, decimal digit`
+  UNICODEDIGIT                = [0-9]      // unicode_digit   // TODO: Expand to include all from Unicode `Number, decimal digit`
 
 
 /**
@@ -25,8 +26,12 @@ lexical syntax
  */
 lexical syntax
 
-  Letter         = UnicodeLetter  // letter
-                 | "_"            // letter
-  DecimalDigit   = [0-9]          // decimal_digit
-  OctalDigit     = [0-7]          // octal_digit
-  HexDigit       = [0-9A-Fa-f]    // hex_digit
+  LETTER                      = UNICODELETTER | "_"   // letter
+  DECIMALDIGIT                = [0-9]                 // decimal_digit
+  BINARYDIGIT                 = [0-1]                 // binary_digit
+  OCTALDIGIT                  = [0-7]                 // octal_digit
+  HEXDIGIT                    = [0-9A-Fa-f]           // hex_digit
+
+lexical restrictions
+
+  EOF                         -/- ~[]
