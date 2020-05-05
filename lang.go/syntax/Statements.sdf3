@@ -10,28 +10,28 @@ imports
 
 context-free start-symbols
 
-  Statement
+  Stmt
 
 context-free syntax
 
-  Statement.DeclarationStmt  = Declaration
-  Statement                  = LabeledStmt
-  Statement                  = SimpleStmt
-  Statement                  = GoStmt
-  Statement                  = ReturnStmt
-  Statement                  = BreakStmt
-  Statement                  = ContinueStmt
-  Statement                  = GotoStmt
-  Statement                  = FallthroughStmt
-  Statement                  = Block
-  Statement                  = IfStmt
-  Statement                  = SwitchStmt
-  Statement                  = SelectStmt
-  Statement                  = ForStmt
-  Statement                  = DeferStmt
+  Stmt.DeclarationStmt       = Declaration
+  Stmt                       = LabeledStmt
+  Stmt                       = SimpleStmt
+  Stmt                       = GoStmt
+  Stmt                       = ReturnStmt
+  Stmt                       = BreakStmt
+  Stmt                       = ContinueStmt
+  Stmt                       = GotoStmt
+  Stmt                       = FallthroughStmt
+  Stmt                       = Block
+  Stmt                       = IfStmt
+  Stmt                       = SwitchStmt
+  Stmt                       = SelectStmt
+  Stmt                       = ForStmt
+  Stmt                       = DeferStmt
 
   SimpleStmt                 = EmptyStmt
-  SimpleStmt                 = ExpressionStmt
+  SimpleStmt                 = ExprStmt
   SimpleStmt                 = SendStmt
   SimpleStmt                 = IncDecStmt
   SimpleStmt                 = Assignment
@@ -41,155 +41,155 @@ context-free syntax
 /**
  * Empty statements -- https://golang.org/ref/spec#Empty_statements
  */
-context-free syntax 
- 
+context-free syntax
+
   EmptyStmt.EmptyStmt = <>
- 
+
 
 /**
  * Labeled statements -- https://golang.org/ref/spec#Labeled_statements
  */
-context-free syntax 
+context-free syntax
 
-  LabeledStmt.LabeledStmt = <<Label>: <Statement>>
-  Label.Label             = Identifier
+  LabeledStmt.LabeledStmt = <<Label>: <Stmt>>
+  Label.Label             = ID
   Label-OPT.NoLabel       = <>
   Label-OPT               = Label
- 
+
 
 /**
  * Expression statements -- https://golang.org/ref/spec#Expression_statements
  */
-context-free syntax 
+context-free syntax
 
-  ExpressionStmt.ExpressionStmt = Expression
+  ExprStmt.ExprStmt = Expr
 
 
 /**
  * Send statements -- https://golang.org/ref/spec#Send_statements
  */
-context-free syntax 
+context-free syntax
 
-  SendStmt.SendStmt = [[Channel] <- [Expression]]
-  Channel           = Expression
+  SendStmt.SendStmt = [[Channel] <- [Expr]]
+  Channel           = Expr
 
 
 /**
  * IncDec statements -- https://golang.org/ref/spec#IncDec_statements
  */
-context-free syntax 
+context-free syntax
 
-  IncDecStmt.IncStmt = <<Expression>++>
-  IncDecStmt.DecStmt = <<Expression>-->
+  IncDecStmt.IncStmt = <<Expr>++>
+  IncDecStmt.DecStmt = <<Expr>-->
 
 
 /**
  * Assignments -- https://golang.org/ref/spec#Assignments
  */
 context-free syntax
-  
-  Assignment.AssignStmt = <<ExpressionList> = <ExpressionList>>
+
+  Assignment.AssignStmt = <<ExprList> = <ExprList>>
 
   // add_op
-  Assignment.SumAssignStmt        = <<ExpressionList> += <ExpressionList>>
-  Assignment.DifferenceAssignStmt = <<ExpressionList> -= <ExpressionList>>
-  Assignment.BitwiseOrAssignStmt  = <<ExpressionList> |= <ExpressionList>>
-  Assignment.BitwiseXorAssignStmt = <<ExpressionList> ^= <ExpressionList>>
+  Assignment.SumAssignStmt        = <<ExprList> += <ExprList>>
+  Assignment.DifferenceAssignStmt = <<ExprList> -= <ExprList>>
+  Assignment.BitwiseOrAssignStmt  = <<ExprList> |= <ExprList>>
+  Assignment.BitwiseXorAssignStmt = <<ExprList> ^= <ExprList>>
 
   // mul_op
-  Assignment.ProductAssignStmt    = [[ExpressionList] *= [ExpressionList]]
-  Assignment.QuotientAssignStmt   = [[ExpressionList] /= [ExpressionList]]
-  Assignment.RemainderAssignStmt  = [[ExpressionList] %= [ExpressionList]]
-  Assignment.LeftShiftAssignStmt  = [[ExpressionList] <<= [ExpressionList]]
-  Assignment.RightShiftAssignStmt = [[ExpressionList] >>= [ExpressionList]]
-  Assignment.BitwiseAndAssignStmt = [[ExpressionList] &= [ExpressionList]]
-  Assignment.BitClearAssignStmt   = [[ExpressionList] &^= [ExpressionList]]
+  Assignment.ProductAssignStmt    = [[ExprList] *= [ExprList]]
+  Assignment.QuotientAssignStmt   = [[ExprList] /= [ExprList]]
+  Assignment.RemainderAssignStmt  = [[ExprList] %= [ExprList]]
+  Assignment.LeftShiftAssignStmt  = [[ExprList] <<= [ExprList]]
+  Assignment.RightShiftAssignStmt = [[ExprList] >>= [ExprList]]
+  Assignment.BitwiseAndAssignStmt = [[ExprList] &= [ExprList]]
+  Assignment.BitClearAssignStmt   = [[ExprList] &^= [ExprList]]
 
 /**
  * If statements -- https://golang.org/ref/spec#If_statements
  */
 context-free syntax
-  
-  IfStmt        = <if <IfStmt-Inner1-OPT> <Expression> <Block> <IfStmt-Inner2-OPT>>
+
+  IfStmt        = <if <IfStmt-Inner1-OPT> <Expr> <Block> <IfStmt-Inner2-OPT>>
   IfStmt-Inner1-OPT.EmptyStmt = <>
   IfStmt-Inner1-OPT           = <<SimpleStmt>;>
   IfStmt-Inner2-OPT.NoElse    = <>
   IfStmt-Inner2-OPT           = <else <IfStmt>>
   IfStmt-Inner2-OPT           = <else <Block>>
 
-  
+
 /**
  * Switch statements -- https://golang.org/ref/spec#Switch_statements
  */
 context-free syntax
-  
+
   SwitchStmt = ExprSwitchStmt
   SwitchStmt = TypeSwitchStmt
-  
-  ExprSwitchStmt       = <switch <ExprSwitchStmt-Inner-OPT> <Expression-OPT> { <ExprCaseClause*> }>
+
+  ExprSwitchStmt       = <switch <ExprSwitchStmt-Inner-OPT> <Expr-OPT> { <ExprCaseClause*> }>
   ExprSwitchStmt-Inner-OPT.EmptyStmt = <>
   ExprSwitchStmt-Inner-OPT           = <<SimpleStmt>;>
-  ExprCaseClause       = <<ExprSwitchCase>: <StatementList>>
-  ExprSwitchCase       = <case <ExpressionList>>
+  ExprCaseClause       = <<ExprSwitchCase>: <StmtList>>
+  ExprSwitchCase       = <case <ExprList>>
   ExprSwitchCase       = <default>
-  
-  TypeSwitchStmt                     = <switch <TypeSwitchStmt-Inner-OPT> <TypeSwitchGuard> { <TypeCaseClause*> }> 
+
+  TypeSwitchStmt                     = <switch <TypeSwitchStmt-Inner-OPT> <TypeSwitchGuard> { <TypeCaseClause*> }>
   TypeSwitchStmt-Inner-OPT.EmptyStmt = <>
   TypeSwitchStmt-Inner-OPT           = <<SimpleStmt>;>
 
   TypeSwitchGuard                        = <<TypeSwitchGuard-Inner-OPT> <PrimaryExpr>.( type )>
   TypeSwitchGuard-Inner-OPT.NoIdentifier = <>
-  TypeSwitchGuard-Inner-OPT              = <<Identifier> :=>
+  TypeSwitchGuard-Inner-OPT              = <<ID> :=>
 
-  TypeCaseClause = <<TypeSwitchCase>: <StatementList>>
+  TypeCaseClause = <<TypeSwitchCase>: <StmtList>>
   TypeSwitchCase = <case <TypeList>>
   TypeSwitchCase = <default>
   TypeList       = {Type ","}+
 
-   
+
 /**
  * For statements -- https://golang.org/ref/spec#For_statements
  */
 context-free syntax
-   
+
   ForStmt       = <for <ForStmt-Inner?> <Block>>
   ForStmt-Inner = Condition
   ForStmt-Inner = ForClause
   ForStmt-Inner = RangeClause
-  Condition     = Expression
+  Condition     = Expr
 
   ForClause = <<InitStmt?>; <Condition?>; <PostStmt?>>
   InitStmt  = SimpleStmt
   PostStmt  = SimpleStmt
-  
-  RangeClause       = <<RangeClause-Inner?> range <Expression>>
-  RangeClause-Inner = <<ExpressionList> =>
-  RangeClause-Inner = <<IdentifierList> :=>
 
-  
+  RangeClause       = <<RangeClause-Inner?> range <Expr>>
+  RangeClause-Inner = <<ExprList> =>
+  RangeClause-Inner = <<IDList> :=>
+
+
 /**
  * Go statements -- https://golang.org/ref/spec#Go_statements
  */
 context-free syntax
-  
-  GoStmt.GoStmt = <go <Expression>>
-  
+
+  GoStmt.GoStmt = <go <Expr>>
+
 
 /**
  * Select statements
  */
 context-free syntax
-  
+
   SelectStmt     = <select { <CommClause*> }>
-  CommClause     = <<CommCase>: <StatementList>>
+  CommClause     = <<CommCase>: <StmtList>>
   CommCase       = <default>
   CommCase       = <case <CommCase-Inner>>
   CommCase-Inner = SendStmt
   CommCase-Inner = RecvStmt
   RecvStmt       = <<RecvStmt-Inner?> <RecvExpr>>
-  RecvStmt-Inner = <<ExpressionList> =>
-  RecvStmt-Inner = <<IdentifierList> :=>
-  RecvExpr       = Expression
+  RecvStmt-Inner = <<ExprList> =>
+  RecvStmt-Inner = <<IDList> :=>
+  RecvExpr       = Expr
 
 
 /**
@@ -197,14 +197,14 @@ context-free syntax
  */
 context-free syntax
 
-  ReturnStmt.ReturnStmt = <return <ExpressionList-OPT>>
+  ReturnStmt.ReturnStmt = <return <ExprList-OPT>>
 
 
 /**
  * Break statements
  */
 context-free syntax
-  
+
   BreakStmt.BreakStmt = <break <Label-OPT>>
 
 
@@ -212,30 +212,30 @@ context-free syntax
  * Continue statements
  */
 context-free syntax
-  
+
   ContinueStmt.ContinueStmt = <continue <Label-OPT>>
-  
-  
+
+
 /**
  * Goto statements
  */
 context-free syntax
-  
+
   GotoStmt.GotoStmt = <goto <Label>>
-  
-  
+
+
 /**
  * Fallthrough statements
  */
 context-free syntax
-  
+
   FallthroughStmt.FallthroughStmt = <fallthrough>
-  
-  
+
+
 /**
  * Defer statements
  */
 context-free syntax
-  
-  DeferStmt.DeferStmt = <defer <Expression>>
+
+  DeferStmt.DeferStmt = <defer <Expr>>
 

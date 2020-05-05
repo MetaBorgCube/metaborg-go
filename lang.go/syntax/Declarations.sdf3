@@ -25,21 +25,21 @@ context-free syntax
   ConstSpec-ELEM.ConstSpec-ELEM    = <<ConstSpec>;>
 
   // spec seems wrong here, assignment is always required
-  ConstSpec.ConstSpec              = <<IdentifierList> <Type-OPT> = <ExpressionList>>
+  ConstSpec.ConstSpec              = <<IDList> <Type-OPT> = <ExprList>>
 
-  IdentifierList                   = {Identifier ","}+
-  IdentifierList-OPT.NoIdentifiers = <>
-  IdentifierList-OPT               = IdentifierList
+  IDList                           = {ID ","}+
+  IDList-OPT.NoIdentifiers         = <>
+  IDList-OPT                       = IDList
 
-  ExpressionList                   = {Expression ","}+
-  ExpressionList-OPT.NoExpressions = <>
-  ExpressionList-OPT               = ExpressionList
+  ExprList                   = {Expr ","}+
+  ExprList-OPT.NoExprs = <>
+  ExprList-OPT               = ExprList
 
 /**
  * Iota -- https://golang.org/ref/spec#Iota
  */
 context-free syntax
- 
+
 /**
  * Type declarations -- https://golang.org/ref/spec#Type_declarations
  */
@@ -49,9 +49,9 @@ context-free syntax
   Declaration.MultiTypeDecl       	= <type (<TypeSpec-ELEM*>)>
   TypeSpec-ELEM.TypeSpec-ELEM     	= <<TypeSpec>;>
 
-  TypeSpec.AliasDecl       			= <<Identifier> = <Type>>
+  TypeSpec.AliasDecl       			= <<ID> = <Type>>
 
-  TypeSpec.TypeDef         			= <<Identifier> <Type>>
+  TypeSpec.TypeDef         			= <<ID> <Type>>
 
 
 /**
@@ -59,16 +59,16 @@ context-free syntax
  */
 context-free syntax
 
- 
+
   Declaration.SingleVarDecl      = <var <VarSpec>>
   Declaration.MultiVarDecl       = <var (<VarSpec-ELEM*>)>
   VarSpec-ELEM.VarSpec-ELEM      = <<VarSpec>;>
-  
+
   // ERROR: when both Type _and_ VarSpec-Assign are not specified.
-  VarSpec.VarSpec                = <<IdentifierList> <Type-OPT> <VarSpec-Assign-OPT>>
-  
+  VarSpec.VarSpec                = <<IDList> <Type-OPT> <VarSpec-Assign-OPT>>
+
   VarSpec-Assign-OPT.NoVarAssign = <>
-  VarSpec-Assign-OPT.VarAssign   = <= <ExpressionList>>
+  VarSpec-Assign-OPT.VarAssign   = <= <ExprList>>
 
 
 /**
@@ -76,19 +76,19 @@ context-free syntax
  */
 context-free syntax
 
-  ShortVarDecl.ShortVarDecl = <<IdentifierList> := <ExpressionList>>
+  ShortVarDecl.ShortVarDecl = <<IDList> := <ExprList>>
 
 
 /**
  * Function declarations -- https://golang.org/ref/spec#Function_declarations
  */
 context-free syntax
-  
-  TopLevelDecl.FunctionDecl = <func <Identifier> <FunctionDecl-Inner>>
-  
+
+  TopLevelDecl.FunctionDecl = <func <ID> <FunctionDecl-Inner>>
+
   FunctionDecl-Inner        = Signature
   FunctionDecl-Inner        = Function
-  
+
   Function.Function         = <<Signature> <Block>>
 
 
@@ -96,14 +96,14 @@ context-free syntax
  * Method declarations -- https://golang.org/ref/spec#Method_declarations
  */
 context-free syntax
-  
+
   TopLevelDecl.MethodDecl = <func <Receiver> <MethodName> <MethodDecl-Inner>>
   MethodDecl-Inner      = Signature
   MethodDecl-Inner      = Function
 
 
 //Receiver.Receiver          = Parameters                   // FIXME inlined special case here
-  Receiver.Receiver          = <(<Identifier> <Receiver-Inner>)>
+  Receiver.Receiver          = <(<ID> <Receiver-Inner>)>
   Receiver.AnonymousReceiver = <(<Receiver-Inner>)>
   Receiver-Inner             = TypeName
   Receiver-Inner             = <*<TypeName>>

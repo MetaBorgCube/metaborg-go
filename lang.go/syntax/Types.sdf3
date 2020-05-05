@@ -1,7 +1,7 @@
 module Types // https://golang.org/ref/spec#Types
 
 imports
-  
+
   Lexical
   Declarations
   Expressions
@@ -20,11 +20,11 @@ context-free syntax
   Type        = TypeName
   Type        = TypeLit
   Type        = <( <Type> )> {bracket}
-  
+
   Type-OPT.NoType = <>
   Type-OPT        = Type
 
-  TypeName.TypeName          = Identifier
+  TypeName.TypeName          = ID
   TypeName.QualifiedTypeName = QualifiedIdent
 
   TypeLit     = ArrayType
@@ -40,7 +40,7 @@ context-free syntax
 /**
  * Boolean types -- https://golang.org/ref/spec#Boolean_types
  */
- 
+
 
 /**
  * Numeric types -- https://golang.org/ref/spec#Numeric_types
@@ -50,38 +50,38 @@ context-free syntax
 /**
  * String types -- https://golang.org/ref/spec#String_types
  */
- 
- 
+
+
 /**
  * Array types -- https://golang.org/ref/spec#Array_types
  */
 context-free syntax
 
   ArrayType.ArrayType = <[<ArrayLength>]<ElementType>> {left}
- 
-  ArrayLength         = Expression
-  
+
+  ArrayLength         = Expr
+
   ElementType         = Type
- 
- 
+
+
 /**
  * Slice types -- https://golang.org/ref/spec#Slice_types
  */
 context-free syntax
-  
+
   SliceType.SliceType = <[ ]<ElementType>> {left}
- 
- 
+
+
 /**
  * Struct types -- https://golang.org/ref/spec#Struct_types
  */
 context-free syntax
   StructType.StructType   = <struct { <StructType-Inner*> }>
   StructType-Inner        = <<FieldDecl>;>
- 
+
   FieldDecl.FieldDecl     = <<Field> <Tag-OPT>>
- 
-  Field.Field             = <<IdentifierList> <Type>>
+
+  Field.Field             = <<IDList> <Type>>
 
   Field.AnonymousPtrField = <*<TypeName>>
   Field.AnonymousField    = TypeName
@@ -95,9 +95,9 @@ context-free syntax
  * Pointer types -- https://golang.org/ref/spec#Pointer_types
  */
 context-free syntax
-  
+
   PointerType.PointerType = <*<BaseType>>
-  
+
   BaseType                = Type
 
 
@@ -120,28 +120,28 @@ context-free syntax
 
   ParameterList               = {ParameterDecl ","}+
 
-  ParameterDecl.ParameterDecl = <<IdentifierList-OPT> <Dots?><Type>>
+  ParameterDecl.ParameterDecl = <<IDList-OPT> <Dots?><Type>>
 
 /**
  * Interface types -- https://golang.org/ref/spec#Interface_types
  */
 context-free syntax
-  
+
   InterfaceType.InterfaceType = <interface { <InterfaceType-Inner*> }>
   InterfaceType-Inner         = <<MethodSpec>;>
- 
+
   MethodSpec.MethodSpec   = <<MethodName> <Signature>>
   MethodSpec              = InterfaceTypeName
-  
-  MethodName.MethodName   = Identifier
+
+  MethodName.MethodName   = ID
   InterfaceTypeName       = TypeName
- 
+
 
 /**
  * Map types -- https://golang.org/ref/spec#Map_types
  */
 context-free syntax
-  
+
   MapType.MapType = <map[<KeyType>]<ElementType>>
 
   KeyType         = Type

@@ -40,7 +40,7 @@ context-free syntax
 context-free syntax
 
   PackageClause.PackageClause = <package <PackageName>>
-  PackageName.PackageName     = Identifier
+  PackageName.PackageName     = ID
 
 /**
  * Import declarations -- https://golang.org/ref/spec#Import_declarations
@@ -61,7 +61,7 @@ context-free syntax
  * Source files for testing
  */
 context-free syntax
-  
+
   TestSources.TestSources = TestSource*
 
   TestSource.SourceFile = <

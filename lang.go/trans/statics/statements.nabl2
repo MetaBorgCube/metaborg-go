@@ -32,7 +32,7 @@ rules
  * Expression statements -- https://golang.org/ref/spec#Expression_statements
  */
  
-  [[ ExpressionStmt(expr) ^ (s) ]] :=
+  [[ ExprStmt(expr) ^ (s) ]] :=
     [[ expr ^ (s) : _ ]].
     
 /**

@@ -1,12 +1,12 @@
 module Lexical // https://golang.org/ref/spec#Lexical_elements
 
 imports
-  
+
   Representation
 
 lexical start-symbols
 
-  Identifier
+  ID
   IntLit
   FloatLit
   ImaginaryLit
@@ -27,7 +27,7 @@ lexical syntax
 
   NewLineEOF     = [\n\r]
   NewLineEOF     = EOF
-  EOF            =  
+  EOF            =
 
 lexical restrictions
 
@@ -39,7 +39,7 @@ lexical restrictions
  * Tokens -- https://golang.org/ref/spec#Tokens
  */
 lexical syntax
-  
+
   LAYOUT   =  [\ \t\n\r]
 
 context-free restrictions
@@ -52,11 +52,11 @@ context-free restrictions
  */
 lexical syntax
 
-  Identifier  =  Letter (Letter | UnicodeDigit)*
+  ID  =  Letter (Letter | UnicodeDigit)*
 
 lexical restrictions
 
-  Identifier -/- [A-Za-z\_0-9] // Letter | UnicodeDigit
+  ID -/- [A-Za-z\_0-9] // Letter | UnicodeDigit
 
 
 /**
@@ -64,31 +64,31 @@ lexical restrictions
  */
 lexical syntax
 
-  Identifier = "break" {reject}
-  Identifier = "case" {reject}
-  Identifier = "chan" {reject}
-  Identifier = "const" {reject}
-  Identifier = "continue" {reject}
-  Identifier = "default" {reject}
-  Identifier = "defer" {reject}
-  Identifier = "else" {reject}
-  Identifier = "fallthrough" {reject}
-  Identifier = "for" {reject}
-  Identifier = "func" {reject}
-  Identifier = "go" {reject}
-  Identifier = "goto" {reject}
-  Identifier = "if" {reject}
-  Identifier = "import" {reject}
-  Identifier = "interface" {reject}
-  Identifier = "map" {reject}
-  Identifier = "package" {reject}
-  Identifier = "range" {reject}
-  Identifier = "return" {reject}
-  Identifier = "select" {reject}
-  Identifier = "struct" {reject}
-  Identifier = "switch" {reject}
-  Identifier = "type" {reject}
-  Identifier = "var" {reject}
+  ID = "break" {reject}
+  ID = "case" {reject}
+  ID = "chan" {reject}
+  ID = "const" {reject}
+  ID = "continue" {reject}
+  ID = "default" {reject}
+  ID = "defer" {reject}
+  ID = "else" {reject}
+  ID = "fallthrough" {reject}
+  ID = "for" {reject}
+  ID = "func" {reject}
+  ID = "go" {reject}
+  ID = "goto" {reject}
+  ID = "if" {reject}
+  ID = "import" {reject}
+  ID = "interface" {reject}
+  ID = "map" {reject}
+  ID = "package" {reject}
+  ID = "range" {reject}
+  ID = "return" {reject}
+  ID = "select" {reject}
+  ID = "struct" {reject}
+  ID = "switch" {reject}
+  ID = "type" {reject}
+  ID = "var" {reject}
 
 
 /**
@@ -105,7 +105,7 @@ lexical syntax
   HexLit      = "0" ("x" | "X") HexDigit+
 
 lexical restrictions
-  
+
   DecimalLit -/- [A-Za-z0-9\.]
   OctalLit   -/- [A-Za-z0-9\.]
   HexLit     -/- [A-Za-z0-9\.]
@@ -179,7 +179,7 @@ syntax
   InterpretedStringLit-CF    = "\"" InterpretedStringLit-Chars-LEX "\""
 
 lexical syntax
-  
+
   RawStringLit-Chars = RawStringLit-Char*
   RawStringLit-Char  = UnicodeChar
   RawStringLit-Char  = Newline

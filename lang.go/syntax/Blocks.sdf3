@@ -7,7 +7,7 @@ imports
 
 context-free syntax
 
-  Block.Block   = <{ <StatementList> }>
-  
-  StatementList.StatementList         = StatementListElem*
-  StatementListElem.StatementListElem = <<Statement>;>
+  Block.Block   = <{ <StmtList> }>
+
+  StmtList.StmtList         = StmtListElem*
+  StmtListElem.StmtListElem = <<Stmt>;>
