@@ -7,8 +7,9 @@ imports
 
   Statements
   Representation
+  SortNames
 
-
+sorts StmtList StmtList-ELEM
 context-free syntax
 
   Block.Block                 = <{ <StmtList> }>

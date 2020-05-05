@@ -52,9 +52,6 @@ rules
 
 rules
 
-  // ParameterList-OPT
-  desugar-list-opt: NoParameters()                -> []
-
   // IDList-OPT
   desugar-list-opt: NoIDs()                       -> []
 
@@ -89,3 +86,5 @@ rules
   // Conversion
   desugar-alt: Conversion-ALT(t, e)               -> Conversion(t, e)
 
+  // Parameters
+  desugar-alt: Parameters-ALT(ps)                 -> Parameters(ps)
