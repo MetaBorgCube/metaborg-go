@@ -2,9 +2,24 @@ module IntLit
 
 language GoLang
 
-start symbol IntLit
+start symbol INTLIT
 
-test decimal integer [[42]] parse succeeds
-test octal integer [[0600]] parse succeeds
-test hex integer [[0xBadFace]] parse succeeds
-test long decimal integer [[170141183460469231731687303715884105727]] parse succeeds
+test int 1  [[ 0 ]]                     parse succeeds
+test int 2  [[ 42 ]]                    parse succeeds
+test int 3  [[ 4_2 ]]                   parse succeeds
+test int 4  [[ 0600 ]]                  parse succeeds
+test int 5  [[ 0_600 ]]                 parse succeeds
+test int 6  [[ 0o600 ]]                 parse succeeds
+test int 7  [[ 0O600 ]]                 parse succeeds
+test int 8  [[ 0xBadFace ]]             parse succeeds
+test int 9  [[ 0xBad_Face ]]            parse succeeds
+test int 10 [[ 0x_67_7a_2f_cc_40_c6 ]]  parse succeeds
+
+// NOTE: These take forever in JSGLR 1
+//test int 11 [[ 170141183460469231731687303715884105727 ]]       parse succeeds
+//test int 12 [[ 170_141183_460469_231731_687303_715884_105727 ]] parse succeeds
+
+test int 11 [[ _42 ]]                   parse fails // invalid: an identifier, not an integer literal
+test int 12 [[ 42_ ]]                   parse fails //  invalid: _ must separate successive digits
+test int 13 [[ 4__2 ]]                  parse fails // invalid: only one _ at a time
+test int 14 [[ 0_xBadFace ]]            parse fails // invalid: _ must separate successive digits
