@@ -1,4 +1,7 @@
-module Representation // https://golang.org/ref/spec#Source_code_representation
+/**
+ * Source code representation -- https://golang.org/ref/spec#Source_code_representation
+ */
+module Representation
 
 /**
  * Syntactic elements -- (not separate in the spec)

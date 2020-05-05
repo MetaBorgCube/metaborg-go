@@ -1,4 +1,7 @@
-module Lexical // https://golang.org/ref/spec#Lexical_elements
+/**
+ * Lexical elements -- https://golang.org/ref/spec#Lexical_elements
+ */
+module Lexical
 
 imports
 

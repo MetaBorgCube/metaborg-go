@@ -1,4 +1,7 @@
-module Packages // https://golang.org/ref/spec#Packages
+/**
+ * Packages -- https://golang.org/ref/spec#Packages
+ */
+module Packages
 
 imports
 
@@ -11,19 +14,14 @@ context-free start-symbols
   TestSources
 
 /**
- * Source file -- https://golang.org/ref/spec#Source_file_organization
+ * Source file organization -- https://golang.org/ref/spec#Source_file_organization
  */
 context-free syntax
 
-  SourceFile.SourceFile = <
-    <PackageClause>;
+  SourceFile.SourceFile       = <<PackageClause>; <ImportDecl-ELEM*> <TopLevelDecl-ELEM*>>
+  ImportDecl-ELEM             = <<ImportDecl>;>
+  TopLevelDecl-ELEM           = <<TopLevelDecl>;>
 
-    <SourceFile-Imports*>
-
-    <SourceFile-Decls*>
-  >
-  SourceFile-Imports = <<ImportDecl>;>
-  SourceFile-Decls   = <<TopLevelDecl>;>
 
 /**
  * Package clause -- https://golang.org/ref/spec#Package_clause
@@ -31,7 +29,8 @@ context-free syntax
 context-free syntax
 
   PackageClause.PackageClause = <package <PackageName>>
-  PackageName.PackageName     = ID
+  PackageName                 = ID
+
 
 /**
  * Import declarations -- https://golang.org/ref/spec#Import_declarations
@@ -39,26 +38,27 @@ context-free syntax
 context-free syntax
 
   ImportDecl.SingleImportDecl = <import <ImportSpec>>
-  ImportDecl.MultiImportDecl  = <import (<MultiImportDecl-Inner*>)>
-  MultiImportDecl-Inner       = <<ImportSpec>;>
+  ImportDecl.MultiImportDecl  = <import (<ImportSpec-ELEM*>)>
+  ImportSpec-ELEM             = <<ImportSpec>;>
 
-  ImportSpec.ImportSpec  = <<ImportSpec-Qual> <ImportPath>>
-  ImportSpec-Qual.Qual   = <>
-  ImportSpec-Qual.Unqual = <.>
-  ImportSpec-Qual.Alias  = PackageName
-  ImportPath             = STRINGLIT
+  ImportSpec.ImportSpec       = <<ImportSpecQual> <ImportPath>>
+  ImportSpecQual.Qual         = <>
+  ImportSpecQual.Unqual       = <.>
+  ImportSpecQual.Alias        = <<PackageName>>
+  ImportPath                  = STRINGLIT
+
 
 /**
  * Source files for testing
  */
 context-free syntax
 
-  TestSources.TestSources = TestSource*
+  TestSources.TestSources = <<TestSource*>>
 
   TestSource.SourceFile = <
     [<ImportPath>]
     <PackageClause>;
 
-    <SourceFile-Imports*>
-    <SourceFile-Decls*>
+    <ImportDecl-ELEM*>
+    <TopLevelDecl-ELEM*>
   >
