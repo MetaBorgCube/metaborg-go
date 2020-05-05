@@ -15,13 +15,14 @@ signature
 
 rules
 
-  desugar-all =
-    try(desugar-sourcefile);
-    desugar-disambs;
-    desugar-alts;
-    desugar-short-var-decls;
-    desugar-single-decls;
+  desugar-all = topdown(try(
+    desugar-sourcefile <+
+    desugar-disamb <+
+    desugar-alt <+
+    desugar-short-var-decl <+
+    desugar-single-decl <+
     desugar-list-opt
+  ))
 
 rules
 
@@ -32,14 +33,10 @@ rules
 
 rules
 
-  desugar-short-var-decls = topdown(try(desugar-short-var-decl))
-
   // ShortVarDecl
   desugar-short-var-decl: ShortVarDecl(ids, es)   -> SingleVarDecl(VarSpecNoType(ids, es))
 
 rules
-
-  desugar-single-decls = topdown(try(desugar-single-decl))
 
   // ImportDecl
   desugar-single-decl: SingleImportDecl(i)        -> ImportDecl([i])
@@ -55,8 +52,6 @@ rules
 
 rules
 
-  desugar-list-opts = topdown(try(desugar-list-opt))
-
   // ParameterList-OPT
   desugar-list-opt: NoParameters()                -> []
 
@@ -67,8 +62,6 @@ rules
   desugar-list-opt: NoExprs()                     -> []
 
 rules
-
-  desugar-disambs = topdown(try(desugar-disamb))
 
   // QualifiedIdent
   desugar-disamb: QualifiedIdent-DISAMB(p, i)     -> QualifiedIdent(p, i)
@@ -85,8 +78,6 @@ rules
   desugar-disamb: Conversion-DISAMB-ALT(t, e)     -> Conversion-ALT(t, e)
 
 rules
-
-  desugar-alts = topdown(try(desugar-alt))
 
   // LiteralValue
   desugar-alt: LiteralValue-ALT(es)               -> LiteralValue(es)
