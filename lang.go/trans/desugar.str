@@ -35,7 +35,7 @@ rules
 
   desugar-short-var-decls =
     topdown(try(desugar-short-var-decl))
-  
+
   desugar-short-var-decl:
       ShortVarDecl(ids, exprs) -> SingleVarDecl(VarSpec(ids, NoType(), VarAssign(exprs)))
 
@@ -43,7 +43,7 @@ rules
 
   desugar-single-decls =
     topdown(try(desugar-single-decl))
- 
+
   desugar-single-decl:
       SingleImportDecl(import-spec) -> MultiImportDecl([import-spec])
 
@@ -59,36 +59,35 @@ rules
 rules
 
   desugar-opts = topdown(try(desugar-opt))
-  
+
   desugar-opt: NoParameters() -> []
   desugar-opt: Parameters(params,_) -> params
-  
- 
+
+
   desugar-opt: NoIdentifiers() -> []
 
   desugar-opt: NoExprs() -> []
-  
+
 rules
 
-	desugar-lists = topdown(try(desugar-list))
-	desugar-list: KeyedElement-LIST-Empty()    -> []
-  	desugar-list: KeyedElement-LIST(elems)     -> elems
-  	desugar-list: KeyedElement-LIST-ALT(elems) -> elems
-  
+  desugar-lists = topdown(try(desugar-list))
+  desugar-list: KeyedElement-LIST-Empty()    -> []
+    desugar-list: KeyedElement-LIST(elems)     -> elems
+    desugar-list: KeyedElement-LIST-ALT(elems) -> elems
+
 rules
 
-	desugar-disambs = topdown(try(desugar-disamb))
+  desugar-disambs = topdown(try(desugar-disamb))
 
-	desugar-disamb: Selector-DISAMB(e, i) 		-> Selector(e, i)
-	desugar-disamb: Call-DISAMB(e, args) 		-> Call(e, args)
-	desugar-disamb: MethodExpr-DISAMB(e, m) 	-> MethodExpr(e, m)
-	desugar-disamb: Conversion-DISAMB(t, e, c) 	-> Conversion(t, e, c)
-	desugar-disamb: QualifiedIdent-DISAMB(p, i) -> QualifiedIdent(p, i)
-	
+  desugar-disamb: Selector-DISAMB(e, i) 		-> Selector(e, i)
+  desugar-disamb: Call-DISAMB(e, args) 		-> Call(e, args)
+  desugar-disamb: MethodExpr-DISAMB(e, m) 	-> MethodExpr(e, m)
+  desugar-disamb: Conversion-DISAMB(t, e, c) 	-> Conversion(t, e, c)
+  desugar-disamb: QualifiedIdent-DISAMB(p, i) -> QualifiedIdent(p, i)
+
 rules
 
-	desugar-alts = topdown(try(desugar-alt))
-	
-	desugar-alt : Arguments-ALT(as) 			-> Arguments(as)
-	desugar-alt : ArgumentsExplode-ALT(as) 		-> ArgumentsExplode(as)
-	
+  desugar-alts = topdown(try(desugar-alt))
+
+  desugar-alt : Arguments-ALT(as) 			-> Arguments(as)
+  desugar-alt : ArgumentsExplode-ALT(as) 		-> ArgumentsExplode(as)

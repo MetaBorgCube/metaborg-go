@@ -1,6 +1,6 @@
 module Syntax
 
-imports 
+imports
 
   libspoofax/color/default
   completion/colorer/GoLang-cc-esv
@@ -15,15 +15,15 @@ language
   fences        : [ ] ( ) { }
 
 menus
-  
+
   menu: "Syntax" (openeditor)
-    
+
     action: "Format"          = editor-format (source)
     action: "Show parsed AST" = debug-show-aterm (source)
     action: "Show pre-analyzed AST" = debug-show-pre-analyzed (source)
     action: "Show analyzed AST" = debug-show-analyzed
 
 views
-  
+
   outline view: editor-outline (source)
     expand to level: 3

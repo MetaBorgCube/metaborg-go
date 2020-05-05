@@ -23,7 +23,7 @@ rules
   assignable: (lhs_ty, rhs_tys, msginfo) -> [CFalse(msginfo)]
     where <not(is-list)> lhs_ty;
           <is-list> rhs_tys
- 
+
   assignable: (lhs_ty, rhs_ty, msginfo) -> []
     where <eq> (lhs_ty, rhs_ty)
 

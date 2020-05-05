@@ -5,13 +5,13 @@ rules
 /**
  * Operands -- https://golang.org/ref/spec#Operands
  */
- 
+
   [[ IntLit(_) ^ (s) : _ ]].
   [[ FloatLit(_) ^ (s) : _ ]].
   [[ ImaginaryLit(_) ^ (s) : _ ]].
   [[ RuneLit(_) ^ (s) : _ ]].
-  [[ StringLit(_) ^ (s) : StringT() ]]. 
- 
+  [[ StringLit(_) ^ (s) : StringT() ]].
+
 /**
  * Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
  */
@@ -36,17 +36,17 @@ rules
   [[ CompositeLit(type, value) ^ (s) : ty ]] :=
     [[ type ^ (s, s_ty) : ty ]], new s_ty,
     [[ value ^ (s) : _ ]].
-    
+
   [[ AutoArrayType(type) ^ (s) ]] :=
     [[ type ^ (s, s_ty) : ty ]], new s_ty.
 
   [[ LiteralValue(elems) ^ (s) : ty ]] :=
     Map1[[ elems ^ (s) ]].
-    
+
   [[ KeyedElement(key, elem) ^ (s) ]] :=
     [[ key ^ (s) ]],
     [[ elem ^ (s) : ty ]].
-    
+
   [[ NoKey() ^ (s) ]].
 
 /**
@@ -55,11 +55,11 @@ rules
 
   [[ FunctionLit(fun) ^ (s) : ty ]] :=
     [[ fun ^ (s) ]].
- 
+
 /**
  * Primary expressions -- https://golang.org/ref/spec#Primary_expressions
  */
- 
+
   [[ Selector(expr,name) ^ (s) : ty ]] :=
     [[ expr ^ (s) : ty_e ]],
     ty_e == NamedT(d_ty), // FIXME Hardcoded for this one case
@@ -68,17 +68,17 @@ rules
     s_fld ---> s_ty,
     VarRef[[ name ^ (s_fld) : ty ]],
     false | note "TODO: Selector/2".
- 
+
   [[ Arguments(expr,args) ^ (s) : ty ]] :=
     [[ expr ^ (s) : FunT(ty_params,ty) ]],
     Map1T[[ args ^ (s) : ty_args ]],
     // check ty_args against ty_params
     false | note "TODO: Arguments/2".
- 
+
 /**
  * Method expressions -- https://golang.org/ref/spec#Method_expressions
  */
- 
+
 /**
  * Index expressions -- https://golang.org/ref/spec#Index_expressions
  */
@@ -86,7 +86,7 @@ rules
 /**
  * Slice expressions -- https://golang.org/ref/spec#Slice_expressions
  */
- 
+
 /**
  * Type assertions -- https://golang.org/ref/spec#Type_assertions
  */
@@ -94,15 +94,15 @@ rules
 /**
  * Calls -- https://golang.org/ref/spec#Calls
  */
- 
+
 /**
  * Passing arguments to ... parameters -- https://golang.org/ref/spec#Passing_arguments_to_..._parameters
  */
- 
+
 /**
  * Operators -- https://golang.org/ref/spec#Operators
  */
- 
+
   [[ LogicalOr(expr1, expr2) ^ (s) : _ ]] :=
     [[ expr1 ^ (s) : _ ]],
     [[ expr2 ^ (s) : _ ]].
@@ -166,7 +166,7 @@ rules
   [[ BitClear(expr1, expr2) ^ (s) : _ ]] :=
     [[ expr1 ^ (s) : _ ]],
     [[ expr2 ^ (s) : _ ]].
-  
+
   [[ Positive(expr) ^ (s) : _ ]] :=
     [[ expr ^ (s) : _ ]].
   [[ Negation(expr) ^ (s) : _ ]] :=
@@ -185,7 +185,7 @@ rules
 /**
  * Conversions -- https://golang.org/ref/spec#Conversions
  */
- 
+
   [[ Conversion(type, expr, _) ^ (s) : ty ]] :=
     [[ type ^ (s, s_ty) : ty ]], new s_ty,
     [[ expr ^ (s) : _ ]].

@@ -3,7 +3,7 @@ module statics/util
 imports
 
   signatures/-
- 
+
 rules
 
   Map1t(X)[[ [x|xs] ^ (s) : ty ]] :=

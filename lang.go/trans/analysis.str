@@ -1,23 +1,23 @@
 module analysis
 
 imports
-  
+
   statixruntime
   statix/api
   statix/runtime/analysis // private, for get-type
   statix/runtime/ast // private, for get-type
-  
+
   desugar
-  
+
   pp
-  
+
   analysis/-
 
 rules // Analysis
 
   editor-analyze =
     stx-editor-analyze(desugar-and-explicate|"analysis/statics", "programOK")
-    
+
   desugar-and-explicate = explicate-injections;desugar-all
 
   explicate-injections =
@@ -28,13 +28,13 @@ rules // Analysis
     with into-sort' := <camel-abbr> into-sort
 
   camel-abbr = explode-string; filter(is-upper); implode-string
-  
+
 //  get-type: node -> type
 //    where a := <stx--get-ast-analysis> node
 //        ; type := <stx--get-ast-property(|a,Prop("type"))> node
 
 rules // Debugging
-  
+
   // Prints the abstract syntax ATerm of a selection.
   debug-show-aterm: (selected, _, _, path, project-path) -> (filename, result)
     with filename := <guarantee-extension(|"aterm")> path

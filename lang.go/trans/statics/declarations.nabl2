@@ -5,10 +5,10 @@ rules
 /**
  * Constant declarations -- https://golang.org/ref/spec#Constant_declarations
  */
- 
+
   [[ MultiConstDecl(constspecs) ^ (s_decl, s) ]] :=
     [[ constspecs ^ (s_decl, s) ]].
-  
+
   [[ ConstSpec(names, ConstAssign(NoType(), exprs)) ^ (s_decl, s) ]] :=
     Map1T(VarDecl)[[ names ^ (s_decl) : tys ]],
     Map1T[[ exprs ^ (s) : tys ]].
@@ -21,7 +21,7 @@ rules
 /**
  * Type declarations -- https://golang.org/ref/spec#Type_declarations
  */
- 
+
   [[ MultiTypeDecl(typespecs) ^ (s_decl, s) ]] :=
     Map1[[ typespecs ^ (s_decl, s) ]].
 
@@ -76,7 +76,7 @@ rules
   VarDecl[[ name ^ (s) : ty ]] :=
     Var{name} <- s,
     Var{name} : ty.
- 
+
   VarRef[[ name ^ (s) : ty ]] :=
     Var{name} -> s,
     Var{name} |-> d,
@@ -89,7 +89,7 @@ rules
     [[ FunctionDecl(FunctionName(name), function_inner) ^ (s_decl, s) ]] :=
       Var{name} <- s_decl,
       [[ function_inner ^ (s) : ty ]].
- 
+
     [[ Function(sig, body) ^ (s) : ty ]] :=
       [[ sig ^ (s) : ty ]],
       [[ body ^ (s_fun) ]],

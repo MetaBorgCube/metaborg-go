@@ -1,9 +1,9 @@
 module golang
 
 imports
-  
+
   completion/completion
   pp
   outline
-  
+
   analysis

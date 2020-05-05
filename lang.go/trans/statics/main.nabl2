@@ -3,7 +3,7 @@ module statics/main
 imports
 
   signatures/-
- 
+
 signature
 
   namespaces
@@ -23,7 +23,7 @@ rules
 
   init ^ (s_univ) :=
     new s_univ,
- 
+
     Type{"uint"} <- s_univ,
     Type{"uint"} : UIntT(),
     Type{"uint8"} <- s_univ,

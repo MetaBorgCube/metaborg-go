@@ -18,25 +18,25 @@ rules
     ; result   := <pp-debug> node
 
 rules
-  
+
   pp-GoLang-string =
     parenthesize-GoLang
     ; prettyprint-GoLang-start-symbols
     ; !V([], <id>)
     ; box2text-string(|120)
-      
+
   pp-partial-GoLang-string =
     parenthesize-GoLang
     ; prettyprint-GoLang
     ; !V([], <id>)
     ; box2text-string(|120)
-    
+
   pp-partial-GoLang-string(|sort) =
     parenthesize-GoLang
     ; prettyprint-GoLang(|sort)
     ; !V([], <id>)
-    ; box2text-string(|120)  
-      
+    ; box2text-string(|120)
+
   pp-debug :
     ast -> result
     with
@@ -45,5 +45,5 @@ rules
     ;  result := ""
 
 rules
-  
+
   construct-textual-change = construct-textual-change(pp-partial-GoLang-string, parenthesize, override-reconstruction, resugar)

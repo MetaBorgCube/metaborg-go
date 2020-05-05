@@ -107,14 +107,14 @@ rules
 /**
  * Function types -- https://golang.org/ref/spec#Function_types
  */
- 
+
   [[ FunctionType(sig) ^ (s, s_ty) : ty ]] :=
-    [[ sig ^ (s) : ty ]]. 
- 
+    [[ sig ^ (s) : ty ]].
+
   [[ Signature(params, result) ^ (s) : FunT(_,_) ]] :=
     Map2[[ params ^ (s, s_ty) ]],
     [[ result ^ (s, s_ty) : ty ]].
- 
+
   [[ ParameterDecl(names, dots, type) ^ (s, s_ty) ]] :=
     Map1t(VarDecl)[[ names ^ (s) : ty ]],
     [[ type ^ (s, s_ty) : ty ]].

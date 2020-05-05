@@ -13,7 +13,7 @@ lexical syntax
  * Characters -- https://golang.org/ref/spec#Characters
  */
 lexical syntax
-  
+
   Newline        = "\\n"      // newline
   UnicodeChar    = ~[\n]      // unicode_char
   UnicodeLetter  = [A-Za-z]   // unicode_letter
