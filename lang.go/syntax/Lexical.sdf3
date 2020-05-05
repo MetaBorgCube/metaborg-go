@@ -186,10 +186,16 @@ lexical syntax
  */
 lexical syntax
 
-  STRINGLIT                   = RAWSTRINGLIT | INTERPRETEDSTRINGLIT         // string_lit
-  RAWSTRINGLIT                = "`" ( UNICODECHAR | NEWLINE ) "`"           // raw_string_lit
-  INTERPRETEDSTRINGLIT        = "\"" ( UNICODEVALUE | BYTEVALUE ) "\""      // interpreted_string_lit
+  STRINGLIT                   = RAWSTRINGLIT | INTERPRETEDSTRINGLIT       // string_lit
+  RAWSTRINGLIT                = "`" RAWSTRINGCHAR* "`"                    // raw_string_lit
+  RAWSTRINGCHAR               = UNICODECHAR
+  RAWSTRINGCHAR               = NEWLINE
+  RAWSTRINGCHAR               = "`" {reject}
 
+  INTERPRETEDSTRINGLIT        = "\"" INTERPRETEDSTRINGCHAR* "\""          // interpreted_string_lit
+  INTERPRETEDSTRINGCHAR       = UNICODEVALUE
+  INTERPRETEDSTRINGCHAR       = BYTEVALUE
+  INTERPRETEDSTRINGCHAR       = "\"" {reject}
 
 //// Strings
 //sorts RawStringLit InterpStringLit RAWSTRINGCHARS INTERPSTRINGCHARS
