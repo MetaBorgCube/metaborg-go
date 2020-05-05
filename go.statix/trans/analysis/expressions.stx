@@ -1,0 +1,17 @@
+module analysis/expressions
+
+imports
+  signatures/Common-sig
+  signatures/Declarations-sig
+  signatures/Expressions-sig
+  signatures/GoStatix-sig
+  signatures/SortNames-sig
+  signatures/Statements-sig
+  signatures/Types-sig
+  
+imports
+  analysis/types
+
+rules
+  typeOfExpr : scope * Expr -> TYPE
+  

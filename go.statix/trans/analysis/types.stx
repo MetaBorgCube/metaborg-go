@@ -6,8 +6,45 @@ imports
   signatures/Expressions-sig
   signatures/GoStatix-sig
   signatures/SortNames-sig
-//  signatures/Statements-sig
+  signatures/Statements-sig
   signatures/Types-sig
+  
+imports
+  analysis/expressions
+
+signature
+  // Special types
+  constructors
+    NAMED       : occurrence -> TYPE
+    FUN         : list(TYPE) * list(TYPE) -> TYPE
+    ARRAY       : int * TYPE -> TYPE
+    SLICE       : TYPE -> TYPE
+    STRUCT      : scope -> TYPE
+    PTR         : TYPE -> TYPE
+    MAP         : TYPE * TYPE -> TYPE
+    STRING      : TYPE
+    
+  // Built-in types
+  constructors
+    UINT        : TYPE
+    UINT8       : TYPE
+    UINT16      : TYPE
+    UINT32      : TYPE
+    UINT64      : TYPE
+    UINTPTR     : TYPE
+    
+    INT         : TYPE
+    INT8        : TYPE
+    INT16       : TYPE
+    INT32       : TYPE
+    INT64       : TYPE
+    INTPTR      : TYPE
+    
+    FLOAT64     : TYPE
+    FLOAT128    : TYPE
+    
+    COMPLEX64   : TYPE
+    COMPLEX128  : TYPE
   
 signature
   relations
@@ -23,17 +60,96 @@ signature
 signature
   sorts TYPE
 
+// Types
 rules
-  typeOfType : scope * Type -> TYPE
+  typeOfType : scope * scope * Type -> TYPE
   
-  typeOfType(s, TypeName2Type(QualifiedTypeName(QualifiedID(ID-LEX2ID(p), ID-LEX2ID(x))))) = T :-
+  typeOfType(s, _, TypeName2Type(QualifiedTypeName(QualifiedID(ID-LEX2ID(p), ID-LEX2ID(x))))) = T :-
 //    typeOfDecl of Pkg{p} in s |-> [(_, (Pkg{dp}, T))].
 //    lookupType(s, x).
     true.
-  typeOfType(s, TypeName2Type(TypeName(ID-LEX2ID(x)))) = T :-
+  typeOfType(s, _, TypeName2Type(TypeName(ID-LEX2ID(x)))) = T :-
     lookupType(s, x) == T.
-//  typeOfType(s, TypeLit2Type(x)) = T :-
-//    lookupType(s, x).
+  
+  // Array types
+  typeOfType(s, s_ty, TypeLit2Type(ArrayType2TypeLit(ArrayType(Expr2ArrayLength(e), Type2ElementType(t))))) = ARRAY(/* dummy size */ 42, T) :-
+    typeOfExpr(s, e) == INT(), // TODO: Does this have to be evaluated?
+    typeOfType(s, s_ty, t) == T.
+  
+  // Slice types
+  typeOfType(s, s_ty, TypeLit2Type(SliceType2TypeLit(SliceType(Type2ElementType(t))))) = SLICE(T) :-
+    typeOfType(s, s_ty, t) == T.
+    
+  // Struct types
+  typeOfType(s, s_ty, TypeLit2Type(StructType2TypeLit(StructType(fields)))) = STRUCT(s_ty) :-
+  // Map2[[ fields ^ (s, s_ty) ]].
+  // each FieldDecl is in a FieldDecl2StructType-Inner()
+    true.
+  
+  // Pointer types
+  typeOfType(s, s_ty, TypeLit2Type(PointerType2TypeLit(PointerType(Type2BaseType(type))))) = PTR(T) :-
+    typeOfType(s, s_ty, type) == T.
+    
+  // Function types
+  typeOfType(s, s_ty, TypeLit2Type(FunctionType2TypeLit(FunctionType(sig)))) = TFUN :-
+    typeOfSignature(s, sig) == TFUN.
+   
+// Field declarations
+rules
+  fieldDeclOk : scope * scope * FieldDecl
+    
+  fieldDeclOk(s, s_ty, FieldDecl(field, tag)) :-
+    fieldOk(s, s_ty, field),
+    tagOk(s, tag).
+
+// Fields
+rules
+  fieldOk : scope * scope * Field
+  
+  fieldOk(s, s_ty, Field(names, type)) :-
+//    Map1t(VarDecl)[[ names ^ (s_ty) : ty ]],
+//    [[ type ^ (s, s_ty) : ty ]].
+    true.
+    
+  // FIXME: qualified types
+  
+  fieldOk(s, s_ty, AnonymousPtrField(type@TypeName(ID-LEX2ID(name)))) :-
+//    Var{name} <- s_ty,
+//    [[ type ^ (s, s_ty') : ty ]], new s_ty',
+//    Var{name} : ty,
+//    Type{name} -> s,
+//    Type{name} <=FM= s_ty.
+    true.
+
+  fieldOk(s, s_ty, AnonymousField(type@TypeName(ID-LEX2ID(name)))) :-
+//    Var{name} <- s_ty,
+//    [[ type ^ (s, s_ty') : ty ]], new s_ty',
+//    Var{name} : ty,
+//    Type{name} -> s,
+//    Type{name} <=FM= s_ty.
+    true.
+  
+// Field tags
+rules
+  tagOk : scope * Tag-OPT
+  
+  tagOk(_, NoTag()).
+  tagOk(_, Tag2Tag-OPT(StringLit2Tag(_))).
+
+// Function signatures  
+rules
+  typeOfSignature : scope * Signature -> TYPE 
+  
+  typeOfSignature(s, Signature(params, result)) = FUN(_, _) :-
+//    Map2[[ params ^ (s, s_ty) ]],
+//    [[ result ^ (s, s_ty) : ty ]].
+    true.
+
+// Function parameter declarations
+rules
+  parameterDeclOk : scope * scope * ParameterDecl
+  
+//  parameterDeclOk(s, s_ty, 
     
 rules
   lookupType : scope * string -> TYPE
@@ -41,3 +157,10 @@ rules
   lookupType(s, x) = T :- {dx}
     @x.ref := dx,
     typeOfDecl of Type{x} in s |-> [(_, (Type{dx}, T))].
+    
+rules
+//  lookupPkg : scope * string -> PKG
+//  
+//  lookupPkg(s, x) = P :- {dx}
+//    @x.ref := dx
+//    typeOfPkg of Pkg{x} in s |-> [(_, (Pkg{dx}, T))].
