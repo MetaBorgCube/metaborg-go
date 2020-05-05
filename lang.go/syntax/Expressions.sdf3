@@ -40,8 +40,8 @@ context-free syntax
   BasicLit.RuneLit            = RUNELIT
   BasicLit.StringLit          = STRINGLIT
 
-  OperandName.OperandName          = ID
-  OperandName                      = QualifiedIdent
+  OperandName.OperandName     = ID
+  OperandName                 = QualifiedIdent
 
 
 /**
@@ -102,7 +102,6 @@ context-free syntax
   PrimaryExpr                 = Conversion
   PrimaryExpr                 = MethodExpr
 
-  // inlined
   PrimaryExpr.Selector        = <<PrimaryExpr>.<ID>> {left}               // inlined
   PrimaryExpr.Selector-DISAMB = [[PrimaryExpr].s#[ID]] {left}             // for manual disambiguation
   PrimaryExpr.Index           = <<PrimaryExpr>[<Expr>]>                   // inlined

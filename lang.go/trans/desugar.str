@@ -17,12 +17,11 @@ rules
 
   desugar-all =
     try(desugar-sourcefile);
+    desugar-disambs;
     desugar-alts;
     desugar-short-var-decls;
     desugar-single-decls;
-    desugar-opts;
-    desugar-lists;
-    desugar-disambs
+    desugar-list-opt
 
 rules
 
@@ -33,61 +32,69 @@ rules
 
 rules
 
-  desugar-short-var-decls =
-    topdown(try(desugar-short-var-decl))
+  desugar-short-var-decls = topdown(try(desugar-short-var-decl))
 
-  desugar-short-var-decl:
-      ShortVarDecl(ids, exprs) -> SingleVarDecl(VarSpec(ids, NoType(), VarAssign(exprs)))
-
-rules
-
-  desugar-single-decls =
-    topdown(try(desugar-single-decl))
-
-  desugar-single-decl:
-      SingleImportDecl(import-spec) -> MultiImportDecl([import-spec])
-
-  desugar-single-decl:
-    SingleConstDecl(const-spec) -> MultiConstDecl([const-spec])
-
-  desugar-single-decl:
-    SingleTypeDecl(type-spec) -> MultiTypeDecl([type-spec])
-
-  desugar-single-decl:
-    SingleVarDecl(var-spec) -> MultiVarDecl([var-spec])
+  // ShortVarDecl
+  desugar-short-var-decl: ShortVarDecl(ids, es)   -> SingleVarDecl(VarSpecNoType(ids, es))
 
 rules
 
-  desugar-opts = topdown(try(desugar-opt))
+  desugar-single-decls = topdown(try(desugar-single-decl))
 
-  desugar-opt: NoParameters() -> []
-  desugar-opt: Parameters(params,_) -> params
+  // ImportDecl
+  desugar-single-decl: SingleImportDecl(i)        -> ImportDecl([i])
 
+  // ConstDecl
+  desugar-single-decl: SingleConstDecl(c)         -> ConstDecl([c])
 
-  desugar-opt: NoIdentifiers() -> []
+  // TypeDecl
+  desugar-single-decl: SingleTypeDecl(t)          -> TypeDecl([t])
 
-  desugar-opt: NoExprs() -> []
+  // VarDecl
+  desugar-single-decl: SingleVarDecl(v)           -> VarDecl([v])
 
 rules
 
-  desugar-lists = topdown(try(desugar-list))
-  desugar-list: KeyedElement-LIST-Empty()    -> []
-    desugar-list: KeyedElement-LIST(elems)     -> elems
-    desugar-list: KeyedElement-LIST-ALT(elems) -> elems
+  desugar-list-opts = topdown(try(desugar-list-opt))
+
+  // ParameterList-OPT
+  desugar-list-opt: NoParameters()                -> []
+
+  // IDList-OPT
+  desugar-list-opt: NoIDs()                       -> []
+
+  // ExprList-OPT
+  desugar-list-opt: NoExprs()                     -> []
 
 rules
 
   desugar-disambs = topdown(try(desugar-disamb))
 
-  desugar-disamb: Selector-DISAMB(e, i) 		-> Selector(e, i)
-  desugar-disamb: Call-DISAMB(e, args) 		-> Call(e, args)
-  desugar-disamb: MethodExpr-DISAMB(e, m) 	-> MethodExpr(e, m)
-  desugar-disamb: Conversion-DISAMB(t, e, c) 	-> Conversion(t, e, c)
-  desugar-disamb: QualifiedIdent-DISAMB(p, i) -> QualifiedIdent(p, i)
+  // QualifiedIdent
+  desugar-disamb: QualifiedIdent-DISAMB(p, i)     -> QualifiedIdent(p, i)
+
+  // PrimaryExpr
+  desugar-disamb: Selector-DISAMB(e, i) 		      -> Selector(e, i)
+  desugar-disamb: Call-DISAMB(e, args)            -> Call(e, args)
+
+  // MethodExpr
+  desugar-disamb: MethodExpr-DISAMB(e, m)         -> MethodExpr(e, m)
+
+  // Conversion
+  desugar-disamb: Conversion-DISAMB(t, e)         -> Conversion(t, e)
+  desugar-disamb: Conversion-DISAMB-ALT(t, e)     -> Conversion-ALT(t, e)
 
 rules
 
   desugar-alts = topdown(try(desugar-alt))
 
-  desugar-alt : Arguments-ALT(as) 			-> Arguments(as)
-  desugar-alt : ArgumentsExplode-ALT(as) 		-> ArgumentsExplode(as)
+  // LiteralValue
+  desugar-alt: LiteralValue-ALT(es)               -> LiteralValue(es)
+
+  // Arguments-OPT
+  desugar-alt: Arguments-ALT(as) 			            -> Arguments(as)
+  desugar-alt: ArgumentsExplode-ALT(as) 		      -> ArgumentsExplode(as)
+
+  // Conversion
+  desugar-alt: Conversion-ALT(t, e)               -> Conversion(t, e)
+

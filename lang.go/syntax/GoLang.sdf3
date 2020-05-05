@@ -28,3 +28,22 @@ imports
   Representation
   Statements
   Types
+
+context-free start-symbols
+
+  TestSources
+
+/**
+ * Source files for testing
+ */
+context-free syntax
+
+  TestSources.TestSources = <<TestSource*>>
+
+  TestSource.TestSourceFile = <
+    [<ImportPath>]
+    <PackageClause>;
+
+    <ImportDecl-ELEM*>
+    <TopLevelDecl-ELEM*>
+  >

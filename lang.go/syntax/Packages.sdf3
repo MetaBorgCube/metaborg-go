@@ -11,7 +11,6 @@ imports
 context-free start-symbols
 
   SourceFile
-  TestSources
 
 /**
  * Source file organization -- https://golang.org/ref/spec#Source_file_organization
@@ -38,7 +37,7 @@ context-free syntax
 context-free syntax
 
   ImportDecl.SingleImportDecl = <import <ImportSpec>>
-  ImportDecl.MultiImportDecl  = <import (<ImportSpec-ELEM*>)>
+  ImportDecl.ImportDecl       = <import (<ImportSpec-ELEM*>)>
   ImportSpec-ELEM             = <<ImportSpec>;>
 
   ImportSpec.ImportSpec       = <<ImportSpecQual> <ImportPath>>
@@ -47,18 +46,3 @@ context-free syntax
   ImportSpecQual.Alias        = <<PackageName>>
   ImportPath                  = STRINGLIT
 
-
-/**
- * Source files for testing
- */
-context-free syntax
-
-  TestSources.TestSources = <<TestSource*>>
-
-  TestSource.SourceFile = <
-    [<ImportPath>]
-    <PackageClause>;
-
-    <ImportDecl-ELEM*>
-    <TopLevelDecl-ELEM*>
-  >

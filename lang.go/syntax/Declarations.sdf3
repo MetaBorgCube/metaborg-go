@@ -36,14 +36,14 @@ context-free syntax
 context-free syntax
 
   ConstDecl.SingleConstDecl   = <const <ConstSpec>>
-  ConstDecl.MultiConstDecl    = <const (<ConstSpec-ELEM*>)>
+  ConstDecl.ConstDecl         = <const (<ConstSpec-ELEM*>)>
   ConstSpec-ELEM              = <<ConstSpec>;>
 
   // spec seems wrong here, assignment is always required
   ConstSpec.ConstSpec         = <<IDList> <Type-OPT> = <ExprList>>
 
   IDList                      = <<{ID ","}+>>
-  IDList-OPT.NoIdentifiers    = <>
+  IDList-OPT.NoIDs            = <>
   IDList-OPT                  = IDList
 
   ExprList                    = <<{Expr ","}+>>
@@ -57,7 +57,7 @@ context-free syntax
 context-free syntax
 
   TypeDecl.SingleTypeDecl     = <type <TypeSpec>>
-  TypeDecl.MultiTypeDecl      = <type (<TypeSpec-ELEM*>)>
+  TypeDecl.TypeDecl           = <type (<TypeSpec-ELEM*>)>
   TypeSpec-ELEM               = <<TypeSpec>;>
 
   TypeSpec.AliasDecl       		= <<ID> = <Type>>
@@ -71,7 +71,7 @@ context-free syntax
 context-free syntax
 
   VarDecl.SingleVarDecl       = <var <VarSpec>>
-  VarDecl.MultiVarDecl        = <var (<VarSpec-ELEM*>)>
+  VarDecl.VarDecl             = <var (<VarSpec-ELEM*>)>
   VarSpec-ELEM                = <<VarSpec>;>
 
   VarSpec.VarSpec             = <<IDList> <Type> = <ExprList>>

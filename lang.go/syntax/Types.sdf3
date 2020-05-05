@@ -106,10 +106,10 @@ context-free syntax
   Result                      = Parameters
   Result                      = Type
 
-  Parameters                            = <(<Parameters-INNER-OPT>)>
-  Parameters-INNER-OPT.NoParameters     = <>
-  Parameters-INNER-OPT.Parameters       = <<ParameterList>>
-  Parameters-INNER-OPT.Parameters-ALT   = <<ParameterList>,>
+  Parameters                            = <(<ParameterList-OPT>)>
+  Parameters                            = <(<ParameterList-OPT>, )>
+  ParameterList-OPT.NoParameters        = <>
+  ParameterList-OPT                     = ParameterList
 
   ParameterList                         = <<{ParameterDecl ","}+>>
 

@@ -4,15 +4,6 @@
 module Representation
 
 /**
- * Syntactic elements -- (not separate in the spec)
- */
-lexical syntax
-// TODO: Remove/replace
-  Semicolon = ";"
-  Comma     = ","
-  Dots      = "..."
-
-/**
  * Characters -- https://golang.org/ref/spec#Characters
  */
 lexical syntax

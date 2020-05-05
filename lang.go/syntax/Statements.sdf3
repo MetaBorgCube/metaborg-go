@@ -124,7 +124,7 @@ context-free syntax
 
 
   StmtInit-OPT.NoStmtInit     = <>
-  StmtInit-OPT.StmtInit       = <<SimpleStmt>; >
+  StmtInit-OPT.StmtInit       = <<SimpleStmt>;>
 
 
 /**
