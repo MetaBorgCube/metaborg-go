@@ -2,7 +2,7 @@ module Expressions
 
 language GoLang
 
-start symbol Expression
+start symbol Expr
 
 test qualified expr [[math.Sin]] parse succeeds
 

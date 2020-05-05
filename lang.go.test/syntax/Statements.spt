@@ -2,7 +2,7 @@ module Statements
 
 language GoLang
 
-start symbol Statement
+start symbol Stmt
 
 test empty statement [[ ]] parse succeeds
 
