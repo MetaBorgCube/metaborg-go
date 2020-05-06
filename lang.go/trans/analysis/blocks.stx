@@ -11,3 +11,11 @@ imports
   signatures/SortNames-sig
   signatures/Statements-sig
   signatures/Types-sig
+
+rules
+  blockOk : scope * Block
+
+  blockOk(s, Block(stmts)) :-
+    stmtsOk(s, stmts).
+
+  blockOk(_, Block-Plhdr()).
