@@ -1,0 +1,14 @@
+module analysis/types
+
+imports
+  signatures/Blocks-sig
+  signatures/Declarations-sig
+  signatures/Expressions-sig
+  signatures/GoLang-sig
+  signatures/Lexical-sig
+  signatures/Packages-sig
+  signatures/Representation-sig
+  signatures/SortNames-sig
+  signatures/Statements-sig
+  signatures/Types-sig
+
