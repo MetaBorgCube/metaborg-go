@@ -183,7 +183,7 @@ context-free syntax
   UnaryExpr.BitwiseComplement = <^<UnaryExpr>>  {left}    // Ones' complement
   UnaryExpr.Deref             = <*<UnaryExpr>>  {left}
   UnaryExpr.Ref               = <&<UnaryExpr>>  {left}
-  UnaryExpr.Recieve           = [<-[UnaryExpr]] {left}
+  UnaryExpr.Receive           = [<-[UnaryExpr]] {left}
 
 context-free priorities
   { left: // unary_op
@@ -193,7 +193,7 @@ context-free priorities
     UnaryExpr.BitwiseComplement
     UnaryExpr.Deref
     UnaryExpr.Ref
-    UnaryExpr.Recieve
+    UnaryExpr.Receive
   } > { left: // mul_op
     BinaryExpr.Product
     BinaryExpr.Quotient
