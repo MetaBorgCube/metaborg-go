@@ -29,7 +29,7 @@ context-free syntax
   Type-OPT.NoType             = <>
   Type-OPT                    = Type
 
-  TypeName.TypeName           = ID
+  TypeName                    = ID
   TypeName.QualifiedTypeName  = QualifiedIdent
 
   TypeLit                     = ArrayType
