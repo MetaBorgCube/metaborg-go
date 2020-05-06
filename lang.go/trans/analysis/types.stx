@@ -59,3 +59,239 @@ signature
     labels P IMP PUB PRV FM
     // TODO: Is this correct?
     resolve Type filter P* (IMP? PUB? PUB? | PRV?) FM* min $ < P, P < PRV, P < PUB, P < FM
+
+// Types
+rules
+  typeOfType : scope * scope * Type -> TYPE
+
+  typeOfType(s, s_ty, TypeName2Type(typeName)) = T :-
+    typeOfTypeName(s, s_ty, typeName) == T.
+  typeOfType(s, s_ty, TypeLit2Type(typeLit)) = T :-
+    typeOfTypeLit(s, s_ty, typeLit) == T.
+
+  typeOfType(_, _, Type-Plhdr()) = _.
+
+rules
+  typeOfTypeName : scope * scope * TypeName -> TYPE
+
+  typeOfTypeName(s, _, ID2TypeName(ID-LEX2ID(name))) = T :-
+    // Type{name} -> s,
+    // Type{name} |-> d_ty.
+    true.
+
+  typeOfTypeName(s, _, QualifiedTypeName(QualifiedIdent(ID2PackageName(ID-LEX2ID(pkg)), ID-LEX2ID(name))))) = NAMED(T) :-
+    // Pkg{pkg} -> s,
+    // new s_qual,
+    // Pkg{pkg} <=PUB= s_qual,
+    // Type{name} -> s_qual,
+    // Type{name} |-> d_ty.
+    true.
+
+  typeOfTypeName(_, _, TypeName-Plhdr() = _.
+
+rules
+  typeOfTypeLit : scope * scope * TypeLit -> TYPE
+
+  typeOfTypeLit(s, s_ty, ArrayType2TypeLit(arrayType))) = T :-
+    typeOfArrayType(s, s_ty, arrayType) == T.
+  typeOfTypeLit(s, s_ty, SliceType2TypeLit(sliceType))) = T :-
+    typeOfSliceType(s, s_ty, sliceType) == T.
+  typeOfTypeLit(s, s_ty, StructType2TypeLit(structType))) = T :-
+    typeOfStructType(s, s_ty, structType) == T.
+  typeOfTypeLit(s, s_ty, PointerType2TypeLit(pointerType))) = T :-
+    typeOfPointerType(s, s_ty, pointerType) == T.
+  typeOfTypeLit(s, s_ty, FunctionType2TypeLit(functionType))) = T :-
+    typeOfFunctionType(s, s_ty, functionType) == T.
+  typeOfTypeLit(s, s_ty, InterfaceType2TypeLit(interfaceType))) = T :-
+    typeOfInterfaceType(s, s_ty, interfaceType) == T.
+  typeOfTypeLit(s, s_ty, MapType2TypeLit(mapType))) = T :-
+    typeOfMapType(s, s_ty, mapType) == T.
+  typeOfTypeLit(s, s_ty, ChannelType2TypeLit(channelType))) = T :-
+    typeOfChannelType(s, s_ty, channelType) == T.
+
+  typeOfTypeLit(_, _, TypeLit-Plhdr()) = _.
+
+rules
+  typeOfArrayType : scope * scope * ArrayType -> TYPE
+  
+  typeOfArrayType(s, s_ty, ArrayType(expr, type)) = ARRAY(/* dummy size */ 42, T)
+    typeOfExpr(s, expr) == _,   // TODO does this have to be evaluated?
+    typeOfType(s, s_ty, type) == T.
+  
+  typeOfArrayType(_, _, ArrayType-Plhdr()) = _.
+
+rules
+  typeOfSliceType : scope * scope * SliceType -> TYPE
+
+  typeOfSliceType(s, s_ty, SliceType(type)) = SLICE(T) :-
+    typeOfType(s, s_ty, t) == T.
+
+  typeOfSliceType(_, _, SliceType-Plhdr()) = _.
+
+rules
+  typeOfStructType : scope * scope * StructType -> TYPE
+
+  typeOfStructType(s, s_ty, StructType(fields)) = STRUCT(s_ty) :-
+    fieldDeclsOk(s, s_ty, fields).
+
+  typeOfStructType(_, _, StructType-Plhdr()) = _.
+
+rules
+  typeOfPointerType : scope * scope * PointerType -> TYPE
+
+  typeOfPointerType(s, s_ty, PointerType(type)) = PTR(T) :-
+    typeOfType(s, s_ty, type) == T.
+
+  typeOfPointerType(_, _, PointerType-Plhdr()) = _.
+
+rules
+  typeOfFunctionType : scope * scope * FunctionType -> TYPE
+
+  typeOfFunctionType(s, s_ty, FunctionType(sig)) = T :-
+    typeOfSignature(s, sig) == T.
+
+  typeOfFunctionType(_, _, FunctionType-Plhdr()) = _.
+
+rules
+  typeOfInterfaceType : scope * scope * InterfaceType -> TYPE
+
+  // TODO:
+  typeOfInterfaceType(s, s_ty, InterfaceType(_)) = T.
+
+  typeOfInterfaceType(_, _, InterfaceType-Plhdr()) = _.
+
+rules
+  typeOfMapType : scope * scope * MapType -> TYPE
+
+  // TODO:
+  typeOfMapType(s, s_ty, MapType(_, _)) = T.
+
+  typeOfMapType(_, _, MapType-Plhdr()) = _.
+
+rules
+  typeOfChannelType : scope * scope * ChannelType -> TYPE
+
+  // TODO:
+  typeOfChannelType(s, s_ty, BidirectionalChannelType(_)) = T.
+  typeOfChannelType(s, s_ty, SendingChannelType(_)) = T.
+  typeOfChannelType(s, s_ty, ReceivingChannelType(_)) = T.
+
+  typeOfChannelType(_, _, ChannelType-Plhdr()) = _.
+
+////////////////////////////////////////////////////////////////////////////////
+
+// Field declarations
+rules
+  fieldDeclOk : scope * scope * FieldDecl
+  fieldDeclsOk maps fieldDeclOk(*, *, list(*))
+
+  fieldDeclOk(s, s_ty, FieldDecl(field, tag)) :-
+    fieldOk(s, s_ty, field),
+    tag-OPTOk(s, tag).
+
+// Fields
+rules
+  fieldOk : scope * scope * Field
+
+  fieldOk(s, s_ty, Field(names, type)) :-
+    typeOfVarDecls(s_ty, names) == TS,
+    typeOfType(s, s_ty, type) == TS.
+
+  fieldOk(s, s_ty, EmbeddedField2Field(embeddedField)) :-
+    embeddedFieldOk(s, s_ty, embeddedField).
+
+  fieldOk(_, _, Field-Plhdr()).
+
+rules
+  embeddedFieldOk : scope * scope * EmbeddedField
+  
+  // FIXME/TODO: qualified types
+  embeddedFieldOk(s, s_ty, AnonymousPtrField(type@TypeName(QualifiedTypeName(QualifiedIdent(ID2PackageName(ID-LEX2ID(pkg)), ID-LEX2ID(name)))))).
+  embeddedFieldOk(s, s_ty, AnonymousField(type@TypeName(QualifiedTypeName(QualifiedIdent(ID2PackageName(ID-LEX2ID(pkg)), ID-LEX2ID(name)))))).
+
+  embeddedFieldOk(s, s_ty, AnonymousPtrField(type@TypeName(ID2TypeName(ID-LEX2ID(name))))).
+    // Var{name} <- s_ty,
+    // [[ type ^ (s, s_ty') : ty ]], new s_ty',
+    // Var{name} : ty,
+    // Type{name} -> s,
+    // Type{name} <=FM= s_ty.
+
+  embeddedFieldOk(s, s_ty, AnonymousField(type@TypeName(ID2TypeName(ID-LEX2ID(name))))).
+    // Var{name} <- s_ty,
+    // [[ type ^ (s, s_ty') : ty ]], new s_ty',
+    // Var{name} : ty,
+    // Type{name} -> s,
+    // Type{name} <=FM= s_ty.
+
+  embeddedFieldOk(_, _, EmbeddedField-Plhdr()).
+
+// Field tags
+rules
+  tag-OPTOk : scope * Tag-OPT
+
+  tag-OPTOk(_, NoTag()).
+  tag-OPTOk(_, Tag2Tag-OPT(tag)) :-
+    tagOk(tag).
+
+  tag-OPTOk(_, Tag-OPT-Plhdr()).
+
+rules
+  tagOk : scope * Tag
+
+  // TODO:
+  tagOk(_, Tag-LEX2Tag(_)).
+
+  tagOk(_, Tag-Plhdr()).
+
+// Function signatures
+rules
+  typeOfSignature : scope * Signature -> TYPE
+
+  typeOfSignature(s, Signature(params, result)) = FUN(_, _) :-
+    parameterDeclsOk(s, s_ty, params),
+    typeOfResult(s, s_ty, result) == T.
+
+  typeOfSignature(_, Signature-Plhdr()) = _.
+
+// Function parameter declarations
+rules
+  parameterDeclOk : scope * scope * ParameterDecl
+  parameterDeclsOk maps parameterDeclOk(*, *, list(*))
+
+  parameterDeclOk(s, s_ty, ParameterDecl(names, dots, type)) :-
+    typeOfVarDecls(s, names) == Ts,
+    typeOfType(s, s_ty, type) == Ts.
+
+  parameterDeclOk(_, _, ParameterDecl-Plhdr()).
+
+rules
+  typeOfResult-OPT : scope * scope * Result-OPT -> TYPE
+
+  typeOfResult-OPT(s, s_ty, NoResult()) = T.
+  typeOfResult-OPT(s, s_ty, Result2Result-OPT(result)) = T :-
+    typeOfResult(s, s_ty, result) == T.
+
+  typeOfResult-OPT(_, _, Result-OPT-Plhdr()) = _.
+
+rules
+  typeOfResult : scope * scope * Result -> TYPE
+
+  // TODO
+  typeOfResult(s, s_ty, Parameters2Result(_)) = T.
+  typeOfResult(s, s_ty, Type2Result(_)) = T.
+
+  typeOfResult(_, _, Result-Plhdr()) = _.
+
+rules
+  lookupType : scope * string -> TYPE
+
+  lookupType(s, x) = T :- {dx}
+    @x.ref := dx,
+    typeOfDecl of Type{x} in s |-> [(_, (Type{dx}, T))].
+
+rules
+//  lookupPkg : scope * string -> PKG
+//
+//  lookupPkg(s, x) = P :- {dx}
+//    @x.ref := dx
+//    typeOfPkg of Pkg{x} in s |-> [(_, (Pkg{dx}, T))].
