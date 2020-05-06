@@ -1,9 +1,0 @@
-module analysis/signatures/Lexical
-
-signature sorts
-	Identifier = string
-	IntLit = string
-	FloatLit = string
-	ImaginaryLit = string
-	RuneLit = string
-	StringLit = string

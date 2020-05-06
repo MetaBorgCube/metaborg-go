@@ -1,17 +1,35 @@
 module analysis/statics
 
 imports
+  signatures/Blocks-sig
+  signatures/Declarations-sig
+  signatures/Expressions-sig
+  signatures/GoLang-sig
+  signatures/Lexical-sig
+  signatures/Packages-sig
+  signatures/Representation-sig
+  signatures/SortNames-sig
+  signatures/Statements-sig
+  signatures/Types-sig
 
-//	analysis/signatures/Blocks
-//	analysis/signatures/Declarations
-//	analysis/signatures/Expressions
-//	analysis/signatures/Lexical
-//	analysis/signatures/Packages
-//	analysis/signatures/Representation
-//	analysis/signatures/Statements
-//	analysis/signatures/Types
+imports
+  analysis/main
 
-rules
+// see README.md for details on how to switch to multi-file analysis
 
-	programOK : scope * ()
-	programOK(s, t) :- true.
+rules // single-file entry point
+
+  programOk : SourceFile
+
+  programOk(_) :- {s}
+    new s, init(s).
+
+rules // multi-file entry point
+
+  projectOk : scope
+
+  projectOk(s).
+
+  fileOk : scope * SourceFile
+
+  fileOk(s, _).
