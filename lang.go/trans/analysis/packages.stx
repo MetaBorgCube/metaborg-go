@@ -14,10 +14,10 @@ imports
   // signatures/Types-sig
 
 rules
-  testSourceFileOk : scope * TestSourceFile
-  testSourceFilesOk maps testSourceFileOk(*, list(*))
+  testSourceOk : scope * TestSource
+  testSourcesOk maps testSourceOk(*, list(*))
 
-  testSourceFileOk(s_univ, TestSourceFile(ImportPath-LEX2ImportPath(pkg_path), PackageClause(PackageName(ID2PackageName(ID-LEX2ID(pkg_name)))), imports, decls)) :-
+  testSourceOk(s_univ, TestSourceFile(ImportPath-LEX2ImportPath(pkg_path), PackageClause(ID2PackageName(ID-LEX2ID(pkg_name))), imports, decls)) :-
     // // define package public and private, and file scopes
     // new s_pkg_pub s_pkg_prv s_file,
     // s_pkg_pub ---> s_univ,
@@ -42,30 +42,30 @@ rules
     true.
 
 rules
-  importDecl-ELEMOk : scope * scope * ImportDecl-ELEM
-  importDecl-ELEMsOk maps importDecl-ELEMOk(*, *, list(*))
+  importDeclELEMOk : scope * scope * ImportDecl-ELEM
+  importDeclELEMsOk maps importDeclELEMOk(*, *, list(*))
 
-  importDecl-ELEMOk(s_univ, s_file, ImportDecl2ImportDecl-ELEM(importDecl)) :-
+  importDeclELEMOk(s_univ, s_file, ImportDecl2ImportDecl-ELEM(importDecl)) :-
     importDeclOk(s_univ, s_file, importDecl).
-  
-  importDecl-ELEMOk(_, _, ImportDecl-ELEM-Plhdr()).
+
+  importDeclELEMOk(_, _, ImportDecl-ELEM-Plhdr()).
 
 rules
   importDeclOk : scope * scope * ImportDecl
-  
-  importDeclOk(s_univ, s_file, ImportDecl(importSpec-ELEMs)) :-
-    importSpec-ELEMsOk(s_univ, s_file, importSpec-ELEMs).
+
+  importDeclOk(s_univ, s_file, ImportDecl(importSpecELEMs)) :-
+    importSpecELEMsOk(s_univ, s_file, importSpecELEMs).
 
   importDeclOk(_, _, ImportDecl-Plhdr()).
 
 rules
-  importSpec-ELEMOk : scope * scope * ImportSpec-ELEM
-  importSpec-ELEMsOk maps importSpec-ELEMOk(*, *, list(*))
+  importSpecELEMOk : scope * scope * ImportSpec-ELEM
+  importSpecELEMsOk maps importSpecELEMOk(*, *, list(*))
 
-  importSpec-ELEMOk(s_univ, s_file, ImportSpec2ImportSpec-ELEM(importSpec)) :-
+  importSpecELEMOk(s_univ, s_file, ImportSpec2ImportSpec-ELEM(importSpec)) :-
     importSpecOk(s_univ, s_file, importSpec).
 
-  importSpec-ELEMOk(_, _, ImportSpec-ELEM-Plhdr()).
+  importSpecELEMOk(_, _, ImportSpec-ELEM-Plhdr()).
 
 rules
   importSpecOk : scope * scope * ImportSpec
@@ -80,9 +80,9 @@ rules
     // PkgPath{pkg_path} <=PUB= s_file.
     true.
 
-  importSpecOk(s_univ, s_file, ImportSpec(Alias(PackageName(ID2PackageName(ID-LEX2ID("_")))), ImportPath-LEX2ImportPath(pkg_path))).
+  importSpecOk(s_univ, s_file, ImportSpec(Alias(ID2PackageName(ID-LEX2ID("_"))), ImportPath-LEX2ImportPath(pkg_path))).
 
-  importSpecOk(s_univ, s_file, ImportSpec(Alias(PackageName(ID2PackageName(ID-LEX2ID(pkg_name)))), ImportPath-LEX2ImportPath(pkg_path))) :-
+  importSpecOk(s_univ, s_file, ImportSpec(Alias(ID2PackageName(ID-LEX2ID(pkg_name))), ImportPath-LEX2ImportPath(pkg_path))) :-
     // new s_imp,
     // Pkg{pkg_name} <- s_file,
     // Pkg{pkg_name} =PUB=> s_imp,

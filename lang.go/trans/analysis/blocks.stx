@@ -13,10 +13,14 @@ imports
   // signatures/Statements-sig
   // signatures/Types-sig
 
+imports
+  analysis/statements
+
 rules
   blockOk : scope * Block
 
   blockOk(s, Block(stmts)) :-
-    stmtsOk(s, stmts).
+    stmtListOk(s, stmts).
 
   blockOk(_, Block-Plhdr()).
+

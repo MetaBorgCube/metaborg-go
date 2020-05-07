@@ -12,3 +12,36 @@ imports
   // signatures/SortNames-sig
   // signatures/Statements-sig
   // signatures/Types-sig
+
+imports
+  analysis/types
+
+rules
+  declareVars : scope * list(ID) * TYPE
+
+  declareVars(s, [ID-LEX2ID(name)|names], T) :-
+    declareVar(s, name, T),
+    declareVars(s, names, T).
+
+  declareVars(_, [], _).
+
+
+rules
+  declareVarsOfTypes : scope * list(ID) * list(TYPE)
+
+  declareVarsOfTypes(s, [ID-LEX2ID(name)|names], [T|TS]) :-
+    declareVar(s, name, T),
+    declareVarsOfTypes(s, names, TS).
+
+  declareVarsOfTypes(_, [], [_|_]) :- true. /* TODO: error */
+  declareVarsOfTypes(_, [_|_], []) :- true. /* TODO: error */
+
+  declareVarsOfTypes(_, [], []).
+
+rules
+  declareVar : scope * string * TYPE
+
+  declareVar(s, name, T) :-
+//    Var{name} <- s,
+//    Var{name} : ty.
+    true.

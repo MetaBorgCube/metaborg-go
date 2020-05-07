@@ -13,7 +13,25 @@ imports
   // signatures/Statements-sig
   // signatures/Types-sig
 
+imports
+  analysis/declarations
+  analysis/expressions
+  analysis/blocks
+
 // Statements
+rules
+  stmtListOk : scope * StmtList
+
+  stmtListOk(s, StmtList(stmtListELEMs)) :-
+    stmtListELEMsOk(s, stmtListELEMs).
+
+rules
+  stmtListELEMOk : scope * StmtList-ELEM
+  stmtListELEMsOk maps stmtListELEMOk(*, list(*))
+
+  stmtListELEMOk(s, Stmt2StmtList-ELEM(stmt)) :-
+    stmtOk(s, stmt).
+
 rules
   stmtOk : scope * Stmt
   stmtsOk maps stmtOk(*, list(*))
@@ -75,14 +93,14 @@ rules
     sendStmtOk(s, sendStmt).
   simpleStmtOk(s, IncDecStmt2SimpleStmt(incDecStmt)) :-
     incDecStmtOk(s, incDecStmt).
-  simpleStmtOk(s, Assignment2SimpleStmt(assignStmt)) :-
-    assignStmtOk(s, assignStmt).
+  simpleStmtOk(s, Assignment2SimpleStmt(assignment)) :-
+    assignmentOk(s, assignment).
 
   simpleStmtOk(_, SimpleStmt-Plhdr()).
 
 rules
   emptyStmtOk : scope * EmptyStmt
-  
+
   emptyStmtOk(s, EmptyStmt()).
 
   emptyStmtOk(s, EmptyStmt-Plhdr()).
@@ -109,57 +127,57 @@ rules
 
   incDecStmtOk(s, IncStmt(expr)) :-
     typeOfExpr(s, expr) == _.
-  
+
   incDecStmtOk(s, DecStmt(expr)) :-
     typeOfExpr(s, expr) == _.
 
   incDecStmtOk(_, IncDecStmt-Plhdr()).
 
 rules
-  assignStmtOk : scope * AssignStmt
+  assignmentOk : scope * Assignment
 
-  assignStmtOk(s, AssignStmt(exprs1, exprs2)) :-
-    typesOfExprs(s, exprs1) == LTs,
-    typesOfExprs(s, exprs2) == RTs,
+  assignmentOk(s, AssignStmt(exprs1, exprs2)) :- {LTS RTS}
+    typesOfExprList(s, exprs1) == LTS,
+    typesOfExprList(s, exprs2) == RTS,
     // lhs_tys <`assignable`? rhs_tys.
     true.
 
   // add_op
-  assignStmtOk(s, SumAssignStmt(exprs1, exprs2)) :-
-    typesOfExprs(s, exprs1) == _,
-    typesOfExprs(s, exprs2) == _.
-  assignStmtOk(s, DifferenceAssignStmt(exprs1, exprs2)) :-
-    typesOfExprs(s, exprs1) == _,
-    typesOfExprs(s, exprs2) == _.
-  assignStmtOk(s, BitwiseOrAssignStmt(exprs1, exprs2)) :-
-    typesOfExprs(s, exprs1) == _,
-    typesOfExprs(s, exprs2) == _.
-  assignStmtOk(s, BitwiseXorAssignStmt(exprs1, exprs2)) :-
-    typesOfExprs(s, exprs1) == _,
-    typesOfExprs(s, exprs2) == _.
+  assignmentOk(s, SumAssignStmt(exprs1, exprs2)) :-
+    typesOfExprList(s, exprs1) == _,
+    typesOfExprList(s, exprs2) == _.
+  assignmentOk(s, DifferenceAssignStmt(exprs1, exprs2)) :-
+    typesOfExprList(s, exprs1) == _,
+    typesOfExprList(s, exprs2) == _.
+  assignmentOk(s, BitwiseOrAssignStmt(exprs1, exprs2)) :-
+    typesOfExprList(s, exprs1) == _,
+    typesOfExprList(s, exprs2) == _.
+  assignmentOk(s, BitwiseXorAssignStmt(exprs1, exprs2)) :-
+    typesOfExprList(s, exprs1) == _,
+    typesOfExprList(s, exprs2) == _.
 
   // mul_op
-  assignStmtOk(s, ProductAssignStmt(exprs1, exprs2)) :-
-    typesOfExprs(s, exprs1) == _,
-    typesOfExprs(s, exprs2) == _.
-  assignStmtOk(s, QuotientAssignStmt(exprs1, exprs2)) :-
-    typesOfExprs(s, exprs1) == _,
-    typesOfExprs(s, exprs2) == _.
-  assignStmtOk(s, RemainderAssignStmt(exprs1, exprs2)) :-
-    typesOfExprs(s, exprs1) == _,
-    typesOfExprs(s, exprs2) == _.
-  assignStmtOk(s, LeftShiftAssignStmt(exprs1, exprs2)) :-
-    typesOfExprs(s, exprs1) == _,
-    typesOfExprs(s, exprs2) == _.
-  assignStmtOk(s, RightShiftAssignStmt(exprs1, exprs2)) :-
-    typesOfExprs(s, exprs1) == _,
-    typesOfExprs(s, exprs2) == _.
-  assignStmtOk(s, BitwiseAndAssignStmt(exprs1, exprs2)) :-
-    typesOfExprs(s, exprs1) == _,
-    typesOfExprs(s, exprs2) == _.
-  assignStmtOk(s, BitClearAssignStmt(exprs1, exprs2)) :-
-    typesOfExprs(s, exprs1) == _,
-    typesOfExprs(s, exprs2) == _.
+  assignmentOk(s, ProductAssignStmt(exprs1, exprs2)) :-
+    typesOfExprList(s, exprs1) == _,
+    typesOfExprList(s, exprs2) == _.
+  assignmentOk(s, QuotientAssignStmt(exprs1, exprs2)) :-
+    typesOfExprList(s, exprs1) == _,
+    typesOfExprList(s, exprs2) == _.
+  assignmentOk(s, RemainderAssignStmt(exprs1, exprs2)) :-
+    typesOfExprList(s, exprs1) == _,
+    typesOfExprList(s, exprs2) == _.
+  assignmentOk(s, LeftShiftAssignStmt(exprs1, exprs2)) :-
+    typesOfExprList(s, exprs1) == _,
+    typesOfExprList(s, exprs2) == _.
+  assignmentOk(s, RightShiftAssignStmt(exprs1, exprs2)) :-
+    typesOfExprList(s, exprs1) == _,
+    typesOfExprList(s, exprs2) == _.
+  assignmentOk(s, BitwiseAndAssignStmt(exprs1, exprs2)) :-
+    typesOfExprList(s, exprs1) == _,
+    typesOfExprList(s, exprs2) == _.
+  assignmentOk(s, BitClearAssignStmt(exprs1, exprs2)) :-
+    typesOfExprList(s, exprs1) == _,
+    typesOfExprList(s, exprs2) == _.
 
 
 rules
@@ -181,17 +199,17 @@ rules
 
 rules
   returnStmtOk : scope * ReturnStmt
-  
+
   returnStmtOk(s, ReturnStmt(exprs)) :-
-    typesOfExprs(s, exprs) == _.
+    typesOfExprListOPT(s, exprs) == _.
 
   returnStmtOk(_, ReturnStmt-Plhdr()).
 
 rules
   breakStmtOk : scope * BreakStmt
-  
+
   breakStmtOk(s, BreakStmt(label)) :-
-    labelRefOk(s, label).
+    labelRefOPTOk(s, label).
 
   breakStmtOk(_, BreakStmt-Plhdr()).
 
@@ -199,7 +217,7 @@ rules
   continueStmtOk : scope * ContinueStmt
 
   continueStmtOk(s, ContinueStmt(label)) :-
-    labelRefOk(s, label).
+    labelRefOPTOk(s, label).
 
   continueStmtOk(_, ContinueStmt-Plhdr()).
 
@@ -227,13 +245,6 @@ rules
   deferStmtOk(_, DeferStmt-Plhdr()).
 
 rules
-  blockOk : scope * Block
-  // TODO
-  blockOk(s, Block(StmtList(stmts))).
-
-  blockOk(_, Block-Plhdr()).
-
-rules
   ifStmtOk : scope * IfStmt
   // TODO
   ifStmtOk(s, IfStmt(_, _, _, _)).
@@ -242,7 +253,7 @@ rules
 
 rules
   switchStmtOk : scope * SwitchStmt
-  
+
   switchStmtOk(s, ExprSwitchStmt2SwitchStmt(exprSwitchStmt)) :-
     exprSwitchStmtOk(s, exprSwitchStmt).
   switchStmtOk(s, TypeSwitchStmt2SwitchStmt(typeSwitchStmt)) :-
@@ -264,26 +275,34 @@ rules
 
   forStmtOk(_, ForStmt-Plhdr()).
 
-// Label declarations  
+// Label declarations
 rules
   labelDeclOk : scope * Label
-  
+
   labelDeclOk(s, Label(ID-LEX2ID(name))).
     // Lbl{name} <- s.
 
   labelDeclOk(_, Label-Plhdr()).
-  
+
 // Label references
 rules
-  labelRefOk : scope * Label-OPT
+  labelRefOPTOk : scope * Label-OPT
 
-  labelRefOk(s, NoLabel()).
+  labelRefOPTOk(s, NoLabel()).
 
-  labelRefOk(s, Label2Label-OPT(Label(ID-LEX2ID(name)))).
+  labelRefOPTOk(s, Label2Label-OPT(label)) :-
+    labelRefOk(s, label).
+
+
+  labelRefOPTOk(_, Label-OPT-Plhdr()).
+rules
+  labelRefOk : scope * Label
+
+  labelRefOk(s, Label(ID-LEX2ID(name))).
     // Lbl{name} -> s,
     // Lbl{name} |-> _.
 
-  labelRefOk(_, Label-OPT-Plhdr()).
+  labelRefOk(_, Label-Plhdr()).
 
 
 rules
@@ -299,3 +318,11 @@ rules
   typeSwitchStmtOk(s, TypeSwitch(_, _, _)).
 
   typeSwitchStmtOk(_, TypeSwitchStmt-Plhdr()).
+
+rules
+  channelOk : scope * Channel
+
+  // TODO
+  channelOk(s, Expr2Channel(expr)).
+
+  channelOk(_, Channel-Plhdr()).

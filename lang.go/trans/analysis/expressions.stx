@@ -13,17 +13,38 @@ imports
   // signatures/Statements-sig
   // signatures/Types-sig
 
+imports
+  analysis/types
+  analysis/declarations
+
 // Expressions
 rules
+  typesOfExprListOPT : scope * ExprList-OPT -> list(TYPE)
+
+  typesOfExprListOPT(s, NoExprs()) = [].
+  typesOfExprListOPT(s, ExprList2ExprList-OPT(exprList)) = TS :-
+    typesOfExprList(s, exprList) == TS.
+
+  typesOfExprListOPT(_, ExprList-OPT-Plhdr()) = _.
+
+rules
+  typesOfExprList : scope * ExprList -> list(TYPE)
+
+  typesOfExprList(s, Expr2ExprList(exprs)) = TS :-
+    typesOfExprs(s, exprs) == TS.
+
+  typesOfExprList(_, ExprList-Plhdr()) = _.
+
+rules
   typeOfExpr : scope * Expr -> TYPE
-  typesOfExprs maps typeOfExpr(*, list(*))
+  typesOfExprs maps typeOfExpr(*, list(*)) = list(*)
 
   typeOfExpr(s, UnaryExpr2Expr(expr)) = T :-
     typeOfUnaryExpr(s, expr) == T.
   typeOfExpr(s, BinaryExpr2Expr(expr)) = T :-
     typeOfBinaryExpr(s, expr) == T.
 
-  typeOfExpr(_, Type-Plhdr()) = _.
+  typeOfExpr(_, Expr-Plhdr()) = _.
 
 
 rules
@@ -38,7 +59,7 @@ rules
   typeOfUnaryExpr(s, BitwiseComplement(expr)) = T :-
     typeOfUnaryExpr(s, expr) == T.
   typeOfUnaryExpr(s, Deref(expr)) = T :-
-    typeOfUnaryExpr(s, expr) == T.)
+    typeOfUnaryExpr(s, expr) == T.
   typeOfUnaryExpr(s, Ref(expr)) = T :-
     typeOfUnaryExpr(s, expr) == T.
   typeOfUnaryExpr(s, Receive(expr)) = T :-
@@ -49,7 +70,7 @@ rules
 
 rules
   typeOfBinaryExpr : scope * BinaryExpr -> TYPE
-  
+
   typeOfBinaryExpr(s, LogicalOr(expr1, expr2)) = T :-
     typeOfExpr(s, expr1) == _,
     typeOfExpr(s, expr2) == _.
@@ -116,12 +137,12 @@ rules
 
   typeOfPrimaryExpr(s, Operand2PrimaryExpr(operand)) = T :-
     typeOfOperand(s, operand) == T.
-  typeOfPrimaryExpr(s, Conversion2PrimaryExpr(conversion)))) = T :-
+  typeOfPrimaryExpr(s, Conversion2PrimaryExpr(conversion)) = T :-
     typeOfConversion(s, conversion) == T.
-  typeOfPrimaryExpr(s, MethodExpr2PrimaryExpr(methodExpr)))) = T :-
+  typeOfPrimaryExpr(s, MethodExpr2PrimaryExpr(methodExpr)) = T :-
     typeOfMethodExpr(s, methodExpr) == T.
 
-  typeOfPrimaryExpr(s, Selector(expr, ID-LEX2ID(name))))) = T :-
+  typeOfPrimaryExpr(s, Selector(expr, ID-LEX2ID(name))) = T :- {TE}
     typeOfPrimaryExpr(s, expr) == TE,
     // TE == NamedT(d_ty), // FIXME Hardcoded for this one case
     // d_ty ?=FM=> s_ty,
@@ -131,11 +152,11 @@ rules
     // false | note "TODO: Selector/2".
     true.
   // TODO:
-  typeOfPrimaryExpr(s, Index(_, _)))) = T.
-  typeOfPrimaryExpr(s, SliceLH(_, _, _)))) = T.
-  typeOfPrimaryExpr(s, SliceLHM(_, _, _, _)))) = T.
-  typeOfPrimaryExpr(s, TypeAssertion(_)))) = T.
-  typeOfPrimaryExpr(s, Call(_, _)))) = T.
+  typeOfPrimaryExpr(s, Index(_, _)) = T.
+  typeOfPrimaryExpr(s, SliceLH(_, _, _)) = T.
+  typeOfPrimaryExpr(s, SliceLHM(_, _, _, _)) = T.
+  typeOfPrimaryExpr(s, TypeAssertion(_, _)) = T.
+  typeOfPrimaryExpr(s, Call(_, _)) = T.
 
   typeOfPrimaryExpr(_, PrimaryExpr-Plhdr()) = _.
 
@@ -160,7 +181,7 @@ rules
     // d : ty.
     true.
 
-  typeOfOperandName(s, QualifiedIdent2OperandName(ident) = T :-
+  typeOfOperandName(s, QualifiedIdent2OperandName(ident)) = T :-
     typeOfQualifiedIdent(s, ident) == T.
 
   typeOfOperandName(_, OperandName-Plhdr()) = _.
@@ -239,19 +260,19 @@ rules
   typeOfMethodExpr : scope * MethodExpr -> TYPE
 
   // TODO:
-  typeOfMethodExpr(s, MethodExpr()) = T.
+  typeOfMethodExpr(s, MethodExpr(_, _)) = T.
 
   typeOfMethodExpr(_, MethodExpr-Plhdr()) = _.
 
 rules
-  typeOfArguments-OPT : scope * Arguments-OPT -> TYPE
+  typeOfArgumentsOPT : scope * Arguments-OPT -> TYPE
 
   // TODO:
-  typeOfArguments-OPT(s, NoArguments()) = _.
-  typeOfArguments-OPT(s, Arguments(_)) = _.
-  typeOfArguments-OPT(s, ArgumentsExplode(_)) = _.
-  
-  typeOfArguments-OPT(_, Arguments-OPT-Plhdr()) = _.
+  typeOfArgumentsOPT(s, NoArguments()) = _.
+  typeOfArgumentsOPT(s, Arguments(_)) = _.
+  typeOfArgumentsOPT(s, ArgumentsExplode(_)) = _.
+
+  typeOfArgumentsOPT(_, Arguments-OPT-Plhdr()) = _.
 
 rules
   typeOfArguments : scope * Arguments -> TYPE
@@ -287,7 +308,7 @@ rules
   typeOfLiteralType(s, s_ty, AutoArrayType(type)) = T.
 
   typeOfLiteralType(s, s_ty, LiteralType-Plhdr()) = _.
-  
+
 
 rules
   typeOfLiteralValue : scope * LiteralValue -> TYPE
@@ -339,9 +360,9 @@ rules
 
   // TODO:
   elementOk(s, Expr2Element(expr)) :-
-    typeOfExpr(s, expr) = _.
+    typeOfExpr(s, expr) == _.
   elementOk(s, LiteralValue2Element(value)) :-
-    typeOfLiteralValue(s, value) = _.
+    typeOfLiteralValue(s, value) == _.
 
   elementOk(_, Element-Plhdr()).
 
