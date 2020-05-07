@@ -11,3 +11,227 @@ imports
   signatures/SortNames-sig
   signatures/Statements-sig
   signatures/Types-sig
+
+rules
+  constDeclOk : scope * scope * ConstDecl
+
+  constDeclOk(s_decl, s, ConstDecl(constSpec-ELEMs)) :-
+    constSpec-ELEMsOk(s_decl, s, constSpec-ELEMs).
+
+  constDeclOk(_, _, ConstDecl-Plhdr()).
+
+rules
+  typeDeclOk : scope * scope * TypeDecl
+
+  typeDeclOk(s_decl, s, TypeDecl(typeSpec-ELEMs)) :-
+    typeSpec-ELEMsOk(s_decl, s, typeSpec-ELEMs).
+
+  typeDeclOk(_, _, TypeDecl-Plhdr()).
+
+rules
+  varDeclOk : scope * scope * VarDecl
+
+  varDeclOk(s_decl, s, TypeDecl(varSpec-ELEMs)) :-
+    varSpec-ELEMsOk(s_decl, s, varSpec-ELEMs).
+
+  varDeclOk(_, _, VarDecl-Plhdr()).
+
+rules
+  constSpec-ELEMOk : scope * scope * ConstSpec-ELEM
+  constSpec-ELEMsOk maps constSpec-ELEMOk(*, *, list(*))
+
+  constSpec-ELEMOk(s_decl, s, ConstSpec2ConstSpec-ELEM(constSpec)) :-
+    constSpecOk(s_decl, s, constSpec).
+
+  constSpec-ELEMOk(_, _, ConstSpec-ELEM-Plhdr()).
+
+rules
+  constSpecOk : scope * scope * ConstSpec
+
+  constSpecOk(s_decl, s, ConstSpec(/* IDList */ names, NoType(), exprs)) :-
+    // Map1T(VarDecl)[[ names ^ (s_decl) : tys ]],
+    // Map1T[[ exprs ^ (s) : tys ]].
+    true.
+
+  constSpecOk(s_decl, s, ConstSpec(/* IDList */ names, Type2Type-OPT(type), exprs)) :-
+    // Map1t(VarDecl)[[ names ^ (s_decl) : ty ]],
+    // [[ type ^ (s, s_ty) : ty ]], new s_ty,
+    // Map1t[[ exprs ^ (s) : ty ]].
+    true.
+
+  constSpecOk(_, _, ConstSpec-Plhdr()).
+
+rules
+  typeSpec-ELEMOk : scope * scope * TypeSpec-ELEM
+  typeSpec-ELEMsOk maps typeSpec-ELEMOk(*, *, list(*))
+
+  typeSpec-ELEMOk(s_decl, s, TypeSpec2TypeSpec-ELEM(typeSpec)) :-
+    typeSpecOk(s_decl, s, typeSpec).
+
+  typeSpec-ELEMOk(_, _, TypeSpec-ELEM-Plhdr()).
+
+rules
+  typeSpecOk : scope * scope * TypeSpec
+
+  typeSpecOk(s_decl, s, TypeSpec(ID-LEX2ID(name), type)) :-
+    // Type{name} <- s_decl,
+    // Type{name} : ty,
+    // new s_ty, // type scope
+    // Type{name} =FM=> s_ty,
+    // TypeFM{name} -> s,
+    // TypeFM{name} <=FM= s_ty,
+    // TopLevelType[[ type ^ (s, s_ty) : ty ]].
+    true.
+
+  // TODO:
+  typeSpecOk(s_decl, s, AliasDecl(ID-LEX2ID(name), type)).
+
+  typeSpecOk(_, _, TypeSpec-Plhdr()).
+
+rules
+  varSpec-ELEMOk : scope * scope * VarSpec-ELEM
+  varSpec-ELEMsOk maps varSpec-ELEMOk(*, *, list(*))
+
+  varSpec-ELEMOk(s_decl, s, VarSpec2VarSpec-ELEM(varSpec)) :-
+    typeSpecOk(s_decl, s, varSpec).
+
+  varSpec-ELEMOk(_, _, VarSpec-ELEM-Plhdr()).
+
+rules
+  varSpecOk : scope * scope * VarSpec
+
+  varSpecOk(s_decl, s, VarSpec(/* IDList */ names, type, exprs)) :-
+    // Map1t(VarDecl)[[ names ^ (s) : ty ]],
+    // [[ type ^ (s, s_ty) : ty ]], new s_ty,
+    // Map1t(VarDecl)[[ exprs ^ (s) : ty ]].
+    true.
+
+  varSpecOk(s_decl, s, VarSpecNoType(/* IDList */ names, exprs)) :-
+    // // FIXME weird errors if lists are different length
+    // Map1T(VarDecl)[[ names ^ (s) : tys ]],
+    // Map1T[[ exprs ^ (s) : tys ]].
+    true.
+
+  varSpecOk(s_decl, s, VarSpecNoInit(/* IDList */ names, type)) :-
+    // Map1t(VarDecl)[[ names ^ (s) : ty ]],
+    // [[ type ^ (s, s_ty) : ty ]], new s_ty.
+    true.
+
+  varSpecOk(_, _, VarSpec-Plhdr()).
+
+rules
+  typeOfTopLevelType : scope * scope * TypeName -> TYPE
+
+  typeOfTopLevelType(s, s_ty, ID2TypeName(name)) = T :-
+    // Type{name} -> s,
+    // Type{name} |-> d_ty,
+    // d_ty : ty.
+    true.
+
+  typeOfTopLevelType(s, s_ty, QualifiedTypeName(QualifiedIdent(ID2PackageName(ID-LEX2ID(pkg)), ID-LEX2ID(name)))) = T :-
+    // Pkg{pkg} -> s,
+    // new s_qual,
+    // Pkg{pkg} <=PUB= s_qual,
+    // Type{name} -> s_qual,
+    // Type{name} |-> d_ty,
+    // d_ty : ty.
+    true.
+
+  // What does this rule do?
+  typeOfTopLevelType(s, s_ty, type) = T :-
+    // [[ type ^ (s, s_ty) : ty ]].
+    true.
+
+  typeOfTopLevelType(_, _, TypeName-Plhdr()) = _.
+
+
+rules
+  functionDeclOk : scope * scope * FunctionDecl
+
+  functionDeclOk(s_decl, s, FunctionDecl(FunctionName(ID2FunctionName(ID-LEX2ID(name))), functionDecl-INNER)) :-
+      // Var{name} <- s_decl,
+      // [[ function_inner ^ (s) : ty ]].
+      true.
+
+  functionDeclOk(_, _, FunctionDecl-Plhdr()).
+
+rules
+  typeOfFunctionDecl-INNER : scope * FunctionDecl-INNER -> TYPE
+
+  typeOfFunctionDecl-INNER(s, Signature2FunctionDecl-INNER(signature)) = T :-
+    typeOfSignature(s, signature) == T.
+  typeOfFunctionDecl-INNER(s, Function2FunctionDecl-INNER(function)) = T :-
+    typeOfFunction(s, function) == T.
+
+  typeOfFunctionDecl-INNER(_, FunctionDecl-INNER-Plhdr()) = _.
+
+rules
+  typeOfFunction : scope * Function -> TYPE
+
+  typeOfFunction(s, Function(sig, body)) = T :-
+      // [[ sig ^ (s) : ty ]],
+      // [[ body ^ (s_fun) ]],
+      // new s_fun,
+      // s_fun ---> s.
+      true.
+
+  typeOfFunction(_, Function-Plhdr()).
+
+rules
+  functionBodyOk : scope * FunctionBody
+
+  functionBodyOk(s, Block2FunctionBody(block)) :-
+    blockOk(s, block).
+
+  functionBodyOk(_, FunctionBody-Plhdr()).
+
+rules
+  methodDeclOk : scope * scope * MethodDecl
+
+  methodDeclOk(s_decl, s, MethodDecl(Receiver(ID-LEX2ID(varname), ReceiverType(type@TypeName(ID2TypeName(ID-LEX2ID(tyname))))), MethodName(ID-LEX2ID(name)), inner)) :-
+    // // method decl
+    // new s_fm,
+    // TypeFM{tyname} <- s_decl,
+    // TypeFM{tyname} =FM=> s_fm,
+    // Var{name} <- s_fm,
+    // // body
+    // new s',
+    // s' ---> s,
+    // Var{varname} <- s',
+    // [[ type ^ (s, s_ty) : ty ]], new s_ty,
+    // Var{varname} : ty,
+    // [[ inner ^ (s') : _ ]].
+    true.
+
+  methodDeclOk(s_decl, s, MethodDecl(AnonymousReceiver(ReceiverType(type@TypeName(ID2TypeName(ID-LEX2ID(tyname))))), MethodName(ID-LEX2ID(name)), inner)) :-
+    // // method decl
+    // new s_fm,
+    // TypeFM{tyname} <- s_decl,
+    // TypeFM{tyname} =FM=> s_fm,
+    // Var{name} <- s_fm,
+    // // body
+    // new s',
+    // s' ---> s,
+    // [[ type ^ (s, s_ty) : ty ]], new s_ty,
+    // [[ inner ^ (s') ]].
+    true.
+
+  // TODO: the following are not covered
+  methodDeclOk(s_decl, s, MethodDecl(Receiver(ID-LEX2ID(varname), ReceiverPtrType(type@TypeName(ID2TypeName(ID-LEX2ID(tyname))))), MethodName(ID-LEX2ID(name)), inner)).
+  methodDeclOk(s_decl, s, MethodDecl(AnonymousReceiver(ReceiverPtrType(type@TypeName(ID2TypeName(ID-LEX2ID(tyname))))), MethodName(ID-LEX2ID(name)), inner)).
+  methodDeclOk(s_decl, s, MethodDecl(Receiver(ID-LEX2ID(varname), ReceiverType(type@TypeName(QualifiedTypeName(QualifiedIdent(ID2PackageName(ID-LEX2ID(typkg)), ID-LEX2ID(tyname)))))), MethodName(ID-LEX2ID(name)), inner)).
+  methodDeclOk(s_decl, s, MethodDecl(AnonymousReceiver(ReceiverType(type@TypeName(QualifiedTypeName(QualifiedIdent(ID2PackageName(ID-LEX2ID(typkg)), ID-LEX2ID(tyname)))))), MethodName(ID-LEX2ID(name)), inner)).
+  methodDeclOk(s_decl, s, MethodDecl(Receiver(ID-LEX2ID(varname), ReceiverPtrType(type@TypeName(QualifiedTypeName(QualifiedIdent(ID2PackageName(ID-LEX2ID(typkg)), ID-LEX2ID(tyname)))))), MethodName(ID-LEX2ID(name)), inner)).
+  methodDeclOk(s_decl, s, MethodDecl(AnonymousReceiver(ReceiverPtrType(type@TypeName(QualifiedTypeName(QualifiedIdent(ID2PackageName(ID-LEX2ID(typkg)), ID-LEX2ID(tyname)))))), MethodName(ID-LEX2ID(name)), inner)).
+
+  methodDeclOk(_, _, MethodDecl-Plhdr()).
+
+rules
+  methodDecl-INNEROk : scope * MethodDecl-INNER
+
+  methodDecl-INNEROk(s, Signature2MethodDecl-INNER(signature)) :-
+    typeOfSignature(s, signature) == T.
+  methodDecl-INNEROk(s, Function2MethodDecl-INNER(function)) :-
+    typeOfFunction(s, function) == T.
+
+  methodDecl-INNEROk(_, MethodDecl-INNER-Plhdr()).

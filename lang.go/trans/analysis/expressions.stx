@@ -167,7 +167,7 @@ rules
 rules
   typeOfQualifiedIdent : scope * QualifiedIdent -> TYPE
 
-  typeOfQualifiedIdent(s, QualifiedIdent(ID2PackageName(ID-LEX2ID(pkg)), ID-LEX2ID(name)))) = T :-
+  typeOfQualifiedIdent(s, QualifiedIdent(ID2PackageName(ID-LEX2ID(pkg)), ID-LEX2ID(name))) = T :-
     // Pkg{pkg} -> s,
     // new s_qual,
     // Pkg{pkg} <=PUB= s_qual,
@@ -219,7 +219,7 @@ rules
   typeOfFunctionLit : scope * FunctionLit -> TYPE
 
   typeOfFunctionLit(s, FunctionLit(fun)) = T :-
-    functionOk(s, fun).
+    typeOfFunction(s, fun) == _.
 
   typeOfFunctionLit(_, FunctionLit-Plhdr()) = _.
 
