@@ -13,21 +13,24 @@ imports
 
   analysis/-
 
+  injections/-
+
 rules // Analysis
 
-  editor-analyze =
-    stx-editor-analyze(desugar-and-explicate|"analysis/statics", "programOK")
+  editor-analyze = stx-editor-analyze(pre-analyze, post-analyze|"analysis/statics", "programOk")
+  pre-analyze = desugar-all; explicate-injections-GoLang-SourceFile
+  post-analyze = strip-annos; implicate-injections-GoLang-SourceFile
 
-  desugar-and-explicate = explicate-injections;desugar-all
-
-  explicate-injections =
-    explicate-injections(inj-name)
-
-  inj-name: (sort, into-sort) -> $[[sort']2[into-sort']]
-    with sort' := <camel-abbr> sort
-    with into-sort' := <camel-abbr> into-sort
-
-  camel-abbr = explode-string; filter(is-upper); implode-string
+//  desugar-and-explicate = explicate-injections;desugar-all
+//
+//  explicate-injections =
+//    explicate-injections(inj-name)
+//
+//  inj-name: (sort, into-sort) -> $[[sort']2[into-sort']]
+//    with sort' := <camel-abbr> sort
+//    with into-sort' := <camel-abbr> into-sort
+//
+//  camel-abbr = explode-string; filter(is-upper); implode-string
 
 //  get-type: node -> type
 //    where a := <stx--get-ast-analysis> node
@@ -50,7 +53,7 @@ rules // Debugging
   // Prints the pre-analyzed abstract syntax ATerm of a selection.
   debug-show-pre-analyzed: (selected, _, _, path, project-path) -> (filename, result)
     with filename := <guarantee-extension(|"pre-analyzed.aterm")> path
-       ; result   := <desugar-and-explicate> selected
+       ; result   := <pre-analyze> selected
 
   // Prints the analyzed annotated abstract syntax ATerm of a selection.
   debug-show-analyzed: (selected, _, _, path, project-path) -> (filename, result)

@@ -54,7 +54,7 @@ context-free restrictions
 /**
  * Identifiers -- https://golang.org/ref/spec#Identifiers
  */
-sorts ID
+lexical sorts ID
 lexical syntax
 
   ID                          = LETTER (LETTER | UNICODEDIGIT)*
@@ -99,7 +99,7 @@ lexical syntax
 /**
  * Integer literals -- https://golang.org/ref/spec#Integer_literals
  */
-sorts INTLIT
+lexical sorts INTLIT
 lexical syntax
 
   INTLIT                      = DECIMALLIT                                  // int_lit
@@ -129,7 +129,7 @@ lexical restrictions
 /**
  * Floating-point literals -- https://golang.org/ref/spec#Floating-point_literals
  */
-sorts FLOATLIT
+lexical sorts FLOATLIT
 lexical syntax
 
   FLOATLIT                    = DECIMALFLOATLIT                             // float_lit
@@ -157,7 +157,7 @@ lexical restrictions
 /**
  * Imaginary literals -- https://golang.org/ref/spec#Imaginary_literals
  */
-sorts IMAGINARYLIT
+lexical sorts IMAGINARYLIT
 lexical syntax
 
   IMAGINARYLIT                = (DECIMALDIGITS | INTLIT | FLOATLIT) "i"     // imaginary_lit
@@ -166,7 +166,7 @@ lexical syntax
 /**
  * Rune literals -- https://golang.org/ref/spec#Rune_literals
  */
-sorts RUNELIT
+lexical sorts RUNELIT
 lexical syntax
 
   RUNELIT                     = "'" (UNICODEVALUE | BYTEVALUE) "'"          // rune_lit
@@ -193,7 +193,7 @@ lexical syntax
 /**
  * String literals -- https://golang.org/ref/spec#String_literals
  */
-sorts STRINGLIT
+lexical sorts STRINGLIT
 lexical syntax
 
   STRINGLIT                   = RAWSTRINGLIT | INTERPRETEDSTRINGLIT       // string_lit

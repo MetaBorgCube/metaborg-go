@@ -163,6 +163,7 @@ signature
     ReceiverType : TypeName -> Receiver-INNER
     ReceiverPtrType : TypeName -> Receiver-INNER
 
+
 signature
 
   sorts
@@ -358,6 +359,7 @@ signature
     Conversion-DISAMB : Type * Expr -> Conversion
     Conversion-DISAMB-ALT : Type * Expr -> Conversion
 
+
 signature
 
   sorts
@@ -379,6 +381,7 @@ signature
   constructors
     TestSources : list(TestSource) -> TestSources
     TestSourceFile : ImportPath * PackageClause * list(ImportDecl-ELEM) * list(TopLevelDecl-ELEM) -> TestSource
+
 
 signature
 
@@ -482,7 +485,6 @@ signature
     Alias : PackageName -> ImportSpecQual
     STRINGLIT2ImportPath : STRINGLIT -> ImportPath
 
-
 signature
 
   sorts
@@ -494,7 +496,6 @@ signature
 signature
 
   constructors
-
 
 signature
 
@@ -1014,7 +1015,7 @@ signature
     Type2Result : Type -> Result
     Parameters : ParameterList -> Parameters
     Parameters-ALT : ParameterList -> Parameters
-    ParameterDecl2ParameterList : list(ParameterDecl) -> ParameterList
+    ParameterDecls2ParameterList : list(ParameterDecl) -> ParameterList
     ParameterDecl : IDList-OPT * Type -> ParameterDecl
     VariadicParameterDecl : IDList-OPT * Type -> ParameterDecl
     InterfaceType : list(InterfaceType-ELEM) -> InterfaceType

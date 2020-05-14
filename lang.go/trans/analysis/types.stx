@@ -261,7 +261,7 @@ rules
 rules
   typeOfSignature : scope * Signature -> TYPE
 
-  typeOfSignature(s, Signature(Parameters(ParameterDecl2ParameterList(params)), result)) = FUN(_, _) :- {T}
+  typeOfSignature(s, Signature(Parameters(ParameterDecls2ParameterList(params)), result)) = FUN(_, _) :- {T}
 //    parameterDeclsOk(s, s_ty, params),
 //    typeOfResultOPT(s, s_ty, result) == T.
     true.
