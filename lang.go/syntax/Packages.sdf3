@@ -27,11 +27,10 @@ context-free syntax
 /**
  * Package clause -- https://golang.org/ref/spec#Package_clause
  */
-context-free sorts PackageClause PackageName
+context-free sorts PackageClause
 context-free syntax
 
-  PackageClause.PackageClause = <package <PackageName>>
-  PackageName                 = ID
+  PackageClause.PackageClause = <package <ID>>
 
 
 /**
@@ -47,6 +46,6 @@ context-free syntax
   ImportSpec.ImportSpec       = <<ImportSpecQual> <ImportPath>>
   ImportSpecQual.Qual         = <>
   ImportSpecQual.Unqual       = <.>
-  ImportSpecQual.Alias        = <<PackageName>>
+  ImportSpecQual.Alias        = <<ID>>
   ImportPath                  = STRING_LIT
 

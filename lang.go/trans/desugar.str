@@ -9,7 +9,7 @@ imports
 
 signature
   constructors
-    SourceFile : ImportPath * PackageName * ImportDecls * TopLevelDecls -> SourceFile
+    SourceFile2: ImportPath * PackageName * ImportDecls * TopLevelDecls -> SourceFile
     Elements   : ElementList -> LiteralValue-Inner
     Parameters : ParameterList -> Parameters-Inner
 
@@ -27,7 +27,7 @@ rules
 rules
 
   desugar-sourcefile:
-      file@SourceFile(name, imports, decls) -> SourceFile(pkg-path, name, imports, decls)
+      file@SourceFile(name, imports, decls) -> SourceFile2(pkg-path, name, imports, decls)
     with file-path := <origin-file> file;
          pkg-path  := <current-language-relative-source-or-include-path;dirname> file-path
 

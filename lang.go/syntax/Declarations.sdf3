@@ -19,23 +19,17 @@ context-free start-symbols
 context-free sorts TopLevelDecl
 context-free syntax
 
-  Declaration                 = ConstDecl
-  Declaration                 = TypeDecl
-  Declaration                 = VarDecl
-
   TopLevelDecl                = Declaration
-  TopLevelDecl                = FunctionDecl
-  TopLevelDecl                = MethodDecl
 
 
 /**
  * Constant declarations -- https://golang.org/ref/spec#Constant_declarations
  */
-context-free sorts ConstDecl ConstSpec-ELEM ConstSpec IDList IDList-OPT
+context-free sorts ConstSpec-ELEM ConstSpec IDList IDList-OPT
 context-free syntax
 
-  ConstDecl.SingleConstDecl   = <const <ConstSpec>>
-  ConstDecl.ConstDecl         = <const (<ConstSpec-ELEM*>)>
+  Declaration.SingleConstDecl = <const <ConstSpec>>
+  Declaration.ConstDecl       = <const (<ConstSpec-ELEM*>)>
   ConstSpec-ELEM              = <<ConstSpec>;>
 
   // spec seems wrong here, assignment is always required
@@ -53,11 +47,11 @@ context-free syntax
 /**
  * Type declarations -- https://golang.org/ref/spec#Type_declarations
  */
-context-free sorts TypeDecl TypeSpec-ELEM TypeSpec
+context-free sorts TypeSpec-ELEM TypeSpec
 context-free syntax
 
-  TypeDecl.SingleTypeDecl     = <type <TypeSpec>>
-  TypeDecl.TypeDecl           = <type (<TypeSpec-ELEM*>)>
+  Declaration.SingleTypeDecl  = <type <TypeSpec>>
+  Declaration.TypeDecl        = <type (<TypeSpec-ELEM*>)>
   TypeSpec-ELEM               = <<TypeSpec>;>
 
   TypeSpec.AliasDecl       		= <<ID> = <Type>>
@@ -68,11 +62,11 @@ context-free syntax
 /**
  * Var declarations -- https://golang.org/ref/spec#Variable_declarations
  */
-context-free sorts VarDecl VarSpec-ELEM VarSpec
+context-free sorts VarSpec-ELEM VarSpec
 context-free syntax
 
-  VarDecl.SingleVarDecl       = <var <VarSpec>>
-  VarDecl.VarDecl             = <var (<VarSpec-ELEM*>)>
+  Declaration.SingleVarDecl   = <var <VarSpec>>
+  Declaration.VarDecl         = <var (<VarSpec-ELEM*>)>
   VarSpec-ELEM                = <<VarSpec>;>
 
   VarSpec.VarSpec             = <<IDList> <Type> = <ExprList>>
@@ -80,38 +74,28 @@ context-free syntax
   VarSpec.VarSpecNoType       = <<IDList> = <ExprList>>
 
 
-/**
- * Short variable declarations -- https://golang.org/ref/spec#Short_variable_declarations
- */
-context-free sorts ShortVarDecl
-context-free syntax
-
-  ShortVarDecl.ShortVarDecl   = <<IDList> := <ExprList>>
-
 
 /**
  * Function declarations -- https://golang.org/ref/spec#Function_declarations
  */
-context-free sorts FunctionDecl FunctionName FunctionDecl-INNER FunctionBody
+context-free sorts FunctionDecl-INNER
 context-free syntax
 
-  FunctionDecl.FunctionDecl   = <func <FunctionName> <FunctionDecl-INNER>>
-  FunctionName                = ID
+  TopLevelDecl.FunctionDecl   = <func <ID> <FunctionDecl-INNER>>
 
   FunctionDecl-INNER          = Signature
   FunctionDecl-INNER          = Function
 
-  Function.Function           = <<Signature> <FunctionBody>>
-  FunctionBody                = Block
+  Function.Function           = <<Signature> <Block>>
 
 
 /**
  * Method declarations -- https://golang.org/ref/spec#Method_declarations
  */
-context-free sorts MethodDecl MethodDecl-INNER Receiver Receiver-INNER
+context-free sorts MethodDecl-INNER Receiver Receiver-INNER
 context-free syntax
 
-  MethodDecl.MethodDecl       = <func <Receiver> <MethodName> <MethodDecl-INNER>>
+  TopLevelDecl.MethodDecl     = <func <Receiver> <ID> <MethodDecl-INNER>>
   MethodDecl-INNER            = Signature
   MethodDecl-INNER            = Function
 
