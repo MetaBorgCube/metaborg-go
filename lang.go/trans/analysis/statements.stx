@@ -279,7 +279,7 @@ rules
 rules
   labelDeclOk : scope * Label
 
-  labelDeclOk(s, Label(ID-LEX2ID(name))).
+  labelDeclOk(s, Label(name)).
     // Lbl{name} <- s.
 
   labelDeclOk(_, Label-Plhdr()).
@@ -298,7 +298,7 @@ rules
 rules
   labelRefOk : scope * Label
 
-  labelRefOk(s, Label(ID-LEX2ID(name))).
+  labelRefOk(s, Label(name)).
     // Lbl{name} -> s,
     // Lbl{name} |-> _.
 

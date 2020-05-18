@@ -16,7 +16,7 @@ context-free start-symbols
 
   TopLevelDecl
 
-sorts TopLevelDecl
+context-free sorts TopLevelDecl
 context-free syntax
 
   Declaration                 = ConstDecl
@@ -31,7 +31,7 @@ context-free syntax
 /**
  * Constant declarations -- https://golang.org/ref/spec#Constant_declarations
  */
-sorts ConstDecl ConstSpec-ELEM ConstSpec IDList IDList-OPT
+context-free sorts ConstDecl ConstSpec-ELEM ConstSpec IDList IDList-OPT
 context-free syntax
 
   ConstDecl.SingleConstDecl   = <const <ConstSpec>>
@@ -53,7 +53,7 @@ context-free syntax
 /**
  * Type declarations -- https://golang.org/ref/spec#Type_declarations
  */
-sorts TypeDecl TypeSpec-ELEM TypeSpec
+context-free sorts TypeDecl TypeSpec-ELEM TypeSpec
 context-free syntax
 
   TypeDecl.SingleTypeDecl     = <type <TypeSpec>>
@@ -68,7 +68,7 @@ context-free syntax
 /**
  * Var declarations -- https://golang.org/ref/spec#Variable_declarations
  */
-sorts VarDecl VarSpec-ELEM VarSpec
+context-free sorts VarDecl VarSpec-ELEM VarSpec
 context-free syntax
 
   VarDecl.SingleVarDecl       = <var <VarSpec>>
@@ -83,7 +83,7 @@ context-free syntax
 /**
  * Short variable declarations -- https://golang.org/ref/spec#Short_variable_declarations
  */
-sorts ShortVarDecl
+context-free sorts ShortVarDecl
 context-free syntax
 
   ShortVarDecl.ShortVarDecl   = <<IDList> := <ExprList>>
@@ -92,7 +92,7 @@ context-free syntax
 /**
  * Function declarations -- https://golang.org/ref/spec#Function_declarations
  */
-sorts FunctionDecl FunctionName FunctionDecl-INNER FunctionBody
+context-free sorts FunctionDecl FunctionName FunctionDecl-INNER FunctionBody
 context-free syntax
 
   FunctionDecl.FunctionDecl   = <func <FunctionName> <FunctionDecl-INNER>>
@@ -108,7 +108,7 @@ context-free syntax
 /**
  * Method declarations -- https://golang.org/ref/spec#Method_declarations
  */
-sorts MethodDecl MethodDecl-INNER Receiver Receiver-INNER
+context-free sorts MethodDecl MethodDecl-INNER Receiver Receiver-INNER
 context-free syntax
 
   MethodDecl.MethodDecl       = <func <Receiver> <MethodName> <MethodDecl-INNER>>

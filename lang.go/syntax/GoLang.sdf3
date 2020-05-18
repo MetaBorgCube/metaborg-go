@@ -36,7 +36,7 @@ context-free start-symbols
 /**
  * Source files for testing
  */
-sorts TestSources TestSource
+context-free sorts TestSources TestSource
 context-free syntax
 
   TestSources.TestSources = <<TestSource*>>

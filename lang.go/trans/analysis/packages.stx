@@ -17,7 +17,7 @@ rules
   testSourceOk : scope * TestSource
   testSourcesOk maps testSourceOk(*, list(*))
 
-  testSourceOk(s_univ, TestSourceFile(ImportPath-LEX2ImportPath(pkg_path), PackageClause(ID2PackageName(ID-LEX2ID(pkg_name))), imports, decls)) :-
+  testSourceOk(s_univ, TestSourceFile(pkg_path, PackageClause(ID2PackageName(pkg_name)), imports, decls)) :-
     // // define package public and private, and file scopes
     // new s_pkg_pub s_pkg_prv s_file,
     // s_pkg_pub ---> s_univ,
@@ -70,19 +70,19 @@ rules
 rules
   importSpecOk : scope * scope * ImportSpec
 
-  importSpecOk(s_univ, s_file, ImportSpec(Qual(), ImportPath-LEX2ImportPath(pkg_path))) :-
+  importSpecOk(s_univ, s_file, ImportSpec(Qual(), pkg_path)) :-
     // PkgPath{pkg_path} -> s_univ,
     // PkgPath{pkg_path} <=IMP= s_file.
     true.
 
-  importSpecOk(s_univ, s_file, ImportSpec(Unqual(), ImportPath-LEX2ImportPath(pkg_path))) :-
+  importSpecOk(s_univ, s_file, ImportSpec(Unqual(), pkg_path)) :-
     // PkgPath{pkg_path} -> s_univ,
     // PkgPath{pkg_path} <=PUB= s_file.
     true.
 
-  importSpecOk(s_univ, s_file, ImportSpec(Alias(ID2PackageName(ID-LEX2ID("_"))), ImportPath-LEX2ImportPath(pkg_path))).
+  importSpecOk(s_univ, s_file, ImportSpec(Alias(ID2PackageName("_")), pkg_path)).
 
-  importSpecOk(s_univ, s_file, ImportSpec(Alias(ID2PackageName(ID-LEX2ID(pkg_name))), ImportPath-LEX2ImportPath(pkg_path))) :-
+  importSpecOk(s_univ, s_file, ImportSpec(Alias(ID2PackageName(pkg_name)), pkg_path)) :-
     // new s_imp,
     // Pkg{pkg_name} <- s_file,
     // Pkg{pkg_name} =PUB=> s_imp,

@@ -25,7 +25,7 @@ context-free syntax
 /**
  * Operands -- https://golang.org/ref/spec#Operands
  */
-sorts Operand Literal BasicLit OperandName
+context-free sorts Operand Literal BasicLit OperandName
 context-free syntax
 
   Operand                     = Literal
@@ -36,11 +36,11 @@ context-free syntax
   Literal                     = CompositeLit
   Literal                     = FunctionLit
 
-  BasicLit.IntLit             = INTLIT
-  BasicLit.FloatLit           = FLOATLIT
-  BasicLit.ImaginaryLit       = IMAGINARYLIT
-  BasicLit.RuneLit            = RUNELIT
-  BasicLit.StringLit          = STRINGLIT
+  BasicLit.IntLit             = INT_LIT
+  BasicLit.FloatLit           = FLOAT_LIT
+  BasicLit.ImaginaryLit       = IMAGINARY_LIT
+  BasicLit.RuneLit            = RUNE_LIT
+  BasicLit.StringLit          = STRING_LIT
 
   OperandName.OperandName     = ID
   OperandName                 = QualifiedIdent
@@ -49,7 +49,7 @@ context-free syntax
 /**
  * Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
  */
-sorts QualifiedIdent
+context-free sorts QualifiedIdent
 context-free syntax
 
   QualifiedIdent.QualifiedIdent         = <<PackageName>.<ID>>
@@ -59,7 +59,7 @@ context-free syntax
 /**
  * Composite literals -- https://golang.org/ref/spec#Composite_literals
  */
-sorts CompositeLit LiteralType LiteralValue ElementList KeyedElement Key-OPT Key FieldName Element
+context-free sorts CompositeLit LiteralType LiteralValue ElementList KeyedElement Key-OPT Key FieldName Element
 context-free syntax
 
   CompositeLit.CompositeLit   = <<LiteralType> <LiteralValue>>
@@ -92,7 +92,7 @@ context-free syntax
 /**
  * Function literals -- https://golang.org/ref/spec#Function_literals
  */
-sorts FunctionLit
+context-free sorts FunctionLit
 context-free syntax
 
   FunctionLit.FunctionLit     = <func <Function>>
@@ -101,7 +101,7 @@ context-free syntax
 /**
  * Primary expressions -- https://golang.org/ref/spec#Primary_expressions
  */
-sorts PrimaryExpr Arguments-OPT Arguments
+context-free sorts PrimaryExpr Arguments-OPT Arguments
 context-free syntax
 
   PrimaryExpr                 = Operand
@@ -130,7 +130,7 @@ context-free syntax
 /**
  * Method expressions -- https://golang.org/ref/spec#Method_expressions
  */
-sorts MethodExpr ReceiverType
+context-free sorts MethodExpr ReceiverType
 context-free syntax
 
   MethodExpr.MethodExpr         = <<ReceiverType>.<MethodName>>
@@ -142,7 +142,7 @@ context-free syntax
 /**
  * Operators -- https://golang.org/ref/spec#Operators
  */
-sorts BinaryExpr UnaryExpr
+context-free sorts BinaryExpr UnaryExpr
 context-free syntax
 
   Expr                        = UnaryExpr
@@ -224,7 +224,7 @@ context-free priorities
 /**
  * Conversions -- https://golang.org/ref/spec#Conversions
  */
-sorts Conversion
+context-free sorts Conversion
 context-free syntax
 
   Conversion.Conversion             = <<Type>(<Expr>)>

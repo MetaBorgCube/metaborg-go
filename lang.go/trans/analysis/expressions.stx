@@ -142,7 +142,7 @@ rules
   typeOfPrimaryExpr(s, MethodExpr2PrimaryExpr(methodExpr)) = T :-
     typeOfMethodExpr(s, methodExpr) == T.
 
-  typeOfPrimaryExpr(s, Selector(expr, ID-LEX2ID(name))) = T :- {TE}
+  typeOfPrimaryExpr(s, Selector(expr, name)) = T :- {TE}
     typeOfPrimaryExpr(s, expr) == TE,
     // TE == NamedT(d_ty), // FIXME Hardcoded for this one case
     // d_ty ?=FM=> s_ty,
@@ -175,7 +175,7 @@ rules
   typeOfOperandName : scope * OperandName -> TYPE
 
   // Qualified identifiers
-  typeOfOperandName(s, OperandName(ID-LEX2ID(name))) = T :-
+  typeOfOperandName(s, OperandName(name)) = T :-
     // Var{name} -> s,
     // Var{name} |-> d,
     // d : ty.
@@ -189,7 +189,7 @@ rules
 rules
   typeOfQualifiedIdent : scope * QualifiedIdent -> TYPE
 
-  typeOfQualifiedIdent(s, QualifiedIdent(ID2PackageName(ID-LEX2ID(pkg)), ID-LEX2ID(name))) = T :-
+  typeOfQualifiedIdent(s, QualifiedIdent(ID2PackageName(pkg), name)) = T :-
     // Pkg{pkg} -> s,
     // new s_qual,
     // Pkg{pkg} <=PUB= s_qual,

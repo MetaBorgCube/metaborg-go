@@ -1,6 +1,6 @@
 module SortNames
 
-sorts
+context-free sorts
   Declaration
   Stmt
   Block

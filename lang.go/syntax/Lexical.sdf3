@@ -10,11 +10,11 @@ imports
 lexical start-symbols
 
   ID
-  INTLIT
-  FLOATLIT
-  IMAGINARYLIT
-  RUNELIT
-  STRINGLIT
+  INT_LIT
+  FLOAT_LIT
+  IMAGINARY_LIT
+  RUNE_LIT
+  STRING_LIT
 
 
 /**
@@ -27,12 +27,12 @@ lexical syntax
   LAYOUT                      = "//" ~[\n\r]* NLEOF
   LAYOUT                      = "/*" INCOMMENT* "*/"
   INCOMMENT                   = ~[\*]
-  INCOMMENT                   = COMMENTCHAR
-  COMMENTCHAR                 = [\*]
+  INCOMMENT                   = COMMENT_CHAR
+  COMMENT_CHAR                = [\*]
 
 lexical restrictions
 
-  COMMENTCHAR                 -/- [\/]
+  COMMENT_CHAR                -/- [\/]
 
 context-free restrictions
   LAYOUT?                     -/- [\/].[\/]
@@ -57,11 +57,11 @@ context-free restrictions
 lexical sorts ID
 lexical syntax
 
-  ID                          = LETTER (LETTER | UNICODEDIGIT)*
+  ID                          = LETTER (LETTER | UNICODE_DIGIT)*
 
 lexical restrictions
 
-  ID                          -/- [A-Za-z\_0-9]   // (LETTER | UNICODEDIGIT)
+  ID                          -/- [A-Za-z\_0-9]   // (LETTER | UNICODE_DIGIT)
 
 
 /**
@@ -99,86 +99,86 @@ lexical syntax
 /**
  * Integer literals -- https://golang.org/ref/spec#Integer_literals
  */
-lexical sorts INTLIT
+lexical sorts INT_LIT
 lexical syntax
 
-  INTLIT                      = DECIMALLIT                                  // int_lit
-  INTLIT                      = BINARYLIT
-  INTLIT                      = OCTALLIT
-  INTLIT                      = HEXLIT
-  DECIMALLIT                  = "0"                                         // decimal_lit
-  DECIMALLIT                  = [1-9] ("_"? DECIMALDIGITS)?
-  BINARYLIT                   = "0" ("b"|"B")  "_"? BINARYDIGITS            // binary_lit
-  OCTALLIT                    = "0" ("o"|"O")? "_"? OCTALDIGITS             // octal_lit
-  HEXLIT                      = "0" ("x"|"X")  "_"? HEXDIGITS               // hex_lit
+  INT_LIT                     = DECIMAL_LIT                                 // int_lit
+  INT_LIT                     = BINARY_LIT
+  INT_LIT                     = OCTAL_LIT
+  INT_LIT                     = HEX_LIT
+  DECIMAL_LIT                 = "0"                                         // decimal_lit
+  DECIMAL_LIT                 = [1-9] ("_"? DECIMAL_DIGITS)?
+  BINARY_LIT                  = "0" ("b"|"B")  "_"? BINARY_DIGITS           // binary_lit
+  OCTAL_LIT                   = "0" ("o"|"O")? "_"? OCTAL_DIGITS            // octal_lit
+  HEX_LIT                     = "0" ("x"|"X")  "_"? HEX_DIGITS              // hex_lit
 
-  DECIMALDIGITS               = DECIMALDIGIT ("_"? DECIMALDIGIT)*           // decimal_digits
-  BINARYDIGITS                = BINARYDIGIT ("_"? BINARYDIGIT)*             // binary_digits
-  OCTALDIGITS                 = OCTALDIGIT ("_"? OCTALDIGIT)*               // octal_digits
-  HEXDIGITS                   = HEXDIGIT ("_"? HEXDIGIT)*                   // hex_digits
+  DECIMAL_DIGITS              = DECIMAL_DIGIT ("_"? DECIMAL_DIGIT)*         // decimal_digits
+  BINARY_DIGITS               = BINARY_DIGIT ("_"? BINARY_DIGIT)*           // binary_digits
+  OCTAL_DIGITS                = OCTAL_DIGIT ("_"? OCTAL_DIGIT)*             // octal_digits
+  HEX_DIGITS                  = HEX_DIGIT ("_"? HEX_DIGIT)*                 // hex_digits
 
 
 lexical restrictions
 
-  DECIMALLIT                  -/- [0-9\_\.]
-  BINARYLIT                   -/- [0-1\_\.]
-  OCTALLIT                    -/- [0-7\_\.]
-  HEXLIT                      -/- [0-9a-fa-F\_\.]
+  DECIMAL_LIT                 -/- [0-9\_\.]
+  BINARY_LIT                  -/- [0-1\_\.]
+  OCTAL_LIT                   -/- [0-7\_\.]
+  HEX_LIT                     -/- [0-9a-fa-F\_\.]
 
 
 /**
  * Floating-point literals -- https://golang.org/ref/spec#Floating-point_literals
  */
-lexical sorts FLOATLIT
+lexical sorts FLOAT_LIT
 lexical syntax
 
-  FLOATLIT                    = DECIMALFLOATLIT                             // float_lit
-  FLOATLIT                    = HEX_FLOAT_LIT
+  FLOAT_LIT                    = DECIMAL_FLOAT_LIT                           // float_lit
+  FLOAT_LIT                    = HEX_FLOAT_LIT
 
-  DECIMALFLOATLIT             = DECIMALDIGITS "." DECIMALDIGITS? DECIMALEXPONENT?    // decimal_float_lit
-  DECIMALFLOATLIT             = DECIMALDIGITS DECIMALEXPONENT
-  DECIMALFLOATLIT             = "." DECIMALDIGITS  DECIMALEXPONENT?
-  DECIMALEXPONENT             = ("e"|"E") ("+"|"-")? DECIMALDIGITS          // decimal_exponent
-  HEX_FLOAT_LIT               = "0" ("x"|"X") HEXMANTISSA HEXEXPONENT       // hex_float_lit
-  HEXMANTISSA                 = "_"? HEXDIGITS "." HEXDIGITS?               // hex_mantissa
-  HEXMANTISSA                 = "_"? HEXDIGITS
-  HEXMANTISSA                 = "." HEXDIGITS
-  HEXEXPONENT                 = ("p"|"P") ("+"|"-")? DECIMALDIGITS          // hex_exponent
+  DECIMAL_FLOAT_LIT             = DECIMAL_DIGITS "." DECIMAL_DIGITS? DECIMAL_EXPONENT?    // decimal_float_lit
+  DECIMAL_FLOAT_LIT             = DECIMAL_DIGITS DECIMAL_EXPONENT
+  DECIMAL_FLOAT_LIT             = "." DECIMAL_DIGITS  DECIMAL_EXPONENT?
+  DECIMAL_EXPONENT             = ("e"|"E") ("+"|"-")? DECIMAL_DIGITS        // decimal_exponent
+  HEX_FLOAT_LIT               = "0" ("x"|"X") HEX_MANTISSA HEX_EXPONENT     // hex_float_lit
+  HEX_MANTISSA                 = "_"? HEX_DIGITS "." HEX_DIGITS?            // hex_mantissa
+  HEX_MANTISSA                 = "_"? HEX_DIGITS
+  HEX_MANTISSA                 = "." HEX_DIGITS
+  HEX_EXPONENT                 = ("p"|"P") ("+"|"-")? DECIMAL_DIGITS        // hex_exponent
 
 lexical restrictions
 
-  DECIMALFLOATLIT             -/- [0-9\_eE\.\+\-]
-  DECIMALEXPONENT             -/- [0-9\_]
+  DECIMAL_FLOAT_LIT           -/- [0-9\_eE\.\+\-]
+  DECIMAL_EXPONENT            -/- [0-9\_]
   HEX_FLOAT_LIT               -/- [0-9a-fA-F\_pP\.\+\-]
-  HEXMANTISSA                 -/- [0-9a-fA-F\_]
-  HEXEXPONENT                 -/- [0-9a-fA-F\_]
+  HEX_MANTISSA                -/- [0-9a-fA-F\_]
+  HEX_EXPONENT                -/- [0-9a-fA-F\_]
 
 
 /**
  * Imaginary literals -- https://golang.org/ref/spec#Imaginary_literals
  */
-lexical sorts IMAGINARYLIT
+lexical sorts IMAGINARY_LIT
 lexical syntax
 
-  IMAGINARYLIT                = (DECIMALDIGITS | INTLIT | FLOATLIT) "i"     // imaginary_lit
+  IMAGINARY_LIT               = (DECIMAL_DIGITS | INT_LIT | FLOAT_LIT) "i"  // imaginary_lit
 
 
 /**
  * Rune literals -- https://golang.org/ref/spec#Rune_literals
  */
-lexical sorts RUNELIT
+lexical sorts RUNE_LIT
 lexical syntax
 
-  RUNELIT                     = "'" (UNICODEVALUE | BYTEVALUE) "'"          // rune_lit
-  UNICODEVALUE                = UNICODECHAR | LITTLE_U_VALUE | BIG_U_VALUE | ESCAPED_CHAR   // unicode_value
-  UNICODEVALUE                = "\\"        {reject}
-  BYTEVALUE                   = OCTAL_BYTE_VALUE | HEX_BYTE_VALUE           // byte_value
-  OCTAL_BYTE_VALUE            = "\\" OCTALDIGIT OCTALDIGIT OCTALDIGIT       // octal_byte_value
-  HEX_BYTE_VALUE              = "\\x" HEXDIGIT HEXDIGIT                     // hex_byte_value
-  LITTLE_U_VALUE              = "\\u" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT   // little_u_value
-  BIG_U_VALUE                 = "\\U" HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT
-                                      HEXDIGIT HEXDIGIT HEXDIGIT HEXDIGIT   // big_u_value
-  ESCAPED_CHAR                = "\\a"                                       // escaped_char
+  RUNE_LIT                    = "'" (UNICODE_VALUE | BYTE_VALUE) "'"          // rune_lit
+  UNICODE_VALUE               = UNICODE_CHAR | LITTLE_U_VALUE | BIG_U_VALUE | ESCAPED_CHAR   // unicode_value
+  UNICODE_VALUE               = "\\"        {reject}
+  BYTE_VALUE                  = OCTAL_BYTE_VALUE | HEX_BYTE_VALUE             // byte_value
+  OCTAL_BYTE_VALUE            = "\\" OCTAL_DIGIT OCTAL_DIGIT OCTAL_DIGIT      // octal_byte_value
+  HEX_BYTE_VALUE              = "\\x" HEX_DIGIT HEX_DIGIT                     // hex_byte_value
+  LITTLE_U_VALUE              = "\\u" HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT // little_u_value
+  BIG_U_VALUE                 = "\\U" HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT
+                                      HEX_DIGIT HEX_DIGIT HEX_DIGIT HEX_DIGIT // big_u_value
+  ESCAPED_CHAR                = "\\a"                                         // escaped_char
   ESCAPED_CHAR                = "\\b"
   ESCAPED_CHAR                = "\\f"
   ESCAPED_CHAR                = "\\n"
@@ -193,61 +193,16 @@ lexical syntax
 /**
  * String literals -- https://golang.org/ref/spec#String_literals
  */
-lexical sorts STRINGLIT
+lexical sorts STRING_LIT
 lexical syntax
 
-  STRINGLIT                   = RAWSTRINGLIT | INTERPRETEDSTRINGLIT       // string_lit
-  RAWSTRINGLIT                = "`" RAWSTRINGCHAR* "`"                    // raw_string_lit
-  RAWSTRINGCHAR               = UNICODECHAR
-  RAWSTRINGCHAR               = NEWLINE
-  RAWSTRINGCHAR               = "`" {reject}
+  STRING_LIT                   = RAW_STRING_LIT | INTERPRETED_STRING_LIT  // string_lit
+  RAW_STRING_LIT                = "`" RAW_STRING_CHAR* "`"                // raw_string_lit
+  RAW_STRING_CHAR               = UNICODE_CHAR
+  RAW_STRING_CHAR               = NEWLINE
+  RAW_STRING_CHAR               = "`" {reject}
 
-  INTERPRETEDSTRINGLIT        = "\"" INTERPRETEDSTRINGCHAR* "\""          // interpreted_string_lit
-  INTERPRETEDSTRINGCHAR       = UNICODEVALUE
-  INTERPRETEDSTRINGCHAR       = BYTEVALUE
-  INTERPRETEDSTRINGCHAR       = "\"" {reject}
-
-//// Strings
-//sorts RawStringLit InterpStringLit RAWSTRINGCHARS INTERPSTRINGCHARS
-//context-free syntax
-//  StringLit           = RawStringLit
-//  StringLit           = InterpStringLit
-//
-//syntax
-//  RawStringLit-CF     = "`" RAWSTRINGCHARS-LEX "`"
-//  InterpStringLit-CF  = "\"" INTERPSTRINGCHARS-LEX "\""
-//
-//lexical syntax
-//  RAWSTRINGCHARS      = RAWSTRINGCHAR*
-//  RAWSTRINGCHAR       = UNICODECHAR
-//  RAWSTRINGCHAR       = NL
-//  RAWSTRINGCHAR       = "`"         {reject}
-//
-//lexical syntax
-//  INTERPSTRINGCHARS   = INTERPSTRINGCHAR*
-//  INTERPSTRINGCHAR    = UNICODERUNE
-//  INTERPSTRINGCHAR    = BYTERUNE
-//  INTERPSTRINGCHAR    = "\""        {reject}
-
-
-//context-free syntax
-//
-//  StringLit                  = RawStringLit
-//  StringLit                  = InterpretedStringLit
-//
-//syntax
-//
-//  RawStringLit-CF            = "`" RawStringLit-Chars-LEX "`"
-//  InterpretedStringLit-CF    = "\"" InterpretedStringLit-Chars-LEX "\""
-//
-//lexical syntax
-//
-//  RawStringLit-Chars = RawStringLit-Char*
-//  RawStringLit-Char  = UNICODECHAR
-//  RawStringLit-Char  = NL
-//  RawStringLit-Char  = "`" {reject}
-//
-//  InterpretedStringLit-Chars = InterpretedStringLit-Char*
-//  InterpretedStringLit-Char  = UnicodeValue
-//  InterpretedStringLit-Char  = ByteValue
-//  InterpretedStringLit-Char  = "\"" {reject}
+  INTERPRETED_STRING_LIT        = "\"" INTERPRETED_STRING_CHAR* "\""      // interpreted_string_lit
+  INTERPRETED_STRING_CHAR       = UNICODE_VALUE
+  INTERPRETED_STRING_CHAR       = BYTE_VALUE
+  INTERPRETED_STRING_CHAR       = "\"" {reject}

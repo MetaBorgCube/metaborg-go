@@ -9,7 +9,7 @@ imports
   Representation
   SortNames
 
-sorts StmtList StmtList-ELEM
+context-free sorts StmtList StmtList-ELEM
 context-free syntax
 
   Block.Block                 = <{ <StmtList> }>

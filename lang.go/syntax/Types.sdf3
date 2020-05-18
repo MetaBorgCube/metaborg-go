@@ -19,7 +19,7 @@ template options
 
   newlines : separating
 
-sorts TypeLit
+context-free sorts TypeLit
 context-free syntax
 
   Type                        = TypeName
@@ -45,7 +45,7 @@ context-free syntax
 /**
  * Array types -- https://golang.org/ref/spec#Array_types
  */
-sorts ArrayType ArrayLength ElementType
+context-free sorts ArrayType ArrayLength ElementType
 context-free syntax
 
   ArrayType.ArrayType         = <[<ArrayLength>]<ElementType>> {left}
@@ -58,7 +58,7 @@ context-free syntax
 /**
  * Slice types -- https://golang.org/ref/spec#Slice_types
  */
-sorts SliceType
+context-free sorts SliceType
 context-free syntax
 
   SliceType.SliceType         = <[ ]<ElementType>> {left}
@@ -67,7 +67,7 @@ context-free syntax
 /**
  * Struct types -- https://golang.org/ref/spec#Struct_types
  */
-sorts StructType StructType-ELEM FieldDecl Field EmbeddedField Tag-OPT Tag
+context-free sorts StructType StructType-ELEM FieldDecl Field EmbeddedField Tag-OPT Tag
 context-free syntax
   StructType.StructType       = <struct { <StructType-ELEM*> }>
   StructType-ELEM             = <<FieldDecl>;>
@@ -82,13 +82,13 @@ context-free syntax
 
   Tag-OPT.NoTag               = <>
   Tag-OPT                     = Tag
-  Tag                         = STRINGLIT
+  Tag                         = STRING_LIT
 
 
 /**
  * Pointer types -- https://golang.org/ref/spec#Pointer_types
  */
-sorts PointerType BaseType
+context-free sorts PointerType BaseType
 context-free syntax
 
   PointerType.PointerType     = <*<BaseType>>
@@ -99,7 +99,7 @@ context-free syntax
 /**
  * Function types -- https://golang.org/ref/spec#Function_types
  */
-sorts FunctionType Result-OPT Result Parameters ParameterList ParameterDecl
+context-free sorts FunctionType Result-OPT Result Parameters ParameterList ParameterDecl
 context-free syntax
 
   FunctionType.FunctionType   = <func <Signature>>
@@ -121,7 +121,7 @@ context-free syntax
 /**
  * Interface types -- https://golang.org/ref/spec#Interface_types
  */
-sorts InterfaceType InterfaceType-ELEM MethodSpec MethodName InterfaceTypeName
+context-free sorts InterfaceType InterfaceType-ELEM MethodSpec MethodName InterfaceTypeName
 context-free syntax
 
   InterfaceType.InterfaceType = <interface { <InterfaceType-ELEM*> }>
@@ -137,7 +137,7 @@ context-free syntax
 /**
  * Map types -- https://golang.org/ref/spec#Map_types
  */
-sorts MapType KeyType
+context-free sorts MapType KeyType
 context-free syntax
 
   MapType.MapType             = <map[<KeyType>]<ElementType>>
@@ -148,7 +148,7 @@ context-free syntax
 /**
  * Channel types -- https://golang.org/ref/spec#Channel_types
  */
-sorts ChannelType
+context-free sorts ChannelType
 context-free syntax
 
   ChannelType.BidirectionalChannelType = [chan [ElementType]]

@@ -10,9 +10,9 @@ lexical syntax
 
   EOF                         =
   NEWLINE                     = [\n\r]     // newline
-  UNICODECHAR                 = ~[\n\r]    // unicode_char
-  UNICODELETTER               = [A-Za-z]   // unicode_letter  // TODO: Expand to include all from Unicode `Number, decimal digit`
-  UNICODEDIGIT                = [0-9]      // unicode_digit   // TODO: Expand to include all from Unicode `Number, decimal digit`
+  UNICODE_CHAR                = ~[\n\r]    // unicode_char
+  UNICODE_LETTER              = [A-Za-z]   // unicode_letter  // TODO: Expand to include all from Unicode `Number, decimal digit`
+  UNICODE_DIGIT               = [0-9]      // unicode_digit   // TODO: Expand to include all from Unicode `Number, decimal digit`
 
 
 /**
@@ -20,11 +20,11 @@ lexical syntax
  */
 lexical syntax
 
-  LETTER                      = UNICODELETTER | "_"   // letter
-  DECIMALDIGIT                = [0-9]                 // decimal_digit
-  BINARYDIGIT                 = [0-1]                 // binary_digit
-  OCTALDIGIT                  = [0-7]                 // octal_digit
-  HEXDIGIT                    = [0-9A-Fa-f]           // hex_digit
+  LETTER                      = UNICODE_LETTER | "_"   // letter
+  DECIMAL_DIGIT               = [0-9]                 // decimal_digit
+  BINARY_DIGIT                = [0-1]                 // binary_digit
+  OCTAL_DIGIT                 = [0-7]                 // octal_digit
+  HEX_DIGIT                   = [0-9A-Fa-f]           // hex_digit
 
 lexical restrictions
 

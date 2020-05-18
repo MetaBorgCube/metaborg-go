@@ -19,7 +19,7 @@ imports
 rules
   declareVars : scope * list(ID) * TYPE
 
-  declareVars(s, [ID-LEX2ID(name)|names], T) :-
+  declareVars(s, [name|names], T) :-
     declareVar(s, name, T),
     declareVars(s, names, T).
 
@@ -29,7 +29,7 @@ rules
 rules
   declareVarsOfTypes : scope * list(ID) * list(TYPE)
 
-  declareVarsOfTypes(s, [ID-LEX2ID(name)|names], [T|TS]) :-
+  declareVarsOfTypes(s, [name|names], [T|TS]) :-
     declareVar(s, name, T),
     declareVarsOfTypes(s, names, TS).
 

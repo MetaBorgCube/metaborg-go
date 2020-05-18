@@ -5,14 +5,8 @@ module analysis/signatures
 signature
 
   sorts
-    StmtList-LEX = string
-    StmtList-ELEM-LEX = string
     StmtList
     StmtList-ELEM
-
-  constructors
-    StmtList-LEX2StmtList : StmtList-LEX -> StmtList
-    StmtList-ELEM-LEX2StmtList-ELEM : StmtList-ELEM-LEX -> StmtList-ELEM
 
   constructors
     StmtList-Plhdr : StmtList
@@ -26,30 +20,10 @@ signature
     Stmt2StmtList-ELEM : Stmt -> StmtList-ELEM
 
 
+
 signature
 
   sorts
-    TopLevelDecl-LEX = string
-    ConstDecl-LEX = string
-    ConstSpec-ELEM-LEX = string
-    ConstSpec-LEX = string
-    IDList-LEX = string
-    IDList-OPT-LEX = string
-    TypeDecl-LEX = string
-    TypeSpec-ELEM-LEX = string
-    TypeSpec-LEX = string
-    VarDecl-LEX = string
-    VarSpec-ELEM-LEX = string
-    VarSpec-LEX = string
-    ShortVarDecl-LEX = string
-    FunctionDecl-LEX = string
-    FunctionName-LEX = string
-    FunctionDecl-INNER-LEX = string
-    FunctionBody-LEX = string
-    MethodDecl-LEX = string
-    MethodDecl-INNER-LEX = string
-    Receiver-LEX = string
-    Receiver-INNER-LEX = string
     TopLevelDecl
     ConstDecl
     ConstSpec-ELEM
@@ -71,29 +45,6 @@ signature
     MethodDecl-INNER
     Receiver
     Receiver-INNER
-
-  constructors
-    TopLevelDecl-LEX2TopLevelDecl : TopLevelDecl-LEX -> TopLevelDecl
-    ConstDecl-LEX2ConstDecl : ConstDecl-LEX -> ConstDecl
-    ConstSpec-ELEM-LEX2ConstSpec-ELEM : ConstSpec-ELEM-LEX -> ConstSpec-ELEM
-    ConstSpec-LEX2ConstSpec : ConstSpec-LEX -> ConstSpec
-    IDList-LEX2IDList : IDList-LEX -> IDList
-    IDList-OPT-LEX2IDList-OPT : IDList-OPT-LEX -> IDList-OPT
-    TypeDecl-LEX2TypeDecl : TypeDecl-LEX -> TypeDecl
-    TypeSpec-ELEM-LEX2TypeSpec-ELEM : TypeSpec-ELEM-LEX -> TypeSpec-ELEM
-    TypeSpec-LEX2TypeSpec : TypeSpec-LEX -> TypeSpec
-    VarDecl-LEX2VarDecl : VarDecl-LEX -> VarDecl
-    VarSpec-ELEM-LEX2VarSpec-ELEM : VarSpec-ELEM-LEX -> VarSpec-ELEM
-    VarSpec-LEX2VarSpec : VarSpec-LEX -> VarSpec
-    ShortVarDecl-LEX2ShortVarDecl : ShortVarDecl-LEX -> ShortVarDecl
-    FunctionDecl-LEX2FunctionDecl : FunctionDecl-LEX -> FunctionDecl
-    FunctionName-LEX2FunctionName : FunctionName-LEX -> FunctionName
-    FunctionDecl-INNER-LEX2FunctionDecl-INNER : FunctionDecl-INNER-LEX -> FunctionDecl-INNER
-    FunctionBody-LEX2FunctionBody : FunctionBody-LEX -> FunctionBody
-    MethodDecl-LEX2MethodDecl : MethodDecl-LEX -> MethodDecl
-    MethodDecl-INNER-LEX2MethodDecl-INNER : MethodDecl-INNER-LEX -> MethodDecl-INNER
-    Receiver-LEX2Receiver : Receiver-LEX -> Receiver
-    Receiver-INNER-LEX2Receiver-INNER : Receiver-INNER-LEX -> Receiver-INNER
 
   constructors
     TopLevelDecl-Plhdr : TopLevelDecl
@@ -131,10 +82,10 @@ signature
     ConstDecl : list(ConstSpec-ELEM) -> ConstDecl
     ConstSpec2ConstSpec-ELEM : ConstSpec -> ConstSpec-ELEM
     ConstSpec : IDList * Type-OPT * ExprList -> ConstSpec
-    ID2IDList : list(ID) -> IDList
+    IDs2IDList : list(ID) -> IDList
     NoIDs : IDList-OPT
     IDList2IDList-OPT : IDList -> IDList-OPT
-    Expr2ExprList : list(Expr) -> ExprList
+    Exprs2ExprList : list(Expr) -> ExprList
     NoExprs : ExprList-OPT
     ExprList2ExprList-OPT : ExprList -> ExprList-OPT
     SingleTypeDecl : TypeSpec -> TypeDecl
@@ -167,29 +118,6 @@ signature
 signature
 
   sorts
-    Operand-LEX = string
-    Literal-LEX = string
-    BasicLit-LEX = string
-    OperandName-LEX = string
-    QualifiedIdent-LEX = string
-    CompositeLit-LEX = string
-    LiteralType-LEX = string
-    LiteralValue-LEX = string
-    ElementList-LEX = string
-    KeyedElement-LEX = string
-    Key-OPT-LEX = string
-    Key-LEX = string
-    FieldName-LEX = string
-    Element-LEX = string
-    FunctionLit-LEX = string
-    PrimaryExpr-LEX = string
-    Arguments-OPT-LEX = string
-    Arguments-LEX = string
-    MethodExpr-LEX = string
-    ReceiverType-LEX = string
-    BinaryExpr-LEX = string
-    UnaryExpr-LEX = string
-    Conversion-LEX = string
     Operand
     Literal
     BasicLit
@@ -213,31 +141,6 @@ signature
     BinaryExpr
     UnaryExpr
     Conversion
-
-  constructors
-    Operand-LEX2Operand : Operand-LEX -> Operand
-    Literal-LEX2Literal : Literal-LEX -> Literal
-    BasicLit-LEX2BasicLit : BasicLit-LEX -> BasicLit
-    OperandName-LEX2OperandName : OperandName-LEX -> OperandName
-    QualifiedIdent-LEX2QualifiedIdent : QualifiedIdent-LEX -> QualifiedIdent
-    CompositeLit-LEX2CompositeLit : CompositeLit-LEX -> CompositeLit
-    LiteralType-LEX2LiteralType : LiteralType-LEX -> LiteralType
-    LiteralValue-LEX2LiteralValue : LiteralValue-LEX -> LiteralValue
-    ElementList-LEX2ElementList : ElementList-LEX -> ElementList
-    KeyedElement-LEX2KeyedElement : KeyedElement-LEX -> KeyedElement
-    Key-OPT-LEX2Key-OPT : Key-OPT-LEX -> Key-OPT
-    Key-LEX2Key : Key-LEX -> Key
-    FieldName-LEX2FieldName : FieldName-LEX -> FieldName
-    Element-LEX2Element : Element-LEX -> Element
-    FunctionLit-LEX2FunctionLit : FunctionLit-LEX -> FunctionLit
-    PrimaryExpr-LEX2PrimaryExpr : PrimaryExpr-LEX -> PrimaryExpr
-    Arguments-OPT-LEX2Arguments-OPT : Arguments-OPT-LEX -> Arguments-OPT
-    Arguments-LEX2Arguments : Arguments-LEX -> Arguments
-    MethodExpr-LEX2MethodExpr : MethodExpr-LEX -> MethodExpr
-    ReceiverType-LEX2ReceiverType : ReceiverType-LEX -> ReceiverType
-    BinaryExpr-LEX2BinaryExpr : BinaryExpr-LEX -> BinaryExpr
-    UnaryExpr-LEX2UnaryExpr : UnaryExpr-LEX -> UnaryExpr
-    Conversion-LEX2Conversion : Conversion-LEX -> Conversion
 
   constructors
     Operand-Plhdr : Operand
@@ -292,7 +195,7 @@ signature
     TypeName2LiteralType : TypeName -> LiteralType
     LiteralValue : ElementList -> LiteralValue
     LiteralValue-ALT : ElementList -> LiteralValue
-    KeyedElement2ElementList : list(KeyedElement) -> ElementList
+    KeyedElements2ElementList : list(KeyedElement) -> ElementList
     KeyedElement : Key-OPT * Element -> KeyedElement
     NoKey : Key-OPT
     Key2Key-OPT : Key -> Key-OPT
@@ -359,18 +262,11 @@ signature
     Conversion-DISAMB : Type * Expr -> Conversion
     Conversion-DISAMB-ALT : Type * Expr -> Conversion
 
-
 signature
 
   sorts
-    TestSources-LEX = string
-    TestSource-LEX = string
     TestSources
     TestSource
-
-  constructors
-    TestSources-LEX2TestSources : TestSources-LEX -> TestSources
-    TestSource-LEX2TestSource : TestSource-LEX -> TestSource
 
   constructors
     TestSources-Plhdr : TestSources
@@ -386,53 +282,21 @@ signature
 signature
 
   sorts
-    ID-LEX = string
-    INTLIT-LEX = string
-    FLOATLIT-LEX = string
-    IMAGINARYLIT-LEX = string
-    RUNELIT-LEX = string
-    STRINGLIT-LEX = string
-    ID
-    INTLIT
-    FLOATLIT
-    IMAGINARYLIT
-    RUNELIT
-    STRINGLIT
+    INTLIT = string
+    FLOATLIT = string
+    IMAGINARYLIT = string
+    RUNELIT = string
+    STRINGLIT = string
 
   constructors
-    ID-LEX2ID : ID-LEX -> ID
-    INTLIT-LEX2INTLIT : INTLIT-LEX -> INTLIT
-    FLOATLIT-LEX2FLOATLIT : FLOATLIT-LEX -> FLOATLIT
-    IMAGINARYLIT-LEX2IMAGINARYLIT : IMAGINARYLIT-LEX -> IMAGINARYLIT
-    RUNELIT-LEX2RUNELIT : RUNELIT-LEX -> RUNELIT
-    STRINGLIT-LEX2STRINGLIT : STRINGLIT-LEX -> STRINGLIT
-
-  constructors
-    ID-Plhdr : ID
-    INTLIT-Plhdr : INTLIT
-    FLOATLIT-Plhdr : FLOATLIT
-    IMAGINARYLIT-Plhdr : IMAGINARYLIT
-    RUNELIT-Plhdr : RUNELIT
-    STRINGLIT-Plhdr : STRINGLIT
 
 signature
 
   constructors
-
 
 signature
 
   sorts
-    SourceFile-LEX = string
-    ImportDecl-ELEM-LEX = string
-    TopLevelDecl-ELEM-LEX = string
-    PackageClause-LEX = string
-    PackageName-LEX = string
-    ImportDecl-LEX = string
-    ImportSpec-ELEM-LEX = string
-    ImportSpec-LEX = string
-    ImportSpecQual-LEX = string
-    ImportPath-LEX = string
     SourceFile
     ImportDecl-ELEM
     TopLevelDecl-ELEM
@@ -443,18 +307,6 @@ signature
     ImportSpec
     ImportSpecQual
     ImportPath
-
-  constructors
-    SourceFile-LEX2SourceFile : SourceFile-LEX -> SourceFile
-    ImportDecl-ELEM-LEX2ImportDecl-ELEM : ImportDecl-ELEM-LEX -> ImportDecl-ELEM
-    TopLevelDecl-ELEM-LEX2TopLevelDecl-ELEM : TopLevelDecl-ELEM-LEX -> TopLevelDecl-ELEM
-    PackageClause-LEX2PackageClause : PackageClause-LEX -> PackageClause
-    PackageName-LEX2PackageName : PackageName-LEX -> PackageName
-    ImportDecl-LEX2ImportDecl : ImportDecl-LEX -> ImportDecl
-    ImportSpec-ELEM-LEX2ImportSpec-ELEM : ImportSpec-ELEM-LEX -> ImportSpec-ELEM
-    ImportSpec-LEX2ImportSpec : ImportSpec-LEX -> ImportSpec
-    ImportSpecQual-LEX2ImportSpecQual : ImportSpecQual-LEX -> ImportSpecQual
-    ImportPath-LEX2ImportPath : ImportPath-LEX -> ImportPath
 
   constructors
     SourceFile-Plhdr : SourceFile
@@ -488,30 +340,6 @@ signature
 signature
 
   sorts
-
-  constructors
-
-  constructors
-
-signature
-
-  constructors
-
-signature
-
-  sorts
-    Declaration-LEX = string
-    Stmt-LEX = string
-    Block-LEX = string
-    Expr-LEX = string
-    Expr-OPT-LEX = string
-    ExprList-LEX = string
-    ExprList-OPT-LEX = string
-    Type-LEX = string
-    Type-OPT-LEX = string
-    TypeName-LEX = string
-    Function-LEX = string
-    Signature-LEX = string
     Declaration
     Stmt
     Block
@@ -524,20 +352,6 @@ signature
     TypeName
     Function
     Signature
-
-  constructors
-    Declaration-LEX2Declaration : Declaration-LEX -> Declaration
-    Stmt-LEX2Stmt : Stmt-LEX -> Stmt
-    Block-LEX2Block : Block-LEX -> Block
-    Expr-LEX2Expr : Expr-LEX -> Expr
-    Expr-OPT-LEX2Expr-OPT : Expr-OPT-LEX -> Expr-OPT
-    ExprList-LEX2ExprList : ExprList-LEX -> ExprList
-    ExprList-OPT-LEX2ExprList-OPT : ExprList-OPT-LEX -> ExprList-OPT
-    Type-LEX2Type : Type-LEX -> Type
-    Type-OPT-LEX2Type-OPT : Type-OPT-LEX -> Type-OPT
-    TypeName-LEX2TypeName : TypeName-LEX -> TypeName
-    Function-LEX2Function : Function-LEX -> Function
-    Signature-LEX2Signature : Signature-LEX -> Signature
 
   constructors
     Declaration-Plhdr : Declaration
@@ -560,53 +374,6 @@ signature
 signature
 
   sorts
-    SimpleStmt-LEX = string
-    EmptyStmt-LEX = string
-    LabeledStmt-LEX = string
-    Label-LEX = string
-    Label-OPT-LEX = string
-    ExprStmt-LEX = string
-    SendStmt-LEX = string
-    Channel-LEX = string
-    IncDecStmt-LEX = string
-    Assignment-LEX = string
-    IfStmt-LEX = string
-    IfStmt-INNER-OPT-LEX = string
-    IfStmt-INNER-LEX = string
-    StmtInit-OPT-LEX = string
-    SwitchStmt-LEX = string
-    ExprSwitchStmt-LEX = string
-    ExprCaseClause-LEX = string
-    ExprSwitchCase-LEX = string
-    TypeSwitchStmt-LEX = string
-    TypeSwitchGuard-LEX = string
-    TypeCaseClause-LEX = string
-    TypeSwitchCase-LEX = string
-    TypeList-LEX = string
-    ForStmt-LEX = string
-    ForStmt-INNER-OPT-LEX = string
-    ForStmt-INNER-LEX = string
-    Condition-LEX = string
-    ForClause-LEX = string
-    InitStmt-OPT-LEX = string
-    InitStmt-LEX = string
-    Condition-OPT-LEX = string
-    PostStmt-OPT-LEX = string
-    PostStmt-LEX = string
-    RangeClause-LEX = string
-    ExprOrIdListEq-LEX = string
-    GoStmt-LEX = string
-    SelectStmt-LEX = string
-    CommClause-LEX = string
-    CommCase-LEX = string
-    RecvStmt-LEX = string
-    RecvExpr-LEX = string
-    ReturnStmt-LEX = string
-    BreakStmt-LEX = string
-    ContinueStmt-LEX = string
-    GotoStmt-LEX = string
-    FallthroughStmt-LEX = string
-    DeferStmt-LEX = string
     SimpleStmt
     EmptyStmt
     LabeledStmt
@@ -654,55 +421,6 @@ signature
     GotoStmt
     FallthroughStmt
     DeferStmt
-
-  constructors
-    SimpleStmt-LEX2SimpleStmt : SimpleStmt-LEX -> SimpleStmt
-    EmptyStmt-LEX2EmptyStmt : EmptyStmt-LEX -> EmptyStmt
-    LabeledStmt-LEX2LabeledStmt : LabeledStmt-LEX -> LabeledStmt
-    Label-LEX2Label : Label-LEX -> Label
-    Label-OPT-LEX2Label-OPT : Label-OPT-LEX -> Label-OPT
-    ExprStmt-LEX2ExprStmt : ExprStmt-LEX -> ExprStmt
-    SendStmt-LEX2SendStmt : SendStmt-LEX -> SendStmt
-    Channel-LEX2Channel : Channel-LEX -> Channel
-    IncDecStmt-LEX2IncDecStmt : IncDecStmt-LEX -> IncDecStmt
-    Assignment-LEX2Assignment : Assignment-LEX -> Assignment
-    IfStmt-LEX2IfStmt : IfStmt-LEX -> IfStmt
-    IfStmt-INNER-OPT-LEX2IfStmt-INNER-OPT : IfStmt-INNER-OPT-LEX -> IfStmt-INNER-OPT
-    IfStmt-INNER-LEX2IfStmt-INNER : IfStmt-INNER-LEX -> IfStmt-INNER
-    StmtInit-OPT-LEX2StmtInit-OPT : StmtInit-OPT-LEX -> StmtInit-OPT
-    SwitchStmt-LEX2SwitchStmt : SwitchStmt-LEX -> SwitchStmt
-    ExprSwitchStmt-LEX2ExprSwitchStmt : ExprSwitchStmt-LEX -> ExprSwitchStmt
-    ExprCaseClause-LEX2ExprCaseClause : ExprCaseClause-LEX -> ExprCaseClause
-    ExprSwitchCase-LEX2ExprSwitchCase : ExprSwitchCase-LEX -> ExprSwitchCase
-    TypeSwitchStmt-LEX2TypeSwitchStmt : TypeSwitchStmt-LEX -> TypeSwitchStmt
-    TypeSwitchGuard-LEX2TypeSwitchGuard : TypeSwitchGuard-LEX -> TypeSwitchGuard
-    TypeCaseClause-LEX2TypeCaseClause : TypeCaseClause-LEX -> TypeCaseClause
-    TypeSwitchCase-LEX2TypeSwitchCase : TypeSwitchCase-LEX -> TypeSwitchCase
-    TypeList-LEX2TypeList : TypeList-LEX -> TypeList
-    ForStmt-LEX2ForStmt : ForStmt-LEX -> ForStmt
-    ForStmt-INNER-OPT-LEX2ForStmt-INNER-OPT : ForStmt-INNER-OPT-LEX -> ForStmt-INNER-OPT
-    ForStmt-INNER-LEX2ForStmt-INNER : ForStmt-INNER-LEX -> ForStmt-INNER
-    Condition-LEX2Condition : Condition-LEX -> Condition
-    ForClause-LEX2ForClause : ForClause-LEX -> ForClause
-    InitStmt-OPT-LEX2InitStmt-OPT : InitStmt-OPT-LEX -> InitStmt-OPT
-    InitStmt-LEX2InitStmt : InitStmt-LEX -> InitStmt
-    Condition-OPT-LEX2Condition-OPT : Condition-OPT-LEX -> Condition-OPT
-    PostStmt-OPT-LEX2PostStmt-OPT : PostStmt-OPT-LEX -> PostStmt-OPT
-    PostStmt-LEX2PostStmt : PostStmt-LEX -> PostStmt
-    RangeClause-LEX2RangeClause : RangeClause-LEX -> RangeClause
-    ExprOrIdListEq-LEX2ExprOrIdListEq : ExprOrIdListEq-LEX -> ExprOrIdListEq
-    GoStmt-LEX2GoStmt : GoStmt-LEX -> GoStmt
-    SelectStmt-LEX2SelectStmt : SelectStmt-LEX -> SelectStmt
-    CommClause-LEX2CommClause : CommClause-LEX -> CommClause
-    CommCase-LEX2CommCase : CommCase-LEX -> CommCase
-    RecvStmt-LEX2RecvStmt : RecvStmt-LEX -> RecvStmt
-    RecvExpr-LEX2RecvExpr : RecvExpr-LEX -> RecvExpr
-    ReturnStmt-LEX2ReturnStmt : ReturnStmt-LEX -> ReturnStmt
-    BreakStmt-LEX2BreakStmt : BreakStmt-LEX -> BreakStmt
-    ContinueStmt-LEX2ContinueStmt : ContinueStmt-LEX -> ContinueStmt
-    GotoStmt-LEX2GotoStmt : GotoStmt-LEX -> GotoStmt
-    FallthroughStmt-LEX2FallthroughStmt : FallthroughStmt-LEX -> FallthroughStmt
-    DeferStmt-LEX2DeferStmt : DeferStmt-LEX -> DeferStmt
 
   constructors
     SimpleStmt-Plhdr : SimpleStmt
@@ -818,7 +536,7 @@ signature
     TypeCaseClause : TypeSwitchCase * StmtList -> TypeCaseClause
     TypeSwitchCase : TypeList -> TypeSwitchCase
     TypeSwitchDefault : TypeSwitchCase
-    Type2TypeList : list(Type) -> TypeList
+    Types2TypeList : list(Type) -> TypeList
     ForStmt : ForStmt-INNER-OPT * Block -> ForStmt
     NoClause : ForStmt-INNER-OPT
     ForStmt-INNER2ForStmt-INNER-OPT : ForStmt-INNER -> ForStmt-INNER-OPT
@@ -857,34 +575,6 @@ signature
 signature
 
   sorts
-    TypeLit-LEX = string
-    ArrayType-LEX = string
-    ArrayLength-LEX = string
-    ElementType-LEX = string
-    SliceType-LEX = string
-    StructType-LEX = string
-    StructType-ELEM-LEX = string
-    FieldDecl-LEX = string
-    Field-LEX = string
-    EmbeddedField-LEX = string
-    Tag-OPT-LEX = string
-    Tag-LEX = string
-    PointerType-LEX = string
-    BaseType-LEX = string
-    FunctionType-LEX = string
-    Result-OPT-LEX = string
-    Result-LEX = string
-    Parameters-LEX = string
-    ParameterList-LEX = string
-    ParameterDecl-LEX = string
-    InterfaceType-LEX = string
-    InterfaceType-ELEM-LEX = string
-    MethodSpec-LEX = string
-    MethodName-LEX = string
-    InterfaceTypeName-LEX = string
-    MapType-LEX = string
-    KeyType-LEX = string
-    ChannelType-LEX = string
     TypeLit
     ArrayType
     ArrayLength
@@ -913,36 +603,6 @@ signature
     MapType
     KeyType
     ChannelType
-
-  constructors
-    TypeLit-LEX2TypeLit : TypeLit-LEX -> TypeLit
-    ArrayType-LEX2ArrayType : ArrayType-LEX -> ArrayType
-    ArrayLength-LEX2ArrayLength : ArrayLength-LEX -> ArrayLength
-    ElementType-LEX2ElementType : ElementType-LEX -> ElementType
-    SliceType-LEX2SliceType : SliceType-LEX -> SliceType
-    StructType-LEX2StructType : StructType-LEX -> StructType
-    StructType-ELEM-LEX2StructType-ELEM : StructType-ELEM-LEX -> StructType-ELEM
-    FieldDecl-LEX2FieldDecl : FieldDecl-LEX -> FieldDecl
-    Field-LEX2Field : Field-LEX -> Field
-    EmbeddedField-LEX2EmbeddedField : EmbeddedField-LEX -> EmbeddedField
-    Tag-OPT-LEX2Tag-OPT : Tag-OPT-LEX -> Tag-OPT
-    Tag-LEX2Tag : Tag-LEX -> Tag
-    PointerType-LEX2PointerType : PointerType-LEX -> PointerType
-    BaseType-LEX2BaseType : BaseType-LEX -> BaseType
-    FunctionType-LEX2FunctionType : FunctionType-LEX -> FunctionType
-    Result-OPT-LEX2Result-OPT : Result-OPT-LEX -> Result-OPT
-    Result-LEX2Result : Result-LEX -> Result
-    Parameters-LEX2Parameters : Parameters-LEX -> Parameters
-    ParameterList-LEX2ParameterList : ParameterList-LEX -> ParameterList
-    ParameterDecl-LEX2ParameterDecl : ParameterDecl-LEX -> ParameterDecl
-    InterfaceType-LEX2InterfaceType : InterfaceType-LEX -> InterfaceType
-    InterfaceType-ELEM-LEX2InterfaceType-ELEM : InterfaceType-ELEM-LEX -> InterfaceType-ELEM
-    MethodSpec-LEX2MethodSpec : MethodSpec-LEX -> MethodSpec
-    MethodName-LEX2MethodName : MethodName-LEX -> MethodName
-    InterfaceTypeName-LEX2InterfaceTypeName : InterfaceTypeName-LEX -> InterfaceTypeName
-    MapType-LEX2MapType : MapType-LEX -> MapType
-    KeyType-LEX2KeyType : KeyType-LEX -> KeyType
-    ChannelType-LEX2ChannelType : ChannelType-LEX -> ChannelType
 
   constructors
     TypeLit-Plhdr : TypeLit

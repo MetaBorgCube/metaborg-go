@@ -78,12 +78,12 @@ rules
 rules
   typeOfTypeName : scope * scope * TypeName -> TYPE
 
-  typeOfTypeName(s, _, ID2TypeName(ID-LEX2ID(name))) = T :-
+  typeOfTypeName(s, _, ID2TypeName(name)) = T :-
     // Type{name} -> s,
     // Type{name} |-> d_ty.
     true.
 
-  typeOfTypeName(s, _, QualifiedTypeName(QualifiedIdent(ID2PackageName(ID-LEX2ID(pkg)), ID-LEX2ID(name)))) = NAMED(T) :-
+  typeOfTypeName(s, _, QualifiedTypeName(QualifiedIdent(ID2PackageName(pkg), name))) = NAMED(T) :-
     // Pkg{pkg} -> s,
     // new s_qual,
     // Pkg{pkg} <=PUB= s_qual,
@@ -220,17 +220,17 @@ rules
   embeddedFieldOk : scope * scope * EmbeddedField
 
   // FIXME/TODO: qualified types
-  embeddedFieldOk(s, s_ty, AnonymousPtrField(type@QualifiedTypeName(QualifiedIdent(ID2PackageName(ID-LEX2ID(pkg)), ID-LEX2ID(name))))).
-  embeddedFieldOk(s, s_ty, AnonymousField(type@QualifiedTypeName(QualifiedIdent(ID2PackageName(ID-LEX2ID(pkg)), ID-LEX2ID(name))))).
+  embeddedFieldOk(s, s_ty, AnonymousPtrField(type@QualifiedTypeName(QualifiedIdent(ID2PackageName(pkg), name)))).
+  embeddedFieldOk(s, s_ty, AnonymousField(type@QualifiedTypeName(QualifiedIdent(ID2PackageName(pkg), name)))).
 
-  embeddedFieldOk(s, s_ty, AnonymousPtrField(type@ID2TypeName(ID-LEX2ID(name)))).
+  embeddedFieldOk(s, s_ty, AnonymousPtrField(type@ID2TypeName(name))).
     // Var{name} <- s_ty,
     // [[ type ^ (s, s_ty') : ty ]], new s_ty',
     // Var{name} : ty,
     // Type{name} -> s,
     // Type{name} <=FM= s_ty.
 
-  embeddedFieldOk(s, s_ty, AnonymousField(type@ID2TypeName(ID-LEX2ID(name)))).
+  embeddedFieldOk(s, s_ty, AnonymousField(type@ID2TypeName(name))).
     // Var{name} <- s_ty,
     // [[ type ^ (s, s_ty') : ty ]], new s_ty',
     // Var{name} : ty,
@@ -253,7 +253,7 @@ rules
   tagOk : scope * Tag
 
   // TODO:
-  tagOk(_, Tag-LEX2Tag(_)).
+  tagOk(_, _).
 
   tagOk(_, Tag-Plhdr()).
 
