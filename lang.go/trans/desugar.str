@@ -33,58 +33,34 @@ rules
 
 rules
 
-  // ShortVarDecl
-  desugar-short-var-decl: ShortVarDecl(ids, es)   -> SingleVarDecl(VarSpecNoType(ids, es))
+  desugar-short-var-decl: ShortVarDecl(ids, es)         -> SingleVarDecl(VarSpecNoType(ids, es))
 
 rules
 
-  // ImportDecl
-  desugar-single-decl: SingleImportDecl(i)        -> ImportDecl([i])
-
-  // ConstDecl
-  desugar-single-decl: SingleConstDecl(c)         -> ConstDecl([c])
-
-  // TypeDecl
-  desugar-single-decl: SingleTypeDecl(t)          -> TypeDecl([t])
-
-  // VarDecl
-  desugar-single-decl: SingleVarDecl(v)           -> VarDecl([v])
+  desugar-single-decl: SingleImportDecl(i)              -> ImportDecl([i])
+  desugar-single-decl: SingleConstDecl(c)               -> ConstDecl([c])
+  desugar-single-decl: SingleTypeDecl(t)                -> TypeDecl([t])
+  desugar-single-decl: SingleVarDecl(v)                 -> VarDecl([v])
 
 rules
 
-  // IDList-OPT
-  desugar-list-opt: NoIDs()                       -> []
-
-  // ExprList-OPT
-  desugar-list-opt: NoExprs()                     -> []
+  desugar-list-opt: NoIDs()                             -> []
+  desugar-list-opt: NoExprs()                           -> []
 
 rules
 
-  // QualifiedIdent
-  desugar-disamb: QualifiedIdent-DISAMB(p, i)     -> QualifiedIdent(p, i)
-
-  // PrimaryExpr
-  desugar-disamb: Selector-DISAMB(e, i) 		      -> Selector(e, i)
-  desugar-disamb: Call-DISAMB(e, args)            -> Call(e, args)
-
-  // MethodExpr
-  desugar-disamb: MethodExpr-DISAMB(e, m)         -> MethodExpr(e, m)
-
-  // Conversion
-  desugar-disamb: Conversion-DISAMB(t, e)         -> Conversion(t, e)
-  desugar-disamb: Conversion-DISAMB-ALT(t, e)     -> Conversion-ALT(t, e)
+  desugar-disamb: QualifiedIdent-DISAMB(p, i)           -> QualifiedIdent(p, i)
+  desugar-disamb: Selector-DISAMB(e, i) 		            -> Selector(e, i)
+  desugar-disamb: Call-DISAMB(e, args)                  -> Call(e, args)
+  desugar-disamb: MethodExpr-DISAMB(e, m)               -> MethodExpr(e, m)
+  desugar-disamb: Conversion-DISAMB(t, e)               -> Conversion(t, e)
+  desugar-disamb: Conversion-DISAMB-ALT(t, e)           -> Conversion-ALT(t, e)
 
 rules
 
-  // LiteralValue
-  desugar-alt: LiteralValue-ALT(es)               -> LiteralValue(es)
-
-  // Arguments-OPT
-  desugar-alt: Arguments-ALT(as) 			            -> Arguments(as)
-  desugar-alt: ArgumentsExplode-ALT(as) 		      -> ArgumentsExplode(as)
-
-  // Conversion
-  desugar-alt: Conversion-ALT(t, e)               -> Conversion(t, e)
-
-  // Parameters
-  desugar-alt: Parameters-ALT(ps)                 -> Parameters(ps)
+  desugar-alt: LiteralValue-ALT(es)                     -> LiteralValue(es)
+  desugar-alt: Arguments-ALT(as) 			                  -> Arguments(as)
+  desugar-alt: ArgumentsExplode-ALT(as) 		            -> ArgumentsExplode(as)
+  desugar-alt: Conversion-ALT(t, e)                     -> Conversion(t, e)
+  desugar-alt: Parameters-ALT(ps)                       -> Parameters(ps)
+  desugar-alt: CallOrConversion-ALT(t, e)               -> CallOrConversion(t, e)

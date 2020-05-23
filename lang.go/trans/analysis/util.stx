@@ -15,33 +15,33 @@ imports
 
 imports
   analysis/types
-
-rules
-  declareVars : scope * list(ID) * TYPE
-
-  declareVars(s, [name|names], T) :-
-    declareVar(s, name, T),
-    declareVars(s, names, T).
-
-  declareVars(_, [], _).
-
-
-rules
-  declareVarsOfTypes : scope * list(ID) * list(TYPE)
-
-  declareVarsOfTypes(s, [name|names], [T|TS]) :-
-    declareVar(s, name, T),
-    declareVarsOfTypes(s, names, TS).
-
-  declareVarsOfTypes(_, [], [_|_]) :- true. /* TODO: error */
-  declareVarsOfTypes(_, [_|_], []) :- true. /* TODO: error */
-
-  declareVarsOfTypes(_, [], []).
-
-rules
-  declareVar : scope * string * TYPE
-
-  declareVar(s, name, T) :-
-//    Var{name} <- s,
-//    Var{name} : ty.
-    true.
+//
+//rules
+//  declareVars : scope * list(ID) * TYPE
+//
+//  declareVars(s, [name|names], T) :-
+//    declareVar(s, name, T),
+//    declareVars(s, names, T).
+//
+//  declareVars(_, [], _).
+//
+//
+//rules
+//  declareVarsOfTypes : scope * list(ID) * list(TYPE)
+//
+//  declareVarsOfTypes(s, [name|names], [T|TS]) :-
+//    declareVar(s, name, T),
+//    declareVarsOfTypes(s, names, TS).
+//
+//  declareVarsOfTypes(_, [], [_|_]) :- true. /* TODO: error */
+//  declareVarsOfTypes(_, [_|_], []) :- true. /* TODO: error */
+//
+//  declareVarsOfTypes(_, [], []).
+//
+//rules
+//  declareVar : scope * string * TYPE
+//
+//  declareVar(s, name, T) :-
+////    Var{name} <- s,
+////    Var{name} : ty.
+//    true.

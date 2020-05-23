@@ -15,12 +15,12 @@ imports
 
 imports
   analysis/statements
-
-rules
-  blockOk : scope * Block
-
-  blockOk(s, Block(stmts)) :-
-    stmtListOk(s, stmts).
-
-  blockOk(_, Block-Plhdr()).
-
+//
+//rules
+//  blockOk : scope * Block
+//
+//  blockOk(s, Block(stmts)) :-
+//    stmtListOk(s, stmts).
+//
+//  blockOk(_, Block-Plhdr()).
+//

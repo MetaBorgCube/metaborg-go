@@ -34,10 +34,10 @@ context-free syntax
   Type                        = StructType
   Type                        = SliceType
   Type                        = MapType
-  
+
 
   Type.PointerType            = <*<Type>>                                     // Pointer types -- https://golang.org/ref/spec#Pointer_types
-  
+
 
 
 /**
@@ -119,7 +119,6 @@ context-free syntax
 /**
  * Channel types -- https://golang.org/ref/spec#Channel_types
  */
-context-free sorts Type
 context-free syntax
 
   Type.BidirectionalChannelType         = [chan [Type]]

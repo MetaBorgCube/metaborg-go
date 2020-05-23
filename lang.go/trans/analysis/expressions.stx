@@ -16,354 +16,354 @@ imports
 imports
   analysis/types
   analysis/declarations
-
-// Expressions
-rules
-  typesOfExprListOPT : scope * ExprList-OPT -> list(TYPE)
-
-  typesOfExprListOPT(s, NoExprs()) = [].
-  typesOfExprListOPT(s, ExprList2ExprList-OPT(exprList)) = TS :-
-    typesOfExprList(s, exprList) == TS.
-
-  typesOfExprListOPT(_, ExprList-OPT-Plhdr()) = _.
-
-rules
-  typesOfExprList : scope * ExprList -> list(TYPE)
-
-  typesOfExprList(s, Expr2ExprList(exprs)) = TS :-
-    typesOfExprs(s, exprs) == TS.
-
-  typesOfExprList(_, ExprList-Plhdr()) = _.
-
-rules
-  typeOfExpr : scope * Expr -> TYPE
-  typesOfExprs maps typeOfExpr(*, list(*)) = list(*)
-
-  typeOfExpr(s, UnaryExpr2Expr(expr)) = T :-
-    typeOfUnaryExpr(s, expr) == T.
-  typeOfExpr(s, BinaryExpr2Expr(expr)) = T :-
-    typeOfBinaryExpr(s, expr) == T.
-
-  typeOfExpr(_, Expr-Plhdr()) = _.
-
-
-rules
-  typeOfUnaryExpr : scope * UnaryExpr -> TYPE
-
-  typeOfUnaryExpr(s, Positive(expr)) = T :-
-    typeOfUnaryExpr(s, expr) == T.
-  typeOfUnaryExpr(s, Negation(expr)) = T :-
-    typeOfUnaryExpr(s, expr) == T.
-  typeOfUnaryExpr(s, Not(expr)) = T :-
-    typeOfUnaryExpr(s, expr) == T.
-  typeOfUnaryExpr(s, BitwiseComplement(expr)) = T :-
-    typeOfUnaryExpr(s, expr) == T.
-  typeOfUnaryExpr(s, Deref(expr)) = T :-
-    typeOfUnaryExpr(s, expr) == T.
-  typeOfUnaryExpr(s, Ref(expr)) = T :-
-    typeOfUnaryExpr(s, expr) == T.
-  typeOfUnaryExpr(s, Receive(expr)) = T :-
-    typeOfUnaryExpr(s, expr) == T.
-
-  typeOfUnaryExpr(s, PrimaryExpr2UnaryExpr(expr)) = T :-
-    typeOfPrimaryExpr(s, expr) == T.
-
-rules
-  typeOfBinaryExpr : scope * BinaryExpr -> TYPE
-
-  typeOfBinaryExpr(s, LogicalOr(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, LogicalAnd(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-
-  typeOfBinaryExpr(s, Equal(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, NotEqual(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, Less(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, LessOrEqual(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, Greater(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, GreaterOrEqual(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-
-  typeOfBinaryExpr(s, Sum(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, Difference(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, BitwiseOr(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, BitwiseXor(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-
-  typeOfBinaryExpr(s, Product(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, Quotient(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, Remainder(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, LeftShift(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, RightShift(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, BitwiseAnd(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-  typeOfBinaryExpr(s, BitClear(expr1, expr2)) = T :-
-    typeOfExpr(s, expr1) == _,
-    typeOfExpr(s, expr2) == _.
-
-rules
-  typeOfPrimaryExpr : scope * PrimaryExpr -> TYPE
-
-  typeOfPrimaryExpr(s, Operand2PrimaryExpr(operand)) = T :-
-    typeOfOperand(s, operand) == T.
-  typeOfPrimaryExpr(s, Conversion2PrimaryExpr(conversion)) = T :-
-    typeOfConversion(s, conversion) == T.
-  typeOfPrimaryExpr(s, MethodExpr2PrimaryExpr(methodExpr)) = T :-
-    typeOfMethodExpr(s, methodExpr) == T.
-
-  typeOfPrimaryExpr(s, Selector(expr, name)) = T :- {TE}
-    typeOfPrimaryExpr(s, expr) == TE,
-    // TE == NamedT(d_ty), // FIXME Hardcoded for this one case
-    // d_ty ?=FM=> s_ty,
-    // new s_fld,
-    // s_fld ---> s_ty,
-    // VarRef[[ name ^ (s_fld) : ty ]],
-    // false | note "TODO: Selector/2".
-    true.
-  // TODO:
-  typeOfPrimaryExpr(s, Index(_, _)) = T.
-  typeOfPrimaryExpr(s, SliceLH(_, _, _)) = T.
-  typeOfPrimaryExpr(s, SliceLHM(_, _, _, _)) = T.
-  typeOfPrimaryExpr(s, TypeAssertion(_, _)) = T.
-  typeOfPrimaryExpr(s, Call(_, _)) = T.
-
-  typeOfPrimaryExpr(_, PrimaryExpr-Plhdr()) = _.
-
-rules
-  typeOfOperand : scope * Operand -> TYPE
-
-  typeOfOperand(s, Literal2Operand(lit)) = T :-
-    typeOfLiteral(s, lit) == T.
-
-  typeOfOperand(s, OperandName2Operand(name)) = T :-
-    typeOfOperandName(s, name) == T.
-
-  typeOfOperand(_, Operand-Plhdr()) = _.
-
-rules
-  typeOfOperandName : scope * OperandName -> TYPE
-
-  // Qualified identifiers
-  typeOfOperandName(s, OperandName(name)) = T :-
-    // Var{name} -> s,
-    // Var{name} |-> d,
-    // d : ty.
-    true.
-
-  typeOfOperandName(s, QualifiedIdent2OperandName(ident)) = T :-
-    typeOfQualifiedIdent(s, ident) == T.
-
-  typeOfOperandName(_, OperandName-Plhdr()) = _.
-
-rules
-  typeOfQualifiedIdent : scope * QualifiedIdent -> TYPE
-
-  typeOfQualifiedIdent(s, QualifiedIdent(ID2PackageName(pkg), name)) = T :-
-    // Pkg{pkg} -> s,
-    // new s_qual,
-    // Pkg{pkg} <=PUB= s_qual,
-    // Var{name} -> s_qual,
-    // Var{name} |-> d,
-    // d : ty.
-    true.
-
-  typeOfQualifiedIdent(_, QualifiedIdent-Plhdr()) = _.
-
-
-rules
-  typeOfLiteral : scope * Literal -> TYPE
-
-  typeOfLiteral(s, BasicLit2Literal(lit)) = T :-
-    typeOfBasicLit(s, lit) == T.
-  typeOfLiteral(s, CompositeLit2Literal(lit)) = T :-
-    typeOfCompositeLit(s, lit) == T.
-  typeOfLiteral(s, FunctionLit2Literal(lit)) = T :-
-    typeOfFunctionLit(s, lit) == T.
-
-  typeOfLiteral(_, Literal-Plhdr()) = _.
-
-
-rules
-  typeOfBasicLit : scope * BasicLit -> TYPE
-
-  typeOfBasicLit(s, IntLit(_)) = _.
-  typeOfBasicLit(s, FloatLit(_)) = _.
-  typeOfBasicLit(s, ImaginaryLit(_)) = _.
-  typeOfBasicLit(s, RuneLit(_)) = _.
-  typeOfBasicLit(s, StringLit(_)) = STRING().
-
-  typeOfBasicLit(_, BasicLit-Plhdr()) = _.
-
-
-rules
-  typeOfCompositeLit : scope * CompositeLit -> TYPE
-
-  typeOfCompositeLit(s, CompositeLit(type, value)) = T :- {s_ty}
-    new s_ty,
-    typeOfLiteralType(s, s_ty, type) == T,
-    typeOfLiteralValue(s, value) == _.
-
-  typeOfCompositeLit(s, CompositeLit-Plhdr()) = _.
-
-
-rules
-  typeOfFunctionLit : scope * FunctionLit -> TYPE
-
-  typeOfFunctionLit(s, FunctionLit(fun)) = T :-
-    typeOfFunction(s, fun) == _.
-
-  typeOfFunctionLit(_, FunctionLit-Plhdr()) = _.
-
-
-rules
-  typeOfConversion : scope * Conversion -> TYPE
-
-  typeOfConversion(s, Conversion(type, expr)) = T :- {s_ty}
-    new s_ty,
-    typeOfType(s, s_ty, type) == T,
-    typeOfExpr(s, expr) == _.
-
-  typeOfConversion(_, Conversion-Plhdr()) = _.
-
-rules
-  typeOfMethodExpr : scope * MethodExpr -> TYPE
-
-  // TODO:
-  typeOfMethodExpr(s, MethodExpr(_, _)) = T.
-
-  typeOfMethodExpr(_, MethodExpr-Plhdr()) = _.
-
-rules
-  typeOfArgumentsOPT : scope * Arguments-OPT -> TYPE
-
-  // TODO:
-  typeOfArgumentsOPT(s, NoArguments()) = _.
-  typeOfArgumentsOPT(s, Arguments(_)) = _.
-  typeOfArgumentsOPT(s, ArgumentsExplode(_)) = _.
-
-  typeOfArgumentsOPT(_, Arguments-OPT-Plhdr()) = _.
-
-rules
-  typeOfArguments : scope * Arguments -> TYPE
-
-  // TODO:
-  typeOfArguments(s, ExprArguments(_)) = _.
-  typeOfArguments(s, TypeArgument(_)) = _.
-  typeOfArguments(s, TypedArguments(_, _)) = _.
-
-  typeOfArguments(_, Arguments-Plhdr()) = _.
-
-  // [[ Arguments(expr,args) ^ (s) : ty ]] :=
-  //   [[ expr ^ (s) : FunT(ty_params,ty) ]],
-  //   Map1T[[ args ^ (s) : ty_args ]],
-  //   // check ty_args against ty_params
-  //   false | note "TODO: Arguments/2".
-
-rules
-  typeOfLiteralType : scope * scope * LiteralType -> TYPE
-
-  typeOfLiteralType(s, s_ty, StructType2LiteralType(structType)) = T :-
-    typeOfStructType(s, s_ty, structType) == T.
-  typeOfLiteralType(s, s_ty, ArrayType2LiteralType(arrayType)) = T :-
-    typeOfArrayType(s, s_ty, arrayType) == T.
-  typeOfLiteralType(s, s_ty, SliceType2LiteralType(sliceType)) = T :-
-    typeOfSliceType(s, s_ty, sliceType) == T.
-  typeOfLiteralType(s, s_ty, MapType2LiteralType(mapType)) = T :-
-    typeOfMapType(s, s_ty, mapType) == T.
-  typeOfLiteralType(s, s_ty, TypeName2LiteralType(typeName)) = T :-
-    typeOfTypeName(s, s_ty, typeName) == T.
-
-  // TODO:
-  typeOfLiteralType(s, s_ty, AutoArrayType(type)) = T.
-
-  typeOfLiteralType(s, s_ty, LiteralType-Plhdr()) = _.
-
-
-rules
-  typeOfLiteralValue : scope * LiteralValue -> TYPE
-
-  typeOfLiteralValue(s, LiteralValue(elemList)) = _.
-    elementListOk(s, elemList).
-
-  typeOfLiteralValue(s, LiteralValue-Plhdr()) = _.
-
-rules
-  elementListOk : scope * ElementList
-
-  elementListOk(s, KeyedElement2ElementList(elems)) :-
-    keyedElementsOk(s, elems).
-
-  elementListOk(_, ElementList-Plhdr()).
-
-rules
-  keyedElementOk : scope * KeyedElement
-  keyedElementsOk maps keyedElementOk(*, list(*))
-
-  keyedElementOk(s, KeyedElement(key, elem)) :-
-    keyOptOk(s, key),
-    elementOk(s, elem).
-
-  keyedElementOk(_, KeyedElement-Plhdr()).
-
-rules
-  keyOptOk : scope * Key-OPT
-
-  keyOptOk(s, NoKey()).
-  keyOptOk(s, Key2Key-OPT(key)) :-
-    keyOk(s, key).
-
-  keyOptOk(_, Key-OPT-Plhdr()).
-
-rules
-  keyOk : scope * Key
-
-  // TODO:
-  keyOk(s, FieldNameKey(_)).
-  keyOk(s, ExprKey(_)).
-  keyOk(s, LiteralKey(_)).
-
-  keyOk(_, Key-Plhdr()).
-
-rules
-  elementOk : scope * Element
-
-  // TODO:
-  elementOk(s, Expr2Element(expr)) :-
-    typeOfExpr(s, expr) == _.
-  elementOk(s, LiteralValue2Element(value)) :-
-    typeOfLiteralValue(s, value) == _.
-
-  elementOk(_, Element-Plhdr()).
+//
+//// Expressions
+//rules
+//  typesOfExprListOPT : scope * ExprList-OPT -> list(TYPE)
+//
+//  typesOfExprListOPT(s, NoExprs()) = [].
+//  typesOfExprListOPT(s, ExprList2ExprList-OPT(exprList)) = TS :-
+//    typesOfExprList(s, exprList) == TS.
+//
+//  typesOfExprListOPT(_, ExprList-OPT-Plhdr()) = _.
+//
+//rules
+//  typesOfExprList : scope * ExprList -> list(TYPE)
+//
+//  typesOfExprList(s, Expr2ExprList(exprs)) = TS :-
+//    typesOfExprs(s, exprs) == TS.
+//
+//  typesOfExprList(_, ExprList-Plhdr()) = _.
+//
+//rules
+//  typeOfExpr : scope * Expr -> TYPE
+//  typesOfExprs maps typeOfExpr(*, list(*)) = list(*)
+//
+//  typeOfExpr(s, UnaryExpr2Expr(expr)) = T :-
+//    typeOfUnaryExpr(s, expr) == T.
+//  typeOfExpr(s, BinaryExpr2Expr(expr)) = T :-
+//    typeOfBinaryExpr(s, expr) == T.
+//
+//  typeOfExpr(_, Expr-Plhdr()) = _.
+//
+//
+//rules
+//  typeOfUnaryExpr : scope * UnaryExpr -> TYPE
+//
+//  typeOfUnaryExpr(s, Positive(expr)) = T :-
+//    typeOfUnaryExpr(s, expr) == T.
+//  typeOfUnaryExpr(s, Negation(expr)) = T :-
+//    typeOfUnaryExpr(s, expr) == T.
+//  typeOfUnaryExpr(s, Not(expr)) = T :-
+//    typeOfUnaryExpr(s, expr) == T.
+//  typeOfUnaryExpr(s, BitwiseComplement(expr)) = T :-
+//    typeOfUnaryExpr(s, expr) == T.
+//  typeOfUnaryExpr(s, Deref(expr)) = T :-
+//    typeOfUnaryExpr(s, expr) == T.
+//  typeOfUnaryExpr(s, Ref(expr)) = T :-
+//    typeOfUnaryExpr(s, expr) == T.
+//  typeOfUnaryExpr(s, Receive(expr)) = T :-
+//    typeOfUnaryExpr(s, expr) == T.
+//
+//  typeOfUnaryExpr(s, PrimaryExpr2UnaryExpr(expr)) = T :-
+//    typeOfPrimaryExpr(s, expr) == T.
+//
+//rules
+//  typeOfBinaryExpr : scope * BinaryExpr -> TYPE
+//
+//  typeOfBinaryExpr(s, LogicalOr(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, LogicalAnd(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//
+//  typeOfBinaryExpr(s, Equal(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, NotEqual(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, Less(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, LessOrEqual(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, Greater(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, GreaterOrEqual(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//
+//  typeOfBinaryExpr(s, Sum(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, Difference(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, BitwiseOr(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, BitwiseXor(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//
+//  typeOfBinaryExpr(s, Product(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, Quotient(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, Remainder(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, LeftShift(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, RightShift(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, BitwiseAnd(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//  typeOfBinaryExpr(s, BitClear(expr1, expr2)) = T :-
+//    typeOfExpr(s, expr1) == _,
+//    typeOfExpr(s, expr2) == _.
+//
+//rules
+//  typeOfPrimaryExpr : scope * PrimaryExpr -> TYPE
+//
+//  typeOfPrimaryExpr(s, Operand2PrimaryExpr(operand)) = T :-
+//    typeOfOperand(s, operand) == T.
+//  typeOfPrimaryExpr(s, Conversion2PrimaryExpr(conversion)) = T :-
+//    typeOfConversion(s, conversion) == T.
+//  typeOfPrimaryExpr(s, MethodExpr2PrimaryExpr(methodExpr)) = T :-
+//    typeOfMethodExpr(s, methodExpr) == T.
+//
+//  typeOfPrimaryExpr(s, Selector(expr, name)) = T :- {TE}
+//    typeOfPrimaryExpr(s, expr) == TE,
+//    // TE == NamedT(d_ty), // FIXME Hardcoded for this one case
+//    // d_ty ?=FM=> s_ty,
+//    // new s_fld,
+//    // s_fld ---> s_ty,
+//    // VarRef[[ name ^ (s_fld) : ty ]],
+//    // false | note "TODO: Selector/2".
+//    true.
+//  // TODO:
+//  typeOfPrimaryExpr(s, Index(_, _)) = T.
+//  typeOfPrimaryExpr(s, SliceLH(_, _, _)) = T.
+//  typeOfPrimaryExpr(s, SliceLHM(_, _, _, _)) = T.
+//  typeOfPrimaryExpr(s, TypeAssertion(_, _)) = T.
+//  typeOfPrimaryExpr(s, Call(_, _)) = T.
+//
+//  typeOfPrimaryExpr(_, PrimaryExpr-Plhdr()) = _.
+//
+//rules
+//  typeOfOperand : scope * Operand -> TYPE
+//
+//  typeOfOperand(s, Literal2Operand(lit)) = T :-
+//    typeOfLiteral(s, lit) == T.
+//
+//  typeOfOperand(s, OperandName2Operand(name)) = T :-
+//    typeOfOperandName(s, name) == T.
+//
+//  typeOfOperand(_, Operand-Plhdr()) = _.
+//
+//rules
+//  typeOfOperandName : scope * OperandName -> TYPE
+//
+//  // Qualified identifiers
+//  typeOfOperandName(s, OperandName(name)) = T :-
+//    // Var{name} -> s,
+//    // Var{name} |-> d,
+//    // d : ty.
+//    true.
+//
+//  typeOfOperandName(s, QualifiedIdent2OperandName(ident)) = T :-
+//    typeOfQualifiedIdent(s, ident) == T.
+//
+//  typeOfOperandName(_, OperandName-Plhdr()) = _.
+//
+//rules
+//  typeOfQualifiedIdent : scope * QualifiedIdent -> TYPE
+//
+//  typeOfQualifiedIdent(s, QualifiedIdent(ID2PackageName(pkg), name)) = T :-
+//    // Pkg{pkg} -> s,
+//    // new s_qual,
+//    // Pkg{pkg} <=PUB= s_qual,
+//    // Var{name} -> s_qual,
+//    // Var{name} |-> d,
+//    // d : ty.
+//    true.
+//
+//  typeOfQualifiedIdent(_, QualifiedIdent-Plhdr()) = _.
+//
+//
+//rules
+//  typeOfLiteral : scope * Literal -> TYPE
+//
+//  typeOfLiteral(s, BasicLit2Literal(lit)) = T :-
+//    typeOfBasicLit(s, lit) == T.
+//  typeOfLiteral(s, CompositeLit2Literal(lit)) = T :-
+//    typeOfCompositeLit(s, lit) == T.
+//  typeOfLiteral(s, FunctionLit2Literal(lit)) = T :-
+//    typeOfFunctionLit(s, lit) == T.
+//
+//  typeOfLiteral(_, Literal-Plhdr()) = _.
+//
+//
+//rules
+//  typeOfBasicLit : scope * BasicLit -> TYPE
+//
+//  typeOfBasicLit(s, IntLit(_)) = _.
+//  typeOfBasicLit(s, FloatLit(_)) = _.
+//  typeOfBasicLit(s, ImaginaryLit(_)) = _.
+//  typeOfBasicLit(s, RuneLit(_)) = _.
+//  typeOfBasicLit(s, StringLit(_)) = STRING().
+//
+//  typeOfBasicLit(_, BasicLit-Plhdr()) = _.
+//
+//
+//rules
+//  typeOfCompositeLit : scope * CompositeLit -> TYPE
+//
+//  typeOfCompositeLit(s, CompositeLit(type, value)) = T :- {s_ty}
+//    new s_ty,
+//    typeOfLiteralType(s, s_ty, type) == T,
+//    typeOfLiteralValue(s, value) == _.
+//
+//  typeOfCompositeLit(s, CompositeLit-Plhdr()) = _.
+//
+//
+//rules
+//  typeOfFunctionLit : scope * FunctionLit -> TYPE
+//
+//  typeOfFunctionLit(s, FunctionLit(fun)) = T :-
+//    typeOfFunction(s, fun) == _.
+//
+//  typeOfFunctionLit(_, FunctionLit-Plhdr()) = _.
+//
+//
+//rules
+//  typeOfConversion : scope * Conversion -> TYPE
+//
+//  typeOfConversion(s, Conversion(type, expr)) = T :- {s_ty}
+//    new s_ty,
+//    typeOfType(s, s_ty, type) == T,
+//    typeOfExpr(s, expr) == _.
+//
+//  typeOfConversion(_, Conversion-Plhdr()) = _.
+//
+//rules
+//  typeOfMethodExpr : scope * MethodExpr -> TYPE
+//
+//  // TODO:
+//  typeOfMethodExpr(s, MethodExpr(_, _)) = T.
+//
+//  typeOfMethodExpr(_, MethodExpr-Plhdr()) = _.
+//
+//rules
+//  typeOfArgumentsOPT : scope * Arguments-OPT -> TYPE
+//
+//  // TODO:
+//  typeOfArgumentsOPT(s, NoArguments()) = _.
+//  typeOfArgumentsOPT(s, Arguments(_)) = _.
+//  typeOfArgumentsOPT(s, ArgumentsExplode(_)) = _.
+//
+//  typeOfArgumentsOPT(_, Arguments-OPT-Plhdr()) = _.
+//
+//rules
+//  typeOfArguments : scope * Arguments -> TYPE
+//
+//  // TODO:
+//  typeOfArguments(s, ExprArguments(_)) = _.
+//  typeOfArguments(s, TypeArgument(_)) = _.
+//  typeOfArguments(s, TypedArguments(_, _)) = _.
+//
+//  typeOfArguments(_, Arguments-Plhdr()) = _.
+//
+//  // [[ Arguments(expr,args) ^ (s) : ty ]] :=
+//  //   [[ expr ^ (s) : FunT(ty_params,ty) ]],
+//  //   Map1T[[ args ^ (s) : ty_args ]],
+//  //   // check ty_args against ty_params
+//  //   false | note "TODO: Arguments/2".
+//
+//rules
+//  typeOfLiteralType : scope * scope * LiteralType -> TYPE
+//
+//  typeOfLiteralType(s, s_ty, StructType2LiteralType(structType)) = T :-
+//    typeOfStructType(s, s_ty, structType) == T.
+//  typeOfLiteralType(s, s_ty, ArrayType2LiteralType(arrayType)) = T :-
+//    typeOfArrayType(s, s_ty, arrayType) == T.
+//  typeOfLiteralType(s, s_ty, SliceType2LiteralType(sliceType)) = T :-
+//    typeOfSliceType(s, s_ty, sliceType) == T.
+//  typeOfLiteralType(s, s_ty, MapType2LiteralType(mapType)) = T :-
+//    typeOfMapType(s, s_ty, mapType) == T.
+//  typeOfLiteralType(s, s_ty, TypeName2LiteralType(typeName)) = T :-
+//    typeOfTypeName(s, s_ty, typeName) == T.
+//
+//  // TODO:
+//  typeOfLiteralType(s, s_ty, AutoArrayType(type)) = T.
+//
+//  typeOfLiteralType(s, s_ty, LiteralType-Plhdr()) = _.
+//
+//
+//rules
+//  typeOfLiteralValue : scope * LiteralValue -> TYPE
+//
+//  typeOfLiteralValue(s, LiteralValue(elemList)) = _.
+//    elementListOk(s, elemList).
+//
+//  typeOfLiteralValue(s, LiteralValue-Plhdr()) = _.
+//
+//rules
+//  elementListOk : scope * ElementList
+//
+//  elementListOk(s, KeyedElement2ElementList(elems)) :-
+//    keyedElementsOk(s, elems).
+//
+//  elementListOk(_, ElementList-Plhdr()).
+//
+//rules
+//  keyedElementOk : scope * KeyedElement
+//  keyedElementsOk maps keyedElementOk(*, list(*))
+//
+//  keyedElementOk(s, KeyedElement(key, elem)) :-
+//    keyOptOk(s, key),
+//    elementOk(s, elem).
+//
+//  keyedElementOk(_, KeyedElement-Plhdr()).
+//
+//rules
+//  keyOptOk : scope * Key-OPT
+//
+//  keyOptOk(s, NoKey()).
+//  keyOptOk(s, Key2Key-OPT(key)) :-
+//    keyOk(s, key).
+//
+//  keyOptOk(_, Key-OPT-Plhdr()).
+//
+//rules
+//  keyOk : scope * Key
+//
+//  // TODO:
+//  keyOk(s, FieldNameKey(_)).
+//  keyOk(s, ExprKey(_)).
+//  keyOk(s, LiteralKey(_)).
+//
+//  keyOk(_, Key-Plhdr()).
+//
+//rules
+//  elementOk : scope * Element
+//
+//  // TODO:
+//  elementOk(s, Expr2Element(expr)) :-
+//    typeOfExpr(s, expr) == _.
+//  elementOk(s, LiteralValue2Element(value)) :-
+//    typeOfLiteralValue(s, value) == _.
+//
+//  elementOk(_, Element-Plhdr()).
 
 ////////////////////////////////////////////////////////////////////////////////

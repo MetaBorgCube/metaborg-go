@@ -13,82 +13,86 @@ imports
   // signatures/Statements-sig
   // signatures/Types-sig
 
-rules
-  testSourceOk : scope * TestSource
-  testSourcesOk maps testSourceOk(*, list(*))
+//rules
+//  testSourceOk : scope * TestSource
+//  testSourcesOk maps testSourceOk(*, list(*))
+//
+//  testSourceOk(s_univ, TestSourceFile(pkg_path, PackageClause(ID2PackageName(pkg_name)), imports, decls)) :-
+//    // // define package public and private, and file scopes
+//    // new s_pkg_pub s_pkg_prv s_file,
+//    // s_pkg_pub ---> s_univ,
+//    // s_pkg_prv ---> s_pkg_pub,
+//    // s_file ---> s_pkg_prv,
+//    // PkgPath{pkg_path} <- s_univ,
+//    // PkgPath{pkg_path} =PUB=> s_pkg_pub,
+//    // PkgPath{pkg_path} =PRV=> s_pkg_pub,
+//
+//    // // implicitly import other files from the same package
+//    // PkgPath{pkg_path} -> s_univ,
+//    // PkgPath{pkg_path} <=PRV= s_pkg_prv,
+//
+//    // // define scope for default imports
+//    // new s_pkg_imp,
+//    // PkgPath{pkg_path} =IMP=> s_pkg_imp,
+//    // Pkg{pkg_name} <- s_pkg_imp,
+//    // Pkg{pkg_name} =PUB=> s_pkg_pub,
+//
+//    // Map2[[ imports ^ (s_univ, s_file) ]],
+//    // Map2[[ decls ^ (s_pkg_pub, s_file) ]].
+//    true.
+//
+//rules
+//  sourceFileOk : scope * SourceFile
+//  sourceFileOk(s_univ, SourceFile(_, _, _)) :- true.
 
-  testSourceOk(s_univ, TestSourceFile(pkg_path, PackageClause(ID2PackageName(pkg_name)), imports, decls)) :-
-    // // define package public and private, and file scopes
-    // new s_pkg_pub s_pkg_prv s_file,
-    // s_pkg_pub ---> s_univ,
-    // s_pkg_prv ---> s_pkg_pub,
-    // s_file ---> s_pkg_prv,
-    // PkgPath{pkg_path} <- s_univ,
-    // PkgPath{pkg_path} =PUB=> s_pkg_pub,
-    // PkgPath{pkg_path} =PRV=> s_pkg_pub,
-
-    // // implicitly import other files from the same package
-    // PkgPath{pkg_path} -> s_univ,
-    // PkgPath{pkg_path} <=PRV= s_pkg_prv,
-
-    // // define scope for default imports
-    // new s_pkg_imp,
-    // PkgPath{pkg_path} =IMP=> s_pkg_imp,
-    // Pkg{pkg_name} <- s_pkg_imp,
-    // Pkg{pkg_name} =PUB=> s_pkg_pub,
-
-    // Map2[[ imports ^ (s_univ, s_file) ]],
-    // Map2[[ decls ^ (s_pkg_pub, s_file) ]].
-    true.
-
-rules
-  importDeclELEMOk : scope * scope * ImportDecl-ELEM
-  importDeclELEMsOk maps importDeclELEMOk(*, *, list(*))
-
-  importDeclELEMOk(s_univ, s_file, ImportDecl2ImportDecl-ELEM(importDecl)) :-
-    importDeclOk(s_univ, s_file, importDecl).
-
-  importDeclELEMOk(_, _, ImportDecl-ELEM-Plhdr()).
-
-rules
-  importDeclOk : scope * scope * ImportDecl
-
-  importDeclOk(s_univ, s_file, ImportDecl(importSpecELEMs)) :-
-    importSpecELEMsOk(s_univ, s_file, importSpecELEMs).
-
-  importDeclOk(_, _, ImportDecl-Plhdr()).
-
-rules
-  importSpecELEMOk : scope * scope * ImportSpec-ELEM
-  importSpecELEMsOk maps importSpecELEMOk(*, *, list(*))
-
-  importSpecELEMOk(s_univ, s_file, ImportSpec2ImportSpec-ELEM(importSpec)) :-
-    importSpecOk(s_univ, s_file, importSpec).
-
-  importSpecELEMOk(_, _, ImportSpec-ELEM-Plhdr()).
-
-rules
-  importSpecOk : scope * scope * ImportSpec
-
-  importSpecOk(s_univ, s_file, ImportSpec(Qual(), pkg_path)) :-
-    // PkgPath{pkg_path} -> s_univ,
-    // PkgPath{pkg_path} <=IMP= s_file.
-    true.
-
-  importSpecOk(s_univ, s_file, ImportSpec(Unqual(), pkg_path)) :-
-    // PkgPath{pkg_path} -> s_univ,
-    // PkgPath{pkg_path} <=PUB= s_file.
-    true.
-
-  importSpecOk(s_univ, s_file, ImportSpec(Alias(ID2PackageName("_")), pkg_path)).
-
-  importSpecOk(s_univ, s_file, ImportSpec(Alias(ID2PackageName(pkg_name)), pkg_path)) :-
-    // new s_imp,
-    // Pkg{pkg_name} <- s_file,
-    // Pkg{pkg_name} =PUB=> s_imp,
-
-    // PkgPath{pkg_path} -> s_univ,
-    // PkgPath{pkg_path} <=PUB= s_imp.
-    true.
-
-  importSpecOk(_, _, ImportSpec-Plhdr()).
+//rules
+//  importDeclELEMOk : scope * scope * ImportDecl-ELEM
+//  importDeclELEMsOk maps importDeclELEMOk(*, *, list(*))
+//
+//  importDeclELEMOk(s_univ, s_file, ImportDecl2ImportDecl-ELEM(importDecl)) :-
+//    importDeclOk(s_univ, s_file, importDecl).
+//
+//  importDeclELEMOk(_, _, ImportDecl-ELEM-Plhdr()).
+//
+//rules
+//  importDeclOk : scope * scope * ImportDecl
+//
+//  importDeclOk(s_univ, s_file, ImportDecl(importSpecELEMs)) :-
+//    importSpecELEMsOk(s_univ, s_file, importSpecELEMs).
+//
+//  importDeclOk(_, _, ImportDecl-Plhdr()).
+//
+//rules
+//  importSpecELEMOk : scope * scope * ImportSpec-ELEM
+//  importSpecELEMsOk maps importSpecELEMOk(*, *, list(*))
+//
+//  importSpecELEMOk(s_univ, s_file, ImportSpec2ImportSpec-ELEM(importSpec)) :-
+//    importSpecOk(s_univ, s_file, importSpec).
+//
+//  importSpecELEMOk(_, _, ImportSpec-ELEM-Plhdr()).
+//
+//rules
+//  importSpecOk : scope * scope * ImportSpec
+//
+//  importSpecOk(s_univ, s_file, ImportSpec(Qual(), pkg_path)) :-
+//    // PkgPath{pkg_path} -> s_univ,
+//    // PkgPath{pkg_path} <=IMP= s_file.
+//    true.
+//
+//  importSpecOk(s_univ, s_file, ImportSpec(Unqual(), pkg_path)) :-
+//    // PkgPath{pkg_path} -> s_univ,
+//    // PkgPath{pkg_path} <=PUB= s_file.
+//    true.
+//
+//  importSpecOk(s_univ, s_file, ImportSpec(Alias(ID2PackageName("_")), pkg_path)).
+//
+//  importSpecOk(s_univ, s_file, ImportSpec(Alias(ID2PackageName(pkg_name)), pkg_path)) :-
+//    // new s_imp,
+//    // Pkg{pkg_name} <- s_file,
+//    // Pkg{pkg_name} =PUB=> s_imp,
+//
+//    // PkgPath{pkg_path} -> s_univ,
+//    // PkgPath{pkg_path} <=PUB= s_imp.
+//    true.
+//
+//  importSpecOk(_, _, ImportSpec-Plhdr()).

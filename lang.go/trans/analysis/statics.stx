@@ -22,8 +22,8 @@ rules // single-file entry point
 
   programOk : SourceFile
 
-  programOk(_) :- {s}
-    new s, init(s).
+  programOk(_) :- true.//{s}
+//    new s, init(s).
 
 rules // multi-file entry point
 

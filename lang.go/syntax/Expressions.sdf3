@@ -22,162 +22,188 @@ context-free syntax
   Expr-OPT                    = Expr
 
 
-/**
- * Operands -- https://golang.org/ref/spec#Operands
- */
+context-free sorts PrimaryExpr
 context-free syntax
 
+  // Operands -- https://golang.org/ref/spec#Operands
   PrimaryExpr                               = <(<Expr>)>  {bracket}
+  PrimaryExpr.IntLit                        = <<INT_LIT>>
+  PrimaryExpr.FloatLit                      = <<FLOAT_LIT>>
+  PrimaryExpr.ImaginaryLit                  = <<IMAGINARY_LIT>>
+  PrimaryExpr.RuneLit                       = <<RUNE_LIT>>
+  PrimaryExpr.StringLit                     = <<STRING_LIT>>
+  PrimaryExpr.OperandName                   = <<ID>>
 
-  PrimaryExpr.IntLit                        = INT_LIT
-  PrimaryExpr.FloatLit                      = FLOAT_LIT
-  PrimaryExpr.ImaginaryLit                  = IMAGINARY_LIT
-  PrimaryExpr.RuneLit                       = RUNE_LIT
-  PrimaryExpr.StringLit                     = STRING_LIT
+  // Function literals -- https://golang.org/ref/spec#Function_literals
+  PrimaryExpr.FunctionLit                   = <func <Function>>
 
-  PrimaryExpr.OperandName                   = ID
+  // Composite literals -- https://golang.org/ref/spec#Composite_literals
+  PrimaryExpr.CompositeLit                  = <<LiteralType> <LiteralValue>>
+
+  // Primary expressions -- https://golang.org/ref/spec#Primary_expressions
+  PrimaryExpr.Index                         = <<PrimaryExpr>[<Expr>]>
+  PrimaryExpr.SliceLH                       = <<PrimaryExpr>[<Expr-OPT>:<Expr-OPT>]>    // low-high
+  PrimaryExpr.SliceLHM                      = <<PrimaryExpr>[<Expr-OPT>:<Expr>:<Expr>]> // low-high-max
+  PrimaryExpr.TypeAssertion                 = <<PrimaryExpr>.(<Type>)>
+
+  // Primary expressions -- https://golang.org/ref/spec#Primary_expressions
+  PrimaryExpr.Call                          = <<PrimaryExpr>(<Arguments-OPT>)>
+  PrimaryExpr.Call-DISAMB                   = [[PrimaryExpr](c#[Arguments-OPT])]        // for manual disambiguation
+  // Conversions -- https://golang.org/ref/spec#Conversions
+  PrimaryExpr.Conversion                    = <<Type>(<Expr>)>
+  PrimaryExpr.Conversion-ALT                = <<Type>(<Expr>, )>
+  PrimaryExpr.Conversion-DISAMB             = [[Type](t#[Expr])]                        // for manual disambiguation
+  PrimaryExpr.Conversion-DISAMB-ALT         = [[Type](t#[Expr], )]                      // for manual disambiguation
+  // This can denote:
+  // - Call: a function or method call (when receiver is an expr)
+  // - Conversion: a type conversion (when receiver is a type)
+  PrimaryExpr.CallOrConversion              = <<ID>(<Expr>)> {prefer}
+  PrimaryExpr.CallOrConversion-ALT          = <<ID>(<Expr>, )> {prefer}
+
+  // Primary expressions -- https://golang.org/ref/spec#Primary_expressions
+  PrimaryExpr.Selector                      = <<PrimaryExpr>.<ID>> {left}
+  PrimaryExpr.Selector-DISAMB               = [[PrimaryExpr].s#[ID]] {left}             // for manual disambiguation
+  // Method expressions -- https://golang.org/ref/spec#Method_expressions
+  PrimaryExpr.MethodExpr                    = <<Type>.<ID>>
+  PrimaryExpr.MethodExpr-DISAMB             = [[Type].m#[ID]]                           // for manual disambiguation
+  // Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
   PrimaryExpr.QualifiedOperandName          = QualifiedIdent
+  // This can denote:
+  // - QualifiedOperandName: a constant, variable, or function
+  // - Selector: a field or method
+  // - MethodExpr: a method group (when receiver is a type)
+  PrimaryExpr.MemberAccess                  = <<ID>.<ID>> {left, prefer}
 
 
-/**
+/*
  * Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
  */
 context-free sorts QualifiedIdent
 context-free syntax
 
   QualifiedIdent.QualifiedIdent             = <<ID>.<ID>>
-  QualifiedIdent.QualifiedIdent-DISAMB      = [[ID].q#[ID]]   // For manual disambiguation
-
+  QualifiedIdent.QualifiedIdent-DISAMB      = [[ID].q#[ID]]                             // For manual disambiguation
 
 /**
  * Composite literals -- https://golang.org/ref/spec#Composite_literals
  */
-context-free sorts LiteralType LiteralValue ElementList KeyedElement Key Element
+context-free sorts LiteralType LiteralValue KeyedElement Key Element
 context-free syntax
 
-  PrimaryExpr.CompositeLit    = <<LiteralType> <LiteralValue>>
+  LiteralType                               = StructType
+  LiteralType                               = ArrayType
+  LiteralType.AutoArrayType                 = <[ ... ]<Type>>
+  LiteralType                               = SliceType
+  LiteralType                               = MapType
+  LiteralType                               = TypeName
 
-  LiteralType                 = StructType
-  LiteralType                 = ArrayType
-  LiteralType.AutoArrayType   = <[ ... ]<Type>>
-  LiteralType                 = SliceType
-  LiteralType                 = MapType
-  LiteralType                 = TypeName
+  LiteralValue.LiteralValue                 = <{ <{KeyedElement ","}+> }>
+  LiteralValue.LiteralValue-ALT             = <{ <{KeyedElement ","}+>, }>
 
-  LiteralValue.LiteralValue                 = <{ <ElementList> }>
-  LiteralValue.LiteralValue-ALT             = <{ <ElementList>, }>
-  ElementList                               = <<{KeyedElement ","}+>>
+  KeyedElement.KeyedElement                 = <<Key> <Element>>
 
-  KeyedElement.KeyedElement   = <<Key> <Element>>
+  Key.NoKey                                 = <>
+  Key.FieldNameKey                          = <<ID>:>
+  Key.ExprKey                               = <<Expr>:>
+  Key.LiteralKey                            = <<LiteralValue>:>
 
-  Key.NoKey                   = <>
-  Key.FieldNameKey            = <<ID>:>
-  Key.ExprKey                 = <<Expr>:>
-  Key.LiteralKey              = <<LiteralValue>:>
+  Element                                   = Expr
+  Element                                   = LiteralValue
 
-  Element                     = Expr
-  Element                     = LiteralValue
-
-
-/**
- * Function literals -- https://golang.org/ref/spec#Function_literals
- */
-context-free syntax
-
-  PrimaryExpr.FunctionLit     = <func <Function>>
 
 
 /**
  * Primary expressions -- https://golang.org/ref/spec#Primary_expressions
  */
-context-free sorts PrimaryExpr Arguments-OPT Arguments
+context-free sorts Arguments-OPT Arguments
 context-free syntax
 
-  PrimaryExpr.Selector        = <<PrimaryExpr>.<ID>> {left}               // inlined
-  PrimaryExpr.Selector-DISAMB = [[PrimaryExpr].s#[ID]] {left}             // for manual disambiguation
-  PrimaryExpr.Index           = <<PrimaryExpr>[<Expr>]>                   // inlined
-  PrimaryExpr.SliceLH         = <<PrimaryExpr>[<Expr-OPT>:<Expr-OPT>]>		// inlined, low-high
-  PrimaryExpr.SliceLHM        = <<PrimaryExpr>[<Expr-OPT>:<Expr>:<Expr>]>	// inlined, low-high-max
-  PrimaryExpr.TypeAssertion   = <<PrimaryExpr>.(<Type>)>                  // inlined
-  PrimaryExpr.Call            = <<PrimaryExpr>(<Arguments-OPT>)>          // inlined
-  PrimaryExpr.Call-DISAMB     = [[PrimaryExpr](c#[Arguments-OPT])]        // for manual disambiguation
+  Arguments-OPT.NoArguments                 = <>
+  Arguments-OPT.Arguments                   = <<Arguments>>
+  Arguments-OPT.Arguments-ALT               = <<Arguments>,>
+  Arguments-OPT.ArgumentsExplode            = <<Arguments>...>
+  Arguments-OPT.ArgumentsExplode-ALT        = <<Arguments>... ,>
+  Arguments.ExprArguments                   = <<ExprList>>
+  Arguments.TypeArgument                    = <<Type>>
+  Arguments.TypedArguments                  = <<Type>, <ExprList>>
 
-  Arguments-OPT.NoArguments          = <>
-  Arguments-OPT.Arguments            = <<Arguments>>
-  Arguments-OPT.Arguments-ALT        = <<Arguments>,>
-  Arguments-OPT.ArgumentsExplode     = <<Arguments>...>
-  Arguments-OPT.ArgumentsExplode-ALT = <<Arguments>... ,>
-  Arguments.ExprArguments            = <<ExprList>>
-  Arguments.TypeArgument             = <<Type>>
-  Arguments.TypedArguments           = <<Type>, <ExprList>>
-
-
-/**
- * Method expressions -- https://golang.org/ref/spec#Method_expressions
- */
-context-free sorts ReceiverType
-context-free syntax
-
-  PrimaryExpr.MethodExpr        = <<ReceiverType>.<ID>>
-  PrimaryExpr.MethodExpr-DISAMB = [[ReceiverType].m#[ID]] // for manual disambiguation
-
-  ReceiverType                  = Type
 
 
 /**
  * Operators -- https://golang.org/ref/spec#Operators
  */
-context-free sorts UnaryExpr
 context-free syntax
 
-  Expr                        = UnaryExpr
-
   // binary_op
-  Expr.LogicalOr              = <<Expr> || <Expr>>  {left}
-  Expr.LogicalAnd             = <<Expr> && <Expr>>  {left}
+  Expr.LogicalOr                            = <<Expr> || <Expr>>  {left}
+  Expr.LogicalAnd                           = <<Expr> && <Expr>>  {left}
 
   // rel_op
-  Expr.Equal                  = <<Expr> == <Expr>>  {left}
-  Expr.NotEqual               = <<Expr> != <Expr>>  {left}
-  Expr.Less                   = [[Expr] < [Expr]]   {left}
-  Expr.LessOrEqual            = [[Expr] <= [Expr]]  {left}
-  Expr.Greater                = [[Expr] > [Expr]]   {left}
-  Expr.GreaterOrEqual         = [[Expr] >= [Expr]]  {left}
+  Expr.Equal                                = <<Expr> == <Expr>>  {left}
+  Expr.NotEqual                             = <<Expr> != <Expr>>  {left}
+  Expr.Less                                 = [[Expr] < [Expr]]   {left}
+  Expr.LessOrEqual                          = [[Expr] <= [Expr]]  {left}
+  Expr.Greater                              = [[Expr] > [Expr]]   {left}
+  Expr.GreaterOrEqual                       = [[Expr] >= [Expr]]  {left}
 
   // add_op
-  Expr.Sum                    = [[Expr] + [Expr]]   {left}
-  Expr.Difference             = [[Expr] - [Expr]]   {left}
-  Expr.BitwiseOr              = [[Expr] | [Expr]]   {left}
-  Expr.BitwiseXor             = [[Expr] ^ [Expr]]   {left}
+  Expr.Sum                                  = [[Expr] + [Expr]]   {left}
+  Expr.Difference                           = [[Expr] - [Expr]]   {left}
+  Expr.BitwiseOr                            = [[Expr] | [Expr]]   {left}
+  Expr.BitwiseXor                           = [[Expr] ^ [Expr]]   {left}
 
   // mul_op
-  Expr.Product                = [[Expr] * [Expr]]   {left}
-  Expr.Quotient               = [[Expr] / [Expr]]   {left}
-  Expr.Remainder              = [[Expr] % [Expr]]   {left}
-  Expr.LeftShift              = [[Expr] << [Expr]]  {left}
-  Expr.RightShift             = [[Expr] >> [Expr]]  {left}
-  Expr.BitwiseAnd             = [[Expr] & [Expr]]   {left}
-  Expr.BitClear               = [[Expr] &^ [Expr]]  {left}
+  Expr.Product                              = [[Expr] * [Expr]]   {left}
+  Expr.Quotient                             = [[Expr] / [Expr]]   {left}
+  Expr.Remainder                            = [[Expr] % [Expr]]   {left}
+  Expr.LeftShift                            = [[Expr] << [Expr]]  {left}
+  Expr.RightShift                           = [[Expr] >> [Expr]]  {left}
+  Expr.BitwiseAnd                           = [[Expr] & [Expr]]   {left}
+  Expr.BitClear                             = [[Expr] &^ [Expr]]  {left}
 
-  // TODO: Inline Expr = UnaryExpr iff the priorities below prevent Expr from being a child (Test!)
-  UnaryExpr                   = PrimaryExpr
-  UnaryExpr.Positive          = <+<UnaryExpr>>  {left}
-  UnaryExpr.Negation          = <-<UnaryExpr>>  {left}    // Two's complement
-  UnaryExpr.Not               = <!<UnaryExpr>>  {left}    // Logical complement
-  UnaryExpr.BitwiseComplement = <^<UnaryExpr>>  {left}    // Ones' complement
-  UnaryExpr.Deref             = <*<UnaryExpr>>  {left}
-  UnaryExpr.Ref               = <&<UnaryExpr>>  {left}
-  UnaryExpr.Receive           = [<-[UnaryExpr]] {left}
+  Expr                                      = PrimaryExpr
+  Expr.Positive                             = <+<Expr>>  {left}
+  Expr.Negation                             = <-<Expr>>  {left}    // Two's complement
+  Expr.Not                                  = <!<Expr>>  {left}    // Logical complement
+  Expr.BitwiseComplement                    = <^<Expr>>  {left}    // Ones' complement
+  Expr.Deref                                = <*<Expr>>  {left}
+  Expr.Ref                                  = <&<Expr>>  {left}
+  Expr.Receive                              = [<-[Expr]] {left}
 
 context-free priorities
-  { left: // unary_op
-    UnaryExpr.Positive
-    UnaryExpr.Negation
-    UnaryExpr.Not
-    UnaryExpr.BitwiseComplement
-    UnaryExpr.Deref
-    UnaryExpr.Ref
-    UnaryExpr.Receive
+
+  {
+    PrimaryExpr.IntLit
+    PrimaryExpr.FloatLit
+    PrimaryExpr.ImaginaryLit
+    PrimaryExpr.RuneLit
+    PrimaryExpr.StringLit
+    PrimaryExpr.OperandName
+    PrimaryExpr.QualifiedOperandName
+    PrimaryExpr.FunctionLit
+    PrimaryExpr.CompositeLit
+    PrimaryExpr.Selector
+    PrimaryExpr.Selector-DISAMB
+    PrimaryExpr.Index
+    PrimaryExpr.SliceLH
+    PrimaryExpr.SliceLHM
+    PrimaryExpr.TypeAssertion
+    PrimaryExpr.Call
+    PrimaryExpr.Call-DISAMB
+    PrimaryExpr.MethodExpr
+    PrimaryExpr.MethodExpr-DISAMB
+    PrimaryExpr.Conversion
+    PrimaryExpr.Conversion-ALT
+    PrimaryExpr.Conversion-DISAMB
+    PrimaryExpr.Conversion-DISAMB-ALT
+  } > { left: // unary_op
+    Expr.Positive
+    Expr.Negation
+    Expr.Not
+    Expr.BitwiseComplement
+    Expr.Deref
+    Expr.Ref
+    Expr.Receive
   } > { left: // mul_op
     Expr.Product
     Expr.Quotient
@@ -203,15 +229,3 @@ context-free priorities
   } > { left: // or_op
     Expr.LogicalOr
   }
-
-
-/**
- * Conversions -- https://golang.org/ref/spec#Conversions
- */
-context-free syntax
-
-  PrimaryExpr.Conversion            = <<Type>(<Expr>)>
-  PrimaryExpr.Conversion-ALT        = <<Type>(<Expr>, )>
-  PrimaryExpr.Conversion-DISAMB     = [[Type](t#[Expr])]    // for manual disambiguation
-  PrimaryExpr.Conversion-DISAMB-ALT = [[Type](t#[Expr], )]  // for manual disambiguation
-
