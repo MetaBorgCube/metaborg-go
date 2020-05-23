@@ -35,7 +35,7 @@ context-free syntax
   PrimaryExpr.OperandName                   = <<ID>>
 
   // Function literals -- https://golang.org/ref/spec#Function_literals
-  PrimaryExpr.FunctionLit                   = <func <Function>>
+  PrimaryExpr.FunctionLit                   = <func <Signature> <Block>>
 
   // Composite literals -- https://golang.org/ref/spec#Composite_literals
   PrimaryExpr.CompositeLit                  = <<LiteralType> <LiteralValue>>
@@ -54,11 +54,6 @@ context-free syntax
   PrimaryExpr.Conversion-ALT                = <<Type>(<Expr>, )>
   PrimaryExpr.Conversion-DISAMB             = [[Type](t#[Expr])]                        // for manual disambiguation
   PrimaryExpr.Conversion-DISAMB-ALT         = [[Type](t#[Expr], )]                      // for manual disambiguation
-  // This can denote:
-  // - Call: a function or method call (when receiver is an expr)
-  // - Conversion: a type conversion (when receiver is a type)
-  PrimaryExpr.CallOrConversion              = <<ID>(<Expr>)> {prefer}
-  PrimaryExpr.CallOrConversion-ALT          = <<ID>(<Expr>, )> {prefer}
 
   // Primary expressions -- https://golang.org/ref/spec#Primary_expressions
   PrimaryExpr.Selector                      = <<PrimaryExpr>.<ID>> {left}
@@ -68,6 +63,15 @@ context-free syntax
   PrimaryExpr.MethodExpr-DISAMB             = [[Type].m#[ID]]                           // for manual disambiguation
   // Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
   PrimaryExpr.QualifiedOperandName          = QualifiedIdent
+
+
+  // This can denote:
+  // - Call: a function or method call (when receiver is an expr)
+  // - Conversion: a type conversion (when receiver is a type)
+  PrimaryExpr.CallOrConversion              = <<ID>(<Expr>)> {prefer}
+  PrimaryExpr.CallOrConversion-ALT          = <<ID>(<Expr>, )> {prefer}
+  PrimaryExpr.QualifiedCallOrConversion     = <<QualifiedIdent>(<Expr>)> {prefer}
+  PrimaryExpr.QualifiedCallOrConversion-ALT = <<QualifiedIdent>(<Expr>, )> {prefer}
   // This can denote:
   // - QualifiedOperandName: a constant, variable, or function
   // - Selector: a field or method

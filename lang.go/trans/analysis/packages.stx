@@ -13,6 +13,24 @@ imports
   // signatures/Statements-sig
   // signatures/Types-sig
 
+imports
+  analysis/declarations
+
+rules
+
+  sourceFileOk : scope * SourceFile
+
+  sourceFileOk(s, SourceFile(pkg, imports, topLevelDecls)) :-
+    true.
+//    topLevelDeclElemsOk(s, topLevelDecls).
+
+rules
+
+  topLevelDeclElemsOk maps topLevelDeclElemOk(*, list(*))
+  topLevelDeclElemOk : scope * TopLevelDecl-ELEM
+  topLevelDeclElemOk(s, TopLevelDecl2TopLevelDecl-ELEM(topLevelDecl)) :-
+    topLevelDeclOk(s, topLevelDecl).
+
 //rules
 //  testSourceOk : scope * TestSource
 //  testSourcesOk maps testSourceOk(*, list(*))

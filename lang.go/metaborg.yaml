@@ -10,10 +10,15 @@ dependencies:
   source:
   - org.metaborg:meta.lib.spoofax:${metaborgVersion}
   - org.metaborg:statix.runtime:${metaborgVersion}
+pardonedLanguages:
+- EditorService
+- Stratego-Sugar
+- SDF
+debug:
+  typesmart: false
 language:
   sdf:
     pretty-print: GoLang
-    # If set to java, set the table in editor/Syntax.esv to target/metaborg/sdf-new.tbl
     sdf2table: java
     #jsglr-version: v1
     placeholder:
@@ -35,3 +40,6 @@ language:
     - stratego-sdf
     - -la
     - strc
+exports:
+- language: ATerm
+  directory: src-gen/statix

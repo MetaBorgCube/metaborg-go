@@ -14,6 +14,7 @@ imports
   // signatures/Types-sig
 
 imports
+  analysis/packages
   analysis/main
 
 // see README.md for details on how to switch to multi-file analysis
@@ -22,7 +23,9 @@ rules // single-file entry point
 
   programOk : SourceFile
 
-  programOk(_) :- true.//{s}
+  programOk(sourceFile) :- {s}
+    new s,
+    sourceFileOk(s, sourceFile).
 //    new s, init(s).
 
 rules // multi-file entry point

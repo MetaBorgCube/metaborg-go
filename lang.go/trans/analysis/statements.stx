@@ -17,6 +17,22 @@ imports
   analysis/declarations
   analysis/expressions
   analysis/blocks
+
+rules
+
+  stmtOk : scope * Stmt
+
+  stmtOk(s, SimpleStmt2Stmt(simpleStmt)) :-
+    simpleStmtOk(s, simpleStmt).
+
+rules
+  simpleStmtOk : scope * SimpleStmt
+
+  simpleStmtOk(s, ExprStmt(expr)) :-
+    typeOfExpr(s, expr) == _.
+
+
+
 //
 //// Statements
 //rules

@@ -16,6 +16,24 @@ imports
 imports
   analysis/types
   analysis/blocks
+
+rules
+  topLevelDeclOk : scope * TopLevelDecl
+
+  topLevelDeclOk(s, FunctionDecl(name, signature)) :-
+    signatureOk(s, signature).
+
+  topLevelDeclOk(s, FunctionDef(name, sig, body)) :-
+    signatureOk(s, sig),
+    blockOk(s, body).
+
+  topLevelDeclOk(s, _) :- true.
+
+rules
+  signatureOk : scope * Signature
+  signatureOk(s, Signature(parameters, result)) :-
+    true.
+
 //
 //rules
 //  declarationOk : scope * scope * ConstDecl

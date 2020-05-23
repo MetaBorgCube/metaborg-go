@@ -16,6 +16,18 @@ imports
 imports
   analysis/types
   analysis/declarations
+
+rules
+  typeOfExpr : scope * Expr -> TYPE
+  typeOfExpr(s, PrimaryExpr2Expr(primaryExpr)) = T :-
+    typeOfPrimaryExpr(s, primaryExpr) == T.
+
+rules
+  typeOfPrimaryExpr : scope * PrimaryExpr -> TYPE
+  typeOfPrimaryExpr(s, QualifiedCallOrConversion(QualifiedIdent(receiver, member), expr)) = T :-
+    // TODO: If receiver.member is a type, this is a type conversion (Conversion)
+    // TODO: If receiver.member is a function or method, this is a call (Call)
+    true.
 //
 //// Expressions
 //rules

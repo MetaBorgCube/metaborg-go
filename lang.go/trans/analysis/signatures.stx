@@ -29,7 +29,6 @@ signature
     TypeSpec
     VarSpec-ELEM
     VarSpec
-    FunctionDecl-INNER
     MethodDecl-INNER
     Receiver
     Receiver-INNER
@@ -44,7 +43,6 @@ signature
     TypeSpec-Plhdr : TypeSpec
     VarSpec-ELEM-Plhdr : VarSpec-ELEM
     VarSpec-Plhdr : VarSpec
-    FunctionDecl-INNER-Plhdr : FunctionDecl-INNER
     MethodDecl-INNER-Plhdr : MethodDecl-INNER
     Receiver-Plhdr : Receiver
     Receiver-INNER-Plhdr : Receiver-INNER
@@ -74,18 +72,14 @@ signature
     VarSpec : IDList * Type * ExprList -> VarSpec
     VarSpecNoInit : IDList * Type -> VarSpec
     VarSpecNoType : IDList * ExprList -> VarSpec
-    FunctionDecl : ID * FunctionDecl-INNER -> TopLevelDecl
-    Signature2FunctionDecl-INNER : Signature -> FunctionDecl-INNER
-    Function2FunctionDecl-INNER : Function -> FunctionDecl-INNER
-    Function : Signature * Block -> Function
-    MethodDecl : Receiver * ID * MethodDecl-INNER -> TopLevelDecl
-    Signature2MethodDecl-INNER : Signature -> MethodDecl-INNER
-    Function2MethodDecl-INNER : Function -> MethodDecl-INNER
+    FunctionDecl : ID * Signature -> TopLevelDecl
+    FunctionDef : ID * Signature * Block -> TopLevelDecl
+    MethodDecl : Receiver * ID * Signature -> TopLevelDecl
+    MethodDed : Receiver * ID * Signature * Block -> TopLevelDecl
     Receiver : ID * Receiver-INNER -> Receiver
     AnonymousReceiver : Receiver-INNER -> Receiver
     ReceiverType : TypeName -> Receiver-INNER
     ReceiverPtrType : TypeName -> Receiver-INNER
-
 
 signature
 
@@ -122,7 +116,7 @@ signature
     RuneLit : RUNE_LIT -> PrimaryExpr
     StringLit : STRING_LIT -> PrimaryExpr
     OperandName : ID -> PrimaryExpr
-    FunctionLit : Function -> PrimaryExpr
+    FunctionLit : Signature * Block -> PrimaryExpr
     CompositeLit : LiteralType * LiteralValue -> PrimaryExpr
     Index : PrimaryExpr * Expr -> PrimaryExpr
     SliceLH : PrimaryExpr * Expr-OPT * Expr-OPT -> PrimaryExpr
@@ -134,13 +128,15 @@ signature
     Conversion-ALT : Type * Expr -> PrimaryExpr
     Conversion-DISAMB : Type * Expr -> PrimaryExpr
     Conversion-DISAMB-ALT : Type * Expr -> PrimaryExpr
-    CallOrConversion : ID * Expr -> PrimaryExpr
-    CallOrConversion-ALT : ID * Expr -> PrimaryExpr
     Selector : PrimaryExpr * ID -> PrimaryExpr
     Selector-DISAMB : PrimaryExpr * ID -> PrimaryExpr
     MethodExpr : Type * ID -> PrimaryExpr
     MethodExpr-DISAMB : Type * ID -> PrimaryExpr
     QualifiedOperandName : QualifiedIdent -> PrimaryExpr
+    CallOrConversion : ID * Expr -> PrimaryExpr
+    CallOrConversion-ALT : ID * Expr -> PrimaryExpr
+    QualifiedCallOrConversion : QualifiedIdent * Expr -> PrimaryExpr
+    QualifiedCallOrConversion-ALT : QualifiedIdent * Expr -> PrimaryExpr
     MemberAccess : ID * ID -> PrimaryExpr
     QualifiedIdent : ID * ID -> QualifiedIdent
     QualifiedIdent-DISAMB : ID * ID -> QualifiedIdent
@@ -292,7 +288,6 @@ signature
     Type
     Type-OPT
     TypeName
-    Function
     Signature
 
   constructors
@@ -306,7 +301,6 @@ signature
     Type-Plhdr : Type
     Type-OPT-Plhdr : Type-OPT
     TypeName-Plhdr : TypeName
-    Function-Plhdr : Function
     Signature-Plhdr : Signature
 
 signature

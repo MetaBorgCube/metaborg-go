@@ -16,43 +16,43 @@ imports
 imports
   analysis/expressions
   analysis/util
-//
-//signature
-//sorts TYPE
-//
-//// Special types
-//constructors
-//  NAMED       : occurrence -> TYPE
-//  FUN         : list(TYPE) * list(TYPE) -> TYPE
-//  ARRAY       : int * TYPE -> TYPE
-//  SLICE       : TYPE -> TYPE
-//  STRUCT      : scope -> TYPE
-//  PTR         : TYPE -> TYPE
-//  MAP         : TYPE * TYPE -> TYPE
-//  STRING      : TYPE
-//
-//// Built-in types
-//constructors
-//  UINT        : TYPE
-//  UINT8       : TYPE
-//  UINT16      : TYPE
-//  UINT32      : TYPE
-//  UINT64      : TYPE
-//  UINTPTR     : TYPE
-//
-//  INT         : TYPE
-//  INT8        : TYPE
-//  INT16       : TYPE
-//  INT32       : TYPE
-//  INT64       : TYPE
-//  INTPTR      : TYPE
-//
-//  FLOAT64     : TYPE
-//  FLOAT128    : TYPE
-//
-//  COMPLEX64   : TYPE
-//  COMPLEX128  : TYPE
-//
+
+signature
+sorts TYPE
+
+// Special types
+constructors
+  NAMED       : occurrence -> TYPE
+  FUN         : list(TYPE) * list(TYPE) -> TYPE
+  ARRAY       : int * TYPE -> TYPE
+  SLICE       : TYPE -> TYPE
+  STRUCT      : scope -> TYPE
+  PTR         : TYPE -> TYPE
+  MAP         : TYPE * TYPE -> TYPE
+  STRING      : TYPE
+
+// Built-in types
+constructors
+  UINT        : TYPE
+  UINT8       : TYPE
+  UINT16      : TYPE
+  UINT32      : TYPE
+  UINT64      : TYPE
+  UINTPTR     : TYPE
+
+  INT         : TYPE
+  INT8        : TYPE
+  INT16       : TYPE
+  INT32       : TYPE
+  INT64       : TYPE
+  INTPTR      : TYPE
+
+  FLOAT64     : TYPE
+  FLOAT128    : TYPE
+
+  COMPLEX64   : TYPE
+  COMPLEX128  : TYPE
+
 //signature
 //  relations
 //    typeOfDecl : occurrence -> TYPE

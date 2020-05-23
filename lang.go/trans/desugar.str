@@ -64,3 +64,4 @@ rules
   desugar-alt: Conversion-ALT(t, e)                     -> Conversion(t, e)
   desugar-alt: Parameters-ALT(ps)                       -> Parameters(ps)
   desugar-alt: CallOrConversion-ALT(t, e)               -> CallOrConversion(t, e)
+  desugar-alt: QualifiedCallOrConversion-ALT(t, e)      -> QualifiedCallOrConversion(t, e)
