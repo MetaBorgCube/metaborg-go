@@ -19,7 +19,7 @@ imports
   analysis/blocks
 
 rules
-
+  stmtsOk maps stmtOk(*, list(*))
   stmtOk : scope * Stmt
 
   stmtOk(s, SimpleStmt2Stmt(simpleStmt)) :-

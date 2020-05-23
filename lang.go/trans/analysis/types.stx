@@ -53,28 +53,30 @@ constructors
   COMPLEX64   : TYPE
   COMPLEX128  : TYPE
 
-//signature
-//  relations
-//    typeOfDecl : occurrence -> TYPE
-//  namespaces
-//    Type : string
-//    Pkg : string
-//  name-resolution
-//    labels P IMP PUB PRV FM
-//    // TODO: Is this correct?
-//    resolve Type filter P* (IMP? PUB? PUB? | PRV?) FM* min $ < P, P < PRV, P < PUB, P < FM
-//
-//// Types
-//rules
+signature
+  relations
+    typeOfDecl : occurrence -> TYPE
+  namespaces
+    Type : string
+    Pkg : string
+  name-resolution
+    labels P IMP PUB PRV FM
+    // TODO: Is this correct?
+    resolve Type filter P* (IMP? PUB? PUB? | PRV?) FM* min $ < P, P < PRV, P < PUB, P < FM
+
+// Types
+rules
+  typeOfType : scope * Type -> TYPE
 //  typeOfType : scope * scope * Type -> TYPE
-//
+
 //  typeOfType(s, s_ty, TypeName2Type(typeName)) = T :-
 //    typeOfTypeName(s, s_ty, typeName) == T.
 //  typeOfType(s, s_ty, TypeLit2Type(typeLit)) = T :-
 //    typeOfTypeLit(s, s_ty, typeLit) == T.
 //
 //  typeOfType(_, _, Type-Plhdr()) = _.
-//
+  typeOfType(_, _) = _.
+
 //rules
 //  typeOfTypeName : scope * scope * TypeName -> TYPE
 //

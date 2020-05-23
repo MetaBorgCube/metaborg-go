@@ -20,12 +20,8 @@ rules
   blockOk : scope * Block
 
   blockOk(s, Block(stmts)) :-
-    stmtListElemsOk(s, stmts).
+    stmtsOk(s, stmts).
 
   blockOk(_, Block-Plhdr()).
 
-rules
-  stmtListElemsOk maps stmtListElemOk(*, list(*))
-  stmtListElemOk : scope * StmtList-ELEM
-  stmtListElemOk(s, Stmt2StmtList-ELEM(stmt)) :- stmtOk(s, stmt).
 

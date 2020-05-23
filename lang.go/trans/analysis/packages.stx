@@ -21,15 +21,8 @@ rules
   sourceFileOk : scope * SourceFile
 
   sourceFileOk(s, SourceFile(pkg, imports, topLevelDecls)) :-
-    true.
-//    topLevelDeclElemsOk(s, topLevelDecls).
+    topLevelDeclsOk(s, topLevelDecls).
 
-rules
-
-  topLevelDeclElemsOk maps topLevelDeclElemOk(*, list(*))
-  topLevelDeclElemOk : scope * TopLevelDecl-ELEM
-  topLevelDeclElemOk(s, TopLevelDecl2TopLevelDecl-ELEM(topLevelDecl)) :-
-    topLevelDeclOk(s, topLevelDecl).
 
 //rules
 //  testSourceOk : scope * TestSource
