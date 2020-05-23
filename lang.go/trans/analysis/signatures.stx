@@ -1,5 +1,4 @@
 module analysis/signatures
-
 // Signatures copied from src-gen/statix/signatures
 
 signature
@@ -15,8 +14,6 @@ signature
   constructors
     Block : list(StmtList-ELEM) -> Block
     Stmt2StmtList-ELEM : Stmt -> StmtList-ELEM
-
-
 signature
 
   sorts
@@ -29,7 +26,6 @@ signature
     TypeSpec
     VarSpec-ELEM
     VarSpec
-    MethodDecl-INNER
     Receiver
     Receiver-INNER
 
@@ -43,7 +39,6 @@ signature
     TypeSpec-Plhdr : TypeSpec
     VarSpec-ELEM-Plhdr : VarSpec-ELEM
     VarSpec-Plhdr : VarSpec
-    MethodDecl-INNER-Plhdr : MethodDecl-INNER
     Receiver-Plhdr : Receiver
     Receiver-INNER-Plhdr : Receiver-INNER
 
@@ -80,7 +75,6 @@ signature
     AnonymousReceiver : Receiver-INNER -> Receiver
     ReceiverType : TypeName -> Receiver-INNER
     ReceiverPtrType : TypeName -> Receiver-INNER
-
 signature
 
   sorts
@@ -190,7 +184,6 @@ signature
     Deref : Expr -> Expr
     Ref : Expr -> Expr
     Receive : Expr -> Expr
-
 signature
 
   sorts
@@ -206,8 +199,6 @@ signature
   constructors
     TestSources : list(TestSource) -> TestSources
     TestSourceFile : ImportPath * PackageClause * list(ImportDecl-ELEM) * list(TopLevelDecl-ELEM) -> TestSource
-
-
 signature
 
   sorts
@@ -223,7 +214,6 @@ signature
 signature
 
   constructors
-
 signature
 
   sorts
@@ -263,7 +253,6 @@ signature
     Unqual : ImportSpecQual
     Alias : ID -> ImportSpecQual
     STRING_LIT2ImportPath : STRING_LIT -> ImportPath
-
 signature
 
   sorts
@@ -273,8 +262,6 @@ signature
 signature
 
   constructors
-
-
 signature
 
   sorts
@@ -306,8 +293,6 @@ signature
 signature
 
   constructors
-
-
 signature
 
   sorts
@@ -462,7 +447,6 @@ signature
     GotoStmt : Label -> Stmt
     FallthroughStmt : Stmt
     DeferStmt : Expr -> Stmt
-
 signature
 
   sorts
@@ -534,4 +518,3 @@ signature
     BidirectionalChannelType : Type -> Type
     SendingChannelType : Type -> Type
     ReceivingChannelType : Type -> Type
-
