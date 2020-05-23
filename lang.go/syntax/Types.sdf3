@@ -21,59 +21,47 @@ template options
 
 context-free syntax
 
-  Type                        = TypeName
-  Type                        = <( <Type> )> {bracket}
+  Type-OPT.NoType                           = <>
+  Type-OPT                                  = Type
 
-  Type-OPT.NoType             = <>
-  Type-OPT                    = Type
+  TypeName.TypeName                         = ID
+  TypeName.QualifiedTypeName                = QualifiedIdent
 
-  TypeName                    = ID
-  TypeName.QualifiedTypeName  = QualifiedIdent
-
-  Type                        = ArrayType
-  Type                        = StructType
-  Type                        = SliceType
-  Type                        = MapType
-
-
-  Type.PointerType            = <*<Type>>                                     // Pointer types -- https://golang.org/ref/spec#Pointer_types
-
-
-
-/**
- * Array types -- https://golang.org/ref/spec#Array_types
- */
-context-free sorts ArrayType
-context-free syntax
-
-  ArrayType.ArrayType         = <[<Expr>]<Type>> {left}
-
-
-/**
- * Slice types -- https://golang.org/ref/spec#Slice_types
- */
-context-free sorts SliceType
-context-free syntax
-
-  SliceType.SliceType         = <[ ]<Type>> {left}
-
+  Type                                      = TypeName
+  Type                                      = <( <Type> )> {bracket}
+  // Pointer types -- https://golang.org/ref/spec#Pointer_types
+  Type.PointerType                          = <*<Type>>
+  // Array types -- https://golang.org/ref/spec#Array_types
+  Type.ArrayType                            = <[<Expr>]<Type>> {left}
+  // Slice types -- https://golang.org/ref/spec#Slice_types
+  Type.SliceType                            = <[ ]<Type>> {left}
+  // Struct types -- https://golang.org/ref/spec#Struct_types
+  Type.StructType                           = <struct { <StructElement*> }>
+  // Function types -- https://golang.org/ref/spec#Function_types
+  Type.FunctionType                         = <func <Signature>>
+  // Interface types -- https://golang.org/ref/spec#Interface_types
+  Type.InterfaceType                        = <interface { <InterfaceTypeMember*> }>
+  // Map types -- https://golang.org/ref/spec#Map_types
+  Type.MapType                              = <map[<Type>]<Type>>
+  // Channel types -- https://golang.org/ref/spec#Channel_types
+  Type.BidirectionalChannelType             = [chan [Type]]
+  Type.SendingChannelType                   = [chan[]<- [Type]]
+  Type.ReceivingChannelType                 = [<-[]chan [Type]]
 
 /**
  * Struct types -- https://golang.org/ref/spec#Struct_types
  */
-context-free sorts StructType StructType-ELEM FieldDecl Field Tag-OPT Tag
+context-free sorts Field Tag StructElement
 context-free syntax
-  StructType.StructType       = <struct { <StructType-ELEM*> }>
-  StructType-ELEM             = <<FieldDecl>;>
 
-  FieldDecl.FieldDecl         = <<Field> <Tag-OPT>>
+  StructElement.StructElement               = <<Field> <Tag>;>
 
-  Field.Field                 = <<IDList> <Type>>
-  Field.AnonymousPtrField     = <*<TypeName>>
-  Field.AnonymousField        = <<TypeName>>
+  Field.Field                               = <<{ID ","}+> <Type>>
+  Field.AnonymousPtrField                   = <*<TypeName>>
+  Field.AnonymousField                      = <<TypeName>>
 
-  Tag.NoTag                   = <>
-  Tag.Tag                     = STRING_LIT
+  Tag.NoTag                                 = <>
+  Tag.Tag                                   = STRING_LIT
 
 
 /**
@@ -82,18 +70,16 @@ context-free syntax
 context-free sorts Result Parameters ParameterDecl
 context-free syntax
 
-  Type.FunctionType           = <func <Signature>>
+  Signature.Signature                       = <<Parameters> <Result>>
+  Result.NoResult                           = <>
+  Result                                    = Parameters
+  Result                                    = Type
 
-  Signature.Signature         = <<Parameters> <Result>>
-  Result.NoResult             = <>
-  Result                      = Parameters
-  Result                      = Type
+  Parameters.Parameters                     = <(<{ParameterDecl ","}*>)>
+  Parameters.Parameters-ALT                 = <(<{ParameterDecl ","}*>, )>
 
-  Parameters.Parameters                 = <(<{ParameterDecl ","}*>)>
-  Parameters.Parameters-ALT             = <(<{ParameterDecl ","}*>, )>
-
-  ParameterDecl.ParameterDecl           = <<IDList-OPT> <Type>>
-  ParameterDecl.VariadicParameterDecl   = <<IDList-OPT> ...<Type>>
+  ParameterDecl.ParameterDecl               = <<IDList-OPT> <Type>>
+  ParameterDecl.VariadicParameterDecl       = <<IDList-OPT> ...<Type>>
 
 
 /**
@@ -102,26 +88,7 @@ context-free syntax
 context-free sorts InterfaceTypeMember
 context-free syntax
 
-  Type.InterfaceType          = <interface { <InterfaceTypeMember*> }>
-  InterfaceTypeMember.MethodSpec     = <<ID> <Signature>;>
-  InterfaceTypeMember.TypeName       = <<TypeName>;>
+  InterfaceTypeMember.MethodSpec            = <<ID> <Signature>;>
+  InterfaceTypeMember.EmbeddedInterface     = <<TypeName>;>
 
 
-/**
- * Map types -- https://golang.org/ref/spec#Map_types
- */
-context-free sorts MapType
-context-free syntax
-
-  MapType.MapType             = <map[<Type>]<Type>>
-
-
-/**
- * Channel types -- https://golang.org/ref/spec#Channel_types
- */
-context-free syntax
-
-  Type.BidirectionalChannelType         = [chan [Type]]
-  // TODO: Separate between chan and <-
-  Type.SendingChannelType               = [chan[]<- [Type]]
-  Type.ReceivingChannelType             = [<-[]chan [Type]]

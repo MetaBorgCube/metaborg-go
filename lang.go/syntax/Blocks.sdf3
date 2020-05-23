@@ -9,9 +9,6 @@ imports
   Representation
   SortNames
 
-context-free sorts StmtList-ELEM
 context-free syntax
 
-  Block.Block                 = <{ <StmtList-ELEM*> }>
-
-  StmtList-ELEM               = <<Stmt>;>
+  Block.Block                               = <{ <Stmt*> }>

@@ -19,83 +19,75 @@ context-free start-symbols
 context-free sorts TopLevelDecl
 context-free syntax
 
-  TopLevelDecl                = Declaration
+  TopLevelDecl                              = Declaration
+  // Function declarations -- https://golang.org/ref/spec#Function_declarations
+  TopLevelDecl.FunctionDecl                 = <func <ID> <Signature>;>
+  TopLevelDecl.FunctionDef                  = <func <ID> <Signature> <Block>;>
+  // Method declarations -- https://golang.org/ref/spec#Method_declarations
+  TopLevelDecl.MethodDecl                   = <func <Receiver> <ID> <Signature>;>
+  TopLevelDecl.MethodDed                    = <func <Receiver> <ID> <Signature> <Block>;>
+
+context-free syntax
+  // Constant declarations -- https://golang.org/ref/spec#Constant_declarations
+  Declaration.SingleConstDecl               = <const <ConstSpec>>
+  Declaration.ConstDecl                     = <const (<ConstSpec*>)<>;>
+  // Type declarations -- https://golang.org/ref/spec#Type_declarations
+  Declaration.SingleTypeDecl                = <type <TypeSpec>>
+  Declaration.TypeDecl                      = <type (<TypeSpec*>)<>;>
+  // Var declarations -- https://golang.org/ref/spec#Variable_declarations
+  Declaration.SingleVarDecl                 = <var <VarSpec>>
+  Declaration.VarDecl                       = <var (<VarSpec*>)<>;>
+
 
 
 /**
  * Constant declarations -- https://golang.org/ref/spec#Constant_declarations
  */
-context-free sorts ConstSpec-ELEM ConstSpec IDList IDList-OPT
+context-free sorts ConstSpec IDList-OPT
 context-free syntax
 
-  Declaration.SingleConstDecl = <const <ConstSpec>>
-  Declaration.ConstDecl       = <const (<ConstSpec-ELEM*>)>
-  ConstSpec-ELEM              = <<ConstSpec>;>
-
   // spec seems wrong here, assignment is always required
-  ConstSpec.ConstSpec         = <<IDList> <Type-OPT> = <ExprList>>
+  ConstSpec.ConstSpec                       = <<{ID ","}+> <Type-OPT> = <{Expr ","}+>;>
 
-  IDList                      = <<{ID ","}+>>
-  IDList-OPT.NoIDs            = <>
-  IDList-OPT                  = IDList
+  IDList-OPT.NoIDs                          = <>
+  IDList-OPT                                = {ID ","}+
 
-  ExprList                    = <<{Expr ","}+>>
-  ExprList-OPT.NoExprs        = <>
-  ExprList-OPT                = ExprList
+  ExprList-OPT.NoExprs                      = <>
+  ExprList-OPT                              = {Expr ","}+
 
 
 /**
  * Type declarations -- https://golang.org/ref/spec#Type_declarations
  */
-context-free sorts TypeSpec-ELEM TypeSpec
+context-free sorts TypeSpec
 context-free syntax
 
-  Declaration.SingleTypeDecl  = <type <TypeSpec>>
-  Declaration.TypeDecl        = <type (<TypeSpec-ELEM*>)>
-  TypeSpec-ELEM               = <<TypeSpec>;>
+  TypeSpec.AliasDecl       		              = <<ID> = <Type>;>
 
-  TypeSpec.AliasDecl       		= <<ID> = <Type>>
-
-  TypeSpec.TypeDef         		= <<ID> <Type>>
+  TypeSpec.TypeDef         		              = <<ID> <Type>;>
 
 
 /**
  * Var declarations -- https://golang.org/ref/spec#Variable_declarations
  */
-context-free sorts VarSpec-ELEM VarSpec
+context-free sorts VarSpec
 context-free syntax
 
-  Declaration.SingleVarDecl   = <var <VarSpec>>
-  Declaration.VarDecl         = <var (<VarSpec-ELEM*>)>
-  VarSpec-ELEM                = <<VarSpec>;>
+  VarSpec.VarSpec                           = <<{ID ","}+> <Type> = <{Expr ","}+>;>
+  VarSpec.VarSpecNoInit                     = <<{ID ","}+> <Type>;>
+  VarSpec.VarSpecNoType                     = <<{ID ","}+> = <{Expr ","}+>;>
 
-  VarSpec.VarSpec             = <<IDList> <Type> = <ExprList>>
-  VarSpec.VarSpecNoInit       = <<IDList> <Type>>
-  VarSpec.VarSpecNoType       = <<IDList> = <ExprList>>
-
-
-
-/**
- * Function declarations -- https://golang.org/ref/spec#Function_declarations
- */
-context-free syntax
-
-  TopLevelDecl.FunctionDecl   = <func <ID> <Signature>>
-  TopLevelDecl.FunctionDef    = <func <ID> <Signature> <Block>>
 
 
 /**
  * Method declarations -- https://golang.org/ref/spec#Method_declarations
  */
-context-free sorts Receiver Receiver-INNER
+context-free sorts Receiver ReceiverType
 context-free syntax
 
-  TopLevelDecl.MethodDecl     = <func <Receiver> <ID> <Signature>>
-  TopLevelDecl.MethodDed      = <func <Receiver> <ID> <Signature> <Block>>
-
   // Inlined case where there is only one receiver, instead of Receiver = Parameters
-  Receiver.Receiver           = <(<ID> <Receiver-INNER>)>
-  Receiver.AnonymousReceiver  = <(<Receiver-INNER>)>
-  Receiver-INNER.ReceiverType     = <<TypeName>>
-  Receiver-INNER.ReceiverPtrType  = <*<TypeName>>
+  Receiver.Receiver                         = <(<ID> <ReceiverType>)>
+  Receiver.AnonymousReceiver                = <(<ReceiverType>)>
+  ReceiverType.ReceiverType                 = <<TypeName>>
+  ReceiverType.ReceiverPtrType              = <*<TypeName>>
 

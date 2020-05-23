@@ -94,12 +94,16 @@ context-free syntax
 context-free sorts LiteralType LiteralValue KeyedElement Key Element
 context-free syntax
 
-  LiteralType                               = StructType
-  LiteralType                               = ArrayType
-  LiteralType.AutoArrayType                 = <[ ... ]<Type>>
-  LiteralType                               = SliceType
-  LiteralType                               = MapType
   LiteralType                               = TypeName
+  // Struct types -- https://golang.org/ref/spec#Struct_types
+  LiteralType.StructTypeLiteral             = <struct { <StructElement*> }>
+  // Array types -- https://golang.org/ref/spec#Array_types
+  LiteralType.ArrayTypeLiteral              = <[<Expr>]<Type>> {left}
+  LiteralType.AutoArrayTypeLiteral          = <[ ... ]<Type>> {left}
+  // Slice types -- https://golang.org/ref/spec#Slice_types
+  LiteralType.SliceTypeLiteral              = <[ ]<Type>> {left}
+  // Map types -- https://golang.org/ref/spec#Map_types
+  LiteralType.MapTypeLiteral                = <map[<Type>]<Type>>
 
   LiteralValue.LiteralValue                 = <{ <{KeyedElement ","}+> }>
   LiteralValue.LiteralValue-ALT             = <{ <{KeyedElement ","}+>, }>
@@ -127,9 +131,9 @@ context-free syntax
   Arguments-OPT.Arguments-ALT               = <<Arguments>,>
   Arguments-OPT.ArgumentsExplode            = <<Arguments>...>
   Arguments-OPT.ArgumentsExplode-ALT        = <<Arguments>... ,>
-  Arguments.ExprArguments                   = <<ExprList>>
+  Arguments.ExprArguments                   = <<{Expr ","}+>>
   Arguments.TypeArgument                    = <<Type>>
-  Arguments.TypedArguments                  = <<Type>, <ExprList>>
+  Arguments.TypedArguments                  = <<Type>, <{Expr ","}+>>
 
 
 

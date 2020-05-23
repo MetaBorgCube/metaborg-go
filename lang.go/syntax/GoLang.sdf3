@@ -42,9 +42,9 @@ context-free syntax
   TestSources.TestSources = <<TestSource*>>
 
   TestSource.TestSourceFile = <
-    [<ImportPath>]
-    <PackageClause>;
+    [<STRING_LIT>]
+    package <ID>;
 
-    <ImportDecl-ELEM*>
-    <TopLevelDecl-ELEM*>
+    <ImportDecl*>
+    <TopLevelDecl*>
   >

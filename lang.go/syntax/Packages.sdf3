@@ -16,36 +16,23 @@ context-free start-symbols
 /**
  * Source file organization -- https://golang.org/ref/spec#Source_file_organization
  */
-context-free sorts SourceFile ImportDecl-ELEM TopLevelDecl-ELEM
+context-free sorts SourceFile
 context-free syntax
 
-  SourceFile.SourceFile       = <<PackageClause>; <ImportDecl-ELEM*> <TopLevelDecl-ELEM*>>
-  ImportDecl-ELEM             = <<ImportDecl>;>
-  TopLevelDecl-ELEM           = <<TopLevelDecl>;>
-
-
-/**
- * Package clause -- https://golang.org/ref/spec#Package_clause
- */
-context-free sorts PackageClause
-context-free syntax
-
-  PackageClause.PackageClause = <package <ID>>
+  SourceFile.SourceFile                     = <package <ID>; <ImportDecl*> <TopLevelDecl*>>
 
 
 /**
  * Import declarations -- https://golang.org/ref/spec#Import_declarations
  */
-context-free sorts ImportDecl ImportSpec-ELEM ImportSpec ImportSpecQual ImportPath
+context-free sorts ImportDecl ImportSpec ImportSpecQual
 context-free syntax
 
-  ImportDecl.SingleImportDecl = <import <ImportSpec>>
-  ImportDecl.ImportDecl       = <import (<ImportSpec-ELEM*>)>
-  ImportSpec-ELEM             = <<ImportSpec>;>
+  ImportDecl.SingleImportDecl               = <import <ImportSpec>>
+  ImportDecl.ImportDecl                     = <import (<ImportSpec*>);>
 
-  ImportSpec.ImportSpec       = <<ImportSpecQual> <ImportPath>>
-  ImportSpecQual.Qual         = <>
-  ImportSpecQual.Unqual       = <.>
-  ImportSpecQual.Alias        = <<ID>>
-  ImportPath                  = STRING_LIT
+  ImportSpec.ImportSpec                     = <<ImportSpecQual> <STRING_LIT>;>
+  ImportSpecQual.Qual                       = <>
+  ImportSpecQual.Unqual                     = <.>
+  ImportSpecQual.Alias                      = <<ID>>
 
