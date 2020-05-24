@@ -21,37 +21,16 @@ rules
   topLevelDeclsOk maps topLevelDeclOk(*, list(*))
   topLevelDeclOk : scope * TopLevelDecl
 
-  topLevelDeclOk(s, FunctionDecl(name, sig)) :- {TFUN}
+  topLevelDeclOk(s, FunctionDecl(name, sig)) :- {TFUN s_ty}
     typeOfSignature(s, sig) == TFUN,
     s -> Type{name} with typeOfDecl TFUN.
 
-  topLevelDeclOk(s, FunctionDef(name, sig, body)) :- {TFUN}
+  topLevelDeclOk(s, FunctionDef(name, sig, body)) :- {TFUN s_ty}
     typeOfSignature(s, sig) == TFUN,
     s -> Type{name} with typeOfDecl TFUN,
     blockOk(s, body).
 
   topLevelDeclOk(s, _) :- true.
-
-rules
-  typeOfSignature : scope * Signature -> TYPE
-  typeOfSignature(s, Signature(Parameters(parameterDecls), result)) = FUN(TPARAMS, TRES) :-
-    typeOfParameterDecls(s, parameterDecls) == TPARAMS,
-    typeOfResult(s, result) == TRES,
-    true.
-
-rules
-  typeOfResult : scope * Result -> list(TYPE)
-  typeOfResult(s, NoResult()) = [].
-  typeOfResult(s, Parameters2Result(Parameters(parameterDecls))) = TRES :-
-    typeOfParameterDecls(s, parameterDecls) == TRES.
-  typeOfResult(s, Type2Result(type)) = [T] :-
-    typeOfType(s, type) == T.
-
-rules
-  typeOfParameterDecls maps typeOfParameterDecl(*, list(*)) = list(*)
-  typeOfParameterDecl : scope * ParameterDecl -> TYPE
-  typeOfParameterDecl(s, ParameterDecl(_, type)) = T :-
-    typeOfType(s, type) == T.
 
 //
 //rules

@@ -16,42 +16,44 @@ imports
 imports
   analysis/types
 
-//rules
-// // Initializes the scope graph with built-in types
-// init : scope
-//
-// init(s) :-
-//   // Declarations of built-in types
-//   declareTypeRaw(s, "uint",       UINT()),
-//   declareTypeRaw(s, "uint8",      UINT8()),
-//   declareTypeRaw(s, "uint16",     UINT16()),
-//   declareTypeRaw(s, "uint32",     UINT32()),
-//   declareTypeRaw(s, "uint64",     UINT64()),
-//   declareTypeRaw(s, "uintptr",    UINTPTR()),
-//
-//   declareTypeRaw(s, "int",        INT()),
-//   declareTypeRaw(s, "int8",       INT8()),
-//   declareTypeRaw(s, "int16",      INT16()),
-//   declareTypeRaw(s, "int32",      INT32()),
-//   declareTypeRaw(s, "int64",      INT64()),
-//   declareTypeRaw(s, "intptr",     INTPTR()),
-//
-//   declareTypeRaw(s, "float64",    FLOAT64()),
-//   declareTypeRaw(s, "float128",   FLOAT128()),
-//
-//   declareTypeRaw(s, "complex64",  COMPLEX64()),
-//   declareTypeRaw(s, "complex128", COMPLEX128()),
-//
-//   declareTypeRaw(s, "byte",       UINT8()),
-//   declareTypeRaw(s, "rune",       INT32()),
-//   declareTypeRaw(s, "string",     STRING()).
-//
-//rules
-//
-// // Used to declare built-in types
-// declareTypeRaw : scope * string * TYPE
-//
-// declareTypeRaw(s, x, T) :-
-//   s -> Type{x} with typeOfDecl T,
-//   // Assert that the declaration is distinct
-//   typeOfDecl of Type{x} in s |-> [(_, (_, T))].
+rules
+ // Initializes the scope graph with built-in types
+ init : scope
+
+ init(s_univ) :-
+   // Declarations of built-in types
+   declareTypeRaw(s_univ, "uint",       UINT()),
+   declareTypeRaw(s_univ, "uint8",      UINT8()),
+   declareTypeRaw(s_univ, "uint16",     UINT16()),
+   declareTypeRaw(s_univ, "uint32",     UINT32()),
+   declareTypeRaw(s_univ, "uint64",     UINT64()),
+   declareTypeRaw(s_univ, "uintptr",    UINTPTR()),
+
+   declareTypeRaw(s_univ, "int",        INT()),
+   declareTypeRaw(s_univ, "int8",       INT8()),
+   declareTypeRaw(s_univ, "int16",      INT16()),
+   declareTypeRaw(s_univ, "int32",      INT32()),
+   declareTypeRaw(s_univ, "int64",      INT64()),
+   declareTypeRaw(s_univ, "intptr",     INTPTR()),
+
+   declareTypeRaw(s_univ, "float64",    FLOAT64()),
+   declareTypeRaw(s_univ, "float128",   FLOAT128()),
+
+   declareTypeRaw(s_univ, "complex64",  COMPLEX64()),
+   declareTypeRaw(s_univ, "complex128", COMPLEX128()),
+
+   declareTypeRaw(s_univ, "byte",       UINT8()),
+   declareTypeRaw(s_univ, "rune",       INT32()),
+   declareTypeRaw(s_univ, "string",     STRING()).
+
+// See: https://golang.org/ref/spec#Predeclared_identifiers
+
+rules
+
+ // Used to declare built-in types
+ declareTypeRaw : scope * string * TYPE
+
+ declareTypeRaw(s, x, T) :-
+   s -> Type{x} with typeOfDecl T,
+   // Assert that the declaration is distinct
+   typeOfDecl of Type{x} in s |-> [(_, (_, T))].

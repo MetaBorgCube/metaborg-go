@@ -23,18 +23,37 @@ sorts TYPE
 // Special types
 constructors
   NAMED       : occurrence -> TYPE
-  FUN         : list(TYPE) * list(TYPE) -> TYPE
+  FUN         : list(TYPE) * TYPE -> TYPE
   ARRAY       : int * TYPE -> TYPE
   SLICE       : TYPE -> TYPE
   STRUCT      : scope -> TYPE
   PTR         : TYPE -> TYPE
   MAP         : TYPE * TYPE -> TYPE
-  STRING      : TYPE
+  // A TUPLE type, to model Go functions with multiple return values.
+  // Note that tuples don't have first-class support in Go. For example,
+  // you cannot nest tuples. But this way we can distinguish between the case
+  // of a function with zero, one, and multiple return values.
+  // Invariants: empty and singleton tuples are not allowed; nested tuples are not allowed.
+  TUPLE       : list(TYPE) -> TYPE
+  // A VOID type, to model Go functions with no return value.
+  VOID        : TYPE
+
+// Untyped constant types
+constructors
+  UNTYPED_INT       : TYPE
+  UNTYPED_BOOL      : TYPE
+  UNTYPED_RUNE      : TYPE
+  UNTYPED_FLOAT     : TYPE
+  UNTYPED_COMPLEX   : TYPE
+  UNTYPED_STRING    : TYPE
 
 // Built-in types
 constructors
+  BOOL        : TYPE
+  STRING      : TYPE
+
   UINT        : TYPE
-  UINT8       : TYPE
+  UINT8       : TYPE    // BYTE
   UINT16      : TYPE
   UINT32      : TYPE
   UINT64      : TYPE
@@ -43,7 +62,7 @@ constructors
   INT         : TYPE
   INT8        : TYPE
   INT16       : TYPE
-  INT32       : TYPE
+  INT32       : TYPE    // RUNE
   INT64       : TYPE
   INTPTR      : TYPE
 
@@ -64,275 +83,188 @@ signature
     // TODO: Is this correct?
     resolve Type filter P* (IMP? PUB? PUB? | PRV?) FM* min $ < P, P < PRV, P < PUB, P < FM
 
-// Types
-rules
-  typeOfType : scope * Type -> TYPE
-//  typeOfType : scope * scope * Type -> TYPE
 
-//  typeOfType(s, s_ty, TypeName2Type(typeName)) = T :-
-//    typeOfTypeName(s, s_ty, typeName) == T.
-//  typeOfType(s, s_ty, TypeLit2Type(typeLit)) = T :-
-//    typeOfTypeLit(s, s_ty, typeLit) == T.
-//
-//  typeOfType(_, _, Type-Plhdr()) = _.
-  typeOfType(_, _) = _.
+rules typeOfType : scope * Type -> TYPE
 
-//rules
-//  typeOfTypeName : scope * scope * TypeName -> TYPE
-//
-//  typeOfTypeName(s, _, ID2TypeName(name)) = T :-
-//    // Type{name} -> s,
-//    // Type{name} |-> d_ty.
-//    true.
-//
-//  typeOfTypeName(s, _, QualifiedTypeName(QualifiedIdent(ID2PackageName(pkg), name))) = NAMED(T) :-
-//    // Pkg{pkg} -> s,
-//    // new s_qual,
-//    // Pkg{pkg} <=PUB= s_qual,
-//    // Type{name} -> s_qual,
-//    // Type{name} |-> d_ty.
-//    true.
-//
-//  typeOfTypeName(_, _, TypeName-Plhdr()) = _.
-//
-//rules
-//  typeOfTypeLit : scope * scope * TypeLit -> TYPE
-//
-//  typeOfTypeLit(s, s_ty, ArrayType2TypeLit(arrayType)) = T :-
-//    typeOfArrayType(s, s_ty, arrayType) == T.
-//  typeOfTypeLit(s, s_ty, SliceType2TypeLit(sliceType)) = T :-
-//    typeOfSliceType(s, s_ty, sliceType) == T.
-//  typeOfTypeLit(s, s_ty, StructType2TypeLit(structType)) = T :-
-//    typeOfStructType(s, s_ty, structType) == T.
-//  typeOfTypeLit(s, s_ty, PointerType2TypeLit(pointerType)) = T :-
-//    typeOfPointerType(s, s_ty, pointerType) == T.
-//  typeOfTypeLit(s, s_ty, FunctionType2TypeLit(functionType)) = T :-
-//    typeOfFunctionType(s, s_ty, functionType) == T.
-//  typeOfTypeLit(s, s_ty, InterfaceType2TypeLit(interfaceType)) = T :-
-//    typeOfInterfaceType(s, s_ty, interfaceType) == T.
-//  typeOfTypeLit(s, s_ty, MapType2TypeLit(mapType)) = T :-
-//    typeOfMapType(s, s_ty, mapType) == T.
-//  typeOfTypeLit(s, s_ty, ChannelType2TypeLit(channelType)) = T :-
-//    typeOfChannelType(s, s_ty, channelType) == T.
-//
-//  typeOfTypeLit(_, _, TypeLit-Plhdr()) = _.
-//
-//rules
-//  typeOfArrayType : scope * scope * ArrayType -> TYPE
-//
-//  typeOfArrayType(s, s_ty, ArrayType(arrayLength, type)) = ARRAY(/* dummy size */ 42, T) :-
-//    typeOfArrayLength(s, arrayLength) == _,   // TODO does this have to be evaluated?
-//    typeOfElementType(s, s_ty, type) == T.
-//
-//  typeOfArrayType(_, _, ArrayType-Plhdr()) = _.
-//
-//rules
-//  typeOfSliceType : scope * scope * SliceType -> TYPE
-//
-//  typeOfSliceType(s, s_ty, SliceType(type)) = SLICE(T) :-
-//    typeOfElementType(s, s_ty, type) == T.
-//
-//  typeOfSliceType(_, _, SliceType-Plhdr()) = _.
-//
-//rules
-//  typeOfStructType : scope * scope * StructType -> TYPE
-//
-//  typeOfStructType(s, s_ty, StructType(fields)) = STRUCT(s_ty) :-
-//    structTypeELEMsOk(s, s_ty, fields).
-//
-//  typeOfStructType(_, _, StructType-Plhdr()) = _.
-//
-//rules
-//  typeOfPointerType : scope * scope * PointerType -> TYPE
-//
-//  typeOfPointerType(s, s_ty, PointerType(Type2BaseType(type))) = PTR(T) :-
-//    typeOfType(s, s_ty, type) == T.
-//
-//  typeOfPointerType(_, _, PointerType-Plhdr()) = _.
-//
-//rules
-//  typeOfFunctionType : scope * scope * FunctionType -> TYPE
-//
-//  typeOfFunctionType(s, s_ty, FunctionType(sig)) = T :-
-//    typeOfSignature(s, sig) == T.
-//
-//  typeOfFunctionType(_, _, FunctionType-Plhdr()) = _.
-//
-//rules
-//  typeOfInterfaceType : scope * scope * InterfaceType -> TYPE
-//
-//  // TODO:
-//  typeOfInterfaceType(s, s_ty, InterfaceType(_)) = T.
-//
-//  typeOfInterfaceType(_, _, InterfaceType-Plhdr()) = _.
-//
-//rules
-//  typeOfMapType : scope * scope * MapType -> TYPE
-//
-//  // TODO:
-//  typeOfMapType(s, s_ty, MapType(_, _)) = T.
-//
-//  typeOfMapType(_, _, MapType-Plhdr()) = _.
-//
-//rules
-//  typeOfChannelType : scope * scope * ChannelType -> TYPE
-//
-//  // TODO:
-//  typeOfChannelType(s, s_ty, BidirectionalChannelType(_)) = T.
-//  typeOfChannelType(s, s_ty, SendingChannelType(_)) = T.
-//  typeOfChannelType(s, s_ty, ReceivingChannelType(_)) = T.
-//
-//  typeOfChannelType(_, _, ChannelType-Plhdr()) = _.
-//
-//////////////////////////////////////////////////////////////////////////////////
-//
-//// Field declarations
-//rules
-//  structTypeELEMOk : scope * scope * StructType-ELEM
-//  structTypeELEMsOk maps structTypeELEMOk(*, *, list(*))
-//
-//  structTypeELEMOk(s, s_ty, FieldDecl2StructType-ELEM(fieldDecl)) :-
-//    fieldDeclOk(s, s_ty, fieldDecl).
-//
-//  structTypeELEMOk(_, _, StructType-ELEM-Plhdr()).
-//
-//
-//rules
-//  fieldDeclOk : scope * scope * FieldDecl
-//  fieldDeclsOk maps fieldDeclOk(*, *, list(*))
-//
-//  fieldDeclOk(s, s_ty, FieldDecl(field, tag)) :-
-//    fieldOk(s, s_ty, field),
-//    tagOPTOk(s, tag).
-//
-//// Fields
-//rules
-//  fieldOk : scope * scope * Field
-//
-//  fieldOk(s, s_ty, Field(ID2IDList(names), type)) :- {T}
-//    declareVars(s_ty, names, T),
-//    typeOfType(s, s_ty, type) == T.
-//
-//  fieldOk(s, s_ty, EmbeddedField2Field(embeddedField)) :-
-//    embeddedFieldOk(s, s_ty, embeddedField).
-//
-//  fieldOk(_, _, Field-Plhdr()).
-//
-//rules
-//  embeddedFieldOk : scope * scope * EmbeddedField
-//
-//  // FIXME/TODO: qualified types
-//  embeddedFieldOk(s, s_ty, AnonymousPtrField(type@QualifiedTypeName(QualifiedIdent(ID2PackageName(pkg), name)))).
-//  embeddedFieldOk(s, s_ty, AnonymousField(type@QualifiedTypeName(QualifiedIdent(ID2PackageName(pkg), name)))).
-//
-//  embeddedFieldOk(s, s_ty, AnonymousPtrField(type@ID2TypeName(name))).
-//    // Var{name} <- s_ty,
-//    // [[ type ^ (s, s_ty') : ty ]], new s_ty',
-//    // Var{name} : ty,
-//    // Type{name} -> s,
-//    // Type{name} <=FM= s_ty.
-//
-//  embeddedFieldOk(s, s_ty, AnonymousField(type@ID2TypeName(name))).
-//    // Var{name} <- s_ty,
-//    // [[ type ^ (s, s_ty') : ty ]], new s_ty',
-//    // Var{name} : ty,
-//    // Type{name} -> s,
-//    // Type{name} <=FM= s_ty.
-//
-//  embeddedFieldOk(_, _, EmbeddedField-Plhdr()).
-//
-//// Field tags
-//rules
-//  tagOPTOk : scope * Tag-OPT
-//
-//  tagOPTOk(_, NoTag()).
-//  tagOPTOk(s, Tag2Tag-OPT(tag)) :-
-//    tagOk(s, tag).
-//
-//  tagOPTOk(_, Tag-OPT-Plhdr()).
-//
-//rules
-//  tagOk : scope * Tag
-//
-//  // TODO:
-//  tagOk(_, _).
-//
-//  tagOk(_, Tag-Plhdr()).
-//
-//// Function signatures
-//rules
-//  typeOfSignature : scope * Signature -> TYPE
-//
-//  typeOfSignature(s, Signature(Parameters(ParameterDecls2ParameterList(params)), result)) = FUN(_, _) :- {T}
-////    parameterDeclsOk(s, s_ty, params),
-////    typeOfResultOPT(s, s_ty, result) == T.
-//    true.
-//
-//  typeOfSignature(_, Signature-Plhdr()) = _.
-//
-//// Function parameter declarations
-//rules
-//  parameterDeclOk : scope * scope * ParameterDecl
-//  parameterDeclsOk maps parameterDeclOk(*, *, list(*))
-//
-//  parameterDeclOk(s, s_ty, ParameterDecl(IDList2IDList-OPT(ID2IDList(names)), type)) :- {T}
-//    declareVars(s, names, T),
-//    typeOfType(s, s_ty, type) == T.
-//
-//  parameterDeclOk(s, s_ty, VariadicParameterDecl(IDList2IDList-OPT(ID2IDList(names)), type)) :- {T}
-//    declareVars(s, names, T),
-//    typeOfType(s, s_ty, type) == T.
-//
-//  // TODO
-//  parameterDeclOk(s, s_ty, ParameterDecl(NoIDs(), type)).
-//  parameterDeclOk(s, s_ty, VariadicParameterDecl(NoIDs(), type)).
-//
-//  parameterDeclOk(_, _, ParameterDecl-Plhdr()).
-//
-//rules
-//  typeOfResultOPT : scope * scope * Result-OPT -> TYPE
-//
-//  typeOfResultOPT(s, s_ty, NoResult()) = T.
-//  typeOfResultOPT(s, s_ty, Result2Result-OPT(result)) = T :-
-//    typeOfResult(s, s_ty, result) == T.
-//
-//  typeOfResultOPT(_, _, Result-OPT-Plhdr()) = _.
-//
-//rules
-//  typeOfResult : scope * scope * Result -> TYPE
-//
-//  // TODO
-//  typeOfResult(s, s_ty, Parameters2Result(_)) = T.
-//  typeOfResult(s, s_ty, Type2Result(_)) = T.
-//
-//  typeOfResult(_, _, Result-Plhdr()) = _.
-//
-//rules
-//  typeOfArrayLength : scope * ArrayLength -> TYPE
-//
-//  typeOfArrayLength(s, Expr2ArrayLength(expr)) = T :-
-//    typeOfExpr(s, expr) == T.
-//
-//  typeOfArrayLength(_, ArrayLength-Plhdr()) = _.
-//
-//rules
-//  typeOfElementType : scope * scope * ElementType -> TYPE
-//
-//  typeOfElementType(s, s_ty, Type2ElementType(type)) = T :-
-//    typeOfType(s, s_ty, type) == T.
-//
-//  typeOfElementType(_, _, ElementType-Plhdr()) = _.
-//
-//rules
-//  lookupType : scope * string -> TYPE
-//
-//  lookupType(s, x) = T :- {dx}
-//    @x.ref := dx,
-//    typeOfDecl of Type{x} in s |-> [(_, (Type{dx}, T))].
-//
-//rules
-////  lookupPkg : scope * string -> PKG
-////
-////  lookupPkg(s, x) = P :- {dx}
-////    @x.ref := dx
-////    typeOfPkg of Pkg{x} in s |-> [(_, (Pkg{dx}, T))].
+  typeOfType(s, TypeName2Type(TypeName(name))) = T :-
+    lookupType(s, name) == T.
+
+  typeOfType(s, TypeName2Type(QualifiedTypeName(QualifiedIdent(x, y)))) = T :-
+    // TODO
+    false | error $[typeOfType(QualifiedTypeName) not implemented.].
+
+  typeOfType(s, PointerType(type)) = PTR(T) :-
+    typeOfType(s, type) == T.
+
+  typeOfType(s, ArrayType(lengthExpr, type)) = ARRAY(/* dummy size */ 42, T) :-
+    // TODO: Evaluate constant expression lengthExpr to an int
+    typeOfType(s, type) == T.
+
+  typeOfType(s, SliceType(type)) = SLICE(T) :-
+    typeOfType(s, type) == T.
+
+  typeOfType(s, StructType(elements)) = T :-
+    // TODO
+    false | error $[typeOfType(StructType) not implemented.].
+
+  typeOfType(s, FunctionType(sig)) = TFUN :-
+    typeOfSignature(s, sig) == TFUN.
+
+  typeOfType(s, InterfaceType(members)) = T :-
+    // TODO
+    false | error $[typeOfType(InterfaceType) not implemented.].
+
+  typeOfType(s, MapType(keyType, elementType)) = MAP(TKEY, TELEMENT) :-
+    typeOfType(s, keyType) == TKEY,
+    typeOfType(s, elementType) == TELEMENT.
+
+  typeOfType(s, BidirectionalChannelType(type)) = T :-
+    // TODO
+    false | error $[typeOfType(BidirectionalChannelType) not implemented.].
+
+  typeOfType(s, SendingChannelType(type)) = T :-
+    // TODO
+    false | error $[typeOfType(SendingChannelType) not implemented.].
+
+  typeOfType(s, ReceivingChannelType(type)) = T :-
+    // TODO
+    false | error $[typeOfType(ReceivingChannelType) not implemented.].
+
+
+rules typeOfStructElement : scope * StructElement -> TYPE
+
+  // TODO
+
+
+rules typeOfSignature : scope * Signature -> TYPE
+
+  typeOfSignature(s, Signature(parameters, result)) = FUN(TPARAMS, TRES) :-
+    typesOfParameters(s, parameters) == TPARAMS,
+    typeOfResult(s, result) == TRES.
+
+
+rules typeOfResult : scope * Result -> TYPE
+
+  typeOfResult(s, NoResult()) = VOID.
+
+  typeOfResult(s, Parameters2Result(parameters)) = TUPLE(TRES) :-
+    typesOfParameters(s, parameters) == TRES.
+
+  typeOfResult(s, Type2Result(type)) = T :-
+    typeOfType(s, type) == T.
+
+
+rules typesOfParameters : scope * Parameters -> list(TYPE)
+
+  typesOfParameters(s, Parameters(parameterDecls)) = TS :-
+    typesOfParameterDecls(s, parameterDecls) == TS.
+
+
+rules typeOfParameterDecl : scope * ParameterDecl -> TYPE
+
+  typesOfParameterDecls maps typeOfParameterDecl(*, list(*)) = list(*)
+
+  typeOfParameterDecl(s, ParameterDecl(_, type)) = T :-
+    typeOfType(s, type) == T.
+
+  typeOfParameterDecl(s, VariadicParameterDecl(_, type)) = T :-
+    // TODO
+    false | error $[typeOfParameterDecl(VariadicParameterDecl) not implemented.].
+
+
+rules typeOfInterfaceTypeMember : scope * InterfaceTypeMember -> TYPE
+
+  typeOfInterfaceTypeMember(s, MethodSpec(name, sig)) = T :-
+    // TODO
+    false | error $[typeOfInterfaceTypeMember(MethodSpec) not implemented.].
+
+  typeOfInterfaceTypeMember(s, EmbeddedInterface(typeName)) = T :-
+    // TODO
+    false | error $[typeOfInterfaceTypeMember(EmbeddedInterface) not implemented.].
+
+
+rules isUntypedType : TYPE
+
+  isUntypedType(UNTYPED_INT()).
+  isUntypedType(UNTYPED_BOOL()).
+  isUntypedType(UNTYPED_RUNE()).
+  isUntypedType(UNTYPED_FLOAT()).
+  isUntypedType(UNTYPED_COMPLEX()).
+  isUntypedType(UNTYPED_STRING()).
+
+rules isComparable : TYPE
+
+  // booleans
+  // integers
+  // floating-point
+  // complex values
+  // string values
+  // pointers
+  // channels
+  // interfaces
+  // a value x : non-interface X and value t : interface T iff values of type X are comparable and X implements T.
+  // struct iff all their fields are comparable
+  // array iff array element type is comparable
+  isComparable(UNTYPED_INT()).
+  isComparable(UNTYPED_BOOL()).
+  isComparable(UNTYPED_RUNE()).
+  isComparable(UNTYPED_FLOAT()).
+  isComparable(UNTYPED_COMPLEX()).
+  isComparable(UNTYPED_STRING()).
+
+  isComparable(BOOL()).
+  isComparable(STRING()).
+
+  isComparable(UINT()).
+  isComparable(UINT8()).
+  isComparable(UINT16()).
+  isComparable(UINT32()).
+  isComparable(UINT64()).
+  isComparable(UINTPTR()).
+
+  isComparable(INT()).
+  isComparable(INT8()).
+  isComparable(INT16()).
+  isComparable(INT32()).
+  isComparable(INT64()).
+  isComparable(INTPTR()).
+
+  isComparable(FLOAT64()).
+  isComparable(FLOAT128()).
+
+  isComparable(COMPLEX64()).
+  isComparable(COMPLEX128()).
+
+  // TODO: Channels
+  // TODO: interfaces
+  // TODO: structs iff all their fields are comparable
+
+  isComparable(ARRAY(_, T)) :-
+    isComparable(T).
+
+rules isOrdered : TYPE
+
+
+//rules defaultTypeOfUntypedType : TYPE -> TYPE
+//
+//  defaultTypeOfUntypedType(UNTYPED_INT)     = INT.
+//  defaultTypeOfUntypedType(UNTYPED_BOOL)    = BOOL.
+//  defaultTypeOfUntypedType(UNTYPED_RUNE)    = INT32.
+//  defaultTypeOfUntypedType(UNTYPED_FLOAT)   = FLOAT64.
+//  defaultTypeOfUntypedType(UNTYPED_COMPLEX) = COMPLEX128.
+//  defaultTypeOfUntypedType(UNTYPED_STRING)  = STRING.
+
+
+rules lookupType : scope * string -> TYPE
+
+  lookupType(s, x) = T :- {dx}
+    @x.ref := dx,
+    typeOfDecl of Type{x} in s |-> [(_, (Type{dx}, T))].
+
+
+  // TODO
+//rules lookupPkg : scope * string -> PKG
+//
+//  lookupPkg(s, x) = P :- {dx}
+//    @x.ref := dx
+//    typeOfPkg of Pkg{x} in s |-> [(_, (Pkg{dx}, T))].

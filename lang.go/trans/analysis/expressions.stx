@@ -17,17 +17,162 @@ imports
   analysis/types
   analysis/declarations
 
-rules
-  typeOfExpr : scope * Expr -> TYPE
-  typeOfExpr(s, PrimaryExpr2Expr(primaryExpr)) = T :-
-    typeOfPrimaryExpr(s, primaryExpr) == T.
+rules typeOfPrimaryExpr : scope * PrimaryExpr -> TYPE
 
-rules
-  typeOfPrimaryExpr : scope * PrimaryExpr -> TYPE
+  typeOfPrimaryExpr(s, IntLit(_))       = UNTYPED_INT.
+  typeOfPrimaryExpr(s, FloatLit(_))     = UNTYPED_FLOAT.
+  typeOfPrimaryExpr(s, ImaginaryLit(_)) = UNTYPED_COMPLEX.
+  typeOfPrimaryExpr(s, RuneLit(_))      = UNTYPED_RUNE.
+  typeOfPrimaryExpr(s, StringLit(_))    = UNTYPED_STRING.
+
+  typeOfPrimaryExpr(s, FunctionLit(sig, body)) = T :-
+    // TODO
+    true.
+
+  typeOfPrimaryExpr(s, CompositeLit(litType, litValue)) = T :-
+    // TODO
+    true.
+
+  typeOfPrimaryExpr(s, Index(expr, indexExpr)) = T :-
+    // TODO
+    true.
+
+  typeOfPrimaryExpr(s, SliceLH(expr, lowExpr, highExpr)) = T :-
+    // TODO
+    true.
+
+  typeOfPrimaryExpr(s, SliceLHM(expr, lowExpr, highExpr, maxExpr)) = T :-
+    // TODO
+    true.
+
+  typeOfPrimaryExpr(s, TypeAssertion(expr, type)) = T :-
+    // TODO
+    true.
+
+  typeOfPrimaryExpr(s, Call(member, arguments)) = TRETS :- {TARGS}
+    typeOfArgumentsOpt(s, arguments) == TARGS,
+    typeOfPrimaryExpr(s, member) == FUN(TARGS, TRETS).
+
+  typeOfPrimaryExpr(s, Conversion(type, expr)) = T :-
+    // TODO
+    true.
+
+  typeOfPrimaryExpr(s, Selector(expr, name)) = T :-
+    // TODO
+    true.
+
+  typeOfPrimaryExpr(s, MethodExpr(type, name)) = T :-
+    // TODO
+    true.
+
+  typeOfPrimaryExpr(s, OperandName(name)) = T :-
+    typeOfDecl of Type{name} in s |-> [(_, (_, T))].
+
+  typeOfPrimaryExpr(s, QualifiedOperandName(QualifiedIdent(x, y))) = T :-
+    // TODO
+    true.
+
+  typeOfPrimaryExpr(s, CallOrConversion(name, expr)) = T :-
+    // TODO
+    true.
+
   typeOfPrimaryExpr(s, QualifiedCallOrConversion(QualifiedIdent(receiver, member), expr)) = T :-
     // TODO: If receiver.member is a type, this is a type conversion (Conversion)
     // TODO: If receiver.member is a function or method, this is a call (Call)
     true.
+
+  typeOfPrimaryExpr(s, MemberAccess(receiverName, memberName)) = T :-
+    // TODO
+    true.
+
+
+rules typeOfLiteralType : scope * LiteralType -> TYPE
+
+  typeOfLiteralType(s, TypeName2LiteralType(TypeName(typeName))) = T :-
+    // TODO
+    true.
+
+  typeOfLiteralType(s, TypeName2LiteralType(QualifiedTypeName(QualifiedIdent(x, y)))) = T :-
+    // TODO
+    true.
+
+  typeOfLiteralType(s, StructTypeLiteral(elements)) = T :-
+    // TODO
+    true.
+
+  typeOfLiteralType(s, ArrayTypeLiteral(lengthExpr, type)) = T :-
+    // TODO
+    true.
+
+  typeOfLiteralType(s, AutoArrayTypeLiteral(type)) = T :-
+    // TODO
+    true.
+
+  typeOfLiteralType(s, SliceTypeLiteral(type)) = T :-
+    // TODO
+    true.
+
+  typeOfLiteralType(s, MapTypeLiteral(keyType, valueType)) = T :-
+    // TODO
+    true.
+
+
+rules typeOfArgumentsOpt : scope * Arguments-OPT -> list(TYPE)
+  // Each argument must be a single-valued expression;
+  // or, as a special case, there can be a single argument and its multiple return values
+  // are assigned as the values to the call.
+
+  typeOfArgumentsOpt(s, NoArguments()) = [].
+
+  typeOfArgumentsOpt(s, Arguments(ExprArguments(exprs))) = [].  // TODO
+  typeOfArgumentsOpt(s, Arguments(TypeArgument(type))) = [].  // TODO
+  typeOfArgumentsOpt(s, Arguments(TypedArguments(type, exprs))) = [].  // TODO
+
+  typeOfArgumentsOpt(s, ArgumentsExplode(ExprArguments(exprs))) = [].  // TODO
+  typeOfArgumentsOpt(s, ArgumentsExplode(TypeArgument(type))) = [].  // TODO
+  typeOfArgumentsOpt(s, ArgumentsExplode(TypedArguments(type, exprs))) = [].  // TODO
+
+
+
+rules typeOfExpr : scope * Expr -> TYPE
+
+  typeOfExpr(s, Equal(lhs, rhs)) = UNTYPED_BOOL :- {TLHS TRHS}
+    typeOfExpr(s, lhs) == TLHS,
+    typeOfExpr(s, rhs) == TRHS,
+    isComparable(TLHS),
+    isComparable(TRHS),
+    // TODO: Check that TLHS and TRHS are equatable
+    // TODO: a value x : non-interface X and value t : interface T iff values of type X are comparable and X implements T.
+    true.
+
+
+  typeOfExpr(s, LeftShift(lhs, rhs)) = UNTYPED_INT :- {TLHS TRHS}
+    typeOfExpr(s, lhs) == TLHS,
+    typeOfExpr(s, rhs) == TRHS,
+    /* where */ isUntypedType(TLHS),
+    // TODO: Check that LHS is UNTYPED_INT or UNTYPED_FLOAT(?) and RHS is integer type
+    true.
+
+//  typeOfExpr(s, LeftShift(lhs, rhs)) = TLHS :- {TRHS}
+//    typeOfExpr(s, lhs) == TLHS,
+//    /* where */ not(isUntypedType(TLHS)),
+//    // TODO: Check that LHS is integer type, and RGS is integer type
+//    true.
+
+
+
+  typeOfExpr(s, PrimaryExpr2Expr(primaryExpr)) = T :-
+    typeOfPrimaryExpr(s, primaryExpr) == T.
+
+//rules typeOfComparison : TYPE * TYPE -> TYPE
+//
+//  typeOfComparison(UNTYPED_INT,     UNTYPED_INT)      = UNTYPED_BOOL.
+//  typeOfComparison(UNTYPED_BOOL,    UNTYPED_BOOL)     = UNTYPED_BOOL.
+//  typeOfComparison(UNTYPED_RUNE,    UNTYPED_RUNE)     = UNTYPED_BOOL.
+//  typeOfComparison(UNTYPED_FLOAT,   UNTYPED_FLOAT)    = UNTYPED_BOOL.
+//  typeOfComparison(UNTYPED_COMPLEX, UNTYPED_COMPLEX)  = UNTYPED_BOOL.
+//  typeOfComparison(UNTYPED_STRING,  UNTYPED_STRING)   = UNTYPED_BOOL.
+
 //
 //// Expressions
 //rules

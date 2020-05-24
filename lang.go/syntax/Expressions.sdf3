@@ -32,7 +32,6 @@ context-free syntax
   PrimaryExpr.ImaginaryLit                  = <<IMAGINARY_LIT>>
   PrimaryExpr.RuneLit                       = <<RUNE_LIT>>
   PrimaryExpr.StringLit                     = <<STRING_LIT>>
-  PrimaryExpr.OperandName                   = <<ID>>
 
   // Function literals -- https://golang.org/ref/spec#Function_literals
   PrimaryExpr.FunctionLit                   = <func <Signature> <Block>>
@@ -62,7 +61,8 @@ context-free syntax
   PrimaryExpr.MethodExpr                    = <<Type>.<ID>>
   PrimaryExpr.MethodExpr-DISAMB             = [[Type].m#[ID]]                           // for manual disambiguation
   // Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
-  PrimaryExpr.QualifiedOperandName          = QualifiedIdent
+  PrimaryExpr.OperandName                   = <<ID>>
+  PrimaryExpr.QualifiedOperandName          = <<QualifiedIdent>>
 
 
   // This can denote:

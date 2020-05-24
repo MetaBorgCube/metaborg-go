@@ -27,6 +27,8 @@ context-free syntax
   TypeName.TypeName                         = ID
   TypeName.QualifiedTypeName                = QualifiedIdent
 
+context-free syntax
+
   Type                                      = TypeName
   Type                                      = <( <Type> )> {bracket}
   // Pointer types -- https://golang.org/ref/spec#Pointer_types
