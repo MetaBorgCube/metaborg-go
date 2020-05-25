@@ -46,7 +46,6 @@ context-free syntax
   Stmt.DeferStmt                            = <defer <Expr>;>
 
 
-
 context-free sorts SimpleStmt
 context-free syntax
   // Empty statements -- https://golang.org/ref/spec#Empty_statements

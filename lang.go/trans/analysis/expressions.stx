@@ -17,6 +17,60 @@ imports
   analysis/types
   analysis/declarations
 
+
+signature
+  sorts
+    CONSTVAL
+  constructors
+    CINT    : int     -> CONSTVAL
+    CSTRING : string  -> CONSTVAL
+//    CONSTFLOAT  : FLOAT_LIT   -> CONSTVAL
+//    CONSTSTRING : STRING_LIT  -> CONSTVAL
+//    CONSTBOOL   : BOOL    -> CONSTVAL
+    CDYN    : CONSTVAL
+
+rules typeOfPrimaryExpr2 : scope * PrimaryExpr -> (TYPE * CONSTVAL)
+
+  typeOfPrimaryExpr2(s, IntLit(v))       = (UNTYPED_INT, CINT(stringToInt(v))).
+
+
+
+rules typeOfExpr2 : scope * Expr -> (TYPE * CONSTVAL)
+
+  typeOfExpr2(s, PrimaryExpr2Expr(primaryExpr)) = T :-
+    typeOfPrimaryExpr2(s, primaryExpr) == T.
+
+  typeOfExpr2(s, Sum(e1, e2)) = TV :- {TV1 TV2}
+    typeOfExpr2(s, e1) == TV1,
+    typeOfExpr2(s, e2) == TV2,
+    addConst(TV1, TV2) == TV,
+    true.
+
+
+rules
+  stringToInt : string -> int
+
+  addConst : (TYPE * CONSTVAL) * (TYPE * CONSTVAL) -> (TYPE * CONSTVAL)
+
+  addConst((T, CDYN()), (T, _)) = (T, CDYN()).
+  addConst((T, _), (T, CDYN())) = (T, CDYN()).
+  addConst((T, CINT(i)), (T, CINT(j))) = (T, CINT(i #+ j)).
+
+  // untypedint + int = int
+  // untypedint + untypedint = untypedint
+  // untypedint + int8 = int8
+
+
+
+
+
+
+
+
+
+
+
+
 rules typeOfPrimaryExpr : scope * PrimaryExpr -> TYPE
 
   typeOfPrimaryExpr(s, IntLit(_))       = UNTYPED_INT.
@@ -51,7 +105,7 @@ rules typeOfPrimaryExpr : scope * PrimaryExpr -> TYPE
 
   typeOfPrimaryExpr(s, Call(member, arguments)) = TRETS :- {TARGS}
     typeOfArgumentsOpt(s, arguments) == TARGS,
-    typeOfPrimaryExpr(s, member) == FUN(TARGS, TRETS).
+    typeOfPrimaryExpr(s, member) == FUN(TARGS, TRETS) | error $[[member] is not a method or function, or not found.].
 
   typeOfPrimaryExpr(s, Conversion(type, expr)) = T :-
     // TODO
@@ -141,6 +195,7 @@ rules typeOfExpr : scope * Expr -> TYPE
     typeOfExpr(s, rhs) == TRHS,
     isComparable(TLHS),
     isComparable(TRHS),
+    isComparableTo(TLHS, TRHS),
     // TODO: Check that TLHS and TRHS are equatable
     // TODO: a value x : non-interface X and value t : interface T iff values of type X are comparable and X implements T.
     true.

@@ -242,11 +242,42 @@ rules isComparable : TYPE
   isComparable(ARRAY(_, T)) :-
     isComparable(T).
 
+rules isComparableTo : TYPE * TYPE
+
+  isComparableTo(UNTYPED_INT(), UNTYPED_INT()).
+  isComparableTo(UNTYPED_INT(), UINT()).
+  isComparableTo(UNTYPED_INT(), UINT8()).
+  isComparableTo(UNTYPED_INT(), UINT16()).
+  isComparableTo(UNTYPED_INT(), UINT32()).
+  isComparableTo(UNTYPED_INT(), UINT64()).
+  isComparableTo(UNTYPED_INT(), UINTPTR()).
+  isComparableTo(UNTYPED_INT(), INT()).
+  isComparableTo(UNTYPED_INT(), INT8()).
+  isComparableTo(UNTYPED_INT(), INT16()).
+  isComparableTo(UNTYPED_INT(), INT32()).
+  isComparableTo(UNTYPED_INT(), INT64()).
+  isComparableTo(UNTYPED_INT(), INTPTR()).
+
+//  isComparableTo(T1, T2) :-
+//    isNumType(T1).
+//    isNumType(T2).
+
+//  isComparableTo(T1, T2) | isNumType(T1) :-
+//    isNumType(T2).
+
+//  isComparableTo(T, UNTYPED_INT()) :-
+//    isNumType(T).
+
+  isNumType : TYPE
+
+
+  // TODO: Repeat this for every possible pair?
+
 rules isOrdered : TYPE
 
 
 //rules defaultTypeOfUntypedType : TYPE -> TYPE
-//
+
 //  defaultTypeOfUntypedType(UNTYPED_INT)     = INT.
 //  defaultTypeOfUntypedType(UNTYPED_BOOL)    = BOOL.
 //  defaultTypeOfUntypedType(UNTYPED_RUNE)    = INT32.

@@ -68,16 +68,22 @@ context-free syntax
   // This can denote:
   // - Call: a function or method call (when receiver is an expr)
   // - Conversion: a type conversion (when receiver is a type)
-  PrimaryExpr.CallOrConversion              = <<ID>(<Expr>)> {prefer}
-  PrimaryExpr.CallOrConversion-ALT          = <<ID>(<Expr>, )> {prefer}
-  PrimaryExpr.QualifiedCallOrConversion     = <<QualifiedIdent>(<Expr>)> {prefer}
-  PrimaryExpr.QualifiedCallOrConversion-ALT = <<QualifiedIdent>(<Expr>, )> {prefer}
+  PrimaryExpr.CallOrConversion              = <<ID>(<Expr>)>
+  PrimaryExpr.CallOrConversion-ALT          = <<ID>(<Expr>, )>
+  PrimaryExpr.QualifiedCallOrConversion     = <<QualifiedIdent>(<Expr>)>
+  PrimaryExpr.QualifiedCallOrConversion-ALT = <<QualifiedIdent>(<Expr>, )>
   // This can denote:
   // - QualifiedOperandName: a constant, variable, or function
   // - Selector: a field or method
   // - MethodExpr: a method group (when receiver is a type)
   PrimaryExpr.MemberAccess                  = <<ID>.<ID>> {left, prefer}
 
+context-free priorities
+
+  PrimaryExpr.Call <0> .> PrimaryExpr.OperandName,
+  PrimaryExpr.Call <0> .> PrimaryExpr.QualifiedOperandName,
+  PrimaryExpr.Conversion <0> .> TypeName.TypeName,
+  PrimaryExpr.Conversion <0> .> TypeName.QualifiedTypeName
 
 /*
  * Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
@@ -98,10 +104,10 @@ context-free syntax
   // Struct types -- https://golang.org/ref/spec#Struct_types
   LiteralType.StructTypeLiteral             = <struct { <StructElement*> }>
   // Array types -- https://golang.org/ref/spec#Array_types
-  LiteralType.ArrayTypeLiteral              = <[<Expr>]<Type>> {left}
-  LiteralType.AutoArrayTypeLiteral          = <[ ... ]<Type>> {left}
+  LiteralType.ArrayTypeLiteral              = <[<Expr>]<Type>>
+  LiteralType.AutoArrayTypeLiteral          = <[ ... ]<Type>>
   // Slice types -- https://golang.org/ref/spec#Slice_types
-  LiteralType.SliceTypeLiteral              = <[ ]<Type>> {left}
+  LiteralType.SliceTypeLiteral              = <[ ]<Type>>
   // Map types -- https://golang.org/ref/spec#Map_types
   LiteralType.MapTypeLiteral                = <map[<Type>]<Type>>
 
@@ -170,13 +176,14 @@ context-free syntax
   Expr.BitClear                             = [[Expr] &^ [Expr]]  {left}
 
   Expr                                      = PrimaryExpr
-  Expr.Positive                             = <+<Expr>>  {left}
-  Expr.Negation                             = <-<Expr>>  {left}    // Two's complement
-  Expr.Not                                  = <!<Expr>>  {left}    // Logical complement
-  Expr.BitwiseComplement                    = <^<Expr>>  {left}    // Ones' complement
-  Expr.Deref                                = <*<Expr>>  {left}
-  Expr.Ref                                  = <&<Expr>>  {left}
-  Expr.Receive                              = [<-[Expr]] {left}
+  Expr.Positive                             = <+<Expr>>
+  Expr.Negation                             = <-<Expr>>      // Two's complement
+  Expr.Not                                  = <!<Expr>>      // Logical complement
+  Expr.BitwiseComplement                    = <^<Expr>>      // Ones' complement
+  Expr.Deref                                = <*<Expr>>
+  Expr.Ref                                  = <&<Expr>>
+  Expr.Receive                              = [<-[Expr]]
+
 
 context-free priorities
 
@@ -204,7 +211,7 @@ context-free priorities
     PrimaryExpr.Conversion-ALT
     PrimaryExpr.Conversion-DISAMB
     PrimaryExpr.Conversion-DISAMB-ALT
-  } > { left: // unary_op
+  } > { // unary_op
     Expr.Positive
     Expr.Negation
     Expr.Not
