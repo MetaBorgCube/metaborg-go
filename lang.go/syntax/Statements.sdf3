@@ -120,8 +120,8 @@ context-free syntax
 context-free sorts TypeSwitchGuard TypeCaseClause
 context-free syntax
 
-  TypeSwitchGuard.TypeSwitchGuard           = <<ID> := <PrimaryExpr>.(<>type<>)>
-  TypeSwitchGuard.TypeSwitchGuardNoID       = <<PrimaryExpr>.(<>type<>)>
+  TypeSwitchGuard.TypeSwitchGuard           = <<ID> := <Expr>.(<>type<>)>
+  TypeSwitchGuard.TypeSwitchGuardNoID       = <<Expr>.(<>type<>)>
 
   TypeCaseClause.TypeCase                   = <case <{Type ","}+>: <Stmt*>>
   TypeCaseClause.TypeCaseDefault            = <default<>: <Stmt*>>
