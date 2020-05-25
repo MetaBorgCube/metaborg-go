@@ -18,126 +18,348 @@ imports
   analysis/declarations
 
 
-signature
-  sorts
-    CONSTVAL
-  constructors
-    CINT    : int     -> CONSTVAL
-    CSTRING : string  -> CONSTVAL
-//    CONSTFLOAT  : FLOAT_LIT   -> CONSTVAL
-//    CONSTSTRING : STRING_LIT  -> CONSTVAL
-//    CONSTBOOL   : BOOL    -> CONSTVAL
-    CDYN    : CONSTVAL
+//signature
+//  sorts
+//    CONSTVAL
+//  constructors
+//    CINT    : int     -> CONSTVAL
+//    CSTRING : string  -> CONSTVAL
+////    CONSTFLOAT  : FLOAT_LIT   -> CONSTVAL
+////    CONSTSTRING : STRING_LIT  -> CONSTVAL
+////    CONSTBOOL   : BOOL    -> CONSTVAL
+//    CDYN    : CONSTVAL
+//
+//rules typeOfPrimaryExpr2 : scope * PrimaryExpr -> (TYPE * CONSTVAL)
+//
+//  typeOfPrimaryExpr2(s, IntLit(v))       = (UNTYPED_INT, CINT(stringToInt(v))).
+//
+//
+//
+//rules typeOfExpr2 : scope * Expr -> (TYPE * CONSTVAL)
+//
+//  typeOfExpr2(s, PrimaryExpr2Expr(primaryExpr)) = T :-
+//    typeOfPrimaryExpr2(s, primaryExpr) == T.
+//
+//  typeOfExpr2(s, Sum(e1, e2)) = TV :- {TV1 TV2}
+//    typeOfExpr2(s, e1) == TV1,
+//    typeOfExpr2(s, e2) == TV2,
+//    addConst(TV1, TV2) == TV,
+//    true.
 
-rules typeOfPrimaryExpr2 : scope * PrimaryExpr -> (TYPE * CONSTVAL)
+//
+//rules
+//  stringToInt : string -> int
 
-  typeOfPrimaryExpr2(s, IntLit(v))       = (UNTYPED_INT, CINT(stringToInt(v))).
-
-
-
-rules typeOfExpr2 : scope * Expr -> (TYPE * CONSTVAL)
-
-  typeOfExpr2(s, PrimaryExpr2Expr(primaryExpr)) = T :-
-    typeOfPrimaryExpr2(s, primaryExpr) == T.
-
-  typeOfExpr2(s, Sum(e1, e2)) = TV :- {TV1 TV2}
-    typeOfExpr2(s, e1) == TV1,
-    typeOfExpr2(s, e2) == TV2,
-    addConst(TV1, TV2) == TV,
-    true.
-
-
-rules
-  stringToInt : string -> int
-
-  addConst : (TYPE * CONSTVAL) * (TYPE * CONSTVAL) -> (TYPE * CONSTVAL)
-
-  addConst((T, CDYN()), (T, _)) = (T, CDYN()).
-  addConst((T, _), (T, CDYN())) = (T, CDYN()).
-  addConst((T, CINT(i)), (T, CINT(j))) = (T, CINT(i #+ j)).
+//  addConst : (TYPE * CONSTVAL) * (TYPE * CONSTVAL) -> (TYPE * CONSTVAL)
+//
+//  addConst((T, CDYN()), (T, _)) = (T, CDYN()).
+//  addConst((T, _), (T, CDYN())) = (T, CDYN()).
+//  addConst((T, CINT(i)), (T, CINT(j))) = (T, CINT(i #+ j)).
 
   // untypedint + int = int
   // untypedint + untypedint = untypedint
   // untypedint + int8 = int8
 
 
+rules typeOfExpr : scope * Expr -> TYPE
 
+  typeOfExpr(s, IntLit(_))       = UNTYPED_INT.
+  typeOfExpr(s, FloatLit(_))     = UNTYPED_FLOAT.
+  typeOfExpr(s, ImaginaryLit(_)) = UNTYPED_COMPLEX.
+  typeOfExpr(s, RuneLit(_))      = UNTYPED_RUNE.
+  typeOfExpr(s, StringLit(_))    = UNTYPED_STRING.
 
-
-
-
-
-
-
-
-
-rules typeOfPrimaryExpr : scope * PrimaryExpr -> TYPE
-
-  typeOfPrimaryExpr(s, IntLit(_))       = UNTYPED_INT.
-  typeOfPrimaryExpr(s, FloatLit(_))     = UNTYPED_FLOAT.
-  typeOfPrimaryExpr(s, ImaginaryLit(_)) = UNTYPED_COMPLEX.
-  typeOfPrimaryExpr(s, RuneLit(_))      = UNTYPED_RUNE.
-  typeOfPrimaryExpr(s, StringLit(_))    = UNTYPED_STRING.
-
-  typeOfPrimaryExpr(s, FunctionLit(sig, body)) = T :-
+  typeOfExpr(s, FunctionLit(sig, body)) = T :-
     // TODO
     true.
 
-  typeOfPrimaryExpr(s, CompositeLit(litType, litValue)) = T :-
+  typeOfExpr(s, CompositeLit(litType, litValue)) = T :-
     // TODO
     true.
 
-  typeOfPrimaryExpr(s, Index(expr, indexExpr)) = T :-
+  typeOfExpr(s, Index(expr, indexExpr)) = T :-
     // TODO
     true.
 
-  typeOfPrimaryExpr(s, SliceLH(expr, lowExpr, highExpr)) = T :-
+  typeOfExpr(s, SliceLH(expr, lowExpr, highExpr)) = T :-
     // TODO
     true.
 
-  typeOfPrimaryExpr(s, SliceLHM(expr, lowExpr, highExpr, maxExpr)) = T :-
+  typeOfExpr(s, SliceLHM(expr, lowExpr, highExpr, maxExpr)) = T :-
     // TODO
     true.
 
-  typeOfPrimaryExpr(s, TypeAssertion(expr, type)) = T :-
+  typeOfExpr(s, TypeAssertion(expr, type)) = T :-
     // TODO
     true.
 
-  typeOfPrimaryExpr(s, Call(member, arguments)) = TRETS :- {TARGS}
+  typeOfExpr(s, Call(member, arguments)) = TRETS :- {TARGS}
     typeOfArgumentsOpt(s, arguments) == TARGS,
-    typeOfPrimaryExpr(s, member) == FUN(TARGS, TRETS) | error $[[member] is not a method or function, or not found.].
+    typeOfExpr(s, member) == FUN(TARGS, TRETS) | error $[[member] is not a method or function, or not found.].
 
-  typeOfPrimaryExpr(s, Conversion(type, expr)) = T :-
+  typeOfExpr(s, Conversion(type, expr)) = T :-
     // TODO
     true.
 
-  typeOfPrimaryExpr(s, Selector(expr, name)) = T :-
+  typeOfExpr(s, Selector(expr, name)) = T :-
     // TODO
     true.
 
-  typeOfPrimaryExpr(s, MethodExpr(type, name)) = T :-
+  typeOfExpr(s, MethodExpr(type, name)) = T :-
     // TODO
     true.
 
-  typeOfPrimaryExpr(s, OperandName(name)) = T :-
+  typeOfExpr(s, OperandName(name)) = T :-
     typeOfDecl of Type{name} in s |-> [(_, (_, T))].
 
-  typeOfPrimaryExpr(s, QualifiedOperandName(QualifiedIdent(x, y))) = T :-
+  typeOfExpr(s, QualifiedOperandName(QualifiedIdent(x, y))) = T :-
     // TODO
     true.
 
-  typeOfPrimaryExpr(s, CallOrConversion(name, expr)) = T :-
+  typeOfExpr(s, CallOrConversion(name, expr)) = T :-
     // TODO
     true.
 
-  typeOfPrimaryExpr(s, QualifiedCallOrConversion(QualifiedIdent(receiver, member), expr)) = T :-
+  typeOfExpr(s, QualifiedCallOrConversion(QualifiedIdent(receiver, member), expr)) = T :-
     // TODO: If receiver.member is a type, this is a type conversion (Conversion)
     // TODO: If receiver.member is a function or method, this is a call (Call)
     true.
 
-  typeOfPrimaryExpr(s, MemberAccess(receiverName, memberName)) = T :-
+  typeOfExpr(s, MemberAccess(receiverName, memberName)) = T :-
     // TODO
     true.
+
+
+rules
+
+  typeOfExpr(s, Positive(e)) = T :-
+    typeOfExpr(s, e) == T,
+    isArithmeticType(T) | error $[Cannot do arithmetic operations on type [T]].
+
+  typeOfExpr(s, Negation(e)) = T :-
+    typeOfExpr(s, e) == T,
+    isArithmeticType(T) | error $[Cannot do arithmetic operations on type [T]].
+
+  typeOfExpr(s, Not(e)) = T :-
+    typeOfExpr(s, e) == T,
+    isBoolType(T) | error $[Cannot do logical operations on non-bool type [T]].
+
+  typeOfExpr(s, BitwiseComplement(e)) = T :-
+    typeOfExpr(s, e) == T,
+    isIntType(T) | error $[Cannot do bitwise operations on non-bool type [T]].
+
+  typeOfExpr(s, Deref(e)) = T :-
+    typeOfExpr(s, e) == PTR(T) | error $[Cannot dereference non-pointer type [T]].
+
+  typeOfExpr(s, Ref(e)) = PTR(T) :-
+    typeOfExpr(s, e) == T.
+    // TODO: Verify that e is addressable: a variable, pointer indirection, slice indexing operation,
+    // field selector of an addressable struct operand, or array indexing operation of an addressable array,
+    // or a possibly parenthesized composite literal.
+    //false | error $[Cannot create a reference to non-addressable type [T]].
+
+  typeOfExpr(s, Receive(e)) = TE :- {T}
+    typeOfExpr(s, e) == T,
+    T == CHANNEL(TE) | error $[Cannot receive from non-channel type [T]].
+
+
+
+  typeOfExpr(s, Equal(e1, e2)) = UNTYPED_BOOL :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    isEquatable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
+
+  typeOfExpr(s, NotEqual(e1, e2)) = UNTYPED_BOOL :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    isEquatable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
+
+
+
+  typeOfExpr(s, Less(e1, e2)) = UNTYPED_BOOL :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    isComparable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
+
+  typeOfExpr(s, LessOrEqual(e1, e2)) = UNTYPED_BOOL :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    isComparable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
+
+  typeOfExpr(s, Greater(e1, e2)) = UNTYPED_BOOL :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    isComparable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
+
+  typeOfExpr(s, GreaterOrEqual(e1, e2)) = UNTYPED_BOOL :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    isComparable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
+
+
+
+  typeOfExpr(s, BitwiseAnd(e1, e2)) = T :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    typeOfBinOp(T1, T2) == T,
+    isIntType(T) | error $[Cannot do bitwise operations on non-integer type [T]].
+
+  typeOfExpr(s, BitwiseOr(e1, e2)) = T :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    typeOfBinOp(T1, T2) == T,
+    isIntType(T) | error $[Cannot do bitwise operations on non-integer type [T]].
+
+  typeOfExpr(s, BitwiseXor(e1, e2)) = T :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    typeOfBinOp(T1, T2) == T,
+    isIntType(T) | error $[Cannot do bitwise operations on non-integer type [T]].
+
+  typeOfExpr(s, BitClear(e1, e2)) = T :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    typeOfBinOp(T1, T2) == T,
+    isIntType(T) | error $[Cannot do bitwise operations on non-integer type [T]].
+
+
+
+  typeOfExpr(s, LeftShift(e1, e2)) = T1 :- {T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    isIntType(T1) | error $[Cannot shift non-integer type [T1]],
+    isIntType(T2) | error $[Cannot shift by non-integer number of bits of type [T2]].
+
+  typeOfExpr(s, RightShift(e1, e2)) = T1 :- {T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    isIntType(T1) | error $[Cannot shift non-integer type [T1]],
+    isIntType(T2) | error $[Cannot shift by non-integer number of bits of type [T2]].
+
+
+
+  typeOfExpr(s, Sum(e1, e2)) = T :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    typeOfBinOp(T1, T2) == T,
+    isArithmeticOrStringType(T) | error $[Cannot do arithmetic operations on type [T]].
+
+  typeOfExpr(s, Difference(e1, e2)) = T :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    typeOfBinOp(T1, T2) == T,
+    isArithmeticType(T) | error $[Cannot do arithmetic operations on type [T]].
+
+  typeOfExpr(s, Product(e1, e2)) = T :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    typeOfBinOp(T1, T2) == T,
+    isArithmeticType(T) | error $[Cannot do arithmetic operations on type [T]].
+
+  typeOfExpr(s, Quotient(e1, e2)) = T :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    typeOfBinOp(T1, T2) == T,
+    isArithmeticType(T) | error $[Cannot do arithmetic operations on type [T]].
+
+  typeOfExpr(s, Remainder(e1, e2)) = T :- {T1 T2}
+    typeOfExpr(s, e1) == T1,
+    typeOfExpr(s, e2) == T2,
+    typeOfBinOp(T1, T2) == T,
+    isIntType(T) | error $[Cannot do arithmetic operations on type [T]].
+
+
+rules typeOfBinOp : TYPE * TYPE -> TYPE
+
+  typeOfBinOp(T1, T2)                               = T :-
+    // TODO: Can the types be different, e.g. subtypes of a common type?
+    T1 == T2 | error $[Invalid binary operation on values of type [T1] and [T2].],
+    T == T1.
+
+  typeOfBinOp(UNTYPED_COMPLEX(), T)                 = T :-
+    familyOfType(T) == COMPLEX_FAMILY() | error $[Invalid binary operation on complex constant and value of type [T].].
+  typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_COMPLEX()) = UNTYPED_COMPLEX().
+  typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_FLOAT())   = UNTYPED_COMPLEX().
+  typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_RUNE())    = UNTYPED_COMPLEX().
+  typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_INT())     = UNTYPED_COMPLEX().
+  typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_BOOL())    = _ :-
+    false | error $[Invalid binary operation on complex and bool constants.].
+  typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_STRING())  = _ :-
+    false | error $[Invalid binary operation on complex and string constants.].
+
+  typeOfBinOp(UNTYPED_FLOAT(), T)                   = T :-
+    familyOfType(T) == FLOAT_FAMILY() | error $[Invalid binary operation on float constant and value of type [T].].
+  typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_COMPLEX())   = UNTYPED_COMPLEX().
+  typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_FLOAT())     = UNTYPED_FLOAT().
+  typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_RUNE())      = UNTYPED_FLOAT().
+  typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_INT())       = UNTYPED_FLOAT().
+  typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_BOOL())      = _ :-
+    false | error $[Invalid binary operation on float and bool constants.].
+  typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_STRING())    = _ :-
+    false | error $[Invalid binary operation on float and string constants.].
+
+  typeOfBinOp(UNTYPED_RUNE(), T)                    = T :-
+    familyOfType(T) == INT_FAMILY() | error $[Invalid binary operation on rune constant and value of type [T].].
+  typeOfBinOp(UNTYPED_RUNE(), UNTYPED_COMPLEX())    = UNTYPED_COMPLEX().
+  typeOfBinOp(UNTYPED_RUNE(), UNTYPED_FLOAT())      = UNTYPED_FLOAT().
+  typeOfBinOp(UNTYPED_RUNE(), UNTYPED_RUNE())       = UNTYPED_RUNE().
+  typeOfBinOp(UNTYPED_RUNE(), UNTYPED_INT())        = UNTYPED_RUNE().
+  typeOfBinOp(UNTYPED_RUNE(), UNTYPED_BOOL())       = _ :-
+    false | error $[Invalid binary operation on rune and bool constants.].
+  typeOfBinOp(UNTYPED_RUNE(), UNTYPED_STRING())     = _ :-
+    false | error $[Invalid binary operation on rune and string constants.].
+
+  typeOfBinOp(UNTYPED_INT(), T)                     = T :-
+    familyOfType(T) == INT_FAMILY() | error $[Invalid binary operation on int constant and value of type [T].].
+  typeOfBinOp(UNTYPED_INT(), UNTYPED_COMPLEX())     = UNTYPED_COMPLEX().
+  typeOfBinOp(UNTYPED_INT(), UNTYPED_FLOAT())       = UNTYPED_FLOAT().
+  typeOfBinOp(UNTYPED_INT(), UNTYPED_RUNE())        = UNTYPED_RUNE().
+  typeOfBinOp(UNTYPED_INT(), UNTYPED_INT())         = UNTYPED_INT().
+  typeOfBinOp(UNTYPED_INT(), UNTYPED_BOOL())        = _ :-
+    false | error $[Invalid binary operation on int and bool constants.].
+  typeOfBinOp(UNTYPED_INT(), UNTYPED_STRING())      = _ :-
+    false | error $[Invalid binary operation on int and string constants.].
+
+  typeOfBinOp(UNTYPED_BOOL(), T)                    = T :-
+    T == BOOL() | error $[Invalid binary operation on bool constant and value of type [T].].
+  typeOfBinOp(UNTYPED_BOOL(), UNTYPED_COMPLEX())    = _ :-
+    false | error $[Invalid binary operation on bool and complex constants.].
+  typeOfBinOp(UNTYPED_BOOL(), UNTYPED_FLOAT())      = _ :-
+    false | error $[Invalid binary operation on bool and float constants.].
+  typeOfBinOp(UNTYPED_BOOL(), UNTYPED_RUNE())       = _ :-
+    false | error $[Invalid binary operation on bool and rune constants.].
+  typeOfBinOp(UNTYPED_BOOL(), UNTYPED_INT())        = _ :-
+    false | error $[Invalid binary operation on bool and int constants.].
+  typeOfBinOp(UNTYPED_BOOL(), UNTYPED_BOOL())       = UNTYPED_BOOL().
+  typeOfBinOp(UNTYPED_BOOL(), UNTYPED_STRING())     = _ :-
+    false | error $[Invalid binary operation on bool and string constants.].
+
+  typeOfBinOp(UNTYPED_STRING(), T)                    = T :-
+    T == STRING() | error $[Invalid binary operation on string constant and value of type [T].].
+  typeOfBinOp(UNTYPED_STRING(), UNTYPED_COMPLEX())    = _ :-
+    false | error $[Invalid binary operation on string and complex constants.].
+  typeOfBinOp(UNTYPED_STRING(), UNTYPED_FLOAT())      = _ :-
+    false | error $[Invalid binary operation on string and float constants.].
+  typeOfBinOp(UNTYPED_STRING(), UNTYPED_RUNE())       = _ :-
+    false | error $[Invalid binary operation on string and rune constants.].
+  typeOfBinOp(UNTYPED_STRING(), UNTYPED_INT())        = _ :-
+    false | error $[Invalid binary operation on string and int constants.].
+  typeOfBinOp(UNTYPED_STRING(), UNTYPED_BOOL())       = _ :-
+    false | error $[Invalid binary operation on string and bool constants.].
+  typeOfBinOp(UNTYPED_STRING(), UNTYPED_STRING())     = UNTYPED_STRING().
+
+
+
+//  typeOfExpr(s, LeftShift(lhs, rhs)) = TLHS :- {TRHS}
+//    typeOfExpr(s, lhs) == TLHS,
+//    /* where */ not(isUntypedType(TLHS)),
+//    // TODO: Check that LHS is integer type, and RGS is integer type
+//    true.
+
+
+
+//  typeOfExpr(s, PrimaryExpr2Expr(primaryExpr)) = T :-
+//    typeOfPrimaryExpr(s, primaryExpr) == T.
 
 
 rules typeOfLiteralType : scope * LiteralType -> TYPE
@@ -187,37 +409,6 @@ rules typeOfArgumentsOpt : scope * Arguments-OPT -> list(TYPE)
   typeOfArgumentsOpt(s, ArgumentsExplode(TypedArguments(type, exprs))) = [].  // TODO
 
 
-
-rules typeOfExpr : scope * Expr -> TYPE
-
-  typeOfExpr(s, Equal(lhs, rhs)) = UNTYPED_BOOL :- {TLHS TRHS}
-    typeOfExpr(s, lhs) == TLHS,
-    typeOfExpr(s, rhs) == TRHS,
-    isComparable(TLHS),
-    isComparable(TRHS),
-    isComparableTo(TLHS, TRHS),
-    // TODO: Check that TLHS and TRHS are equatable
-    // TODO: a value x : non-interface X and value t : interface T iff values of type X are comparable and X implements T.
-    true.
-
-
-  typeOfExpr(s, LeftShift(lhs, rhs)) = UNTYPED_INT :- {TLHS TRHS}
-    typeOfExpr(s, lhs) == TLHS,
-    typeOfExpr(s, rhs) == TRHS,
-    /* where */ isUntypedType(TLHS),
-    // TODO: Check that LHS is UNTYPED_INT or UNTYPED_FLOAT(?) and RHS is integer type
-    true.
-
-//  typeOfExpr(s, LeftShift(lhs, rhs)) = TLHS :- {TRHS}
-//    typeOfExpr(s, lhs) == TLHS,
-//    /* where */ not(isUntypedType(TLHS)),
-//    // TODO: Check that LHS is integer type, and RGS is integer type
-//    true.
-
-
-
-  typeOfExpr(s, PrimaryExpr2Expr(primaryExpr)) = T :-
-    typeOfPrimaryExpr(s, primaryExpr) == T.
 
 //rules typeOfComparison : TYPE * TYPE -> TYPE
 //

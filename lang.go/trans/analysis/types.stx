@@ -18,6 +18,52 @@ imports
   analysis/util
 
 signature
+sorts FAMILY
+constructors
+  INT_FAMILY      : FAMILY
+  FLOAT_FAMILY    : FAMILY
+  COMPLEX_FAMILY  : FAMILY
+  BOOL_FAMILY     : FAMILY
+  STRING_FAMILY   : FAMILY
+  OTHER_FAMILY    : TYPE -> FAMILY
+
+rules familyOfType : TYPE -> FAMILY
+
+  // UNTYPED_RUNE?
+  familyOfType(UNTYPED_INT())     = INT_FAMILY().
+
+  familyOfType(UINT())            = INT_FAMILY().
+  familyOfType(UINT8())           = INT_FAMILY().
+  familyOfType(UINT16())          = INT_FAMILY().
+  familyOfType(UINT32())          = INT_FAMILY().
+  familyOfType(UINT64())          = INT_FAMILY().
+  familyOfType(UINTPTR())         = INT_FAMILY().
+
+  familyOfType(INT())             = INT_FAMILY().
+  familyOfType(INT8())            = INT_FAMILY().
+  familyOfType(INT16())           = INT_FAMILY().
+  familyOfType(INT32())           = INT_FAMILY().
+  familyOfType(INT64())           = INT_FAMILY().
+  familyOfType(INTPTR())          = INT_FAMILY().
+
+  familyOfType(UNTYPED_FLOAT())   = FLOAT_FAMILY().
+  familyOfType(FLOAT64())         = FLOAT_FAMILY().
+  familyOfType(FLOAT128())        = FLOAT_FAMILY().
+
+  familyOfType(UNTYPED_COMPLEX()) = COMPLEX_FAMILY().
+  familyOfType(COMPLEX64())       = COMPLEX_FAMILY().
+  familyOfType(COMPLEX128())      = COMPLEX_FAMILY().
+
+  familyOfType(UNTYPED_BOOL())    = BOOL_FAMILY().
+  familyOfType(BOOL())            = BOOL_FAMILY().
+
+  familyOfType(UNTYPED_STRING())  = STRING_FAMILY().
+  familyOfType(STRING())          = STRING_FAMILY().
+
+  familyOfType(T)                 = OTHER_FAMILY(T).
+
+
+signature
 sorts TYPE
 
 // Special types
@@ -37,6 +83,8 @@ constructors
   TUPLE       : list(TYPE) -> TYPE
   // A VOID type, to model Go functions with no return value.
   VOID        : TYPE
+
+  CHANNEL     : TYPE -> TYPE
 
 // Untyped constant types
 constructors
@@ -182,98 +230,73 @@ rules typeOfInterfaceTypeMember : scope * InterfaceTypeMember -> TYPE
     // TODO
     false | error $[typeOfInterfaceTypeMember(EmbeddedInterface) not implemented.].
 
+rules isIntType : TYPE
 
-rules isUntypedType : TYPE
+  isIntType(T) :-
+    familyOfType(T) == INT_FAMILY().
 
-  isUntypedType(UNTYPED_INT()).
-  isUntypedType(UNTYPED_BOOL()).
-  isUntypedType(UNTYPED_RUNE()).
-  isUntypedType(UNTYPED_FLOAT()).
-  isUntypedType(UNTYPED_COMPLEX()).
-  isUntypedType(UNTYPED_STRING()).
+rules isBoolType : TYPE
 
-rules isComparable : TYPE
+  isBoolType(T) :-
+    familyOfType(T) == BOOL_FAMILY().
 
-  // booleans
-  // integers
-  // floating-point
-  // complex values
-  // string values
-  // pointers
-  // channels
-  // interfaces
-  // a value x : non-interface X and value t : interface T iff values of type X are comparable and X implements T.
-  // struct iff all their fields are comparable
-  // array iff array element type is comparable
-  isComparable(UNTYPED_INT()).
-  isComparable(UNTYPED_BOOL()).
-  isComparable(UNTYPED_RUNE()).
-  isComparable(UNTYPED_FLOAT()).
-  isComparable(UNTYPED_COMPLEX()).
-  isComparable(UNTYPED_STRING()).
+rules isArithmeticType : TYPE
 
-  isComparable(BOOL()).
-  isComparable(STRING()).
+  isArithmeticType(T) :- {F}
+    familyOfType(T) == F,
+    isArithmeticTypeFamily(F).
 
-  isComparable(UINT()).
-  isComparable(UINT8()).
-  isComparable(UINT16()).
-  isComparable(UINT32()).
-  isComparable(UINT64()).
-  isComparable(UINTPTR()).
+rules isArithmeticTypeFamily : FAMILY
 
-  isComparable(INT()).
-  isComparable(INT8()).
-  isComparable(INT16()).
-  isComparable(INT32()).
-  isComparable(INT64()).
-  isComparable(INTPTR()).
+  isArithmeticTypeFamily(INT_FAMILY()).
+  isArithmeticTypeFamily(FLOAT_FAMILY()).
+  isArithmeticTypeFamily(COMPLEX_FAMILY()).
 
-  isComparable(FLOAT64()).
-  isComparable(FLOAT128()).
+rules isArithmeticOrStringType : TYPE
 
-  isComparable(COMPLEX64()).
-  isComparable(COMPLEX128()).
+  isArithmeticOrStringType(T) :- {F}
+    familyOfType(T) == F,
+    isArithmeticOrStringTypeFamily(F).
 
-  // TODO: Channels
-  // TODO: interfaces
-  // TODO: structs iff all their fields are comparable
+rules isArithmeticOrStringTypeFamily : FAMILY
 
-  isComparable(ARRAY(_, T)) :-
-    isComparable(T).
+  isArithmeticOrStringTypeFamily(STRING_FAMILY()).
+  isArithmeticOrStringTypeFamily(F) :- isArithmeticTypeFamily(F).
 
-rules isComparableTo : TYPE * TYPE
-
-  isComparableTo(UNTYPED_INT(), UNTYPED_INT()).
-  isComparableTo(UNTYPED_INT(), UINT()).
-  isComparableTo(UNTYPED_INT(), UINT8()).
-  isComparableTo(UNTYPED_INT(), UINT16()).
-  isComparableTo(UNTYPED_INT(), UINT32()).
-  isComparableTo(UNTYPED_INT(), UINT64()).
-  isComparableTo(UNTYPED_INT(), UINTPTR()).
-  isComparableTo(UNTYPED_INT(), INT()).
-  isComparableTo(UNTYPED_INT(), INT8()).
-  isComparableTo(UNTYPED_INT(), INT16()).
-  isComparableTo(UNTYPED_INT(), INT32()).
-  isComparableTo(UNTYPED_INT(), INT64()).
-  isComparableTo(UNTYPED_INT(), INTPTR()).
-
-//  isComparableTo(T1, T2) :-
-//    isNumType(T1).
-//    isNumType(T2).
-
-//  isComparableTo(T1, T2) | isNumType(T1) :-
-//    isNumType(T2).
-
-//  isComparableTo(T, UNTYPED_INT()) :-
-//    isNumType(T).
-
-  isNumType : TYPE
-
-
-  // TODO: Repeat this for every possible pair?
-
-rules isOrdered : TYPE
+//rules isUntypedType : TYPE
+//
+//  isUntypedType(UNTYPED_INT()).
+//  isUntypedType(UNTYPED_BOOL()).
+//  isUntypedType(UNTYPED_RUNE()).
+//  isUntypedType(UNTYPED_FLOAT()).
+//  isUntypedType(UNTYPED_COMPLEX()).
+//  isUntypedType(UNTYPED_STRING()).
+//
+//// Families of types that can be compared for equality
+//rules isEquatableTo : FAMILY * FAMILY
+//
+//  isEquatableTo(BOOL_FAMILY(),    BOOL_FAMILY()).
+//  isEquatableTo(INT_FAMILY(),     INT_FAMILY()).
+//  isEquatableTo(FLOAT_FAMILY(),   FLOAT_FAMILY()).
+//  isEquatableTo(COMPLEX_FAMILY(), COMPLEX_FAMILY()).
+//  isEquatableTo(STRING_FAMILY(),  STRING_FAMILY()).
+//  // TODO: pointers
+//  // TODO: Channels
+//  // TODO: interfaces
+//  // TODO: A value x of non-interface type X and a value t of interface type T are comparable when values of type X are comparable and X implements T. They are equal if t's dynamic type is identical to X and t's dynamic value is equal to x.
+//  isEquatableTo(OTHER_FAMILY(T1), OTHER_FAMILY(T2)) :- T1 == T2.
+//  // TODO: structs iff all their fields are comparable
+//
+//  isEquatableTo(OTHER_FAMILY(ARRAY(_, T1)), OTHER_FAMILY(ARRAY(_, T2))) :-
+//    isEquatableTo(T1, T2).
+//
+//// Families of types that can be compared for order
+//rules isComparable : FAMILY * FAMILY
+//
+//  isComparable(INT_FAMILY(),      INT_FAMILY()).
+//  isComparable(FLOAT_FAMILY(),    FLOAT_FAMILY()).
+//  isComparable(STRING_FAMILY(),   STRING_FAMILY()).
+//  isComparable(OTHER_FAMILY(T1),  OTHER_FAMILY(T2)) :- T1 == T2.
 
 
 //rules defaultTypeOfUntypedType : TYPE -> TYPE
@@ -299,3 +322,43 @@ rules lookupType : scope * string -> TYPE
 //  lookupPkg(s, x) = P :- {dx}
 //    @x.ref := dx
 //    typeOfPkg of Pkg{x} in s |-> [(_, (Pkg{dx}, T))].
+
+// Families of types that can be compared for equality
+rules isEquatable : TYPE * TYPE
+
+  isEquatable(T1, T2) :- {F1 F2}
+    familyOfType(T1) == F1,
+    familyOfType(T2) == F2,
+    isFamilyEquatable(F1, F2).
+
+rules isFamilyEquatable : FAMILY * FAMILY
+
+  isFamilyEquatable(BOOL_FAMILY(),    BOOL_FAMILY()).
+  isFamilyEquatable(INT_FAMILY(),     INT_FAMILY()).
+  isFamilyEquatable(FLOAT_FAMILY(),   FLOAT_FAMILY()).
+  isFamilyEquatable(COMPLEX_FAMILY(), COMPLEX_FAMILY()).
+  isFamilyEquatable(STRING_FAMILY(),  STRING_FAMILY()).
+  // TODO: pointers
+  // TODO: Channels
+  // TODO: interfaces
+  // TODO: A value x of non-interface type X and a value t of interface type T are comparable when values of type X are comparable and X implements T. They are equal if t's dynamic type is identical to X and t's dynamic value is equal to x.
+  isFamilyEquatable(OTHER_FAMILY(T1), OTHER_FAMILY(T2)) :- T1 == T2.
+  // TODO: structs iff all their fields are comparable
+
+  isFamilyEquatable(OTHER_FAMILY(ARRAY(_, T1)), OTHER_FAMILY(ARRAY(_, T2))) :-
+    isEquatable(T1, T2).
+
+rules isComparable : TYPE * TYPE
+
+  isComparable(T1, T2) :- {F1 F2}
+    familyOfType(T1) == F1,
+    familyOfType(T2) == F2,
+    isFamilyComparable(F1, F2).
+
+// Families of types that can be compared for order
+rules isFamilyComparable : FAMILY * FAMILY
+
+  isFamilyComparable(INT_FAMILY(),      INT_FAMILY()).
+  isFamilyComparable(FLOAT_FAMILY(),    FLOAT_FAMILY()).
+  isFamilyComparable(STRING_FAMILY(),   STRING_FAMILY()).
+  isFamilyComparable(OTHER_FAMILY(T1),  OTHER_FAMILY(T2)) :- T1 == T2.
