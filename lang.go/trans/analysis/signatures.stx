@@ -62,7 +62,6 @@ signature
 signature
 
   sorts
-    PrimaryExpr
     QualifiedIdent
     LiteralType
     LiteralValue
@@ -73,7 +72,6 @@ signature
     Arguments
 
   constructors
-    PrimaryExpr-Plhdr : PrimaryExpr
     QualifiedIdent-Plhdr : QualifiedIdent
     LiteralType-Plhdr : LiteralType
     LiteralValue-Plhdr : LiteralValue
@@ -88,34 +86,34 @@ signature
   constructors
     NoExpr : Expr-OPT
     Expr2Expr-OPT : Expr -> Expr-OPT
-    IntLit : INT_LIT -> PrimaryExpr
-    FloatLit : FLOAT_LIT -> PrimaryExpr
-    ImaginaryLit : IMAGINARY_LIT -> PrimaryExpr
-    RuneLit : RUNE_LIT -> PrimaryExpr
-    StringLit : STRING_LIT -> PrimaryExpr
-    OperandName : ID -> PrimaryExpr
-    FunctionLit : Signature * Block -> PrimaryExpr
-    CompositeLit : LiteralType * LiteralValue -> PrimaryExpr
-    Index : PrimaryExpr * Expr -> PrimaryExpr
-    SliceLH : PrimaryExpr * Expr-OPT * Expr-OPT -> PrimaryExpr
-    SliceLHM : PrimaryExpr * Expr-OPT * Expr * Expr -> PrimaryExpr
-    TypeAssertion : PrimaryExpr * Type -> PrimaryExpr
-    Call : PrimaryExpr * Arguments-OPT -> PrimaryExpr
-    Call-DISAMB : PrimaryExpr * Arguments-OPT -> PrimaryExpr
-    Conversion : Type * Expr -> PrimaryExpr
-    Conversion-ALT : Type * Expr -> PrimaryExpr
-    Conversion-DISAMB : Type * Expr -> PrimaryExpr
-    Conversion-DISAMB-ALT : Type * Expr -> PrimaryExpr
-    Selector : PrimaryExpr * ID -> PrimaryExpr
-    Selector-DISAMB : PrimaryExpr * ID -> PrimaryExpr
-    MethodExpr : Type * ID -> PrimaryExpr
-    MethodExpr-DISAMB : Type * ID -> PrimaryExpr
-    QualifiedOperandName : QualifiedIdent -> PrimaryExpr
-    CallOrConversion : ID * Expr -> PrimaryExpr
-    CallOrConversion-ALT : ID * Expr -> PrimaryExpr
-    QualifiedCallOrConversion : QualifiedIdent * Expr -> PrimaryExpr
-    QualifiedCallOrConversion-ALT : QualifiedIdent * Expr -> PrimaryExpr
-    MemberAccess : ID * ID -> PrimaryExpr
+    IntLit : INT_LIT -> Expr
+    FloatLit : FLOAT_LIT -> Expr
+    ImaginaryLit : IMAGINARY_LIT -> Expr
+    RuneLit : RUNE_LIT -> Expr
+    StringLit : STRING_LIT -> Expr
+    FunctionLit : Signature * Block -> Expr
+    CompositeLit : LiteralType * LiteralValue -> Expr
+    Index : Expr * Expr -> Expr
+    SliceLH : Expr * Expr-OPT * Expr-OPT -> Expr
+    SliceLHM : Expr * Expr-OPT * Expr * Expr -> Expr
+    TypeAssertion : Expr * Type -> Expr
+    Call : Expr * Arguments-OPT -> Expr
+    Call-DISAMB : Expr * Arguments-OPT -> Expr
+    Conversion : Type * Expr -> Expr
+    Conversion-ALT : Type * Expr -> Expr
+    Conversion-DISAMB : Type * Expr -> Expr
+    Conversion-DISAMB-ALT : Type * Expr -> Expr
+    Selector : Expr * ID -> Expr
+    Selector-DISAMB : Expr * ID -> Expr
+    MethodExpr : Type * ID -> Expr
+    MethodExpr-DISAMB : Type * ID -> Expr
+    OperandName : ID -> Expr
+    QualifiedOperandName : QualifiedIdent -> Expr
+    CallOrConversion : ID * Expr -> Expr
+    CallOrConversion-ALT : ID * Expr -> Expr
+    QualifiedCallOrConversion : QualifiedIdent * Expr -> Expr
+    QualifiedCallOrConversion-ALT : QualifiedIdent * Expr -> Expr
+    MemberAccess : ID * ID -> Expr
     QualifiedIdent : ID * ID -> QualifiedIdent
     QualifiedIdent-DISAMB : ID * ID -> QualifiedIdent
     TypeName2LiteralType : TypeName -> LiteralType
@@ -160,7 +158,6 @@ signature
     RightShift : Expr * Expr -> Expr
     BitwiseAnd : Expr * Expr -> Expr
     BitClear : Expr * Expr -> Expr
-    PrimaryExpr2Expr : PrimaryExpr -> Expr
     Positive : Expr -> Expr
     Negation : Expr -> Expr
     Not : Expr -> Expr
@@ -347,8 +344,8 @@ signature
     StmtInit : SimpleStmt -> StmtInit
     ExprCase : list(Expr) * list(Stmt) -> ExprCaseClause
     ExprCaseDefault : list(Stmt) -> ExprCaseClause
-    TypeSwitchGuard : ID * PrimaryExpr -> TypeSwitchGuard
-    TypeSwitchGuardNoID : PrimaryExpr -> TypeSwitchGuard
+    TypeSwitchGuard : ID * Expr -> TypeSwitchGuard
+    TypeSwitchGuardNoID : Expr -> TypeSwitchGuard
     TypeCase : list(Type) * list(Stmt) -> TypeCaseClause
     TypeCaseDefault : list(Stmt) -> TypeCaseClause
     ForNoClause : ForStmtClause
