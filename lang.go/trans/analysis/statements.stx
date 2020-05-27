@@ -17,19 +17,92 @@ imports
   analysis/declarations
   analysis/expressions
   analysis/blocks
+  analysis/name-resolution
 
-rules
+rules stmtOk : scope * Stmt
+
   stmtsOk maps stmtOk(*, list(*))
-  stmtOk : scope * Stmt
+
+  stmtOk(s, DeclarationStmt(declaration)) :-
+    declarationOk(s, declaration).
 
   stmtOk(s, SimpleStmt2Stmt(simpleStmt)) :-
     simpleStmtOk(s, simpleStmt).
 
-rules
-  simpleStmtOk : scope * SimpleStmt
+  stmtOk(s, Block2Stmt(block)) :-
+    blockOk(s, block).
+  stmtOk(s, IfStmt2Stmt(ifStmt)) :-
+    ifStmtOk(s, ifStmt).
 
+  stmtOk(s, LabeledStmt(label, stmt)) :-
+    // TODO: Declare label
+//    declareLabel(s, label),
+    stmtOk(s, stmt).
+
+  stmtOk(s, ExprSwitchStmt(_, _, _)) :-
+    true.
+  stmtOk(s, TypeSwitchStmt(_, _, _)) :-
+    true.
+  stmtOk(s, ForStmt(_, _)) :-
+    true.
+  stmtOk(s, GoStmt(_)) :-
+    true.
+  stmtOk(s, SelectStmt(_)) :-
+    true.
+  stmtOk(s, ReturnStmt(_)) :-
+    true.
+  stmtOk(s, BreakStmt(_)) :-
+    true.
+  stmtOk(s, ContinueStmt(_)) :-
+    true.
+  stmtOk(s, GotoStmt(_)) :-
+    true.
+  stmtOk(s, FallthroughStmt()) :-
+    true.
+  stmtOk(s, DeferStmt(_)) :-
+    true.
+
+rules simpleStmtOk : scope * SimpleStmt
+
+  simpleStmtOk(s, EmptyStmt()).
+  simpleStmtOk(s, SendStmt2SimpleStmt(_)) :-
+    true.
   simpleStmtOk(s, ExprStmt(expr)) :-
     typeOfExpr(s, expr) == _.
+  simpleStmtOk(s, IncStmt(_)) :-
+    true.
+  simpleStmtOk(s, DecStmt(_)) :-
+    true.
+  simpleStmtOk(s, ShortVarDecl(_, _)) :-
+    true.
+  simpleStmtOk(s, AssignStmt(_, _)) :-
+    true.
+  simpleStmtOk(s, SumAssignStmt(_, _)) :-
+    true.
+  simpleStmtOk(s, DifferenceAssignStmt(_, _)) :-
+    true.
+  simpleStmtOk(s, BitwiseOrAssignStmt(_, _)) :-
+    true.
+  simpleStmtOk(s, BitwiseXorAssignStmt(_, _)) :-
+    true.
+  simpleStmtOk(s, ProductAssignStmt(_, _)) :-
+    true.
+  simpleStmtOk(s, QuotientAssignStmt(_, _)) :-
+    true.
+  simpleStmtOk(s, RemainderAssignStmt(_, _)) :-
+    true.
+  simpleStmtOk(s, LeftShiftAssignStmt(_, _)) :-
+    true.
+  simpleStmtOk(s, RightShiftAssignStmt(_, _)) :-
+    true.
+  simpleStmtOk(s, BitwiseAndAssignStmt(_, _)) :-
+    true.
+  simpleStmtOk(s, BitClearAssignStmt(_, _)) :-
+    true.
+
+
+rules ifStmtOk : scope * IfStmt
+
 
 
 

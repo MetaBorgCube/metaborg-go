@@ -16,6 +16,7 @@ imports
 imports
   analysis/types
   analysis/blocks
+  analysis/name-resolution
 
 rules
   topLevelDeclsOk maps topLevelDeclOk(*, list(*))
@@ -31,6 +32,8 @@ rules
     blockOk(s, body).
 
   topLevelDeclOk(s, _) :- true.
+
+rules declarationOk : scope * Declaration
 
 //
 //rules

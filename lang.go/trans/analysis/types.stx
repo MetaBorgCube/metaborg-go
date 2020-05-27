@@ -16,16 +16,17 @@ imports
 imports
   analysis/expressions
   analysis/util
+  analysis/name-resolution
 
 signature
-sorts FAMILY
-constructors
-  INT_FAMILY      : FAMILY
-  FLOAT_FAMILY    : FAMILY
-  COMPLEX_FAMILY  : FAMILY
-  BOOL_FAMILY     : FAMILY
-  STRING_FAMILY   : FAMILY
-  OTHER_FAMILY    : TYPE -> FAMILY
+  sorts FAMILY
+  constructors
+    INT_FAMILY      : FAMILY
+    FLOAT_FAMILY    : FAMILY
+    COMPLEX_FAMILY  : FAMILY
+    BOOL_FAMILY     : FAMILY
+    STRING_FAMILY   : FAMILY
+    OTHER_FAMILY    : TYPE -> FAMILY
 
 rules familyOfType : TYPE -> FAMILY
 
@@ -64,8 +65,6 @@ rules familyOfType : TYPE -> FAMILY
 
 
 signature
-sorts TYPE
-
 // Special types
 constructors
   NAMED       : occurrence -> TYPE
@@ -119,17 +118,6 @@ constructors
 
   COMPLEX64   : TYPE
   COMPLEX128  : TYPE
-
-signature
-  relations
-    typeOfDecl : occurrence -> TYPE
-  namespaces
-    Type : string
-    Pkg : string
-  name-resolution
-    labels P IMP PUB PRV FM
-    // TODO: Is this correct?
-    resolve Type filter P* (IMP? PUB? PUB? | PRV?) FM* min $ < P, P < PRV, P < PUB, P < FM
 
 
 rules typeOfType : scope * Type -> TYPE
@@ -308,12 +296,6 @@ rules isArithmeticOrStringTypeFamily : FAMILY
 //  defaultTypeOfUntypedType(UNTYPED_COMPLEX) = COMPLEX128.
 //  defaultTypeOfUntypedType(UNTYPED_STRING)  = STRING.
 
-
-rules lookupType : scope * string -> TYPE
-
-  lookupType(s, x) = T :- {dx}
-    @x.ref := dx,
-    typeOfDecl of Type{x} in s |-> [(_, (Type{dx}, T))].
 
 
   // TODO
