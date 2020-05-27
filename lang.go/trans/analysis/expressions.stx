@@ -16,6 +16,7 @@ imports
 imports
   analysis/types
   analysis/declarations
+  analysis/name-resolution
 
 
 //signature
@@ -61,7 +62,10 @@ imports
   // untypedint + int8 = int8
 
 
+
 rules typeOfExpr : scope * Expr -> TYPE
+
+  typesOfExprs maps typeOfExpr(*, list(*)) = list(*)
 
   typeOfExpr(s, IntLit(_))       = UNTYPED_INT.
   typeOfExpr(s, FloatLit(_))     = UNTYPED_FLOAT.
@@ -110,7 +114,7 @@ rules typeOfExpr : scope * Expr -> TYPE
     true.
 
   typeOfExpr(s, OperandName(name)) = T :-
-    typeOfDecl of Type{name} in s |-> [(_, (_, T))].
+    lookupType(s, name) == T.
 
   typeOfExpr(s, QualifiedOperandName(QualifiedIdent(x, y))) = T :-
     // TODO
@@ -278,74 +282,112 @@ rules typeOfBinOp : TYPE * TYPE -> TYPE
 
   typeOfBinOp(UNTYPED_COMPLEX(), T)                 = T :-
     familyOfType(T) == COMPLEX_FAMILY() | error $[Invalid binary operation on complex constant and value of type [T].].
+
   typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_COMPLEX()) = UNTYPED_COMPLEX().
+
   typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_FLOAT())   = UNTYPED_COMPLEX().
+
   typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_RUNE())    = UNTYPED_COMPLEX().
+
   typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_INT())     = UNTYPED_COMPLEX().
+
   typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_BOOL())    = _ :-
     false | error $[Invalid binary operation on complex and bool constants.].
+
   typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_STRING())  = _ :-
     false | error $[Invalid binary operation on complex and string constants.].
 
   typeOfBinOp(UNTYPED_FLOAT(), T)                   = T :-
     familyOfType(T) == FLOAT_FAMILY() | error $[Invalid binary operation on float constant and value of type [T].].
+
   typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_COMPLEX())   = UNTYPED_COMPLEX().
+
   typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_FLOAT())     = UNTYPED_FLOAT().
+
   typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_RUNE())      = UNTYPED_FLOAT().
+
   typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_INT())       = UNTYPED_FLOAT().
+
   typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_BOOL())      = _ :-
     false | error $[Invalid binary operation on float and bool constants.].
+
   typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_STRING())    = _ :-
     false | error $[Invalid binary operation on float and string constants.].
 
   typeOfBinOp(UNTYPED_RUNE(), T)                    = T :-
     familyOfType(T) == INT_FAMILY() | error $[Invalid binary operation on rune constant and value of type [T].].
+
   typeOfBinOp(UNTYPED_RUNE(), UNTYPED_COMPLEX())    = UNTYPED_COMPLEX().
+
   typeOfBinOp(UNTYPED_RUNE(), UNTYPED_FLOAT())      = UNTYPED_FLOAT().
+
   typeOfBinOp(UNTYPED_RUNE(), UNTYPED_RUNE())       = UNTYPED_RUNE().
+
   typeOfBinOp(UNTYPED_RUNE(), UNTYPED_INT())        = UNTYPED_RUNE().
+
   typeOfBinOp(UNTYPED_RUNE(), UNTYPED_BOOL())       = _ :-
     false | error $[Invalid binary operation on rune and bool constants.].
+
   typeOfBinOp(UNTYPED_RUNE(), UNTYPED_STRING())     = _ :-
     false | error $[Invalid binary operation on rune and string constants.].
 
+
   typeOfBinOp(UNTYPED_INT(), T)                     = T :-
     familyOfType(T) == INT_FAMILY() | error $[Invalid binary operation on int constant and value of type [T].].
+
   typeOfBinOp(UNTYPED_INT(), UNTYPED_COMPLEX())     = UNTYPED_COMPLEX().
+
   typeOfBinOp(UNTYPED_INT(), UNTYPED_FLOAT())       = UNTYPED_FLOAT().
+
   typeOfBinOp(UNTYPED_INT(), UNTYPED_RUNE())        = UNTYPED_RUNE().
+
   typeOfBinOp(UNTYPED_INT(), UNTYPED_INT())         = UNTYPED_INT().
+
   typeOfBinOp(UNTYPED_INT(), UNTYPED_BOOL())        = _ :-
     false | error $[Invalid binary operation on int and bool constants.].
+
   typeOfBinOp(UNTYPED_INT(), UNTYPED_STRING())      = _ :-
     false | error $[Invalid binary operation on int and string constants.].
 
+
   typeOfBinOp(UNTYPED_BOOL(), T)                    = T :-
     T == BOOL() | error $[Invalid binary operation on bool constant and value of type [T].].
+
   typeOfBinOp(UNTYPED_BOOL(), UNTYPED_COMPLEX())    = _ :-
     false | error $[Invalid binary operation on bool and complex constants.].
+
   typeOfBinOp(UNTYPED_BOOL(), UNTYPED_FLOAT())      = _ :-
     false | error $[Invalid binary operation on bool and float constants.].
+
   typeOfBinOp(UNTYPED_BOOL(), UNTYPED_RUNE())       = _ :-
     false | error $[Invalid binary operation on bool and rune constants.].
+
   typeOfBinOp(UNTYPED_BOOL(), UNTYPED_INT())        = _ :-
     false | error $[Invalid binary operation on bool and int constants.].
+
   typeOfBinOp(UNTYPED_BOOL(), UNTYPED_BOOL())       = UNTYPED_BOOL().
+
   typeOfBinOp(UNTYPED_BOOL(), UNTYPED_STRING())     = _ :-
     false | error $[Invalid binary operation on bool and string constants.].
 
   typeOfBinOp(UNTYPED_STRING(), T)                    = T :-
     T == STRING() | error $[Invalid binary operation on string constant and value of type [T].].
+
   typeOfBinOp(UNTYPED_STRING(), UNTYPED_COMPLEX())    = _ :-
     false | error $[Invalid binary operation on string and complex constants.].
+
   typeOfBinOp(UNTYPED_STRING(), UNTYPED_FLOAT())      = _ :-
     false | error $[Invalid binary operation on string and float constants.].
+
   typeOfBinOp(UNTYPED_STRING(), UNTYPED_RUNE())       = _ :-
     false | error $[Invalid binary operation on string and rune constants.].
+
   typeOfBinOp(UNTYPED_STRING(), UNTYPED_INT())        = _ :-
     false | error $[Invalid binary operation on string and int constants.].
+
   typeOfBinOp(UNTYPED_STRING(), UNTYPED_BOOL())       = _ :-
     false | error $[Invalid binary operation on string and bool constants.].
+
   typeOfBinOp(UNTYPED_STRING(), UNTYPED_STRING())     = UNTYPED_STRING().
 
 
@@ -396,7 +438,44 @@ rules typeOfArgumentsOpt : scope * Arguments-OPT -> list(TYPE)
   typeOfArgumentsOpt(s, ArgumentsExplode(TypeArgument(type))) = [].  // TODO
   typeOfArgumentsOpt(s, ArgumentsExplode(TypedArguments(type, exprs))) = [].  // TODO
 
+// An addressable expression is:
+// - a variable,
+// - pointer indirection,
+// - slice indexing operation,
+// - field selector of an addressable struct operand
+// - array indexing operation of an addressable array
 
+rules typeOfAddressableExpr : scope * Expr -> TYPE
+
+  typeOfAddressableExpr(_, _) :-
+    // TODO
+    true.
+
+rules typeOfAddressableOrCompositeLiteralExpr : scope * Expr -> TYPE
+
+  typeOfAddressableOrCompositeLiteralExpr(_, _) :-
+    // TODO
+    true.
+
+rules typeOfAddressableOrMapIndexExpr : scope * Expr -> TYPE
+
+  typeOfAddressableOrMapIndexExpr(_, _) :-
+    // TODO
+    true.
+
+rules typeOfMethodOrFunctionExpr : scope * Expr -> TYPE
+
+  typeOfMethodOrFunctionExpr(_, _) :-
+    // TODO
+    true.
+
+//  typeOfMethodOrFunctionCallExpr(s, MethodExpr(type, name)) = T :-
+//    // TODO
+//    true.
+//
+//  typeOfMethodOrFunctionCallExpr(s, MethodExpr(type, name)) = T :-
+//    // TODO
+//    true.
 
 //
 //  typeOfPrimaryExpr(s, Selector(expr, name)) = T :- {TE}

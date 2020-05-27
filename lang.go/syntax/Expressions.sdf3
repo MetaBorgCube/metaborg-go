@@ -21,8 +21,9 @@ context-free syntax
   Expr-OPT.NoExpr                           = <>
   Expr-OPT                                  = Expr
 
-
 context-free syntax
+
+  // TODO: Support blank identifier
 
   // Operands -- https://golang.org/ref/spec#Operands
   Expr                                      = <(<Expr>)>  {bracket}

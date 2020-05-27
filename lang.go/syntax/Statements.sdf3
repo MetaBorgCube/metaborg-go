@@ -19,7 +19,7 @@ context-free start-symbols
 context-free syntax
 
   Stmt.DeclarationStmt                      = Declaration
-  Stmt                                      = SimpleStmt
+  Stmt                                      = <<SimpleStmt>;>
   Stmt                                      = <<Block>;>
   Stmt                                      = <<IfStmt>;>
   // Labeled statements -- https://golang.org/ref/spec#Labeled_statements
@@ -28,64 +28,56 @@ context-free syntax
   Stmt.ExprSwitchStmt                       = <switch <StmtInit> <Expr-OPT>{ <ExprCaseClause*> }<>;>
   Stmt.TypeSwitchStmt                       = <switch <StmtInit> <TypeSwitchGuard>{ <TypeCaseClause*> }<>;>
   Stmt.ForStmt                              = <for <ForStmtClause> <Block>;>
+  // Fallthrough statements
+  Stmt.FallthroughStmt                      = <fallthrough<>;>
   // Go statements -- https://golang.org/ref/spec#Go_statements
   Stmt.GoStmt                               = <go <Expr>;>
+  // Defer statements
+  Stmt.DeferStmt                            = <defer <Expr>;>
   // Select statements -- https://golang.org/ref/spec#Select_statements
   Stmt.SelectStmt                           = <select { <CommClause*> }<>;>
   // Return statements
-  Stmt.ReturnStmt                           = <return <ExprList-OPT>;>
+  Stmt.ReturnStmt                           = <return <{Expr ","}*>;>
   // Break statements
-  Stmt.BreakStmt                            = <break <LabelOpt>;>
+  Stmt.BreakStmt                            = <break<>;>
+  Stmt.BreakLabeledStmt                     = <break <ID>;>
   // Continue statements
-  Stmt.ContinueStmt                         = <continue <LabelOpt>;>
+  Stmt.ContinueStmt                         = <continue<>;>
+  Stmt.ContinueLabeledStmt                  = <continue <ID>;>
   // Goto statements
   Stmt.GotoStmt                             = <goto <ID>;>
-  // Fallthrough statements
-  Stmt.FallthroughStmt                      = <fallthrough<>;>
-  // Defer statements
-  Stmt.DeferStmt                            = <defer <Expr>;>
-
 
 context-free sorts SimpleStmt
 context-free syntax
   // Empty statements -- https://golang.org/ref/spec#Empty_statements
-  SimpleStmt.EmptyStmt                      = <;>
+  SimpleStmt.EmptyStmt                      = <>
   // Send statements -- https://golang.org/ref/spec#Send_statements
   SimpleStmt                                = SendStmt
   // Expression statements -- https://golang.org/ref/spec#Expression_statements
-  SimpleStmt.ExprStmt                       = <<Expr>;>
+  SimpleStmt.ExprStmt                       = <<Expr>>
   // IncDec statements -- https://golang.org/ref/spec#IncDec_statements
-  SimpleStmt.IncStmt                        = <<Expr>++<>;>
-  SimpleStmt.DecStmt                        = <<Expr>--<>;>
+  SimpleStmt.IncStmt                        = <<Expr>++>
+  SimpleStmt.DecStmt                        = <<Expr>-->
   // Short variable declarations -- https://golang.org/ref/spec#Short_variable_declarations
-  SimpleStmt.ShortVarDecl                   = <<{ID ","}+> := <{Expr ","}+>;>
+  SimpleStmt.ShortVarDecl                   = <<{ID ","}+> := <{Expr ","}+>>
   // Assignments -- https://golang.org/ref/spec#Assignments
-  SimpleStmt.AssignStmt                     = <<{Expr ","}+> = <{Expr ","}+>;>
+  SimpleStmt.AssignStmt                     = <<{Expr ","}+> = <{Expr ","}+>>
 
   // add_op
-  SimpleStmt.SumAssignStmt                  = <<{Expr ","}+> += <{Expr ","}+>;>
-  SimpleStmt.DifferenceAssignStmt           = <<{Expr ","}+> -= <{Expr ","}+>;>
-  SimpleStmt.BitwiseOrAssignStmt            = <<{Expr ","}+> |= <{Expr ","}+>;>
-  SimpleStmt.BitwiseXorAssignStmt           = <<{Expr ","}+> ^= <{Expr ","}+>;>
+  SimpleStmt.SumAssignStmt                  = <<{Expr ","}+> += <{Expr ","}+>>
+  SimpleStmt.DifferenceAssignStmt           = <<{Expr ","}+> -= <{Expr ","}+>>
+  SimpleStmt.BitwiseOrAssignStmt            = <<{Expr ","}+> |= <{Expr ","}+>>
+  SimpleStmt.BitwiseXorAssignStmt           = <<{Expr ","}+> ^= <{Expr ","}+>>
 
   // mul_op
-  SimpleStmt.ProductAssignStmt              = [[{Expr ","}+] *= [{Expr ","}+];]
-  SimpleStmt.QuotientAssignStmt             = [[{Expr ","}+] /= [{Expr ","}+];]
-  SimpleStmt.RemainderAssignStmt            = [[{Expr ","}+] %= [{Expr ","}+];]
-  SimpleStmt.LeftShiftAssignStmt            = [[{Expr ","}+] <<= [{Expr ","}+];]
-  SimpleStmt.RightShiftAssignStmt           = [[{Expr ","}+] >>= [{Expr ","}+];]
-  SimpleStmt.BitwiseAndAssignStmt           = [[{Expr ","}+] &= [{Expr ","}+];]
-  SimpleStmt.BitClearAssignStmt             = [[{Expr ","}+] &^= [{Expr ","}+];]
+  SimpleStmt.ProductAssignStmt              = [[{Expr ","}+] *= [{Expr ","}+]]
+  SimpleStmt.QuotientAssignStmt             = [[{Expr ","}+] /= [{Expr ","}+]]
+  SimpleStmt.RemainderAssignStmt            = [[{Expr ","}+] %= [{Expr ","}+]]
+  SimpleStmt.LeftShiftAssignStmt            = [[{Expr ","}+] <<= [{Expr ","}+]]
+  SimpleStmt.RightShiftAssignStmt           = [[{Expr ","}+] >>= [{Expr ","}+]]
+  SimpleStmt.BitwiseAndAssignStmt           = [[{Expr ","}+] &= [{Expr ","}+]]
+  SimpleStmt.BitClearAssignStmt             = [[{Expr ","}+] &^= [{Expr ","}+]]
 
-
-/**
- * Labeled statements -- https://golang.org/ref/spec#Labeled_statements
- */
-context-free sorts LabelOpt
-context-free syntax
-
-  LabelOpt.NoLabel                          =
-  LabelOpt.Label                            = ID
 
 /**
  * If statements -- https://golang.org/ref/spec#If_statements
@@ -172,5 +164,5 @@ context-free syntax
 context-free sorts SendStmt
 context-free syntax
 
-  SendStmt.SendStmt                         = [[Expr] <- [Expr];]
+  SendStmt.SendStmt                         = [[Expr] <- [Expr]]
 

@@ -7,11 +7,11 @@ signature
   namespaces
     Type    : string
     Pkg     : string
-    Lbl     : string
+//    Lbl     : string
 
   relations
     typeOfDecl  : occurrence -> TYPE
-    lblOfStmt   : occurrence
+//    lblOfStmt   : occurrence
 
   name-resolution
     labels
@@ -23,7 +23,7 @@ signature
 
     // TODO: Is this correct?
     resolve Type  filter P* (IMP? PUB? PUB? | PRV?) FM* min $ < P, P < PRV, P < PUB, P < FM
-    resolve Lbl   filter P*                             min $ < P
+//    resolve Lbl   filter P*                             min $ < P
 
 rules lookupType : scope * string -> TYPE
 
@@ -31,15 +31,16 @@ rules lookupType : scope * string -> TYPE
     @x.ref := dx,
     typeOfDecl of Type{x} in s |-> [(_, (Type{dx}, T))].
 
-//rules declareLabel : scope * string
-//
+rules declareLabel : scope * string
+
 // declareLabel(s, name) :-
-//   s -> Lbl{name} with lblOfStmt _,
+//   s -> Lbl{name}, // with lblOfStmt _,
 //   // Assert that the label is distinct
 //   lblOfStmt of Lbl{name} in s |-> [(_, (_, _))].
-//
-//rules lookupLabel : scope * string
-//
+
+rules lookupLabel : scope * string
+
 //  lookupLabel(s, refName) :- {defName}
 //    lblOfStmt of Lbl{refName} in s |-> [(_, (Lbl{defName}, _))],
+////    lblOfStmt of Lbl{refName} in s |-> [(_, (Lbl{defName}, _))],
 //    @refName.ref := defName.

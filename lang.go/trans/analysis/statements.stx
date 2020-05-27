@@ -18,6 +18,7 @@ imports
   analysis/expressions
   analysis/blocks
   analysis/name-resolution
+  analysis/types
 
 rules stmtOk : scope * Stmt
 
@@ -31,79 +32,289 @@ rules stmtOk : scope * Stmt
 
   stmtOk(s, Block2Stmt(block)) :-
     blockOk(s, block).
+
   stmtOk(s, IfStmt2Stmt(ifStmt)) :-
     ifStmtOk(s, ifStmt).
 
   stmtOk(s, LabeledStmt(label, stmt)) :-
-    // TODO: Declare label
-//    declareLabel(s, label),
+    declareLabel(s, label),
     stmtOk(s, stmt).
 
-  stmtOk(s, ExprSwitchStmt(_, _, _)) :-
-    true.
-  stmtOk(s, TypeSwitchStmt(_, _, _)) :-
-    true.
-  stmtOk(s, ForStmt(_, _)) :-
-    true.
-  stmtOk(s, GoStmt(_)) :-
-    true.
-  stmtOk(s, SelectStmt(_)) :-
-    true.
-  stmtOk(s, ReturnStmt(_)) :-
-    true.
-  stmtOk(s, BreakStmt(_)) :-
-    true.
-  stmtOk(s, ContinueStmt(_)) :-
-    true.
-  stmtOk(s, GotoStmt(_)) :-
-    true.
+  stmtOk(s, ExprSwitchStmt(stmtInit, NoExpr(), clauses)) :- {T}
+    stmtInitOk(s, stmtInit),
+    UNTYPED_BOOL() == T,  // expr defaults to true
+    exprCaseClausesOk(s, clauses, T).
+
+  stmtOk(s, ExprSwitchStmt(stmtInit, Expr2Expr-OPT(expr), clauses)) :- {T}
+    stmtInitOk(s, stmtInit),
+    typeOfExpr(s, expr) == T,
+    exprCaseClausesOk(s, clauses, T).
+
+  stmtOk(s, TypeSwitchStmt(stmtInit, guard, clauses)) :-
+    stmtInitOk(s, stmtInit),
+    typeSwitchGuardOk(s, guard),
+    typeCaseClausesOk(s, clauses).
+
+  stmtOk(s, ForStmt(clause, block)) :-
+    forStmtClauseOk(s, clause),
+    blockOk(s, block).
+
   stmtOk(s, FallthroughStmt()) :-
+    // TODO: only allowed as the last non-empty statement in an expression switch clause
     true.
+
+  stmtOk(s, GoStmt(expr)) :-
+    // TODO: expr must be a function or method call
+    true.
+
   stmtOk(s, DeferStmt(_)) :-
+    // TODO: expr must be a function or method call
+    true.
+
+  stmtOk(s, SelectStmt(clauses)) :-
+    commClausesOk(s, clauses).
+
+  stmtOk(s, ReturnStmt(exprs)) :- {TS}
+    typesOfExprs(s, exprs) == TS,
+    // TODO: Compare return types to expected return types
+    true.
+
+  stmtOk(s, BreakStmt()) :-
+    // TODO: must have an enclosing for, switch, or select
+    true.
+
+  stmtOk(s, BreakLabeledStmt(label)) :-
+    // TODO: find label, must be of an enclosing for, switch, or select
+    true.
+
+  stmtOk(s, ContinueStmt()) :-
+    // TODO: must have an enclosing for
+    true.
+
+  stmtOk(s, ContinueLabeledStmt(label)) :-
+    // TODO: find label, must be of an enclosing for
+    true.
+
+  stmtOk(s, GotoStmt(label)) :-
+    // TODO: find label, check for validity
     true.
 
 rules simpleStmtOk : scope * SimpleStmt
 
   simpleStmtOk(s, EmptyStmt()).
-  simpleStmtOk(s, SendStmt2SimpleStmt(_)) :-
-    true.
+
+  simpleStmtOk(s, SendStmt2SimpleStmt(sendStmt)) :-
+    sendStmtOk(s, sendStmt).
+
   simpleStmtOk(s, ExprStmt(expr)) :-
     typeOfExpr(s, expr) == _.
-  simpleStmtOk(s, IncStmt(_)) :-
+
+  simpleStmtOk(s, IncStmt(expr)) :- {T1 T2}
+    typeOfAddressableOrMapIndexExpr(s, expr) == T1 | error $[The expression must be addressable or a map index expression.],
+    // TODO: Relate T1 and T2?
+    typeOfExpr(s, expr) == T2,
+    isArithmeticType(T2) | error $[Cannot do arithmetic operations on type [T2]].
+
+  simpleStmtOk(s, DecStmt(expr)) :- {T1 T2}
+    typeOfAddressableOrMapIndexExpr(s, expr) == T1 | error $[The expression must be addressable or a map index expression.],
+    // TODO: Relate T1 and T2?
+    typeOfExpr(s, expr) == T2,
+    isArithmeticType(T2) | error $[Cannot do arithmetic operations on type [T2]].
+
+  simpleStmtOk(s, SingleVarDecl(VarSpecNoType(ids, es))) :- // Desugared from ShortVarDecl(_, _)
     true.
-  simpleStmtOk(s, DecStmt(_)) :-
+
+  simpleStmtOk(s, AssignStmt(exprs1, exprs2)) :-
+    // TODO: exprs1 must all be addressable or a map index expression or a blank identifier
+    // TODO: exprs1 must be compatible with the types of exprs2
     true.
-  simpleStmtOk(s, ShortVarDecl(_, _)) :-
+
+  simpleStmtOk(s, SumAssignStmt(exprs1, exprs2)) :-
+    // TODO: exprs1 must all be addressable or a map index expression
+    // TODO: exprs1 must be compatible with the types of exprs2
     true.
-  simpleStmtOk(s, AssignStmt(_, _)) :-
+
+  simpleStmtOk(s, DifferenceAssignStmt(exprs1, exprs2)) :-
+    // TODO: exprs1 must all be addressable or a map index expression
+    // TODO: exprs1 must be compatible with the types of exprs2
     true.
-  simpleStmtOk(s, SumAssignStmt(_, _)) :-
+
+  simpleStmtOk(s, BitwiseOrAssignStmt(exprs1, exprs2)) :-
+    // TODO: exprs1 must all be addressable or a map index expression
+    // TODO: exprs1 must be compatible with the types of exprs2
     true.
-  simpleStmtOk(s, DifferenceAssignStmt(_, _)) :-
+
+  simpleStmtOk(s, BitwiseXorAssignStmt(exprs1, exprs2)) :-
+    // TODO: exprs1 must all be addressable or a map index expression
+    // TODO: exprs1 must be compatible with the types of exprs2
     true.
-  simpleStmtOk(s, BitwiseOrAssignStmt(_, _)) :-
+
+  simpleStmtOk(s, ProductAssignStmt(exprs1, exprs2)) :-
+    // TODO: exprs1 must all be addressable or a map index expression
+    // TODO: exprs1 must be compatible with the types of exprs2
     true.
-  simpleStmtOk(s, BitwiseXorAssignStmt(_, _)) :-
+
+  simpleStmtOk(s, QuotientAssignStmt(exprs1, exprs2)) :-
+    // TODO: exprs1 must all be addressable or a map index expression
+    // TODO: exprs1 must be compatible with the types of exprs2
     true.
-  simpleStmtOk(s, ProductAssignStmt(_, _)) :-
+
+  simpleStmtOk(s, RemainderAssignStmt(exprs1, exprs2)) :-
+    // TODO: exprs1 must all be addressable or a map index expression
+    // TODO: exprs1 must be compatible with the types of exprs2
     true.
-  simpleStmtOk(s, QuotientAssignStmt(_, _)) :-
+
+  simpleStmtOk(s, LeftShiftAssignStmt(exprs1, exprs2)) :-
+    // TODO: exprs1 must all be addressable or a map index expression
+    // TODO: exprs1 must be compatible with the types of exprs2
     true.
-  simpleStmtOk(s, RemainderAssignStmt(_, _)) :-
+
+  simpleStmtOk(s, RightShiftAssignStmt(exprs1, exprs2)) :-
+    // TODO: exprs1 must all be addressable or a map index expression
+    // TODO: exprs1 must be compatible with the types of exprs2
     true.
-  simpleStmtOk(s, LeftShiftAssignStmt(_, _)) :-
+
+  simpleStmtOk(s, BitwiseAndAssignStmt(exprs1, exprs2)) :-
+    // TODO: exprs1 must all be addressable or a map index expression
+    // TODO: exprs1 must be compatible with the types of exprs2
     true.
-  simpleStmtOk(s, RightShiftAssignStmt(_, _)) :-
-    true.
-  simpleStmtOk(s, BitwiseAndAssignStmt(_, _)) :-
-    true.
-  simpleStmtOk(s, BitClearAssignStmt(_, _)) :-
+
+  simpleStmtOk(s, BitClearAssignStmt(exprs1, exprs2)) :-
+    // TODO: exprs1 must all be addressable or a map index expression
+    // TODO: exprs1 must be compatible with the types of exprs2
     true.
 
 
 rules ifStmtOk : scope * IfStmt
 
+  ifStmtOk(s, IfStmt(stmtInit, expr, thenBlock, rest)) :- {T}
+    stmtInitOk(s, stmtInit),
+    typeOfExpr(s, expr) == T,
+    isBoolType(T) | error $[Expected boolean expression, got [T].],
+    blockOk(s, thenBlock),
+    ifStmtElseOk(s, rest).
 
+rules ifStmtElseOk : scope * IfStmtElse
+
+  ifStmtElseOk(_, NoElse()).
+  ifStmtElseOk(s, ElseBlock(block)) :-
+    blockOk(s, block).
+  ifStmtElseOk(s, ElseIf(ifStmt)) :-
+    ifStmtOk(s, ifStmt).
+
+rules stmtInitOk : scope * StmtInit
+
+  stmtInitOk(_, NoStmtInit()).
+  stmtInitOk(s, StmtInit(simpleStmt)) :-
+    simpleStmtOk(s, simpleStmt).
+
+rules exprCaseClauseOk : scope * ExprCaseClause * TYPE
+
+  exprCaseClausesOk maps exprCaseClauseOk(*, list(*), *)
+
+  exprCaseClauseOk(s, ExprCase(exprs, stmts), T) :- {TS}
+    typesOfExprs(s, exprs) == TS,
+    // TODO: Ensure each TYPE in TS can be converted (implicitly) to T (that is, compatibility)
+    stmtsOk(s, stmts).
+
+  exprCaseClauseOk(s, ExprCaseDefault(stmts), T) :-
+    stmtsOk(s, stmts).
+
+rules typeSwitchGuardOk : scope * TypeSwitchGuard
+
+  typeSwitchGuardOk(s, TypeSwitchGuard(name, expr)) :-
+    true.
+  typeSwitchGuardOk(s, TypeSwitchGuardNoID(expr)) :-
+    true.
+
+rules typeCaseClauseOk : scope * TypeCaseClause
+
+  typeCaseClausesOk maps typeCaseClauseOk(*, list(*))
+
+  typeCaseClauseOk(s, TypeCase(types, stmts)) :-
+    // TODO
+    stmtsOk(s, stmts),
+    true.
+
+  typeCaseClauseOk(s, TypeCaseDefault(stmts)) :-
+    stmtsOk(s, stmts).
+
+rules forStmtClauseOk : scope * ForStmtClause
+
+  forStmtClauseOk(s, ForNoClause()).
+
+  forStmtClauseOk(s, ForExprClause(conditionExpr)) :- {T}
+    typeOfExpr(s, conditionExpr) == T,
+    isBoolType(T) | error $[Expected boolean expression, got [T].].
+
+  forStmtClauseOk(s, ForClause(initStmt, condition, postStmt)) :- {T}
+    forInitStmtOk(s, initStmt),
+    forConditionOk(s, condition),
+    forPostStmtOk(s, postStmt).
+
+  forStmtClauseOk(s, ForRangeClause(ExprListEq(exprs), expr)) :-
+    true.
+
+  forStmtClauseOk(s, ForRangeClause(IdListEq(exprs), expr)) :-
+    true.
+
+rules forInitStmtOk : scope * ForInitStmt
+
+  forInitStmtOk(_, NoInitStmt()).
+
+  forInitStmtOk(s, SimpleStmt2ForInitStmt(simpleStmt)) :-
+    simpleStmtOk(s, simpleStmt).
+
+rules forConditionOk : scope * ForCondition
+
+  forConditionOk(_, NoCondition()).
+
+  forConditionOk(s, Expr2ForCondition(expr)) :- {T}
+    typeOfExpr(s, expr) == T,
+    isBoolType(T) | error $[Expected boolean expression, got [T].].
+
+rules forPostStmtOk : scope * ForPostStmt
+
+  forPostStmtOk(_, NoPostStmt()).
+
+  forPostStmtOk(s, SimpleStmt2ForPostStmt(simpleStmt)) :-
+    simpleStmtOk(s, simpleStmt).
+
+rules commClauseOk : scope * CommClause
+
+  commClausesOk maps commClauseOk(*, list(*))
+
+  commClauseOk(s, CommClause(case, stmts)) :-
+    commCaseOk(s, case),
+    stmtsOk(s, stmts).
+
+rules commCaseOk : scope * CommCase
+
+  commCaseOk(s, CommCaseSend(sendStmt)) :-
+    sendStmtOk(s, sendStmt).
+  commCaseOk(s, CommCaseRecv(recvStmt)) :-
+    recvStmtOk(s, recvStmt).
+  commCaseOk(s, CommCaseDefault()).
+
+rules sendStmtOk : scope * SendStmt
+
+  sendStmtOk(s, SendStmt(channelExpr, expr)) :- {T TC}
+    typeOfExpr(s, expr) == T,
+    typeOfExpr(s, channelExpr) == TC,
+    TC == CHANNEL(T) | error $[Expected channel of type [T], got [TC]].
+
+rules recvStmtOk : scope * RecvStmt
+
+  recvStmtOk(s, RecvStmt(ExprListEq(exprs), channelExpr)) :- {T TC}
+    // TODO: What is T?
+    typeOfExpr(s, channelExpr) == TC,
+    TC == CHANNEL(T) | error $[Expected channel of type [T], got [TC]],
+    true.
+  recvStmtOk(s, RecvStmt(IdListEq(ids), channelExpr)) :- {T TC}
+    // TODO: What is T?
+    typeOfExpr(s, channelExpr) == TC,
+    TC == CHANNEL(T) | error $[Expected channel of type [T], got [TC]],
+    true.
 
 
 //

@@ -48,8 +48,6 @@ signature
     ConstSpec : list(ID) * Type-OPT * list(Expr) -> ConstSpec
     NoIDs : IDList-OPT
     IDs2IDList-OPT : list(ID) -> IDList-OPT
-    NoExprs : ExprList-OPT
-    Exprs2ExprList-OPT : list(Expr) -> ExprList-OPT
     AliasDecl : ID * Type -> TypeSpec
     TypeDef : ID * Type -> TypeSpec
     VarSpec : list(ID) * Type * list(Expr) -> VarSpec
@@ -114,6 +112,32 @@ signature
     QualifiedCallOrConversion : QualifiedIdent * Expr -> Expr
     QualifiedCallOrConversion-ALT : QualifiedIdent * Expr -> Expr
     MemberAccess : ID * ID -> Expr
+    Positive : Expr -> Expr
+    Negation : Expr -> Expr
+    Not : Expr -> Expr
+    BitwiseComplement : Expr -> Expr
+    Deref : Expr -> Expr
+    Ref : Expr -> Expr
+    Receive : Expr -> Expr
+    Equal : Expr * Expr -> Expr
+    NotEqual : Expr * Expr -> Expr
+    Less : Expr * Expr -> Expr
+    LessOrEqual : Expr * Expr -> Expr
+    Greater : Expr * Expr -> Expr
+    GreaterOrEqual : Expr * Expr -> Expr
+    LogicalOr : Expr * Expr -> Expr
+    LogicalAnd : Expr * Expr -> Expr
+    BitwiseAnd : Expr * Expr -> Expr
+    BitwiseOr : Expr * Expr -> Expr
+    BitwiseXor : Expr * Expr -> Expr
+    BitClear : Expr * Expr -> Expr
+    LeftShift : Expr * Expr -> Expr
+    RightShift : Expr * Expr -> Expr
+    Sum : Expr * Expr -> Expr
+    Difference : Expr * Expr -> Expr
+    Product : Expr * Expr -> Expr
+    Quotient : Expr * Expr -> Expr
+    Remainder : Expr * Expr -> Expr
     QualifiedIdent : ID * ID -> QualifiedIdent
     QualifiedIdent-DISAMB : ID * ID -> QualifiedIdent
     TypeName2LiteralType : TypeName -> LiteralType
@@ -139,32 +163,6 @@ signature
     ExprArguments : list(Expr) -> Arguments
     TypeArgument : Type -> Arguments
     TypedArguments : Type * list(Expr) -> Arguments
-    LogicalOr : Expr * Expr -> Expr
-    LogicalAnd : Expr * Expr -> Expr
-    Equal : Expr * Expr -> Expr
-    NotEqual : Expr * Expr -> Expr
-    Less : Expr * Expr -> Expr
-    LessOrEqual : Expr * Expr -> Expr
-    Greater : Expr * Expr -> Expr
-    GreaterOrEqual : Expr * Expr -> Expr
-    Sum : Expr * Expr -> Expr
-    Difference : Expr * Expr -> Expr
-    BitwiseOr : Expr * Expr -> Expr
-    BitwiseXor : Expr * Expr -> Expr
-    Product : Expr * Expr -> Expr
-    Quotient : Expr * Expr -> Expr
-    Remainder : Expr * Expr -> Expr
-    LeftShift : Expr * Expr -> Expr
-    RightShift : Expr * Expr -> Expr
-    BitwiseAnd : Expr * Expr -> Expr
-    BitClear : Expr * Expr -> Expr
-    Positive : Expr -> Expr
-    Negation : Expr -> Expr
-    Not : Expr -> Expr
-    BitwiseComplement : Expr -> Expr
-    Deref : Expr -> Expr
-    Ref : Expr -> Expr
-    Receive : Expr -> Expr
 signature
 
   sorts
@@ -261,7 +259,6 @@ signature
 
   sorts
     SimpleStmt
-    LabelOpt
     IfStmt
     IfStmtElse
     StmtInit
@@ -280,7 +277,6 @@ signature
 
   constructors
     SimpleStmt-Plhdr : SimpleStmt
-    LabelOpt-Plhdr : LabelOpt
     IfStmt-Plhdr : IfStmt
     IfStmtElse-Plhdr : IfStmtElse
     StmtInit-Plhdr : StmtInit
@@ -308,14 +304,16 @@ signature
     ExprSwitchStmt : StmtInit * Expr-OPT * list(ExprCaseClause) -> Stmt
     TypeSwitchStmt : StmtInit * TypeSwitchGuard * list(TypeCaseClause) -> Stmt
     ForStmt : ForStmtClause * Block -> Stmt
-    GoStmt : Expr -> Stmt
-    SelectStmt : list(CommClause) -> Stmt
-    ReturnStmt : ExprList-OPT -> Stmt
-    BreakStmt : LabelOpt -> Stmt
-    ContinueStmt : LabelOpt -> Stmt
-    GotoStmt : ID -> Stmt
     FallthroughStmt : Stmt
+    GoStmt : Expr -> Stmt
     DeferStmt : Expr -> Stmt
+    SelectStmt : list(CommClause) -> Stmt
+    ReturnStmt : list(Expr) -> Stmt
+    BreakStmt : Stmt
+    BreakLabeledStmt : ID -> Stmt
+    ContinueStmt : Stmt
+    ContinueLabeledStmt : ID -> Stmt
+    GotoStmt : ID -> Stmt
     EmptyStmt : SimpleStmt
     SendStmt2SimpleStmt : SendStmt -> SimpleStmt
     ExprStmt : Expr -> SimpleStmt
@@ -334,8 +332,6 @@ signature
     RightShiftAssignStmt : list(Expr) * list(Expr) -> SimpleStmt
     BitwiseAndAssignStmt : list(Expr) * list(Expr) -> SimpleStmt
     BitClearAssignStmt : list(Expr) * list(Expr) -> SimpleStmt
-    NoLabel : LabelOpt
-    Label : ID -> LabelOpt
     IfStmt : StmtInit * Expr * Block * IfStmtElse -> IfStmt
     NoElse : IfStmtElse
     ElseBlock : Block -> IfStmtElse
