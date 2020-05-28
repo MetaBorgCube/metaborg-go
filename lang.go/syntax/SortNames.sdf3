@@ -6,7 +6,6 @@ context-free sorts
   Block
   Expr
   Expr-OPT
-  ExprList-OPT
   Type
   Type-OPT
   TypeName

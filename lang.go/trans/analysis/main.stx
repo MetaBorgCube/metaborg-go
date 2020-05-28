@@ -15,6 +15,7 @@ imports
 
 imports
   analysis/types
+  analysis/name-resolution
 
 rules
  // Initializes the scope graph with built-in types
@@ -47,13 +48,3 @@ rules
    declareTypeRaw(s_univ, "string",     STRING()).
 
 // See: https://golang.org/ref/spec#Predeclared_identifiers
-
-rules
-
- // Used to declare built-in types
- declareTypeRaw : scope * string * TYPE
-
- declareTypeRaw(s, x, T) :-
-   s -> Type{x} with typeOfDecl T,
-   // Assert that the declaration is distinct
-   typeOfDecl of Type{x} in s |-> [(_, (_, T))].

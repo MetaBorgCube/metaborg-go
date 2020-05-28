@@ -447,25 +447,25 @@ rules typeOfArgumentsOpt : scope * Arguments-OPT -> list(TYPE)
 
 rules typeOfAddressableExpr : scope * Expr -> TYPE
 
-  typeOfAddressableExpr(_, _) :-
+  typeOfAddressableExpr(_, _) = _ :-
     // TODO
     true.
 
 rules typeOfAddressableOrCompositeLiteralExpr : scope * Expr -> TYPE
 
-  typeOfAddressableOrCompositeLiteralExpr(_, _) :-
+  typeOfAddressableOrCompositeLiteralExpr(_, _) = _ :-
     // TODO
     true.
 
 rules typeOfAddressableOrMapIndexExpr : scope * Expr -> TYPE
 
-  typeOfAddressableOrMapIndexExpr(_, _) :-
+  typeOfAddressableOrMapIndexExpr(_, _) = _ :-
     // TODO
     true.
 
 rules typeOfMethodOrFunctionExpr : scope * Expr -> TYPE
 
-  typeOfMethodOrFunctionExpr(_, _) :-
+  typeOfMethodOrFunctionExpr(_, _) = _ :-
     // TODO
     true.
 

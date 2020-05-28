@@ -121,7 +121,8 @@ rules simpleStmtOk : scope * SimpleStmt
     typeOfExpr(s, expr) == T2,
     isArithmeticType(T2) | error $[Cannot do arithmetic operations on type [T2]].
 
-  simpleStmtOk(s, SingleVarDecl(VarSpecNoType(ids, es))) :- // Desugared from ShortVarDecl(_, _)
+  simpleStmtOk(s, ShortVarDecl(ids, es)) :-
+    // similar to SingleVarDecl(VarSpecNoType(ids, es))
     true.
 
   simpleStmtOk(s, AssignStmt(exprs1, exprs2)) :-

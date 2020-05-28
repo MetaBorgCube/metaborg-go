@@ -19,7 +19,6 @@ rules
     desugar-sourcefile <+
     desugar-disamb <+
     desugar-alt <+
-    desugar-short-var-decl <+
     desugar-single-decl <+
     desugar-list-opt
   ))
@@ -33,10 +32,6 @@ rules
 
 rules
 
-  desugar-short-var-decl: ShortVarDecl(ids, es)         -> SingleVarDecl(VarSpecNoType(ids, es))
-
-rules
-
   desugar-single-decl: SingleImportDecl(i)              -> ImportDecl([i])
   desugar-single-decl: SingleConstDecl(c)               -> ConstDecl([c])
   desugar-single-decl: SingleTypeDecl(t)                -> TypeDecl([t])
@@ -45,7 +40,6 @@ rules
 rules
 
   desugar-list-opt: NoIDs()                             -> []
-  desugar-list-opt: NoExprs()                           -> []
 
 rules
 

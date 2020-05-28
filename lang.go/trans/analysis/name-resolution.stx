@@ -44,3 +44,11 @@ rules lookupLabel : scope * string
 //    lblOfStmt of Lbl{refName} in s |-> [(_, (Lbl{defName}, _))],
 ////    lblOfStmt of Lbl{refName} in s |-> [(_, (Lbl{defName}, _))],
 //    @refName.ref := defName.
+
+// Used to declare built-in types
+rules declareTypeRaw : scope * string * TYPE
+
+ declareTypeRaw(s, x, T) :-
+   s -> Type{x} with typeOfDecl T,
+   // Assert that the declaration is distinct
+   typeOfDecl of Type{x} in s |-> [(_, (_, T))].
