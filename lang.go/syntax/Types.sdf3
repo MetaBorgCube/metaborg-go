@@ -80,8 +80,8 @@ context-free syntax
   Parameters.Parameters                     = <(<{ParameterDecl ","}*>)>
   Parameters.Parameters-ALT                 = <(<{ParameterDecl ","}*>, )>
 
-  ParameterDecl.ParameterDecl               = <<IDList-OPT> <Type>>
-  ParameterDecl.VariadicParameterDecl       = <<IDList-OPT> ...<Type>>
+  ParameterDecl.ParameterDecl               = <<{ID ","}*> <Type>>
+  ParameterDecl.VariadicParameterDecl       = <<{ID ","}*> ...<Type>>
 
 
 /**

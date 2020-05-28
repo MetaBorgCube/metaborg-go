@@ -19,8 +19,7 @@ rules
     desugar-sourcefile <+
     desugar-disamb <+
     desugar-alt <+
-    desugar-single-decl <+
-    desugar-list-opt
+    desugar-single-decl
   ))
 
 rules
@@ -36,10 +35,6 @@ rules
   desugar-single-decl: SingleConstDecl(c)               -> ConstDecl([c])
   desugar-single-decl: SingleTypeDecl(t)                -> TypeDecl([t])
   desugar-single-decl: SingleVarDecl(v)                 -> VarDecl([v])
-
-rules
-
-  desugar-list-opt: NoIDs()                             -> []
 
 rules
 

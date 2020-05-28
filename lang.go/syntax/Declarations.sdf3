@@ -43,14 +43,11 @@ context-free syntax
 /**
  * Constant declarations -- https://golang.org/ref/spec#Constant_declarations
  */
-context-free sorts ConstSpec IDList-OPT
+context-free sorts ConstSpec
 context-free syntax
 
   // spec seems wrong here, assignment is always required
   ConstSpec.ConstSpec                       = <<{ID ","}+> <Type-OPT> = <{Expr ","}+>;>
-
-  IDList-OPT.NoIDs                          = <>
-  IDList-OPT                                = {ID ","}+
 
 
 /**

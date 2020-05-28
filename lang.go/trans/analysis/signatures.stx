@@ -16,7 +16,6 @@ signature
   sorts
     TopLevelDecl
     ConstSpec
-    IDList-OPT
     TypeSpec
     VarSpec
     Receiver
@@ -25,7 +24,6 @@ signature
   constructors
     TopLevelDecl-Plhdr : TopLevelDecl
     ConstSpec-Plhdr : ConstSpec
-    IDList-OPT-Plhdr : IDList-OPT
     TypeSpec-Plhdr : TypeSpec
     VarSpec-Plhdr : VarSpec
     Receiver-Plhdr : Receiver
@@ -46,8 +44,6 @@ signature
     SingleVarDecl : VarSpec -> Declaration
     VarDecl : list(VarSpec) -> Declaration
     ConstSpec : list(ID) * Type-OPT * list(Expr) -> ConstSpec
-    NoIDs : IDList-OPT
-    IDs2IDList-OPT : list(ID) -> IDList-OPT
     AliasDecl : ID * Type -> TypeSpec
     TypeDef : ID * Type -> TypeSpec
     VarSpec : list(ID) * Type * list(Expr) -> VarSpec
@@ -234,7 +230,6 @@ signature
     Block
     Expr
     Expr-OPT
-    ExprList-OPT
     Type
     Type-OPT
     TypeName
@@ -246,7 +241,6 @@ signature
     Block-Plhdr : Block
     Expr-Plhdr : Expr
     Expr-OPT-Plhdr : Expr-OPT
-    ExprList-OPT-Plhdr : ExprList-OPT
     Type-Plhdr : Type
     Type-OPT-Plhdr : Type-OPT
     TypeName-Plhdr : TypeName
