@@ -36,14 +36,15 @@ signature
     FunctionDecl : ID * Signature -> TopLevelDecl
     FunctionDef : ID * Signature * Block -> TopLevelDecl
     MethodDecl : Receiver * ID * Signature -> TopLevelDecl
-    MethodDed : Receiver * ID * Signature * Block -> TopLevelDecl
+    MethodDef : Receiver * ID * Signature * Block -> TopLevelDecl
     SingleConstDecl : ConstSpec -> Declaration
     ConstDecl : list(ConstSpec) -> Declaration
     SingleTypeDecl : TypeSpec -> Declaration
     TypeDecl : list(TypeSpec) -> Declaration
     SingleVarDecl : VarSpec -> Declaration
     VarDecl : list(VarSpec) -> Declaration
-    ConstSpec : list(ID) * Type-OPT * list(Expr) -> ConstSpec
+    ConstSpec : list(ID) * Type * list(Expr) -> ConstSpec
+    ConstSpecNoType : list(ID) * list(Expr) -> ConstSpec
     AliasDecl : ID * Type -> TypeSpec
     TypeDef : ID * Type -> TypeSpec
     VarSpec : list(ID) * Type * list(Expr) -> VarSpec
@@ -231,7 +232,6 @@ signature
     Expr
     Expr-OPT
     Type
-    Type-OPT
     TypeName
     Signature
 
@@ -242,7 +242,6 @@ signature
     Expr-Plhdr : Expr
     Expr-OPT-Plhdr : Expr-OPT
     Type-Plhdr : Type
-    Type-OPT-Plhdr : Type-OPT
     TypeName-Plhdr : TypeName
     Signature-Plhdr : Signature
 
@@ -379,8 +378,6 @@ signature
 signature
 
   constructors
-    NoType : Type-OPT
-    Type2Type-OPT : Type -> Type-OPT
     TypeName : ID -> TypeName
     QualifiedTypeName : QualifiedIdent -> TypeName
     TypeName2Type : TypeName -> Type
@@ -406,7 +403,7 @@ signature
     Type2Result : Type -> Result
     Parameters : list(ParameterDecl) -> Parameters
     Parameters-ALT : list(ParameterDecl) -> Parameters
-    ParameterDecl : IDList-OPT * Type -> ParameterDecl
-    VariadicParameterDecl : IDList-OPT * Type -> ParameterDecl
+    ParameterDecl : list(ID) * Type -> ParameterDecl
+    VariadicParameterDecl : list(ID) * Type -> ParameterDecl
     MethodSpec : ID * Signature -> InterfaceTypeMember
     EmbeddedInterface : TypeName -> InterfaceTypeMember

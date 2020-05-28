@@ -25,7 +25,7 @@ context-free syntax
   TopLevelDecl.FunctionDef                  = <func <ID> <Signature> <Block>;>
   // Method declarations -- https://golang.org/ref/spec#Method_declarations
   TopLevelDecl.MethodDecl                   = <func <Receiver> <ID> <Signature>;>
-  TopLevelDecl.MethodDed                    = <func <Receiver> <ID> <Signature> <Block>;>
+  TopLevelDecl.MethodDef                    = <func <Receiver> <ID> <Signature> <Block>;>
 
 context-free syntax
   // Constant declarations -- https://golang.org/ref/spec#Constant_declarations
@@ -47,7 +47,8 @@ context-free sorts ConstSpec
 context-free syntax
 
   // spec seems wrong here, assignment is always required
-  ConstSpec.ConstSpec                       = <<{ID ","}+> <Type-OPT> = <{Expr ","}+>;>
+  ConstSpec.ConstSpec                       = <<{ID ","}+> <Type> = <{Expr ","}+>;>
+  ConstSpec.ConstSpecNoType                 = <<{ID ","}+> = <{Expr ","}+>;>
 
 
 /**

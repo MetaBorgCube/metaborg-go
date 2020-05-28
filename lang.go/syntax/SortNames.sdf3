@@ -7,6 +7,5 @@ context-free sorts
   Expr
   Expr-OPT
   Type
-  Type-OPT
   TypeName
   Signature

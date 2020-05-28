@@ -18,9 +18,9 @@ imports
   analysis/blocks
   analysis/name-resolution
 
-rules
+rules topLevelDeclOk : scope * TopLevelDecl
+
   topLevelDeclsOk maps topLevelDeclOk(*, list(*))
-  topLevelDeclOk : scope * TopLevelDecl
 
   topLevelDeclOk(s, FunctionDecl(name, sig)) :- {TFUN s_ty}
     typeOfSignature(s, sig) == TFUN,
@@ -31,9 +31,78 @@ rules
     s -> Type{name} with typeOfDecl TFUN,
     blockOk(s, body).
 
-  topLevelDeclOk(s, _) :- true.
+  topLevelDeclOk(s, MethodDecl(receiver, name, sig)) :- {T}
+    typeOfReceiver(s, receiver) == T,
+    true.
+
+  topLevelDeclOk(s, MethodDef(receiver, name, sig, body)) :- {T}
+    typeOfReceiver(s, receiver) == T,
+    true.
 
 rules declarationOk : scope * Declaration
+
+  declarationOk(s, ConstDecl(constSpecs)) :-
+    constSpecsOk(s, constSpecs),
+    true.
+
+  declarationOk(s, TypeDecl(typeSpecs)) :-
+    typeSpecsOk(s, typeSpecs),
+    true.
+
+  declarationOk(s, VarDecl(varSpecs)) :-
+    varSpecsOk(s, varSpecs),
+    true.
+
+rules constSpecOk : scope * ConstSpec
+
+  constSpecsOk maps constSpecOk(*, list(*))
+
+  constSpecOk(s, ConstSpec(ids, type, exprs)) :-
+    true.
+
+  constSpecOk(s, ConstSpecNoType(ids, exprs)) :-
+    true.
+
+rules typeSpecOk : scope * TypeSpec
+
+  typeSpecsOk maps typeSpecOk(*, list(*))
+
+  typeSpecOk(s, AliasDecl(name, type)) :-
+    true.
+
+  typeSpecOk(s, TypeDef(name, type)) :-
+    true.
+
+rules varSpecOk : scope * VarSpec
+
+  varSpecsOk maps varSpecOk(*, list(*))
+
+  varSpecOk(s, VarSpec(names, type, exprs)) :-
+    true.
+
+  varSpecOk(s, VarSpecNoInit(names, type)) :-
+    true.
+
+  varSpecOk(s, VarSpecNoType(names, exprs)) :-
+    true.
+
+rules typeOfReceiver : scope * Receiver -> TYPE
+
+  typeOfReceiver(s, Receiver(name, receiverType)) = T :-
+    typeOfReceiverType(s, receiverType) == T,
+    true.
+
+  typeOfReceiver(s, AnonymousReceiver(receiverType)) = T :-
+    typeOfReceiverType(s, receiverType) == T,
+    true.
+
+rules typeOfReceiverType : scope * ReceiverType -> TYPE
+
+  typeOfReceiverType(s, ReceiverType(typeName)) = T :-
+    true.
+
+  typeOfReceiverType(s, ReceiverPtrType(typeName)) = T :-
+    true.
 
 //
 //rules

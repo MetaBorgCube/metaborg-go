@@ -21,9 +21,6 @@ template options
 
 context-free syntax
 
-  Type-OPT.NoType                           = <>
-  Type-OPT                                  = Type
-
   TypeName.TypeName                         = ID
   TypeName.QualifiedTypeName                = QualifiedIdent
 
