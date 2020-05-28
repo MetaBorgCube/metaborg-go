@@ -17,6 +17,6 @@ build:
 language:
   sdf:
     sdf2table: java
-language:
-  sdf:
-    jsglr-version: v1
+#language:
+#  sdf:
+#    jsglr-version: v1
