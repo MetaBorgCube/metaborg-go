@@ -248,6 +248,18 @@ rules isArithmeticOrStringTypeFamily : FAMILY
   isArithmeticOrStringTypeFamily(STRING_FAMILY()).
   isArithmeticOrStringTypeFamily(F) :- isArithmeticTypeFamily(F).
 
+// Returns the default type for a given constant type;
+// or fails when the type is not a constant type
+// (untyped in Go).
+rules defaultTypeOfConstType : TYPE -> TYPE
+
+  defaultTypeOfConstType(UNTYPED_BOOL())    = BOOL().
+  defaultTypeOfConstType(UNTYPED_RUNE())    = INT32().
+  defaultTypeOfConstType(UNTYPED_INT())     = INT().
+  defaultTypeOfConstType(UNTYPED_FLOAT())   = FLOAT64().
+  defaultTypeOfConstType(UNTYPED_COMPLEX()) = COMPLEX128().
+  defaultTypeOfConstType(UNTYPED_STRING())  = STRING().
+
 //rules isUntypedType : TYPE
 //
 //  isUntypedType(UNTYPED_INT()).
