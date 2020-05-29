@@ -38,14 +38,12 @@ rules familyOfType : TYPE -> FAMILY
   familyOfType(UINT16())          = INT_FAMILY().
   familyOfType(UINT32())          = INT_FAMILY().
   familyOfType(UINT64())          = INT_FAMILY().
-  familyOfType(UINTPTR())         = INT_FAMILY().
 
   familyOfType(INT())             = INT_FAMILY().
   familyOfType(INT8())            = INT_FAMILY().
   familyOfType(INT16())           = INT_FAMILY().
   familyOfType(INT32())           = INT_FAMILY().
   familyOfType(INT64())           = INT_FAMILY().
-  familyOfType(INTPTR())          = INT_FAMILY().
 
   familyOfType(UNTYPED_FLOAT())   = FLOAT_FAMILY().
   familyOfType(FLOAT64())         = FLOAT_FAMILY().
@@ -111,7 +109,6 @@ constructors
   INT16       : TYPE
   INT32       : TYPE    // RUNE
   INT64       : TYPE
-  INTPTR      : TYPE
 
   FLOAT64     : TYPE
   FLOAT128    : TYPE
