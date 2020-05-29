@@ -7,7 +7,7 @@ signature
   namespaces
     Type    : string
     Pkg     : string
-//    Lbl     : string
+    Label   : string
 
   relations
     typeOfDecl  : occurrence -> TYPE
@@ -23,7 +23,7 @@ signature
 
     // TODO: Is this correct?
     resolve Type  filter P* (IMP? PUB? PUB? | PRV?) FM* min $ < P, P < PRV, P < PUB, P < FM
-//    resolve Lbl   filter P*                             min $ < P
+    resolve Label filter P*                             min $ < P
 
 rules lookupType : scope * string -> TYPE
 
@@ -33,17 +33,16 @@ rules lookupType : scope * string -> TYPE
 
 rules declareLabel : scope * string
 
-// declareLabel(s, name) :-
-//   s -> Lbl{name}, // with lblOfStmt _,
-//   // Assert that the label is distinct
-//   lblOfStmt of Lbl{name} in s |-> [(_, (_, _))].
+  declareLabel(s, name) :-
+    s -> Label{name},
+    Label{name} in s |-> [(_, (Label{name}))] | error $[Multiple declarations of label [name]].
 
-rules lookupLabel : scope * string
+rules resolveLabel : scope * string
 
-//  lookupLabel(s, refName) :- {defName}
-//    lblOfStmt of Lbl{refName} in s |-> [(_, (Lbl{defName}, _))],
-////    lblOfStmt of Lbl{refName} in s |-> [(_, (Lbl{defName}, _))],
-//    @refName.ref := defName.
+  resolveLabel(s, refName) :- {declName}
+    Label{refName} in s |-> [(_, (Label{declName}))] | error $[Label [refName] is not declared or not in scope],
+    @refName.ref := declName.
+
 
 // Used to declare built-in types
 rules declareTypeRaw : scope * string * TYPE
@@ -51,4 +50,4 @@ rules declareTypeRaw : scope * string * TYPE
  declareTypeRaw(s, x, T) :-
    s -> Type{x} with typeOfDecl T,
    // Assert that the declaration is distinct
-   typeOfDecl of Type{x} in s |-> [(_, (_, T))].
+   typeOfDecl of Type{x} in s |-> [(_, (_, T))] | error $[Multiple declarations of type [x] : [T]].

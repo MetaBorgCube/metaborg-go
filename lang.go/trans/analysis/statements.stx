@@ -84,7 +84,8 @@ rules stmtOk : scope * Stmt
     true.
 
   stmtOk(s, BreakLabeledStmt(label)) :-
-    // TODO: find label, must be of an enclosing for, switch, or select
+    // TODO: label must be of an enclosing for, switch, or select
+    resolveLabel(s, label),
     true.
 
   stmtOk(s, ContinueStmt()) :-
@@ -92,10 +93,12 @@ rules stmtOk : scope * Stmt
     true.
 
   stmtOk(s, ContinueLabeledStmt(label)) :-
-    // TODO: find label, must be of an enclosing for
+    // TODO: label must be of an enclosing for
+    resolveLabel(s, label),
     true.
 
   stmtOk(s, GotoStmt(label)) :-
+    resolveLabel(s, label),
     // TODO: find label, check for validity
     true.
 
