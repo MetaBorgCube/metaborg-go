@@ -11,3 +11,14 @@ test assign to untyped variable [[
     x = "Go";
   };
 ]] 0 errors
+
+test function call [[
+  ["."]
+  package test;
+
+  func test();
+
+  func main() {
+      //test();
+  };
+]] 0 errors

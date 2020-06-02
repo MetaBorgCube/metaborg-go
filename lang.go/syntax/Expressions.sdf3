@@ -67,15 +67,19 @@ context-free syntax
   // This can denote:
   // - Call: a function or method call (when receiver is an expr)
   // - Conversion: a type conversion (when receiver is a type)
-  Expr.CallOrConversion                     = <<ID>(<Expr>)> {prefer}
-  Expr.CallOrConversion-ALT                 = <<ID>(<Expr>, )> {prefer}
-  Expr.QualifiedCallOrConversion            = <<QualifiedIdent>(<Expr>)> {prefer}
-  Expr.QualifiedCallOrConversion-ALT        = <<QualifiedIdent>(<Expr>, )> {prefer}
+  Expr.CallOrConversion                     = <<ID>(<Expr>)>// {prefer}
+  Expr.CallOrConversion-ALT                 = <<ID>(<Expr>, )>// {prefer}
+  Expr.QualifiedCallOrConversion            = <<QualifiedIdent>(<Expr>)>// {prefer}
+  Expr.QualifiedCallOrConversion-ALT        = <<QualifiedIdent>(<Expr>, )>// {prefer}
+//  Expr.CallOrConversion                     = <<ID>(<Expr>)> {prefer}
+//  Expr.CallOrConversion-ALT                 = <<ID>(<Expr>, )> {prefer}
+//  Expr.QualifiedCallOrConversion            = <<QualifiedIdent>(<Expr>)> {prefer}
+//  Expr.QualifiedCallOrConversion-ALT        = <<QualifiedIdent>(<Expr>, )> {prefer}
   // This can denote:
   // - QualifiedOperandName: a constant, variable, or function
   // - Selector: a field or method
   // - MethodExpr: a method group (when receiver is a type)
-  Expr.MemberAccess                         = <<ID>.<ID>> {left, prefer}
+  Expr.MemberAccess                         = <<ID>.<ID>> {left}//, prefer}
 
 /**
  * Operators -- https://golang.org/ref/spec#Operators
@@ -114,12 +118,12 @@ context-free syntax
   Expr.Quotient                             = [[Expr] / [Expr]]   {left}
   Expr.Remainder                            = [[Expr] % [Expr]]   {left}
 
-//context-free priorities
-//
-//  Expr.Call <0> .> Expr.OperandName,
-//  Expr.Call <0> .> Expr.QualifiedOperandName,
-//  Expr.Conversion <0> .> TypeName.TypeName,
-//  Expr.Conversion <0> .> TypeName.QualifiedTypeName
+context-free priorities
+
+  Expr.Call <0> .> Expr.OperandName,
+  Expr.Call <0> .> Expr.QualifiedOperandName,
+  Expr.Conversion <0> .> TypeName.TypeName,
+  Expr.Conversion <0> .> TypeName.QualifiedTypeName
 
 
 context-free priorities

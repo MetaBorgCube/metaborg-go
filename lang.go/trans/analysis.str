@@ -20,7 +20,7 @@ rules // Analysis
   editor-analyze = stx-editor-analyze(pre-analyze, post-analyze|"analysis/statics", "programOk")
   pre-analyze: x -> x'
   //desugar-all Should be desugared, but this changes the SourceFile term
-  with x' := <desugar-testsource; explicate-injections-GoLang-SourceFile> x
+  with x' := <try(desugar-testsource); explicate-injections-GoLang-SourceFile> x
 
   post-analyze: x -> x'
   with x' := <strip-annos; implicate-injections-GoLang-SourceFile> x

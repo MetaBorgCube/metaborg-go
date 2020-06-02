@@ -273,6 +273,8 @@ rules
     isIntType(T) | error $[Cannot do arithmetic operations on type [T]].
 
 
+
+// int > rune > float > complex
 rules typeOfBinOp : TYPE * TYPE -> TYPE
 
   typeOfBinOp(T1, T2)                               = T :-
