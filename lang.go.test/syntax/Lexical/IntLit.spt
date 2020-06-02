@@ -2,7 +2,7 @@ module IntLit
 
 language GoLang
 
-start symbol INTLIT
+start symbol INT_LIT
 
 test int 1  [[0]]                       parse succeeds
 test int 2  [[42]]                      parse succeeds

@@ -2,7 +2,7 @@ module ImaginaryLit
 
 language GoLang
 
-start symbol IMAGINARYLIT
+start symbol IMAGINARY_LIT
 
 test imaginary 1  [[0i]]                parse succeeds
 test imaginary 2  [[0123i]]             parse succeeds  // == 123i

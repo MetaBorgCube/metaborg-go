@@ -1,4 +1,4 @@
-module const
+module selector
 
 language GoLang
 start symbol TestSources

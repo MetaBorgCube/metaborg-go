@@ -2,7 +2,7 @@ module StringLit
 
 language GoLang
 
-start symbol STRINGLIT
+start symbol STRING_LIT
 
 test string 1  [[`abc`]]                parse succeeds  // same as "abc"
 test string 2  [[`\n

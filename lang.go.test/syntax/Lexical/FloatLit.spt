@@ -2,7 +2,7 @@ module FloatLit
 
 language GoLang
 
-start symbol FLOATLIT
+start symbol FLOAT_LIT
 
 test float 1  [[0.]]                    parse succeeds
 test float 2  [[72.40]]                 parse succeeds

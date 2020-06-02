@@ -1,4 +1,4 @@
-module Types
+module Packages
 
 language GoLang
 
@@ -6,7 +6,7 @@ start symbol SourceFile
 
 test imports [[
   package main;
-  
+
   import _ "lib/math";
   import (
       "lib/math";

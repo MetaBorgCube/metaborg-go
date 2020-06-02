@@ -2,7 +2,7 @@ module RuneLit
 
 language GoLang
 
-start symbol RUNELIT
+start symbol RUNE_LIT
 
 test rune 1  [['a']]                    parse succeeds
 test rune 2  [['ä']]                    parse succeeds
