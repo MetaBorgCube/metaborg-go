@@ -46,40 +46,82 @@ context-free syntax
   Expr.TypeAssertion                        = <<Expr>.(<Type>)>
 
   // Primary expressions -- https://golang.org/ref/spec#Primary_expressions
-  Expr.Call                                 = <<Expr>(<Arguments-OPT>)>
-  Expr.Call-DISAMB                          = [[Expr](c#[Arguments-OPT])]        // for manual disambiguation
+//  Expr.Call                                 = <<Expr>(<Arguments-OPT>)>
+//  Expr.Call-DISAMB                          = [[Expr](c#[Arguments-OPT])]        // for manual disambiguation
   // Conversions -- https://golang.org/ref/spec#Conversions
-  Expr.Conversion                           = <<Type>(<Expr>)>
-  Expr.Conversion-ALT                       = <<Type>(<Expr>, )>
-  Expr.Conversion-DISAMB                    = [[Type](t#[Expr])]                        // for manual disambiguation
-  Expr.Conversion-DISAMB-ALT                = [[Type](t#[Expr], )]                      // for manual disambiguation
+//  Expr.Conversion                           = <<Type>(<Expr>)>
+//  Expr.Conversion-ALT                       = <<Type>(<Expr>, )>
+//  Expr.Conversion-DISAMB                    = [[Type](t#[Expr])]                        // for manual disambiguation
+//  Expr.Conversion-DISAMB-ALT                = [[Type](t#[Expr], )]                      // for manual disambiguation
 
-  // Primary expressions -- https://golang.org/ref/spec#Primary_expressions
-  Expr.Selector                             = <<Expr>.<ID>> {left}
-  Expr.Selector-DISAMB                      = [[Expr].s#[ID]] {left}             // for manual disambiguation
-  // Method expressions -- https://golang.org/ref/spec#Method_expressions
-  Expr.MethodExpr                           = <<Type>.<ID>>
-  Expr.MethodExpr-DISAMB                    = [[Type].m#[ID]]                           // for manual disambiguation
   // Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
   Expr.OperandName                          = <<ID>>
-  Expr.QualifiedOperandName                 = <<QualifiedIdent>>
+  // Primary expressions -- https://golang.org/ref/spec#Primary_expressions
+  Expr.Selector                             = <<ExprOrType>.<ID>> {left}
+//  Expr.Selector                             = <<Expr>.<ID>> {left}
+//  Expr.Selector-DISAMB                      = [[Expr].s#[ID]] {left}             // for manual disambiguation
+  // Method expressions -- https://golang.org/ref/spec#Method_expressions
+//  Expr.MethodExpr                           = <<Type>.<ID>>
+//  Expr.MethodExpr-DISAMB                    = [[Type].m#[ID]]                           // for manual disambiguation
+//  Expr.QualifiedOperandName                 = <<ID>.<ID>>
 
   // This can denote:
   // - Call: a function or method call (when receiver is an expr)
   // - Conversion: a type conversion (when receiver is a type)
-  Expr.CallOrConversion                     = <<ID>(<Expr>)>// {prefer}
-  Expr.CallOrConversion-ALT                 = <<ID>(<Expr>, )>// {prefer}
-  Expr.QualifiedCallOrConversion            = <<QualifiedIdent>(<Expr>)>// {prefer}
-  Expr.QualifiedCallOrConversion-ALT        = <<QualifiedIdent>(<Expr>, )>// {prefer}
-//  Expr.CallOrConversion                     = <<ID>(<Expr>)> {prefer}
-//  Expr.CallOrConversion-ALT                 = <<ID>(<Expr>, )> {prefer}
-//  Expr.QualifiedCallOrConversion            = <<QualifiedIdent>(<Expr>)> {prefer}
-//  Expr.QualifiedCallOrConversion-ALT        = <<QualifiedIdent>(<Expr>, )> {prefer}
+//  Expr.CallOrConversion                     = <<ID>(<Expr>)>
+//  Expr.CallOrConversion-ALT                 = <<ID>(<Expr>, )>
+//  Expr.QualifiedCallOrConversion            = <<QualifiedIdent>(<Expr>)>
+//  Expr.QualifiedCallOrConversion-ALT        = <<QualifiedIdent>(<Expr>, )>
+
   // This can denote:
   // - QualifiedOperandName: a constant, variable, or function
   // - Selector: a field or method
   // - MethodExpr: a method group (when receiver is a type)
-  Expr.MemberAccess                         = <<ID>.<ID>> {left}//, prefer}
+//  Expr.MemberAccess                         = <<ID>.<ID>> {left}//, prefer}
+
+context-free syntax
+
+  // Primary expressions -- https://golang.org/ref/spec#Primary_expressions
+  // Conversions -- https://golang.org/ref/spec#Conversions
+  // NOTE: Only the first argument can be a type in case of a call
+  // NOTE: There can be only one argument in case of a conversion
+  Expr.Call                                 = <<ExprOrType>(<{ExprOrType ","}*>)>
+  Expr.Call-ALT                             = <<ExprOrType>(<{ExprOrType ","}*>,<>)>
+  Expr.CallVariadic                         = <<ExprOrType>(<{ExprOrType ","}*>...)>
+  Expr.CallVariadic-ALT                     = <<ExprOrType>(<{ExprOrType ","}*>... ,<>)>
+//
+//
+//  Expr.CallOrConversion                     = <<ID>(<Arguments-OPT>)>
+//  Expr.QualifiedCallOrConversion            = <<QualifiedIdent>(<Arguments-OPT>)>
+//  Expr.Conversion                           = <<Type>(<Expr>)>
+//  Expr.Conversion-ALT                       = <<Type>(<Expr>, )>
+//
+//  Arguments-OPT.NoArguments                 = <>
+//  Arguments-OPT.Arguments                   = <<Arguments>>
+//  Arguments-OPT.Arguments-ALT               = <<Arguments>,>
+//  Arguments-OPT.ArgumentsExplode            = <<Arguments>...>
+//  Arguments-OPT.ArgumentsExplode-ALT        = <<Arguments>... ,>
+//  Arguments.ExprArguments                   = <<{ExprOrType ","}+>>
+//  Arguments.TypeArgument                    = <<Type>>
+//  Arguments.TypedArguments                  = <<Type>, <{Expr ","}+>>
+////
+
+context-free syntax
+
+  ExprOrType                                = Expr
+  ExprOrType                                = Type
+  ExprOrType.ExprOrTypeSelector             = <<ExprOrType>.<ID>> {prefer}
+  ExprOrType.ExprOrTypeName                 = <<ID>> {prefer}
+  //ExprOrType.QualifiedExprOrTypeName        = <<ID>.<ID>>
+
+context-free priorities
+
+//  ExprOrType = Expr <0> .> Expr.OperandName,
+//  ExprOrType = Expr <0> .> Expr.Selector
+//  Expr.Call <0> .> Expr.OperandName,
+//  Expr.Call <0> .> Expr.QualifiedOperandName,
+//  Expr.Conversion <0> .> Type = TypeName
+
 
 /**
  * Operators -- https://golang.org/ref/spec#Operators
@@ -118,40 +160,28 @@ context-free syntax
   Expr.Quotient                             = [[Expr] / [Expr]]   {left}
   Expr.Remainder                            = [[Expr] % [Expr]]   {left}
 
-context-free priorities
-
-  Expr.Call <0> .> Expr.OperandName,
-  Expr.Call <0> .> Expr.QualifiedOperandName,
-  Expr.Conversion <0> .> TypeName.TypeName,
-  Expr.Conversion <0> .> TypeName.QualifiedTypeName
-
 
 context-free priorities
 
   {
-    Expr.IntLit
-    Expr.FloatLit
-    Expr.ImaginaryLit
-    Expr.RuneLit
-    Expr.StringLit
-    Expr.OperandName
-    Expr.QualifiedOperandName
     Expr.FunctionLit
     Expr.CompositeLit
     Expr.Selector
-    Expr.Selector-DISAMB
+//    Expr.Selector-DISAMB
     Expr.Index
     Expr.SliceLH
     Expr.SliceLHM
     Expr.TypeAssertion
     Expr.Call
-    Expr.Call-DISAMB
-    Expr.MethodExpr
-    Expr.MethodExpr-DISAMB
-    Expr.Conversion
-    Expr.Conversion-ALT
-    Expr.Conversion-DISAMB
-    Expr.Conversion-DISAMB-ALT
+    Expr.Call-ALT
+    Expr.CallVariadic
+    Expr.CallVariadic-ALT
+//    Expr.MethodExpr
+//    Expr.MethodExpr-DISAMB
+//    Expr.Conversion
+//    Expr.Conversion-ALT
+//    Expr.Conversion-DISAMB
+//    Expr.Conversion-DISAMB-ALT
   } > {
     Expr.Positive
     Expr.Negation
@@ -186,14 +216,14 @@ context-free priorities
     Expr.LogicalOr
   }
 
-/*
- * Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
- */
-context-free sorts QualifiedIdent
-context-free syntax
-
-  QualifiedIdent.QualifiedIdent             = <<ID>.<ID>>
-  QualifiedIdent.QualifiedIdent-DISAMB      = [[ID].q#[ID]]                             // For manual disambiguation
+///*
+// * Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
+// */
+//context-free sorts QualifiedIdent
+//context-free syntax
+//
+//  QualifiedIdent.QualifiedIdent             = <<ID>.<ID>>
+//  QualifiedIdent.QualifiedIdent-DISAMB      = [[ID].q#[ID]]                             // For manual disambiguation
 
 /**
  * Composite literals -- https://golang.org/ref/spec#Composite_literals
@@ -212,8 +242,8 @@ context-free syntax
   // Map types -- https://golang.org/ref/spec#Map_types
   LiteralType.MapTypeLiteral                = <map[<Type>]<Type>>
 
-  LiteralValue.LiteralValue                 = <{ <{KeyedElement ","}+> }>
-  LiteralValue.LiteralValue-ALT             = <{ <{KeyedElement ","}+>, }>
+  LiteralValue.LiteralValue                 = <{ <{KeyedElement ","}*> }>
+  LiteralValue.LiteralValue-ALT             = <{ <{KeyedElement ","}*>, }>
 
   KeyedElement.KeyedElement                 = <<Key> <Element>>
 
@@ -227,19 +257,19 @@ context-free syntax
 
 
 
-/**
- * Primary expressions -- https://golang.org/ref/spec#Primary_expressions
- */
-context-free sorts Arguments-OPT Arguments
-context-free syntax
-
-  Arguments-OPT.NoArguments                 = <>
-  Arguments-OPT.Arguments                   = <<Arguments>>
-  Arguments-OPT.Arguments-ALT               = <<Arguments>,>
-  Arguments-OPT.ArgumentsExplode            = <<Arguments>...>
-  Arguments-OPT.ArgumentsExplode-ALT        = <<Arguments>... ,>
-  Arguments.ExprArguments                   = <<{Expr ","}+>>
-  Arguments.TypeArgument                    = <<Type>>
-  Arguments.TypedArguments                  = <<Type>, <{Expr ","}+>>
-
+///**
+// * Primary expressions -- https://golang.org/ref/spec#Primary_expressions
+// */
+//context-free sorts Arguments-OPT Arguments
+//context-free syntax
+//
+//  Arguments-OPT.NoArguments                 = <>
+//  Arguments-OPT.Arguments                   = <<Arguments>>
+//  Arguments-OPT.Arguments-ALT               = <<Arguments>,>
+//  Arguments-OPT.ArgumentsExplode            = <<Arguments>...>
+//  Arguments-OPT.ArgumentsExplode-ALT        = <<Arguments>... ,>
+//  Arguments.ExprArguments                   = <<{Expr ","}+>>
+//  Arguments.TypeArgument                    = <<Type>>
+//  Arguments.TypedArguments                  = <<Type>, <{Expr ","}+>>
+//
 

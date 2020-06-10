@@ -4,110 +4,125 @@ language GoLang
 
 start symbol Type
 
-test boolean type [[bool]] parse succeeds
+// https://golang.org/ref/spec#Boolean_types
+test boolean type 1  [[bool]]       parse succeeds
 
-test numeric type [[uint]] parse succeeds
-test numeric type [[uint8]] parse succeeds
-test numeric type [[uint16]] parse succeeds
-test numeric type [[uint32]] parse succeeds
-test numeric type [[uint64]] parse succeeds
-test numeric type [[uintptr]] parse succeeds
-test numeric type [[int]] parse succeeds
-test numeric type [[int8]] parse succeeds
-test numeric type [[int16]] parse succeeds
-test numeric type [[int32]] parse succeeds
-test numeric type [[int64]] parse succeeds
-test float type [[float32]] parse succeeds
-test float type [[float64]] parse succeeds
-test complex type [[complex64]] parse succeeds
-test complex type [[complex128]] parse succeeds
-test byte type [[byte]] parse succeeds
-test rune type [[rune]] parse succeeds
+// https://golang.org/ref/spec#Numeric_types
+test numeric type 1  [[uint]]       parse succeeds
+test numeric type 2  [[uint8]]      parse succeeds
+test numeric type 3  [[uint16]]     parse succeeds
+test numeric type 4  [[uint32]]     parse succeeds
+test numeric type 5  [[uint64]]     parse succeeds
+test numeric type 6  [[uintptr]]    parse succeeds
+test numeric type 7  [[int]]        parse succeeds
+test numeric type 8  [[int8]]       parse succeeds
+test numeric type 9  [[int16]]      parse succeeds
+test numeric type 10 [[int32]]      parse succeeds
+test numeric type 11 [[int64]]      parse succeeds
+test float type 1 [[float32]]       parse succeeds
+test float type 2 [[float64]]       parse succeeds
+test complex type 1 [[complex64]]   parse succeeds
+test complex type 2 [[complex128]]  parse succeeds
+test byte type 1   [[byte]]         parse succeeds
+test rune type 2   [[rune]]         parse succeeds
 
-test string type [[string]] parse succeeds
+// https://golang.org/ref/spec#String_types
+test string type 1 [[string]]       parse succeeds
 
-test array type [[ [32]byte]] parse succeeds
-test array type [[ [2*N] struct { x, y int32; }]] parse succeeds
-test array type [[ [1000]*float64]] parse succeeds
-test array type [[ [3][5]int]] parse succeeds
-test array type [[ [2][2][2]float64]] parse to [[ [2]([2]([2]float64))]]
+// https://golang.org/ref/spec#Array_types
+test array type 1 [[ [32]byte]]         parse succeeds
+test array type 2 [[ [2*N] struct { x, y int32; }]] parse succeeds
+test array type 3 [[ [1000]*float64]]   parse succeeds
+test array type 4 [[ [3][5]int]]        parse succeeds
+test array type 5 [[ [2][2][2]float64]] parse to [[ [2]([2]([2]float64))]]
 
-test struct type [[struct {}]] parse succeeds
-test struct type [[struct {
+// https://golang.org/ref/spec#Slice_types
+test slice type 1 [[ []T]]          parse to SliceType(TypeName("T"))
+
+// https://golang.org/ref/spec#Struct_types
+test struct type 1 [[struct {}]] parse succeeds
+test struct type 2 [[struct {
   x, y int;
   u float32;
   _ float32;  // padding
   A *[]int;
   F func();
 }]] parse succeeds
-test struct type [[struct {
+test struct type 3 [[struct {
   T1;       // field name is T1
   *T2;      // field name is T2
   P.T3;     // field name is T3
   *P.T4;    // field name is T4
   x, y int; // field names are x and y
 }]] parse succeeds
-test struct type [[struct {
+test struct type 4 [[struct {
   T;    // conflicts with anonymous field *T and *P.T
   *T;   // conflicts with anonymous field T and *P.T
   *P.T; // conflicts with anonymous field T and *T
 }]] parse succeeds
-test struct type [[struct {
+test struct type 5 [[struct {
   x, y float64 ""; // an empty tag string is like an absent tag
   name string  "any string is permitted as a tag";
   _    [4]byte "ceci n'est pas un champ de structure";
 }]] parse succeeds
-test struct type [[struct {
+test struct type 6 [[struct {
   microsec  uint64 `protobuf:"1"`;
   serverIP6 uint64 `protobuf:"2"`;
 }]] parse succeeds
 
-test pointer type [[*Point]] parse succeeds
-test pointer type [[*[4]int]] parse succeeds
+// https://golang.org/ref/spec#Pointer_types
+test pointer type 1 [[*Point]] parse succeeds
+test pointer type 2 [[*[4]int]] parse succeeds
 
-test function type [[func()]] parse succeeds
-test function type [[func(x int) int]] parse succeeds
-test function type [[func(a, _ int, z float32) bool]] parse succeeds
-test function type [[func(a, b int, z float32) (bool)]] parse succeeds
-test function type [[func(prefix string, values ...int)]] parse succeeds
-test function type [[func(a, b int, z float64, opt ...interface{}) (success bool)]] parse succeeds
-test function type [[func(int, int, float64) (float64, *[]int)]] parse succeeds
-test function type [[func(n int) func(p *T)]] parse succeeds
+// https://golang.org/ref/spec#Function_types
+test function type 1 [[func()]] parse succeeds
+test function type 2 [[func(x int) int]] parse succeeds
+test function type 3 [[func(a, _ int, z float32) bool]] parse succeeds
+test function type 4 [[func(a, b int, z float32) (bool)]] parse succeeds
+test function type 5 [[func(prefix string, values ...int)]] parse succeeds
+test function type 6 [[func(a, b int, z float64, opt ...interface{}) (success bool)]] parse succeeds
+test function type 7 [[func(int, int, float64) (float64, *[]int)]] parse succeeds
+test function type 8 [[func(n int) func(p *T)]] parse succeeds
 
-test interface type [[interface {
+// https://golang.org/ref/spec#Interface_types
+test interface type 1 [[interface {
   Read(b Buffer) bool;
   Write(b Buffer) bool;
   Close();
 }]] parse succeeds
 
-test interface type [[interface{}]] parse succeeds
-test interface type [[interface {
+test interface type 2 [[interface{}]] parse succeeds
+test interface type 3 [[interface {
   Lock();
   Unlock();
 }]] parse succeeds
-test interface type [[interface {
-  Read(b Buffer) bool;
-  Write(b Buffer) bool;
+test interface type 4 [[interface {
+  Read(p []byte) (n int, err error);
+  Close() error;
 }]] parse succeeds
-test interface type [[interface {
-  ReadWriter;  // same as adding the methods of ReadWriter
-  Locker;      // same as adding the methods of Locker
-  Close();
+test interface type 5 [[interface {
+  Write(p []byte) (n int, err error);
+  Close() error;
 }]] parse succeeds
-test interface type [[interface {
-  Locker;
-  File;        // illegal: Lock, Unlock not unique
-  Lock();     // illegal: Lock not unique
+test interface type 6 [[interface {
+  Reader;  // includes methods of Reader in ReadWriter's method set
+  Writer;  // includes methods of Writer in ReadWriter's method set
+}]] parse succeeds
+test interface type 7 [[interface {
+  Reader;   // includes methods of Reader in ReadCloser's method set
+  Close();  // illegal: signatures of Reader.Close and Close are different
 }]] parse succeeds
 
-test map type [[map[string]int]] parse succeeds
-test map type [[map[*T]struct{ x, y float64; }]] parse succeeds
-test map type [[map[string]interface{}]] parse succeeds
+// https://golang.org/ref/spec#Map_types
+test map type 1 [[map[string]int]] parse succeeds
+test map type 2 [[map[*T]struct{ x, y float64; }]] parse succeeds
+test map type 3 [[map[string]interface{}]] parse succeeds
 
-test channel type[[chan T]] parse succeeds
-test channel type[[chan<- float64]] parse succeeds
-test channel type[[<-chan int]] parse succeeds
+// https://golang.org/ref/spec#Channel_types
+test channel type 1 [[chan T]] parse succeeds
+test channel type 2 [[chan<- float64]] parse succeeds
+test channel type 3 [[<-chan int]] parse succeeds
 
-test channel type [[chan<- chan int]] parse to [[chan<- (chan int)]]
-test channel type [[chan<- <-chan int]] parse to [[chan<- (<-chan int)]]
-test channel type [[<-chan <-chan int]] parse to [[<-chan (<-chan int)]]
+test channel type 4 [[chan<- chan int]]   parse to [[chan<- (chan int)]]
+test channel type 5 [[chan<- <-chan int]] parse to [[chan<- (<-chan int)]]
+test channel type 6 [[<-chan <-chan int]] parse to [[<-chan (<-chan int)]]

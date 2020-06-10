@@ -3,6 +3,6 @@ package main;
 func test();
 
 func main() {
-   test("x");
+  f(3.1415, true);
 };
 

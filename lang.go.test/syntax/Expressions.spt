@@ -4,6 +4,8 @@ language GoLang
 
 start symbol Expr
 
+test selector with operator [[a.hi < b.hi]] parse to [[(a.hi) < (b.hi)]]
+
 test qualified expr [[math.Sin]] parse succeeds
 
 test composite literal [[Point3D{}]] parse succeeds
@@ -34,15 +36,17 @@ test function literal [[func(a, b int, z float64) bool { return a*b < int(z); }]
 test function literal [[func(x, y int) int { return x + y; }]] parse succeeds
 test function literal [[func(ch chan int) { ch <- ACK; }]] parse succeeds
 
-test primary expression [[x]] parse succeeds
-test primary expression [[2]] parse succeeds
-test primary expression [[(s + ".txt")]] parse succeeds
-test primary expression [[f(3.1415, true)]] parse succeeds
-test primary expression [[Point{1, 2}]] parse succeeds
-test primary expression [[m["foo"] ]] parse succeeds
-test primary expression [[s[i : j + 1] ]] parse succeeds
-test primary expression [[obj.color]] parse succeeds
-test primary expression [[f.p[i].x()]] parse succeeds
+test primary expression 1 [[x]] parse succeeds
+test primary expression 2 [[2]] parse succeeds
+test primary expression 3 [[(s + ".txt")]] parse succeeds
+test primary expression 4.1 [[f()]] parse succeeds
+test primary expression 4.2 [[f(3.1415)]] parse succeeds
+test primary expression 4.3 [[f(3.1415, true)]] parse succeeds
+test primary expression 5 [[Point{1, 2}]] parse succeeds
+test primary expression 6 [[m["foo"] ]] parse succeeds
+test primary expression 7 [[s[i : j + 1] ]] parse succeeds
+test primary expression 8 [[obj.color]] parse succeeds
+test primary expression 9 [[f.p[i].x()]] parse succeeds
 
 test method expression [[t.Mv]] parse succeeds
 test method expression [[T.Mv]] parse succeeds
@@ -55,6 +59,7 @@ test type assertion [[x.(T)]] parse succeeds
 
 test function call [[math.Atan2(x, y)]] parse succeeds
 test method call [[p.Scale(3.5)]] parse succeeds
+test method call [[a.Uint64().LeftShift(b).Int64()]] parse succeeds
 
 test variadic call [[Greeting("goodbye:", s...)]] parse succeeds
 

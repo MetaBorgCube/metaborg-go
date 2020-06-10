@@ -16,10 +16,10 @@ signature
 rules
 
   desugar-all = topdown(try(
-    desugar-sourcefile <+
-    desugar-disamb <+
-    desugar-alt <+
-    desugar-single-decl
+    desugar-sourcefile // <+
+//    desugar-disamb <+
+//    desugar-alt <+
+//    desugar-single-decl
   ))
 
 rules
@@ -29,28 +29,28 @@ rules
     with file-path := <origin-file> file;
          pkg-path  := <current-language-relative-source-or-include-path;dirname> file-path
 
-rules
-
-  desugar-single-decl: SingleImportDecl(i)              -> ImportDecl([i])
-  desugar-single-decl: SingleConstDecl(c)               -> ConstDecl([c])
-  desugar-single-decl: SingleTypeDecl(t)                -> TypeDecl([t])
-  desugar-single-decl: SingleVarDecl(v)                 -> VarDecl([v])
-
-rules
-
-  desugar-disamb: QualifiedIdent-DISAMB(p, i)           -> QualifiedIdent(p, i)
-  desugar-disamb: Selector-DISAMB(e, i) 		            -> Selector(e, i)
-  desugar-disamb: Call-DISAMB(e, args)                  -> Call(e, args)
-  desugar-disamb: MethodExpr-DISAMB(e, m)               -> MethodExpr(e, m)
-  desugar-disamb: Conversion-DISAMB(t, e)               -> Conversion(t, e)
-  desugar-disamb: Conversion-DISAMB-ALT(t, e)           -> Conversion-ALT(t, e)
-
-rules
-
-  desugar-alt: LiteralValue-ALT(es)                     -> LiteralValue(es)
-  desugar-alt: Arguments-ALT(as) 			                  -> Arguments(as)
-  desugar-alt: ArgumentsExplode-ALT(as) 		            -> ArgumentsExplode(as)
-  desugar-alt: Conversion-ALT(t, e)                     -> Conversion(t, e)
-  desugar-alt: Parameters-ALT(ps)                       -> Parameters(ps)
-  desugar-alt: CallOrConversion-ALT(t, e)               -> CallOrConversion(t, e)
-  desugar-alt: QualifiedCallOrConversion-ALT(t, e)      -> QualifiedCallOrConversion(t, e)
+//rules
+//
+//  desugar-single-decl: SingleImportDecl(i)              -> ImportDecl([i])
+//  desugar-single-decl: SingleConstDecl(c)               -> ConstDecl([c])
+//  desugar-single-decl: SingleTypeDecl(t)                -> TypeDecl([t])
+//  desugar-single-decl: SingleVarDecl(v)                 -> VarDecl([v])
+//
+//rules
+//
+//  desugar-disamb: QualifiedIdent-DISAMB(p, i)           -> QualifiedIdent(p, i)
+//  desugar-disamb: Selector-DISAMB(e, i) 		            -> Selector(e, i)
+//  desugar-disamb: Call-DISAMB(e, args)                  -> Call(e, args)
+//  desugar-disamb: MethodExpr-DISAMB(e, m)               -> MethodExpr(e, m)
+//  desugar-disamb: Conversion-DISAMB(t, e)               -> Conversion(t, e)
+//  desugar-disamb: Conversion-DISAMB-ALT(t, e)           -> Conversion-ALT(t, e)
+//
+//rules
+//
+//  desugar-alt: LiteralValue-ALT(es)                     -> LiteralValue(es)
+//  desugar-alt: Arguments-ALT(as) 			                  -> Arguments(as)
+//  desugar-alt: ArgumentsExplode-ALT(as) 		            -> ArgumentsExplode(as)
+//  desugar-alt: Conversion-ALT(t, e)                     -> Conversion(t, e)
+//  desugar-alt: Parameters-ALT(ps)                       -> Parameters(ps)
+//  desugar-alt: CallOrConversion-ALT(t, e)               -> CallOrConversion(t, e)
+//  desugar-alt: QualifiedCallOrConversion-ALT(t, e)      -> QualifiedCallOrConversion(t, e)

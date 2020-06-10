@@ -1,0 +1,13 @@
+module Variables
+
+language GoLang
+
+start symbol TopLevelDecl
+
+test var decl 1
+[[var x interface{};]]
+parse succeeds // x is nil and has static type interface{}
+
+test var decl 2
+[[var v *T;]]
+parse succeeds // v has value nil, static type *T

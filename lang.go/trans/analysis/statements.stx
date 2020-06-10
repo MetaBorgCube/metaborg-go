@@ -20,16 +20,16 @@ imports
   analysis/name-resolution
   analysis/types
 
-//rules stmtsOk : scope * list(Stmt)
-//
-//  stmtsOk(s, []) :- true.
-//  stmtsOk(s, [x|xs]) :-
-//    stmtOk(s, x),
-//    stmtsOk(s, xs).
+rules stmtsOk : scope * list(Stmt)
+
+  stmtsOk(s, []) :- true.
+  stmtsOk(s, [x|xs]) :-
+    stmtOk(s, x),
+    stmtsOk(s, xs).
 
 rules stmtOk : scope * Stmt
 
-  stmtsOk maps stmtOk(*, list(*))
+//  stmtsOk maps stmtOk(*, list(*))
 
   stmtOk(s, DeclarationStmt(declaration)) :-
     declarationOk(s, declaration).

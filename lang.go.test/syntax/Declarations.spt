@@ -13,6 +13,28 @@ test const decl [[const (
 test const decl [[const a, b, c = 3, 4, "foo";]] parse succeeds
 test const decl [[const u, v float32 = 0, 3;]] parse succeeds
 
+test const decl: empty [[const ();]] parse succeeds
+test const decl: underscore [[const (_;);]] parse succeeds
+test const decl: id [[const (N;);]] parse succeeds
+test const decl: id type [[const (N int;);]] parse succeeds
+test const decl: id type expr [[const (N int = 11 + 1;);]] parse succeeds
+test const decl: id expr [[const (N = 11 + 1;);]] parse succeeds
+
+test const decl: simple underscore [[const _;]] parse succeeds
+test const decl: simple id [[const N;]] parse succeeds
+test const decl: simple id type [[const N int;]] parse succeeds
+test const decl: simple id type expr [[const N int = 11 + 1;]] parse succeeds
+test const decl: simple id expr [[const N = 11 + 1;]] parse succeeds
+
+test const decl [[const (
+  c0 = iota;
+  _;
+  _;
+  _;
+  c4;
+);]] parse succeeds
+
+
 test type decl [[type IntArray [16]int;]] parse succeeds
 test type decl [[type (
   Point struct{ x, y float64; };
@@ -27,6 +49,17 @@ test type decl [[type Block interface {
   Encrypt(src, dst []byte);
   Decrypt(src, dst []byte);
 };]] parse succeeds
+test type decl [[type U struct {
+  _ struct{ a, b, c int };
+};]] parse succeeds
+test type decl: tags [[type Person struct {
+  Name string `json:"name"`
+  Address *struct {
+    Street string `json:"street"`
+    City   string `json:"city"`
+  } `json:"address"`
+};]] parse succeeds
+
 
 test var decl[[var i int;]] parse succeeds
 test var decl[[var U, V, W float64;]] parse succeeds

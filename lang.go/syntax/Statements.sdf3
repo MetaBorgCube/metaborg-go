@@ -139,6 +139,7 @@ context-free syntax
 
   ExprOrIdListEq.ExprListEq                 = <<{Expr ","}+> =>
   ExprOrIdListEq.IdListEq                   = <<{ID ","}+> :=>
+  ExprOrIdListEq.NoEq                       = <>
 
 
 
@@ -155,7 +156,7 @@ context-free syntax
 
 context-free sorts RecvStmt
 context-free syntax
-  RecvStmt.RecvStmt                         = <<ExprOrIdListEq> <Expr>>
+  RecvStmt.RecvStmt                         = [[ExprOrIdListEq] <- [Expr]]
 
 
 /**

@@ -22,3 +22,12 @@ test float 14 [[0x1.Fp+0]]              parse succeeds
 test float 15 [[0X.8p-0]]               parse succeeds
 test float 16 [[0X_1FFFP-16]]           parse succeeds
 test float 17 [[0x15e-2]]               parse fails     // invalid: hex float with exponent letter e
+
+test float 18 [[0x.p1]]                 parse fails     // invalid: mantissa has no digits
+test float 19 [[1p-2]]                  parse fails     // invalid: p exponent requires hexadecimal mantissa
+test float 20 [[0x1.5e-2]]              parse fails     // invalid: hexadecimal mantissa requires p exponent
+test float 21 [[1_.5]]                  parse fails     // invalid: _ must separate successive digits
+test float 22 [[1._5]]                  parse fails     // invalid: _ must separate successive digits
+test float 23 [[1.5_e1]]                parse fails     // invalid: _ must separate successive digits
+test float 24 [[1.5e_1]]                parse fails     // invalid: _ must separate successive digits
+test float 25 [[1.5e1_]]                parse fails     // invalid: _ must separate successive digits

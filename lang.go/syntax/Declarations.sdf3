@@ -46,9 +46,11 @@ context-free syntax
 context-free sorts ConstSpec
 context-free syntax
 
-  // spec seems wrong here, assignment is always required
+  // spec seems wrong here, assignment or type or both or neither
   ConstSpec.ConstSpec                       = <<{ID ","}+> <Type> = <{Expr ","}+>;>
   ConstSpec.ConstSpecNoType                 = <<{ID ","}+> = <{Expr ","}+>;>
+  ConstSpec.ConstSpecNoExpr                 = <<{ID ","}+> <Type>;>
+  ConstSpec.ConstSpecNoTypeNoExpr           = <<{ID ","}+>;>
 
 
 /**

@@ -57,24 +57,18 @@ signature
 signature
 
   sorts
-    QualifiedIdent
     LiteralType
     LiteralValue
     KeyedElement
     Key
     Element
-    Arguments-OPT
-    Arguments
 
   constructors
-    QualifiedIdent-Plhdr : QualifiedIdent
     LiteralType-Plhdr : LiteralType
     LiteralValue-Plhdr : LiteralValue
     KeyedElement-Plhdr : KeyedElement
     Key-Plhdr : Key
     Element-Plhdr : Element
-    Arguments-OPT-Plhdr : Arguments-OPT
-    Arguments-Plhdr : Arguments
 
 signature
 
@@ -92,23 +86,16 @@ signature
     SliceLH : Expr * Expr-OPT * Expr-OPT -> Expr
     SliceLHM : Expr * Expr-OPT * Expr * Expr -> Expr
     TypeAssertion : Expr * Type -> Expr
-    Call : Expr * Arguments-OPT -> Expr
-    Call-DISAMB : Expr * Arguments-OPT -> Expr
-    Conversion : Type * Expr -> Expr
-    Conversion-ALT : Type * Expr -> Expr
-    Conversion-DISAMB : Type * Expr -> Expr
-    Conversion-DISAMB-ALT : Type * Expr -> Expr
-    Selector : Expr * ID -> Expr
-    Selector-DISAMB : Expr * ID -> Expr
-    MethodExpr : Type * ID -> Expr
-    MethodExpr-DISAMB : Type * ID -> Expr
     OperandName : ID -> Expr
-    QualifiedOperandName : QualifiedIdent -> Expr
-    CallOrConversion : ID * Expr -> Expr
-    CallOrConversion-ALT : ID * Expr -> Expr
-    QualifiedCallOrConversion : QualifiedIdent * Expr -> Expr
-    QualifiedCallOrConversion-ALT : QualifiedIdent * Expr -> Expr
-    MemberAccess : ID * ID -> Expr
+    Selector : ExprOrType * ID -> Expr
+    Call : ExprOrType * list(ExprOrType) -> Expr
+    Call-ALT : ExprOrType * list(ExprOrType) -> Expr
+    CallVariadic : ExprOrType * list(ExprOrType) -> Expr
+    CallVariadic-ALT : ExprOrType * list(ExprOrType) -> Expr
+    Expr2ExprOrType : Expr -> ExprOrType
+    Type2ExprOrType : Type -> ExprOrType
+    ExprOrTypeName : ID -> ExprOrType
+    QualifiedExprOrTypeName : ID * ID -> ExprOrType
     Positive : Expr -> Expr
     Negation : Expr -> Expr
     Not : Expr -> Expr
@@ -135,8 +122,6 @@ signature
     Product : Expr * Expr -> Expr
     Quotient : Expr * Expr -> Expr
     Remainder : Expr * Expr -> Expr
-    QualifiedIdent : ID * ID -> QualifiedIdent
-    QualifiedIdent-DISAMB : ID * ID -> QualifiedIdent
     TypeName2LiteralType : TypeName -> LiteralType
     StructTypeLiteral : list(StructElement) -> LiteralType
     ArrayTypeLiteral : Expr * Type -> LiteralType
@@ -152,14 +137,6 @@ signature
     LiteralKey : LiteralValue -> Key
     Expr2Element : Expr -> Element
     LiteralValue2Element : LiteralValue -> Element
-    NoArguments : Arguments-OPT
-    Arguments : Arguments -> Arguments-OPT
-    Arguments-ALT : Arguments -> Arguments-OPT
-    ArgumentsExplode : Arguments -> Arguments-OPT
-    ArgumentsExplode-ALT : Arguments -> Arguments-OPT
-    ExprArguments : list(Expr) -> Arguments
-    TypeArgument : Type -> Arguments
-    TypedArguments : Type * list(Expr) -> Arguments
 signature
 
   sorts
@@ -379,7 +356,7 @@ signature
 
   constructors
     TypeName : ID -> TypeName
-    QualifiedTypeName : QualifiedIdent -> TypeName
+    QualifiedTypeName : ID * ID -> TypeName
     TypeName2Type : TypeName -> Type
     PointerType : Type -> Type
     ArrayType : Expr * Type -> Type

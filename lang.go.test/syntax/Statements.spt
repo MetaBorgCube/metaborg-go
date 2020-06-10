@@ -40,6 +40,11 @@ test if statement [[if x := f(); x < y {
 } else {
   return y;
 };]] parse succeeds
+test if statement [[if b.hi != 0 || b.lo >= 64 {
+  return;
+};]] parse to [[if (((b.hi) != 0) || ((b.lo) >= 64)) {
+  return;
+};]]
 
 test expression switch statement [[switch tag {
 default: s3();

@@ -21,8 +21,8 @@ template options
 
 context-free syntax
 
-  TypeName.TypeName                         = ID
-  TypeName.QualifiedTypeName                = QualifiedIdent
+  TypeName.TypeName                         = <<ID>>
+  TypeName.QualifiedTypeName                = <<ID>.<ID>>
 
 context-free syntax
 
@@ -31,9 +31,9 @@ context-free syntax
   // Pointer types -- https://golang.org/ref/spec#Pointer_types
   Type.PointerType                          = <*<Type>>
   // Array types -- https://golang.org/ref/spec#Array_types
-  Type.ArrayType                            = <[<Expr>]<Type>> {left}
+  Type.ArrayType                            = <[<Expr>]<Type>> {right}
   // Slice types -- https://golang.org/ref/spec#Slice_types
-  Type.SliceType                            = <[ ]<Type>> {left}
+  Type.SliceType                            = <[ ]<Type>>
   // Struct types -- https://golang.org/ref/spec#Struct_types
   Type.StructType                           = <struct { <StructElement*> }>
   // Function types -- https://golang.org/ref/spec#Function_types
@@ -47,20 +47,25 @@ context-free syntax
   Type.SendingChannelType                   = [chan[]<- [Type]]
   Type.ReceivingChannelType                 = [<-[]chan [Type]]
 
+context-free priorities
+
+//  Type.ReceivingChannelType     <0> .> Type.BidirectionalChannelType,
+//  Type.BidirectionalChannelType <0> .> Type.ReceivingChannelType,
+//  Type.ReceivingChannelType          > Type.BidirectionalChannelType,
+  Type.BidirectionalChannelType      > Type.ReceivingChannelType
+
 /**
  * Struct types -- https://golang.org/ref/spec#Struct_types
  */
 context-free sorts Field Tag StructElement
 context-free syntax
 
-  StructElement.StructElement               = <<Field> <Tag>;>
+  StructElement.StructElement               = <<Field>;>
+  StructElement.StructElementTagged         = <<Field> <STRING_LIT>;>
 
   Field.Field                               = <<{ID ","}+> <Type>>
   Field.AnonymousPtrField                   = <*<TypeName>>
   Field.AnonymousField                      = <<TypeName>>
-
-  Tag.NoTag                                 = <>
-  Tag.Tag                                   = STRING_LIT
 
 
 /**

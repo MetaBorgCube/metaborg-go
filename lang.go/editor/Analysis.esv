@@ -10,8 +10,10 @@ language
 
 references
 
-  reference _ : editor-resolve
-  hover _     : editor-hover
+//  reference _ : editor-resolve
+//  hover _     : editor-hover
+  reference _ : stx-editor-resolve
+  hover _     : stx-editor-hover
 
 menus
 
