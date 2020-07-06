@@ -156,7 +156,8 @@ context-free syntax
 
 context-free sorts RecvStmt
 context-free syntax
-  RecvStmt.RecvStmt                         = [[ExprOrIdListEq] <- [Expr]]
+  RecvStmt.RecvStmt                         = [[ExprOrIdListEq] <-[Expr]] {prefer}
+  RecvStmt.RecvStmt-ALT                     = [[ExprOrIdListEq] ([]<-[Expr])]
 
 
 /**
@@ -165,5 +166,5 @@ context-free syntax
 context-free sorts SendStmt
 context-free syntax
 
-  SendStmt.SendStmt                         = [[Expr] <- [Expr]]
+  SendStmt.SendStmt                         = [[Expr] <-[Expr]] {prefer}
 

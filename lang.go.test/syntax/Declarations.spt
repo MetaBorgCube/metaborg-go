@@ -50,14 +50,14 @@ test type decl [[type Block interface {
   Decrypt(src, dst []byte);
 };]] parse succeeds
 test type decl [[type U struct {
-  _ struct{ a, b, c int };
+  _ struct{ a, b, c int; };
 };]] parse succeeds
 test type decl: tags [[type Person struct {
-  Name string `json:"name"`
+  Name string `json:"name"`;
   Address *struct {
-    Street string `json:"street"`
-    City   string `json:"city"`
-  } `json:"address"`
+    Street string `json:"street"`;
+    City   string `json:"city"`;
+  } `json:"address"`;
 };]] parse succeeds
 
 

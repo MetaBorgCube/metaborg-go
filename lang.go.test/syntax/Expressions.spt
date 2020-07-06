@@ -53,6 +53,10 @@ test method expression [[T.Mv]] parse succeeds
 test method expression [[(T).Mv]] parse succeeds
 test method expression [[(*T).Mp]] parse succeeds
 
+test selectors and operators [[p.x]] parse succeeds
+//test selectors and operators [[p.x * p.x]] parse to [[(p.x) * (p.x)]
+//test selectors and operators [[p.x * p.x + p.y * p.y]] parse to [[((p.x) * (p.x)) + ((p.y) * (p.y))]]
+
 test slice expression [[a[1:3:5] ]] parse succeeds
 
 test type assertion [[x.(T)]] parse succeeds
@@ -63,8 +67,8 @@ test method call [[a.Uint64().LeftShift(b).Int64()]] parse succeeds
 
 test variadic call [[Greeting("goodbye:", s...)]] parse succeeds
 
-test conversion [[*Point(p)]] parse succeeds
-test conversion [[(*Point)(p)]] parse succeeds
+test conversion [[*Point(p)]] parse to [[*(Point(p))]]
+test conversion [[(*Point)(p)]] parse succeeds    // Call(amb([PointerType(TypeName("Point")), Deref(OperandName("Point"))]), []
 test conversion [[<-chan int(c)]] parse succeeds
 test conversion [[(<-chan int)(c)]] parse succeeds
 test conversion [[func()(x)]] parse succeeds

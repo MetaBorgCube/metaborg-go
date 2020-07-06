@@ -45,39 +45,10 @@ context-free syntax
   Expr.SliceLHM                             = <<Expr>[<Expr-OPT>:<Expr>:<Expr>]> // low-high-max
   Expr.TypeAssertion                        = <<Expr>.(<Type>)>
 
-  // Primary expressions -- https://golang.org/ref/spec#Primary_expressions
-//  Expr.Call                                 = <<Expr>(<Arguments-OPT>)>
-//  Expr.Call-DISAMB                          = [[Expr](c#[Arguments-OPT])]        // for manual disambiguation
-  // Conversions -- https://golang.org/ref/spec#Conversions
-//  Expr.Conversion                           = <<Type>(<Expr>)>
-//  Expr.Conversion-ALT                       = <<Type>(<Expr>, )>
-//  Expr.Conversion-DISAMB                    = [[Type](t#[Expr])]                        // for manual disambiguation
-//  Expr.Conversion-DISAMB-ALT                = [[Type](t#[Expr], )]                      // for manual disambiguation
-
   // Qualified identifiers -- https://golang.org/ref/spec#Qualified_identifiers
   Expr.OperandName                          = <<ID>>
   // Primary expressions -- https://golang.org/ref/spec#Primary_expressions
   Expr.Selector                             = <<ExprOrType>.<ID>> {left}
-//  Expr.Selector                             = <<Expr>.<ID>> {left}
-//  Expr.Selector-DISAMB                      = [[Expr].s#[ID]] {left}             // for manual disambiguation
-  // Method expressions -- https://golang.org/ref/spec#Method_expressions
-//  Expr.MethodExpr                           = <<Type>.<ID>>
-//  Expr.MethodExpr-DISAMB                    = [[Type].m#[ID]]                           // for manual disambiguation
-//  Expr.QualifiedOperandName                 = <<ID>.<ID>>
-
-  // This can denote:
-  // - Call: a function or method call (when receiver is an expr)
-  // - Conversion: a type conversion (when receiver is a type)
-//  Expr.CallOrConversion                     = <<ID>(<Expr>)>
-//  Expr.CallOrConversion-ALT                 = <<ID>(<Expr>, )>
-//  Expr.QualifiedCallOrConversion            = <<QualifiedIdent>(<Expr>)>
-//  Expr.QualifiedCallOrConversion-ALT        = <<QualifiedIdent>(<Expr>, )>
-
-  // This can denote:
-  // - QualifiedOperandName: a constant, variable, or function
-  // - Selector: a field or method
-  // - MethodExpr: a method group (when receiver is a type)
-//  Expr.MemberAccess                         = <<ID>.<ID>> {left}//, prefer}
 
 context-free syntax
 
@@ -89,22 +60,6 @@ context-free syntax
   Expr.Call-ALT                             = <<ExprOrType>(<{ExprOrType ","}*>,<>)>
   Expr.CallVariadic                         = <<ExprOrType>(<{ExprOrType ","}*>...)>
   Expr.CallVariadic-ALT                     = <<ExprOrType>(<{ExprOrType ","}*>... ,<>)>
-//
-//
-//  Expr.CallOrConversion                     = <<ID>(<Arguments-OPT>)>
-//  Expr.QualifiedCallOrConversion            = <<QualifiedIdent>(<Arguments-OPT>)>
-//  Expr.Conversion                           = <<Type>(<Expr>)>
-//  Expr.Conversion-ALT                       = <<Type>(<Expr>, )>
-//
-//  Arguments-OPT.NoArguments                 = <>
-//  Arguments-OPT.Arguments                   = <<Arguments>>
-//  Arguments-OPT.Arguments-ALT               = <<Arguments>,>
-//  Arguments-OPT.ArgumentsExplode            = <<Arguments>...>
-//  Arguments-OPT.ArgumentsExplode-ALT        = <<Arguments>... ,>
-//  Arguments.ExprArguments                   = <<{ExprOrType ","}+>>
-//  Arguments.TypeArgument                    = <<Type>>
-//  Arguments.TypedArguments                  = <<Type>, <{Expr ","}+>>
-////
 
 context-free syntax
 
@@ -112,7 +67,6 @@ context-free syntax
   ExprOrType                                = Type
   ExprOrType.ExprOrTypeSelector             = <<ExprOrType>.<ID>> {prefer}
   ExprOrType.ExprOrTypeName                 = <<ID>> {prefer}
-  //ExprOrType.QualifiedExprOrTypeName        = <<ID>.<ID>>
 
 context-free priorities
 
@@ -167,7 +121,8 @@ context-free priorities
     Expr.FunctionLit
     Expr.CompositeLit
     Expr.Selector
-//    Expr.Selector-DISAMB
+    ExprOrType.ExprOrTypeSelector
+    ExprOrType.ExprOrTypeName
     Expr.Index
     Expr.SliceLH
     Expr.SliceLHM
@@ -176,12 +131,6 @@ context-free priorities
     Expr.Call-ALT
     Expr.CallVariadic
     Expr.CallVariadic-ALT
-//    Expr.MethodExpr
-//    Expr.MethodExpr-DISAMB
-//    Expr.Conversion
-//    Expr.Conversion-ALT
-//    Expr.Conversion-DISAMB
-//    Expr.Conversion-DISAMB-ALT
   } > {
     Expr.Positive
     Expr.Negation
@@ -248,13 +197,16 @@ context-free syntax
   KeyedElement.KeyedElement                 = <<Key> <Element>>
 
   Key.NoKey                                 = <>
-  Key.FieldNameKey                          = <<ID>:>
+  Key.FieldNameKey                          = <<ID>:> {prefer}
   Key.ExprKey                               = <<Expr>:>
   Key.LiteralKey                            = <<LiteralValue>:>
 
   Element                                   = Expr
   Element                                   = LiteralValue
 
+//context-free priorities
+
+//  Expr.OperandName <0> .> Key.ExprKey
 
 
 ///**

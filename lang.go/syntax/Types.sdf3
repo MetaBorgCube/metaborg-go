@@ -44,7 +44,7 @@ context-free syntax
   Type.MapType                              = <map[<Type>]<Type>>
   // Channel types -- https://golang.org/ref/spec#Channel_types
   Type.BidirectionalChannelType             = [chan [Type]]
-  Type.SendingChannelType                   = [chan[]<- [Type]]
+  Type.SendingChannelType                   = [chan[]<- [Type]] {prefer}
   Type.ReceivingChannelType                 = [<-[]chan [Type]]
 
 context-free priorities
@@ -52,7 +52,8 @@ context-free priorities
 //  Type.ReceivingChannelType     <0> .> Type.BidirectionalChannelType,
 //  Type.BidirectionalChannelType <0> .> Type.ReceivingChannelType,
 //  Type.ReceivingChannelType          > Type.BidirectionalChannelType,
-  Type.BidirectionalChannelType      > Type.ReceivingChannelType
+//  Type.ReceivingChannelType <0> .> Type.BidirectionalChannelType
+//  Type.BidirectionalChannelType      > Type.ReceivingChannelType
 
 /**
  * Struct types -- https://golang.org/ref/spec#Struct_types
@@ -77,13 +78,18 @@ context-free syntax
   Signature.Signature                       = <<Parameters> <Result>>
   Result.NoResult                           = <>
   Result                                    = Parameters
-  Result                                    = Type
+  Result                                    = Type {prefer}
 
   Parameters.Parameters                     = <(<{ParameterDecl ","}*>)>
   Parameters.Parameters-ALT                 = <(<{ParameterDecl ","}*>, )>
+  Parameters.AnonymousParameters            = <(<{AnonymousParameterDecl ","}+>)>
+  Parameters.AnonymousParameters-ALT        = <(<{AnonymousParameterDecl ","}+>, )>
 
-  ParameterDecl.ParameterDecl               = <<{ID ","}*> <Type>>
-  ParameterDecl.VariadicParameterDecl       = <<{ID ","}*> ...<Type>>
+  ParameterDecl.ParameterDecl               = <<{ID ","}+> <Type>>
+  ParameterDecl.VariadicParameterDecl       = <<{ID ","}+> ...<Type>>
+
+  AnonymousParameterDecl.AnonymousParameterDecl               = <<Type>>
+  AnonymousParameterDecl.AnonymousVariadicParameterDecl       = <...<Type>>
 
 
 /**

@@ -20,7 +20,7 @@ language:
   sdf:
     pretty-print: GoLang
     sdf2table: java
-    #jsglr-version: v1
+    #jsglr-version: v2
     placeholder:
       prefix: "$"
   stratego:
