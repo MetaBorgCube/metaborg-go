@@ -1,0 +1,400 @@
+module ExpressionsAst
+
+language GoLang
+
+start symbol Expr
+
+test selector with operator [[a.hi < b.hi]]
+parse to
+  Less(
+    Selector(ExprOrTypeName("a"), "hi")
+  , Selector(ExprOrTypeName("b"), "hi")
+  )
+
+test qualified expr [[math.Sin]] parse to Selector(ExprOrTypeName("math"), "Sin")
+
+test composite literal 1 [[Point3D{}]] parse to CompositeLit(TypeName("Point3D"), LiteralValue([]))
+test composite literal 2 [[Line{origin, Point3D{y: -4, z: 12.3}}]]
+parse to
+  CompositeLit(
+    TypeName("Line")
+  , LiteralValue(
+      [ KeyedElement(NoKey(), OperandName("origin"))
+      , KeyedElement(
+          NoKey()
+        , CompositeLit(
+            TypeName("Point3D")
+          , LiteralValue(
+              [ KeyedElement(FieldNameKey("y"), Negation(IntLit("4")))
+              , KeyedElement(FieldNameKey("z"), FloatLit("12.3"))
+              ]
+            )
+          )
+        )
+      ]
+    )
+  )
+test composite literal 3 [[Point3D{y: 1000}]]
+parse to
+  CompositeLit(
+    TypeName("Point3D")
+  , LiteralValue([KeyedElement(FieldNameKey("y"), IntLit("1000"))])
+  )
+test composite literal 4 [[ [10]string{}]]
+parse to
+  CompositeLit(ArrayTypeLiteral(IntLit("10"), TypeName("string")), LiteralValue([]))
+test composite literal 5 [[ [6]int{1, 2, 3, 5}]]
+parse to
+  CompositeLit(
+    ArrayTypeLiteral(IntLit("6"), TypeName("int"))
+  , LiteralValue(
+      [ KeyedElement(NoKey(), IntLit("1"))
+      , KeyedElement(NoKey(), IntLit("2"))
+      , KeyedElement(NoKey(), IntLit("3"))
+      , KeyedElement(NoKey(), IntLit("5"))
+      ]
+    )
+  )
+test composite literal 6 [[ [...]string{"Sat", "Sun"}]]
+parse to
+  CompositeLit(
+    AutoArrayTypeLiteral(TypeName("string"))
+  , LiteralValue(
+      [KeyedElement(NoKey(), StringLit("\"Sat\"")), KeyedElement(NoKey(), StringLit("\"Sun\""))]
+    )
+  )
+
+test shorthand composite literal 1 [[ [...]Point{{1.5, -3.5}, {0, 0}}]]
+parse to
+  CompositeLit(
+    AutoArrayTypeLiteral(TypeName("Point"))
+  , LiteralValue(
+      [ KeyedElement(
+          NoKey()
+        , LiteralValue(
+            [KeyedElement(NoKey(), FloatLit("1.5")), KeyedElement(NoKey(), Negation(FloatLit("3.5")))]
+          )
+        )
+      , KeyedElement(
+          NoKey()
+        , LiteralValue(
+            [KeyedElement(NoKey(), IntLit("0")), KeyedElement(NoKey(), IntLit("0"))]
+          )
+        )
+      ]
+    )
+  )
+test shorthand composite literal 2 [[ [][]int{{1, 2, 3}, {4, 5}}]]
+parse to
+  CompositeLit(
+    SliceTypeLiteral(SliceType(TypeName("int")))
+  , LiteralValue(
+      [ KeyedElement(
+          NoKey()
+        , LiteralValue(
+            [ KeyedElement(NoKey(), IntLit("1"))
+            , KeyedElement(NoKey(), IntLit("2"))
+            , KeyedElement(NoKey(), IntLit("3"))
+            ]
+          )
+        )
+      , KeyedElement(
+          NoKey()
+        , LiteralValue(
+            [KeyedElement(NoKey(), IntLit("4")), KeyedElement(NoKey(), IntLit("5"))]
+          )
+        )
+      ]
+    )
+  )
+test shorthand composite literal 3 [[ [][]Point{{{0, 1}, {1, 2}}}]]
+parse to
+  CompositeLit(
+    SliceTypeLiteral(SliceType(TypeName("Point")))
+  , LiteralValue(
+      [ KeyedElement(
+          NoKey()
+        , LiteralValue(
+            [ KeyedElement(
+                NoKey()
+              , LiteralValue(
+                  [KeyedElement(NoKey(), IntLit("0")), KeyedElement(NoKey(), IntLit("1"))]
+                )
+              )
+            , KeyedElement(
+                NoKey()
+              , LiteralValue(
+                  [KeyedElement(NoKey(), IntLit("1")), KeyedElement(NoKey(), IntLit("2"))]
+                )
+              )
+            ]
+          )
+        )
+      ]
+    )
+  )
+test shorthand composite literal 4 [[map[string]Point{"orig": {0, 0}}]]
+parse to
+  CompositeLit(
+    MapTypeLiteral(TypeName("string"), TypeName("Point"))
+  , LiteralValue(
+      [ KeyedElement(
+          ExprKey(StringLit("\"orig\""))
+        , LiteralValue(
+            [KeyedElement(NoKey(), IntLit("0")), KeyedElement(NoKey(), IntLit("0"))]
+          )
+        )
+      ]
+    )
+  )
+test shorthand composite literal 5 [[map[Point]string{{0, 0}: "orig"}]]
+parse to
+  CompositeLit(
+    MapTypeLiteral(TypeName("Point"), TypeName("string"))
+  , LiteralValue(
+      [ KeyedElement(
+          LiteralKey(
+            LiteralValue(
+              [KeyedElement(NoKey(), IntLit("0")), KeyedElement(NoKey(), IntLit("0"))]
+            )
+          )
+        , StringLit("\"orig\"")
+        )
+      ]
+    )
+  )
+
+test shorthand composite literal 1 [[ [2]*Point{{1.5, -3.5}, {}}]]
+parse to
+CompositeLit(
+  ArrayTypeLiteral(IntLit("2"), PointerType(TypeName("Point")))
+, LiteralValue(
+    [ KeyedElement(
+        NoKey()
+      , LiteralValue(
+          [KeyedElement(NoKey(), FloatLit("1.5")), KeyedElement(NoKey(), Negation(FloatLit("3.5")))]
+        )
+      )
+    , KeyedElement(NoKey(), LiteralValue([]))
+    ]
+  )
+)
+test shorthand composite literal 2 [[ [2]PPoint{{1.5, -3.5}, {}}]]
+parse to
+CompositeLit(
+  ArrayTypeLiteral(IntLit("2"), TypeName("PPoint"))
+, LiteralValue(
+    [ KeyedElement(
+        NoKey()
+      , LiteralValue(
+          [KeyedElement(NoKey(), FloatLit("1.5")), KeyedElement(NoKey(), Negation(FloatLit("3.5")))]
+        )
+      )
+    , KeyedElement(NoKey(), LiteralValue([]))
+    ]
+  )
+)
+
+test slice literal [[ []int{2, 3, 5, 7, 9, 2147483647}]]
+parse to
+  CompositeLit(
+    SliceTypeLiteral(TypeName("int"))
+  , LiteralValue(
+      [ KeyedElement(NoKey(), IntLit("2"))
+      , KeyedElement(NoKey(), IntLit("3"))
+      , KeyedElement(NoKey(), IntLit("5"))
+      , KeyedElement(NoKey(), IntLit("7"))
+      , KeyedElement(NoKey(), IntLit("9"))
+      , KeyedElement(NoKey(), IntLit("2147483647"))
+      ]
+    )
+  )
+test array literal 1 [[ [128]bool{'a': true, 'e': true, 'i': true, 'o': true, 'u': true, 'y': true}]]
+parse to
+  CompositeLit(
+    ArrayTypeLiteral(IntLit("128"), TypeName("bool"))
+  , LiteralValue(
+      [ KeyedElement(ExprKey(RuneLit("'a'")), OperandName("true"))
+      , KeyedElement(ExprKey(RuneLit("'e'")), OperandName("true"))
+      , KeyedElement(ExprKey(RuneLit("'i'")), OperandName("true"))
+      , KeyedElement(ExprKey(RuneLit("'o'")), OperandName("true"))
+      , KeyedElement(ExprKey(RuneLit("'u'")), OperandName("true"))
+      , KeyedElement(ExprKey(RuneLit("'y'")), OperandName("true"))
+      ]
+    )
+  )
+test array literal 2 [[ [10]float32{-1, 4: -0.1, -0.1, 9: -1}]]
+parse to
+  CompositeLit(
+    ArrayTypeLiteral(IntLit("10"), TypeName("float32"))
+  , LiteralValue(
+      [ KeyedElement(NoKey(), Negation(IntLit("1")))
+      , KeyedElement(ExprKey(IntLit("4")), Negation(FloatLit("0.1")))
+      , KeyedElement(NoKey(), Negation(FloatLit("0.1")))
+      , KeyedElement(ExprKey(IntLit("9")), Negation(IntLit("1")))
+      ]
+    )
+  )
+
+  // FIXME: Dash in name
+//test map literal [[map[string]float32{
+//  "C0": 16.35, "D0": 18.35, "E0": 20.60, "F0": 21.83,
+//  "G0": 24.50, "A0": 27.50, "B0": 30.87,
+//}]]
+//parse to
+//  CompositeLit(
+//    MapTypeLiteral(TypeName("string"), TypeName("float32"))
+//  , LiteralValue-ALT(
+//      [ KeyedElement(ExprKey(StringLit("\"C0\"")), FloatLit("16.35"))
+//      , KeyedElement(ExprKey(StringLit("\"D0\"")), FloatLit("18.35"))
+//      , KeyedElement(ExprKey(StringLit("\"E0\"")), FloatLit("20.60"))
+//      , KeyedElement(ExprKey(StringLit("\"F0\"")), FloatLit("21.83"))
+//      , KeyedElement(ExprKey(StringLit("\"G0\"")), FloatLit("24.50"))
+//      , KeyedElement(ExprKey(StringLit("\"A0\"")), FloatLit("27.50"))
+//      , KeyedElement(ExprKey(StringLit("\"B0\"")), FloatLit("30.87"))
+//      ]
+//    )
+//  )
+
+test function literal 1 [[func(a, b int, z float64) bool { return a*b < int(z); }]]
+parse to
+  FunctionLit(
+    Signature(
+      Parameters(
+        [ ParameterDecl(["a", "b"], TypeName("int"))
+        , ParameterDecl(["z"], TypeName("float64"))
+        ]
+      )
+    , TypeName("bool")
+    )
+  , Block(
+      [ ReturnStmt(
+          [ Less(
+              Product(OperandName("a"), OperandName("b"))
+            , Call(ExprOrTypeName("int"), [ExprOrTypeName("z")])
+            )
+          ]
+        )
+      ]
+    )
+  )
+test function literal 2 [[func(x, y int) int { return x + y; }]]
+parse to
+  FunctionLit(
+    Signature(
+      Parameters([ParameterDecl(["x", "y"], TypeName("int"))])
+    , TypeName("int")
+    )
+  , Block(
+      [ReturnStmt([Sum(OperandName("x"), OperandName("y"))])]
+    )
+  )
+test function literal 3 [[func(ch chan int) { ch <- ACK; }]]
+parse to
+  FunctionLit(
+    Signature(
+      Parameters([ParameterDecl(["ch"], BidirectionalChannelType(TypeName("int")))])
+    , NoResult()
+    )
+  , Block([SendStmt(OperandName("ch"), OperandName("ACK"))])
+  )
+
+test primary expression 1 [[x]] parse to OperandName("x")
+test primary expression 2 [[2]] parse to IntLit("2")
+test primary expression 3 [[(s + ".txt")]] parse to Sum(OperandName("s"), StringLit("\".txt\""))
+test primary expression 4.1 [[f()]] parse to Call(ExprOrTypeName("f"), [])
+test primary expression 4.2 [[f(3.1415)]] parse to Call(ExprOrTypeName("f"), [FloatLit("3.1415")])
+test primary expression 4.3 [[f(3.1415, true)]]
+parse to
+  Call(ExprOrTypeName("f"), [FloatLit("3.1415"), ExprOrTypeName("true")])
+test primary expression 5 [[Point{1, 2}]]
+parse to
+  CompositeLit(
+    TypeName("Point")
+  , LiteralValue(
+      [KeyedElement(NoKey(), IntLit("1")), KeyedElement(NoKey(), IntLit("2"))]
+    )
+  )
+test primary expression 6 [[m["foo"] ]] parse to Index(OperandName("m"), StringLit("\"foo\""))
+test primary expression 7 [[s[i : j + 1] ]]
+parse to
+  SliceLH(
+    OperandName("s")
+  , OperandName("i")
+  , Sum(OperandName("j"), IntLit("1"))
+  )
+test primary expression 8 [[obj.color]] parse to Selector(ExprOrTypeName("obj"), "color")
+test primary expression 9 [[f.p[i].x()]]
+parse to
+Call(ExprOrTypeSelector(Index(Selector(ExprOrTypeName("f"), "p"), OperandName("i")), "x"), [])
+
+test method expression 1 [[t.Mv]] parse to Selector(ExprOrTypeName("t"), "Mv")
+test method expression 2 [[T.Mv]] parse to Selector(ExprOrTypeName("T"), "Mv")
+test method expression 3 [[(T).Mv]] parse to Selector(TypeName("T"), "Mv")
+test method expression 4 [[(*T).Mp]] parse to Selector(PointerType(TypeName("T")), "Mp")
+
+test selectors and operators [[p.x]] parse to Selector(ExprOrTypeName("p"), "x")
+test selectors and operators [[p.x * p.x]]
+parse to
+  Product(
+    Selector(ExprOrTypeName("p"), "x")
+  , Selector(ExprOrTypeName("p"), "x")
+  )
+test selectors and operators [[p.x * p.x + p.y * p.y]]
+parse to
+Sum(
+  Product(
+    Selector(ExprOrTypeName("p"), "x")
+  , Selector(ExprOrTypeName("p"), "x")
+  )
+, Product(
+    Selector(ExprOrTypeName("p"), "y")
+  , Selector(ExprOrTypeName("p"), "y")
+  )
+)
+
+test slice expression [[a[1:3:5] ]]
+parse to
+  SliceLHM(
+    OperandName("a")
+  , IntLit("1")
+  , IntLit("3")
+  , IntLit("5")
+  )
+
+test type assertion [[x.(T)]] parse to TypeAssertion(OperandName("x"), TypeName("T"))
+
+test function call [[math.Atan2(x, y)]]
+parse to
+  Call(
+    ExprOrTypeSelector(ExprOrTypeName("math"), "Atan2")
+  , [ExprOrTypeName("x"), ExprOrTypeName("y")]
+  )
+test method call 1 [[p.Scale(3.5)]] parse to Call(ExprOrTypeSelector(ExprOrTypeName("p"), "Scale"), [FloatLit("3.5")])
+test method call 2 [[a.Uint64().LeftShift(b).Int64()]]
+parse to
+  Call(
+    ExprOrTypeSelector(
+      Call(
+        ExprOrTypeSelector(Call(ExprOrTypeSelector(ExprOrTypeName("a"), "Uint64"), []), "LeftShift")
+      , [ExprOrTypeName("b")]
+      )
+    , "Int64"
+    )
+  , []
+  )
+
+test variadic call [[Greeting("goodbye:", s...)]]
+parse to CallVariadic(ExprOrTypeName("Greeting"), [StringLit("\"goodbye:\""), ExprOrTypeName("s")])
+
+test deref call [[*Point(p)]] parse to Deref(Call(ExprOrTypeName("Point"), [ExprOrTypeName("p")]))
+
+test call deref [[(*Point)()]] parse to Call(PointerType(TypeName("Point")), [])
+
+test conversion 1 [[(*Point)(p)]] parse to Call(PointerType(TypeName("Point")), [ExprOrTypeName("p")])
+test conversion 2 [[<-chan int(c)]] parse to Call(ReceivingChannelType(TypeName("int")), [ExprOrTypeName("c")])
+test conversion 3 [[(<-chan int)(c)]] parse to Call(ReceivingChannelType(TypeName("int")), [ExprOrTypeName("c")])
+test conversion 4 [[func()(x)]] parse to Call(FunctionType(Signature(Parameters([]), NoResult())), [ExprOrTypeName("x")])
+test conversion 5 [[(func())(x)]] parse to Call(FunctionType(Signature(Parameters([]), NoResult())), [ExprOrTypeName("x")])
+test conversion 6 [[(func() int)(x)]] parse to Call(FunctionType(Signature(Parameters([]), TypeName("int"))), [ExprOrTypeName("x")])
+test conversion 7 [[func() int(x)]] parse to Call(FunctionType(Signature(Parameters([]), TypeName("int"))), [ExprOrTypeName("x")])

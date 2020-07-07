@@ -1,4 +1,4 @@
-module Declarations
+module DeclarationsAst
 
 language GoLang
 
@@ -125,7 +125,7 @@ test const decl: simple id expr [[
     )
   )
 
-test const decl [[
+test const decl 6 [[
   const (
     c0 = iota;
     _;
@@ -144,12 +144,12 @@ test const decl [[
   )
 
 
-test type decl [[
+test type decl 1 [[
   type IntArray [16]int;
 ]] parse to
   SingleTypeDecl(TypeDef("IntArray", ArrayType(IntLit("16"), TypeName("int"))))
 
-test type decl [[
+test type decl 2 [[
   type (
     Point struct{ x, y float64; };
     Polar Point;
@@ -166,7 +166,7 @@ test type decl [[
     ]
   )
 
-test type decl [[
+test type decl 3 [[
   type TreeNode struct {
     left, right *TreeNode;
     value *Comparable;
@@ -183,7 +183,7 @@ test type decl [[
     )
   )
 
-test type decl [[
+test type decl 4 [[
   type Block interface {
     BlockSize() int;
     Encrypt(src, dst []byte);
@@ -218,7 +218,7 @@ test type decl [[
     )
   )
 
-test type decl [[
+test type decl 5 [[
   type U struct {
     _ struct{ a, b, c int; };
   };
@@ -274,22 +274,22 @@ test type decl: tags [[
 
 
 
-test var decl [[
+test var decl 1 [[
   var i int;
 ]] parse to
   SingleVarDecl(VarSpecNoInit(["i"], TypeName("int")))
 
-test var decl [[
+test var decl 2 [[
   var U, V, W float64;
 ]] parse to
   SingleVarDecl(VarSpecNoInit(["U", "V", "W"], TypeName("float64")))
 
-test var decl [[
+test var decl 3 [[
   var k = 0;
 ]] parse to
   SingleVarDecl(VarSpecNoType(["k"], [IntLit("0")]))
 
-test var decl [[
+test var decl 4 [[
   var x, y float32 = -1, -2;
 ]] parse to
   SingleVarDecl(
@@ -300,7 +300,7 @@ test var decl [[
     )
   )
 
-test var decl [[
+test var decl 5 [[
   var (
     i       int;
     u, v, s = 2.0, 3.0, "bar";
@@ -315,7 +315,7 @@ test var decl [[
     ]
   )
 
-test var decl [[
+test var decl 6 [[
   var re, im = complexSqrt(-1);
 ]] parse to
   SingleVarDecl(
@@ -325,7 +325,7 @@ test var decl [[
     )
   )
 
-test var decl [[
+test var decl 7 [[
   var _, found = entries[name];
 ]] parse to
   SingleVarDecl(
@@ -337,7 +337,7 @@ test var decl [[
 
 
 
-test function definition [[
+test function decl 1 [[
   func min(x int, y int) int {
     if x < y {
       return x;
@@ -367,7 +367,7 @@ test function definition [[
     )
   )
 
-test function decl [[
+test function decl 2 [[
   func flushICache(begin, end uintptr);
 ]] parse to
   FunctionDecl(
@@ -380,7 +380,7 @@ test function decl [[
 
 
 
-test method decl [[
+test method decl 1 [[
   func (p *Point) Length() float64 {
     return math.Sqrt(p.x * p.x + p.y * p.y);
   };
@@ -411,7 +411,7 @@ test method decl [[
     )
   )
 
-test method decl [[
+test method decl 2 [[
   func (p *Point) Scale(factor float64) {
     p.x *= factor;
     p.y *= factor;
