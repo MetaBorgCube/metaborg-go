@@ -347,6 +347,7 @@ signature
     Result
     Parameters
     ParameterDecl
+    AnonymousParameterDecl
     InterfaceTypeMember
 
   constructors
@@ -356,6 +357,7 @@ signature
     Result-Plhdr : Result
     Parameters-Plhdr : Parameters
     ParameterDecl-Plhdr : ParameterDecl
+    AnonymousParameterDecl-Plhdr : AnonymousParameterDecl
     InterfaceTypeMember-Plhdr : InterfaceTypeMember
 
 signature

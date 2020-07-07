@@ -72,7 +72,7 @@ context-free syntax
 /**
  * Function types -- https://golang.org/ref/spec#Function_types
  */
-context-free sorts Result Parameters ParameterDecl
+context-free sorts Result Parameters ParameterDecl AnonymousParameterDecl
 context-free syntax
 
   Signature.Signature                       = <<Parameters> <Result>>

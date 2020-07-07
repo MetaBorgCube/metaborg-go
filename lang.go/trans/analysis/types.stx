@@ -122,7 +122,7 @@ rules typeOfType : scope * Type -> TYPE
   typeOfType(s, TypeName2Type(TypeName(name))) = T :-
     lookupType(s, name) == T.
 
-  typeOfType(s, TypeName2Type(QualifiedTypeName(QualifiedIdent(x, y)))) = T :-
+  typeOfType(s, TypeName2Type(QualifiedTypeName(x, y))) = T :-
     // TODO
     false | error $[typeOfType(QualifiedTypeName) not implemented.].
 

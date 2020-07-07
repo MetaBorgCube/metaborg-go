@@ -71,14 +71,6 @@ context-free syntax
 
 context-free priorities
 
-//  ExprOrType = Expr <0> .> Expr.OperandName,
-//  ExprOrType = Expr <0> .> Expr.Selector
-//  Expr.Call <0> .> Expr.OperandName,
-//  Expr.Call <0> .> Expr.QualifiedOperandName,
-//  Expr.Conversion <0> .> Type = TypeName
-
-context-free priorities
-
   ExprOrType = Type <0> .> Type.PointerType,    // To parse *Point(p) as a deref of a call result *(Point(p))
   ExprOrType = Expr <0> .> Expr = "(" Expr ")", // To parse (*Point)(p) as a conversion
   // BUG? Cannot add <0> here:

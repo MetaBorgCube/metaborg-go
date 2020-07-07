@@ -98,40 +98,35 @@ rules typeOfExpr : scope * Expr -> TYPE
     true.
 
   typeOfExpr(s, Call(member, arguments)) = TRETS :- {TARGS}
-    typeOfArgumentsOpt(s, arguments) == TARGS,
-    typeOfExpr(s, member) == FUN(TARGS, TRETS) | error $[[member] is not a method or function, or not found.].
+    typesOfExprOrTypes(s, arguments) == TARGS,
+    typeOfExprOrType(s, member) == FUN(TARGS, TRETS) | error $[[member] is not a method or function, or not found.].
 
-  typeOfExpr(s, Conversion(type, expr)) = T :-
-    // TODO
-    true.
+  // Conversions are now part of Call()
+//  typeOfExpr(s, Conversion(type, expr)) = T :-
+//    // TODO
+//    true.
 
+  // MethodExpr are now part of Selector
+  // QualifiedOperandName are now part of Selector
+  // MemberAccess are now part of Selector
   typeOfExpr(s, Selector(expr, name)) = T :-
     // TODO
     true.
 
-  typeOfExpr(s, MethodExpr(type, name)) = T :-
-    // TODO
-    true.
+//  typeOfExpr(s, MethodExpr(type, name)) = T :-
+//    // TODO
+//    true.
 
   typeOfExpr(s, OperandName(name)) = T :-
     lookupType(s, name) == T.
 
-  typeOfExpr(s, QualifiedOperandName(QualifiedIdent(x, y))) = T :-
-    // TODO
-    true.
+//  typeOfExpr(s, QualifiedOperandName(x, y)) = T :-
+//    // TODO
+//    true.
 
-  typeOfExpr(s, CallOrConversion(name, expr)) = T :-
-    // TODO
-    true.
-
-  typeOfExpr(s, QualifiedCallOrConversion(QualifiedIdent(receiver, member), expr)) = T :-
-    // TODO: If receiver.member is a type, this is a type conversion (Conversion)
-    // TODO: If receiver.member is a function or method, this is a call (Call)
-    true.
-
-  typeOfExpr(s, MemberAccess(receiverName, memberName)) = T :-
-    // TODO
-    true.
+//  typeOfExpr(s, MemberAccess(receiverName, memberName)) = T :-
+//    // TODO
+//    true.
 
 
 rules
@@ -400,7 +395,7 @@ rules typeOfLiteralType : scope * LiteralType -> TYPE
     // TODO
     true.
 
-  typeOfLiteralType(s, TypeName2LiteralType(QualifiedTypeName(QualifiedIdent(x, y)))) = T :-
+  typeOfLiteralType(s, TypeName2LiteralType(QualifiedTypeName(x, y))) = T :-
     // TODO
     true.
 
@@ -425,20 +420,20 @@ rules typeOfLiteralType : scope * LiteralType -> TYPE
     true.
 
 
-rules typeOfArgumentsOpt : scope * Arguments-OPT -> list(TYPE)
-  // Each argument must be a single-valued expression;
-  // or, as a special case, there can be a single argument and its multiple return values
-  // are assigned as the values to the call.
-
-  typeOfArgumentsOpt(s, NoArguments()) = [].
-
-  typeOfArgumentsOpt(s, Arguments(ExprArguments(exprs))) = [].  // TODO
-  typeOfArgumentsOpt(s, Arguments(TypeArgument(type))) = [].  // TODO
-  typeOfArgumentsOpt(s, Arguments(TypedArguments(type, exprs))) = [].  // TODO
-
-  typeOfArgumentsOpt(s, ArgumentsExplode(ExprArguments(exprs))) = [].  // TODO
-  typeOfArgumentsOpt(s, ArgumentsExplode(TypeArgument(type))) = [].  // TODO
-  typeOfArgumentsOpt(s, ArgumentsExplode(TypedArguments(type, exprs))) = [].  // TODO
+//rules typeOfArgument : scope * ExprOrType) -> TYPE)
+//  // Each argument must be a single-valued expression;
+//  // or, as a special case, there can be a single argument and its multiple return values
+//  // are assigned as the values to the call.
+//
+//  typeOfArgumentsOpt(s, NoArguments()) = [].
+//
+//  typeOfArgumentsOpt(s, Arguments(ExprArguments(exprs))) = [].  // TODO
+//  typeOfArgumentsOpt(s, Arguments(TypeArgument(type))) = [].  // TODO
+//  typeOfArgumentsOpt(s, Arguments(TypedArguments(type, exprs))) = [].  // TODO
+//
+//  typeOfArgumentsOpt(s, ArgumentsExplode(ExprArguments(exprs))) = [].  // TODO
+//  typeOfArgumentsOpt(s, ArgumentsExplode(TypeArgument(type))) = [].  // TODO
+//  typeOfArgumentsOpt(s, ArgumentsExplode(TypedArguments(type, exprs))) = [].  // TODO
 
 // An addressable expression is:
 // - a variable,
@@ -468,6 +463,24 @@ rules typeOfAddressableOrMapIndexExpr : scope * Expr -> TYPE
 rules typeOfMethodOrFunctionExpr : scope * Expr -> TYPE
 
   typeOfMethodOrFunctionExpr(_, _) = _ :-
+    // TODO
+    true.
+
+rules typeOfExprOrType : scope * ExprOrType -> TYPE
+
+  typesOfExprOrTypes maps typeOfExprOrType(*, list(*)) = list(*)
+
+  typeOfExprOrType(s, Expr2ExprOrType(expr)) = T :-
+    typeOfExpr(s, expr) == T.
+
+  typeOfExprOrType(s, Type2ExprOrType(expr)) = _ :-
+    false.
+
+  typeOfExprOrType(s, ExprOrTypeSelector(exprOrType, member)) = T :-
+    // TODO
+    true.
+
+  typeOfExprOrType(s, ExprOrTypeName(name)) = T :-
     // TODO
     true.
 
