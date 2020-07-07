@@ -12,8 +12,8 @@ imports
   pp
 
   analysis/-
-
   injections/-
+  signatures/-
 
 rules // Analysis
 
@@ -21,10 +21,11 @@ rules // Analysis
   pre-analyze: x -> x'
   //desugar-all Should be desugared, but this changes the SourceFile term
   with x' := <try(desugar-testsource); explicate-injections-GoLang-SourceFile> x
+//  with x' := <try(desugar-testsource); id> x
 
   post-analyze: x -> x'
   with x' := <implicate-injections-GoLang-SourceFile> x
-//  with x' := <strip-annos; implicate-injections-GoLang-SourceFile> x
+//  with x' := <id> x
 
   desugar-testsource: TestSources([TestSourceFile(_, pkg, imports, decls)]) -> SourceFile(pkg, imports, decls)
 

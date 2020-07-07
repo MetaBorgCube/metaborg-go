@@ -59,6 +59,7 @@ signature
 signature
 
   sorts
+    ExprOrType
     LiteralType
     LiteralValue
     KeyedElement
@@ -66,6 +67,7 @@ signature
     Element
 
   constructors
+    ExprOrType-Plhdr : ExprOrType
     LiteralType-Plhdr : LiteralType
     LiteralValue-Plhdr : LiteralValue
     KeyedElement-Plhdr : KeyedElement

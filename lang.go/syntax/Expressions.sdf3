@@ -61,6 +61,7 @@ context-free syntax
   Expr.CallVariadic                         = <<ExprOrType>(<{ExprOrType ","}*>...)>
   Expr.CallVariadic-ALT                     = <<ExprOrType>(<{ExprOrType ","}*>... ,<>)>
 
+context-free sorts ExprOrType
 context-free syntax
 
   ExprOrType                                = Expr
