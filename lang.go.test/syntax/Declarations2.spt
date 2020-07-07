@@ -1,0 +1,438 @@
+module Declarations
+
+language GoLang
+
+start symbol TopLevelDecl
+
+test const decl 1 [[
+  const Pi float64 = 3.14159265358979323846;
+]] parse to
+  SingleConstDecl(ConstSpec(["Pi"], TypeName("float64"), [FloatLit("3.14159265358979323846")]))
+
+test const decl 2 [[
+  const zero = 0.0;
+]] parse to
+  SingleConstDecl(ConstSpecNoType(["zero"], [FloatLit("0.0")]))
+
+test const decl 3 [[
+  const (
+    size int64 = 1024;
+    eof        = -1;
+  );
+]] parse to
+  ConstDecl(
+    [ ConstSpec(["size"], TypeName("int64"), [IntLit("1024")])
+    , ConstSpecNoType(["eof"], [Negation(IntLit("1"))])
+    ]
+  )
+
+test const decl 4 [[
+  const a, b, c = 3, 4, "foo";
+]] parse to
+  SingleConstDecl(
+    ConstSpecNoType(
+      ["a", "b", "c"]
+    , [IntLit("3"), IntLit("4"), StringLit("\"foo\"")]
+    )
+  )
+
+test const decl 5 [[
+  const u, v float32 = 0, 3;
+]] parse to
+  SingleConstDecl(
+    ConstSpec(
+      ["u", "v"]
+    , TypeName("float32")
+    , [IntLit("0"), IntLit("3")]
+    )
+  )
+
+test const decl: empty [[
+  const ();
+]] parse to
+  ConstDecl([])
+
+test const decl: underscore [[
+  const (_;);
+]] parse to
+  ConstDecl([ConstSpecNoTypeNoExpr(["_"])])
+
+test const decl: id [[
+  const (N;);
+]] parse to
+  ConstDecl([ConstSpecNoTypeNoExpr(["N"])])
+
+test const decl: id type [[
+  const (N int;);
+]] parse to
+  ConstDecl([ConstSpecNoExpr(["N"], TypeName("int"))])
+
+test const decl: id type expr [[
+  const (N int = 11 + 1;);
+]] parse to
+  ConstDecl(
+    [ ConstSpec(
+        ["N"]
+      , TypeName("int")
+      , [Sum(IntLit("11"), IntLit("1"))]
+      )
+    ]
+  )
+
+test const decl: id expr [[
+  const (N = 11 + 1;);
+]] parse to
+  ConstDecl(
+    [ConstSpecNoType(
+       ["N"]
+     , [Sum(IntLit("11"), IntLit("1"))]
+     )]
+  )
+
+test const decl: simple underscore [[
+  const _;
+]] parse to
+  SingleConstDecl(ConstSpecNoTypeNoExpr(["_"]))
+
+test const decl: simple id [[
+  const N;
+]] parse to
+  SingleConstDecl(ConstSpecNoTypeNoExpr(["N"]))
+
+test const decl: simple id type [[
+  const N int;
+]] parse to
+  SingleConstDecl(ConstSpecNoExpr(["N"], TypeName("int")))
+
+test const decl: simple id type expr [[
+  const N int = 11 + 1;
+]] parse to
+  SingleConstDecl(
+    ConstSpec(
+      ["N"]
+    , TypeName("int")
+    , [Sum(IntLit("11"), IntLit("1"))]
+    )
+  )
+
+test const decl: simple id expr [[
+  const N = 11 + 1;
+]] parse to
+  SingleConstDecl(
+    ConstSpecNoType(
+      ["N"]
+    , [Sum(IntLit("11"), IntLit("1"))]
+    )
+  )
+
+test const decl [[
+  const (
+    c0 = iota;
+    _;
+    _;
+    _;
+    c4;
+  );
+]] parse to
+  ConstDecl(
+    [ ConstSpecNoType(["c0"], [OperandName("iota")])
+    , ConstSpecNoTypeNoExpr(["_"])
+    , ConstSpecNoTypeNoExpr(["_"])
+    , ConstSpecNoTypeNoExpr(["_"])
+    , ConstSpecNoTypeNoExpr(["c4"])
+    ]
+  )
+
+
+test type decl [[
+  type IntArray [16]int;
+]] parse to
+  SingleTypeDecl(TypeDef("IntArray", ArrayType(IntLit("16"), TypeName("int"))))
+
+test type decl [[
+  type (
+    Point struct{ x, y float64; };
+    Polar Point;
+  );
+]] parse to
+  TypeDecl(
+    [ TypeDef(
+        "Point"
+      , StructType(
+          [StructElement(Field(["x", "y"], TypeName("float64")))]
+        )
+      )
+    , TypeDef("Polar", TypeName("Point"))
+    ]
+  )
+
+test type decl [[
+  type TreeNode struct {
+    left, right *TreeNode;
+    value *Comparable;
+  };
+]] parse to
+  SingleTypeDecl(
+    TypeDef(
+      "TreeNode"
+    , StructType(
+        [ StructElement(Field(["left", "right"], PointerType(TypeName("TreeNode"))))
+        , StructElement(Field(["value"], PointerType(TypeName("Comparable"))))
+        ]
+      )
+    )
+  )
+
+test type decl [[
+  type Block interface {
+    BlockSize() int;
+    Encrypt(src, dst []byte);
+    Decrypt(src, dst []byte);
+  };
+]] parse to
+  SingleTypeDecl(
+    TypeDef(
+      "Block"
+    , InterfaceType(
+        [ MethodSpec("BlockSize", Signature(Parameters([]), TypeName("int")))
+        , MethodSpec(
+            "Encrypt"
+          , Signature(
+              Parameters(
+                [ParameterDecl(["src", "dst"], SliceType(TypeName("byte")))]
+              )
+            , NoResult()
+            )
+          )
+        , MethodSpec(
+            "Decrypt"
+          , Signature(
+              Parameters(
+                [ParameterDecl(["src", "dst"], SliceType(TypeName("byte")))]
+              )
+            , NoResult()
+            )
+          )
+        ]
+      )
+    )
+  )
+
+test type decl [[
+  type U struct {
+    _ struct{ a, b, c int; };
+  };
+]] parse to
+  SingleTypeDecl(
+    TypeDef(
+      "U"
+    , StructType(
+        [ StructElement(
+            Field(
+              ["_"]
+            , StructType(
+                [StructElement(Field(["a", "b", "c"], TypeName("int")))]
+              )
+            )
+          )
+        ]
+      )
+    )
+  )
+
+test type decl: tags [[
+  type Person struct {
+    Name string `json:"name"`;
+    Address *struct {
+      Street string `json:"street"`;
+      City   string `json:"city"`;
+    } `json:"address"`;
+  };
+]] parse to
+  SingleTypeDecl(
+    TypeDef(
+      "Person"
+    , StructType(
+        [ StructElementTagged(Field(["Name"], TypeName("string")), "`json:\"name\"`")
+        , StructElementTagged(
+            Field(
+              ["Address"]
+            , PointerType(
+                StructType(
+                  [ StructElementTagged(Field(["Street"], TypeName("string")), "`json:\"street\"`")
+                  , StructElementTagged(Field(["City"], TypeName("string")), "`json:\"city\"`")
+                  ]
+                )
+              )
+            )
+          , "`json:\"address\"`"
+          )
+        ]
+      )
+    )
+  )
+
+
+
+test var decl [[
+  var i int;
+]] parse to
+  SingleVarDecl(VarSpecNoInit(["i"], TypeName("int")))
+
+test var decl [[
+  var U, V, W float64;
+]] parse to
+  SingleVarDecl(VarSpecNoInit(["U", "V", "W"], TypeName("float64")))
+
+test var decl [[
+  var k = 0;
+]] parse to
+  SingleVarDecl(VarSpecNoType(["k"], [IntLit("0")]))
+
+test var decl [[
+  var x, y float32 = -1, -2;
+]] parse to
+  SingleVarDecl(
+    VarSpec(
+      ["x", "y"]
+    , TypeName("float32")
+    , [Negation(IntLit("1")), Negation(IntLit("2"))]
+    )
+  )
+
+test var decl [[
+  var (
+    i       int;
+    u, v, s = 2.0, 3.0, "bar";
+  );
+]] parse to
+  VarDecl(
+    [ VarSpecNoInit(["i"], TypeName("int"))
+    , VarSpecNoType(
+        ["u", "v", "s"]
+      , [FloatLit("2.0"), FloatLit("3.0"), StringLit("\"bar\"")]
+      )
+    ]
+  )
+
+test var decl [[
+  var re, im = complexSqrt(-1);
+]] parse to
+  SingleVarDecl(
+    VarSpecNoType(
+      ["re", "im"]
+    , [Call(ExprOrTypeName("complexSqrt"), [Negation(IntLit("1"))])]
+    )
+  )
+
+test var decl [[
+  var _, found = entries[name];
+]] parse to
+  SingleVarDecl(
+    VarSpecNoType(
+      ["_", "found"]
+    , [Index(OperandName("entries"), OperandName("name"))]
+    )
+  )
+
+
+
+test function definition [[
+  func min(x int, y int) int {
+    if x < y {
+      return x;
+    };
+    return y;
+  };
+]] parse to
+  FunctionDef(
+    "min"
+  , Signature(
+      Parameters(
+        [ ParameterDecl(["x"], TypeName("int"))
+        , ParameterDecl(["y"], TypeName("int"))
+        ]
+      )
+    , TypeName("int")
+    )
+  , Block(
+      [ IfStmt(
+          NoStmtInit()
+        , Less(OperandName("x"), OperandName("y"))
+        , Block([ReturnStmt([OperandName("x")])])
+        , NoElse()
+        )
+      , ReturnStmt([OperandName("y")])
+      ]
+    )
+  )
+
+test function decl [[
+  func flushICache(begin, end uintptr);
+]] parse to
+  FunctionDecl(
+    "flushICache"
+  , Signature(
+      Parameters([ParameterDecl(["begin", "end"], TypeName("uintptr"))])
+    , NoResult()
+    )
+  )
+
+
+
+test method decl [[
+  func (p *Point) Length() float64 {
+    return math.Sqrt(p.x * p.x + p.y * p.y);
+  };
+]] parse to
+  MethodDef(
+    Receiver("p", ReceiverPtrType(TypeName("Point")))
+  , "Length"
+  , Signature(Parameters([]), TypeName("float64"))
+  , Block(
+      [ ReturnStmt(
+          [ Call(
+              ExprOrTypeSelector(ExprOrTypeName("math"), "Sqrt")
+            , [ Sum(
+                  Product(
+                    Selector(ExprOrTypeName("p"), "x")
+                  , Selector(ExprOrTypeName("p"), "x")
+                  )
+                , Product(
+                    Selector(ExprOrTypeName("p"), "y")
+                  , Selector(ExprOrTypeName("p"), "y")
+                  )
+                )
+              ]
+            )
+          ]
+        )
+      ]
+    )
+  )
+
+test method decl [[
+  func (p *Point) Scale(factor float64) {
+    p.x *= factor;
+    p.y *= factor;
+  };
+]] parse to
+  MethodDef(
+    Receiver("p", ReceiverPtrType(TypeName("Point")))
+  , "Scale"
+  , Signature(
+      Parameters([ParameterDecl(["factor"], TypeName("float64"))])
+    , NoResult()
+    )
+  , Block(
+      [ ProductAssignStmt(
+          [Selector(ExprOrTypeName("p"), "x")]
+        , [OperandName("factor")]
+        )
+      , ProductAssignStmt(
+          [Selector(ExprOrTypeName("p"), "y")]
+        , [OperandName("factor")]
+        )
+      ]
+    )
+  )
