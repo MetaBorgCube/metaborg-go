@@ -45,6 +45,8 @@ signature
     VarDecl : list(VarSpec) -> Declaration
     ConstSpec : list(ID) * Type * list(Expr) -> ConstSpec
     ConstSpecNoType : list(ID) * list(Expr) -> ConstSpec
+    ConstSpecNoExpr : list(ID) * Type -> ConstSpec
+    ConstSpecNoTypeNoExpr : list(ID) -> ConstSpec
     AliasDecl : ID * Type -> TypeSpec
     TypeDef : ID * Type -> TypeSpec
     VarSpec : list(ID) * Type * list(Expr) -> VarSpec
@@ -94,8 +96,8 @@ signature
     CallVariadic-ALT : ExprOrType * list(ExprOrType) -> Expr
     Expr2ExprOrType : Expr -> ExprOrType
     Type2ExprOrType : Type -> ExprOrType
+    ExprOrTypeSelector : ExprOrType * ID -> ExprOrType
     ExprOrTypeName : ID -> ExprOrType
-    QualifiedExprOrTypeName : ID * ID -> ExprOrType
     Positive : Expr -> Expr
     Negation : Expr -> Expr
     Not : Expr -> Expr
@@ -326,11 +328,13 @@ signature
     SimpleStmt2ForPostStmt : SimpleStmt -> ForPostStmt
     ExprListEq : list(Expr) -> ExprOrIdListEq
     IdListEq : list(ID) -> ExprOrIdListEq
+    NoEq : ExprOrIdListEq
     CommClause : CommCase * list(Stmt) -> CommClause
     CommCaseSend : SendStmt -> CommCase
     CommCaseRecv : RecvStmt -> CommCase
     CommCaseDefault : CommCase
     RecvStmt : ExprOrIdListEq * Expr -> RecvStmt
+    RecvStmt-ALT : ExprOrIdListEq * Expr -> RecvStmt
     SendStmt : Expr * Expr -> SendStmt
 signature
 
@@ -368,19 +372,22 @@ signature
     BidirectionalChannelType : Type -> Type
     SendingChannelType : Type -> Type
     ReceivingChannelType : Type -> Type
-    StructElement : Field * Tag -> StructElement
+    StructElement : Field -> StructElement
+    StructElementTagged : Field * STRING_LIT -> StructElement
     Field : list(ID) * Type -> Field
     AnonymousPtrField : TypeName -> Field
     AnonymousField : TypeName -> Field
-    NoTag : Tag
-    Tag : STRING_LIT -> Tag
     Signature : Parameters * Result -> Signature
     NoResult : Result
     Parameters2Result : Parameters -> Result
     Type2Result : Type -> Result
     Parameters : list(ParameterDecl) -> Parameters
     Parameters-ALT : list(ParameterDecl) -> Parameters
+    AnonymousParameters : list(AnonymousParameterDecl) -> Parameters
+    AnonymousParameters-ALT : list(AnonymousParameterDecl) -> Parameters
     ParameterDecl : list(ID) * Type -> ParameterDecl
     VariadicParameterDecl : list(ID) * Type -> ParameterDecl
+    AnonymousParameterDecl : Type -> AnonymousParameterDecl
+    AnonymousVariadicParameterDecl : Type -> AnonymousParameterDecl
     MethodSpec : ID * Signature -> InterfaceTypeMember
     EmbeddedInterface : TypeName -> InterfaceTypeMember

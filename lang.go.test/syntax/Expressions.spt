@@ -67,8 +67,10 @@ test method call [[a.Uint64().LeftShift(b).Int64()]] parse succeeds
 
 test variadic call [[Greeting("goodbye:", s...)]] parse succeeds
 
-test conversion [[*Point(p)]] parse to [[*(Point(p))]]
-test conversion [[(*Point)(p)]] parse succeeds    // Call(amb([PointerType(TypeName("Point")), Deref(OperandName("Point"))]), []
+test deref call [[*Point(p)]] parse to [[*(Point(p))]]
+test conversion [[(*Point)(p)]] parse succeeds
+test call deref [[(*Point)()]] parse succeeds
+
 test conversion [[<-chan int(c)]] parse succeeds
 test conversion [[(<-chan int)(c)]] parse succeeds
 test conversion [[func()(x)]] parse succeeds

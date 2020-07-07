@@ -27,7 +27,7 @@ context-free syntax
 context-free syntax
 
   Type                                      = TypeName
-  Type                                      = <( <Type> )> {bracket}
+  Type                                      = <(<Type>)> {bracket}
   // Pointer types -- https://golang.org/ref/spec#Pointer_types
   Type.PointerType                          = <*<Type>>
   // Array types -- https://golang.org/ref/spec#Array_types

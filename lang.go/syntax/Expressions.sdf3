@@ -76,6 +76,16 @@ context-free priorities
 //  Expr.Call <0> .> Expr.QualifiedOperandName,
 //  Expr.Conversion <0> .> Type = TypeName
 
+context-free priorities
+
+  ExprOrType = Type <0> .> Type.PointerType,    // To parse *Point(p) as a deref of a call result *(Point(p))
+  ExprOrType = Expr <0> .> Expr = "(" Expr ")", // To parse (*Point)(p) as a conversion
+  // BUG? Cannot add <0> here:
+  Expr.Receive .> Expr.Call,                    // To parse <-chan int(c) as a conversion (<-chan int)(c)
+  Expr.Receive .> Expr.Call-ALT,
+  Expr.Receive .> Expr.CallVariadic,
+  Expr.Receive .> Expr.CallVariadic-ALT
+
 
 /**
  * Operators -- https://golang.org/ref/spec#Operators
