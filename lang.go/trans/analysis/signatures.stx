@@ -92,6 +92,10 @@ signature
     TypeAssertion : Expr * Type -> Expr
     OperandName : ID -> Expr
     Selector : ExprOrType * ID -> Expr
+    True : Expr
+    False : Expr
+    Iota : Expr
+    Nill : Expr
     Call : ExprOrType * list(ExprOrType) -> Expr
     Call-ALT : ExprOrType * list(ExprOrType) -> Expr
     CallVariadic : ExprOrType * list(ExprOrType) -> Expr
@@ -363,8 +367,6 @@ signature
 signature
 
   constructors
-    TypeName : ID -> TypeName
-    QualifiedTypeName : ID * ID -> TypeName
     TypeName2Type : TypeName -> Type
     PointerType : Type -> Type
     ArrayType : Expr * Type -> Type
@@ -376,11 +378,33 @@ signature
     BidirectionalChannelType : Type -> Type
     SendingChannelType : Type -> Type
     ReceivingChannelType : Type -> Type
+    TypeName : ID -> TypeName
+    QualifiedTypeName : ID * ID -> TypeName
+    Bool : TypeName
+    String : TypeName
+    Error : TypeName
+    Int : TypeName
+    Int8 : TypeName
+    Int16 : TypeName
+    Int32 : TypeName
+    Int64 : TypeName
+    UInt : TypeName
+    UInt8 : TypeName
+    UInt16 : TypeName
+    UInt32 : TypeName
+    UInt64 : TypeName
+    UIntPtr : TypeName
+    Float32 : TypeName
+    Float64 : TypeName
+    Complex64 : TypeName
+    Complex128 : TypeName
+    Byte : TypeName
+    Rune : TypeName
     StructElement : Field -> StructElement
     StructElementTagged : Field * STRING_LIT -> StructElement
     Field : list(ID) * Type -> Field
-    AnonymousPtrField : TypeName -> Field
-    AnonymousField : TypeName -> Field
+    EmbeddedTypeField : TypeName -> Field
+    EmbeddedPtrTypeField : TypeName -> Field
     Signature : Parameters * Result -> Signature
     NoResult : Result
     Parameters2Result : Parameters -> Result

@@ -21,11 +21,6 @@ template options
 
 context-free syntax
 
-  TypeName.TypeName                         = <<ID>>
-  TypeName.QualifiedTypeName                = <<ID>.<ID>>
-
-context-free syntax
-
   Type                                      = TypeName
   Type                                      = <(<Type>)> {bracket}
   // Pointer types -- https://golang.org/ref/spec#Pointer_types
@@ -47,6 +42,71 @@ context-free syntax
   Type.SendingChannelType                   = [chan[]<- [Type]] {prefer}
   Type.ReceivingChannelType                 = [<-[]chan [Type]]
 
+
+context-free syntax
+
+  TypeName.TypeName                         = <<ID>>
+  TypeName.QualifiedTypeName                = <<ID>.<ID>>
+
+// Pre-declared types
+context-free syntax
+
+  TypeName.Bool                             = <bool>
+  TypeName.String                           = <string>
+  TypeName.Error                            = <error>
+
+  TypeName.Int                              = <int>
+  TypeName.Int8                             = <int8>
+  TypeName.Int16                            = <int16>
+  TypeName.Int32                            = <int32>
+  TypeName.Int64                            = <int64>
+
+  TypeName.UInt                             = <uint>
+  TypeName.UInt8                            = <uint8>
+  TypeName.UInt16                           = <uint16>
+  TypeName.UInt32                           = <uint32>
+  TypeName.UInt64                           = <uint64>
+  TypeName.UIntPtr                          = <uintptr>
+
+  TypeName.Float32                          = <float32>
+  TypeName.Float64                          = <float64>
+
+  TypeName.Complex64                        = <complex64>
+  TypeName.Complex128                       = <complex128>
+
+  TypeName.Byte                             = <byte>  // alias for uint8
+  TypeName.Rune                             = <rune>  // alias for int32
+
+lexical syntax
+
+  ID                                        = "bool" {reject}
+  ID                                        = "string" {reject}
+  ID                                        = "error" {reject}
+
+  ID                                        = "int" {reject}
+  ID                                        = "int8" {reject}
+  ID                                        = "int16" {reject}
+  ID                                        = "int32" {reject}
+  ID                                        = "int64" {reject}
+
+  ID                                        = "uint" {reject}
+  ID                                        = "uint8" {reject}
+  ID                                        = "uint16" {reject}
+  ID                                        = "uint32" {reject}
+  ID                                        = "uint64" {reject}
+  ID                                        = "uintptr" {reject}
+
+  ID                                        = "float32" {reject}
+  ID                                        = "float64" {reject}
+
+  ID                                        = "complex64" {reject}
+  ID                                        = "complex128" {reject}
+
+  ID                                        = "byte" {reject}
+  ID                                        = "rune" {reject}
+  // TODO: Add more keywords, e.g., 'struct'
+
+
 context-free priorities
 
 //  Type.ReceivingChannelType     <0> .> Type.BidirectionalChannelType,
@@ -65,8 +125,8 @@ context-free syntax
   StructElement.StructElementTagged         = <<Field> <STRING_LIT>;>
 
   Field.Field                               = <<{ID ","}+> <Type>>
-  Field.AnonymousPtrField                   = <*<TypeName>>
-  Field.AnonymousField                      = <<TypeName>>
+  Field.EmbeddedTypeField                   = <<TypeName>>
+  Field.EmbeddedPtrTypeField                = <*<TypeName>>
 
 
 /**

@@ -17,74 +17,209 @@ imports
   analysis/types
   analysis/blocks
   analysis/name-resolution
+  analysis/expressions
 
+
+rules declarationOk : scope * Declaration
+
+
+/**********************************************/
+/* Top-level function and method declarations */
+/**********************************************/
 rules topLevelDeclOk : scope * TopLevelDecl
 
   topLevelDeclsOk maps topLevelDeclOk(*, list(*))
 
-  topLevelDeclOk(s, FunctionDecl(name, sig)) :- {TFUN s_ty}
-    typeOfSignature(s, sig) == TFUN,
-    s -> Type{name} with typeOfDecl TFUN.
-
-  topLevelDeclOk(s, FunctionDef(name, sig, body)) :- {TFUN s_ty}
+  topLevelDeclOk(s, decl@FunctionDecl(name, sig)) :- {TFUN}
     typeOfSignature(s, sig) == TFUN,
     s -> Type{name} with typeOfDecl TFUN,
+    @decl.type := TFUN.
+
+  topLevelDeclOk(s, decl@FunctionDef(name, sig, body)) :- {TFUN TRES}
+    typeOfSignature(s, sig) == TFUN@FUN(_, TRES),
+    s -> Type{name} with typeOfDecl TFUN,
+    @decl.type := TFUN,
+    // TODO: Ensure that the block returns a value of TRES
     blockOk(s, body).
 
-  topLevelDeclOk(s, MethodDecl(receiver, name, sig)) :- {T}
-    typeOfReceiver(s, receiver) == T,
-    true.
+  // A method declaration or definition:
+  //   func (p *Point) Scale(factor float64);
+  // has its receiver as the first parameter:
+  //   func Scale(p *Point, factor float64);
+  // However, a function declared like this is not a method.
+  topLevelDeclOk(s, decl@MethodDecl(receiver, name, sig)) :- {TRECV TFUN TPARAM TRES}
+    typeOfSignature(s, sig) == FUN(TPARAM, TRES),
+    typeOfReceiver(s, receiver) == TRECV,
+    TFUN == FUN([TRECV | TPARAM], TRES),
+    // TODO: Find the scope of the receiver and add declaration
+    @decl.type := TFUN.
 
-  topLevelDeclOk(s, MethodDef(receiver, name, sig, body)) :- {T}
-    typeOfReceiver(s, receiver) == T,
-    true.
+  topLevelDeclOk(s, decl@MethodDef(receiver, name, sig, body)) :- {TRECV TFUN TPARAM TRES}
+    typeOfSignature(s, sig) == FUN(TPARAM, TRES),
+    typeOfReceiver(s, receiver) == TRECV,
+    TFUN == FUN([TRECV | TPARAM], TRES),
+    // TODO: Find the scope of the receiver and add declaration
+    @decl.type := TFUN,
+    // TODO: Ensure that the block returns a value of TRES
+    blockOk(s, body).
 
-rules declarationOk : scope * Declaration
+  topLevelDeclOk(s_pkg, Declaration2TopLevelDecl(decl)) :-
+    declarationOk(s_pkg, decl).
+
+
+
+
+/*************************/
+/* Constant declarations */
+/*************************/
 
   declarationOk(s, ConstDecl(constSpecs)) :-
-    constSpecsOk(s, constSpecs),
-    true.
+    constSpecsOk(s, constSpecs).
 
-  declarationOk(s, TypeDecl(typeSpecs)) :-
-    typeSpecsOk(s, typeSpecs),
-    true.
-
-  declarationOk(s, VarDecl(varSpecs)) :-
-    varSpecsOk(s, varSpecs),
-    true.
-
+// A constant declaration consists of one or more constant specifications.
+// Each constant specification declares one or more constants.
 rules constSpecOk : scope * ConstSpec
 
   constSpecsOk maps constSpecOk(*, list(*))
 
-  constSpecOk(s, ConstSpec(ids, type, exprs)) :-
-    true.
+  // Constant specifications with a type and initialization expressions
+  constSpecOk(s, ConstSpec(names, type, exprs)) :- {T}
+    typeOfType(s, type) == T,
+    constSpecsDeclsAndExprsOk(s, names, exprs, T).
 
-  constSpecOk(s, ConstSpecNoType(ids, exprs)) :-
-    true.
+  // Constant specifications with initialization expressions but no type
+  constSpecOk(s, ConstSpecNoType(names, exprs)) :-
+    constSpecExprsOk(s, names, exprs).
 
+rules constSpecsDeclAndExprOk : scope * string * Expr * TYPE
+
+  constSpecsDeclsAndExprsOk maps constSpecsDeclAndExprOk(*, list(*), list(*), *)
+
+  constSpecsDeclAndExprOk(s, name, expr, T) :- {TEXP}
+    declareConst(s, name, T),
+    typeOfExpr(s, expr) == TEXP,
+    isAssignableTo(TEXP, T) | error $[Expression of type [TEXP] is not assignable to constant of [T].].
+
+rules constSpecExprOk : scope * string * Expr
+
+  constSpecExprsOk maps constSpecExprOk(*, list(*), list(*))
+
+  constSpecExprOk(s, name, expr) :- {T}
+    typeOfExpr(s, expr) == T,   // This can be an untyped type
+    declareConst(s, name, T).
+
+
+
+/*********************/
+/* Type declarations */
+/*********************/
+
+  declarationOk(s, TypeDecl(typeSpecs)) :-
+    typeSpecsOk(s, typeSpecs).
+
+// A type declaration consists of one or more type specifications.
+// Each type specification declares one or more types.
+// Every type declaration is unique, so two declarations T1 string; T2 string
+// are distinct types. Every type has an underlying type, which in this
+// example is string for both.
 rules typeSpecOk : scope * TypeSpec
 
   typeSpecsOk maps typeSpecOk(*, list(*))
 
   typeSpecOk(s, AliasDecl(name, type)) :-
+    // TODO
     true.
 
-  typeSpecOk(s, TypeDef(name, type)) :-
-    true.
+  // Type specification with name and type
+  typeSpecOk(s, TypeDef(name, type)) :- {T}
+    typeOfType(s, type) == T,
+    declareType(s, name, T).
 
+
+//rules declareStructField : scope * Field
+//
+//  // A field declares one or more fields with the same type
+//  declareStructField(s_struct, Field(ids, type)) :- {T}
+//    typeOfType(s_struct, type) == T,
+//    declareStructFieldInsts(s_struct, ids, T).
+//
+//  // A field declared with a type but no explicit field name is called an embedded field.
+//  // An embedded field must be specified as a type name T or as a pointer to a non-interface
+//  // type name *T, and T itself may not be a pointer type. The unqualified type name acts as
+//  // the field name.
+//  declareStructField(s_struct, EmbeddedTypeField(type@TypeName(typeName))) :- {T}
+//    typeOfType(s_struct, TypeName2Type(type)) == T,
+//    declareEmbeddedField(s_struct, typeName, T).
+//
+//  declareStructField(s_struct, EmbeddedTypeField(type@QualifiedTypeName(_, typeName))) :- {T}
+//    typeOfType(s_struct, TypeName2Type(type)) == T,
+//    declareEmbeddedField(s_struct, typeName, T).
+//
+//  declareStructField(s_struct, EmbeddedPtrTypeField(type@TypeName(typeName))) :- {T}
+//    typeOfType(s_struct, PointerType(TypeName2Type(type))) == T,
+//    declareEmbeddedField(s_struct, typeName, T).
+//
+//  declareStructField(s_struct, EmbeddedPtrTypeField(type@QualifiedTypeName(_, typeName))) :- {T}
+//    typeOfType(s_struct, PointerType(TypeName2Type(type))) == T,
+//    declareEmbeddedField(s_struct, typeName, T).
+
+
+
+
+/*************************/
+/* Variable declarations */
+/*************************/
+
+  declarationOk(s, VarDecl(varSpecs)) :-
+    varSpecsOk(s, varSpecs).
+
+// A variable declaration consists of one or more variable specifications.
+// Each variable specification declares one or more variables.
 rules varSpecOk : scope * VarSpec
 
   varSpecsOk maps varSpecOk(*, list(*))
 
-  varSpecOk(s, VarSpec(names, type, exprs)) :-
-    true.
+  // Variable specifications with a type and initialization expressions
+  varSpecOk(s, decl@VarSpec(names, type, exprs)) :- {T}
+    typeOfType(s, type) == T,
+    varSpecsDeclsAndExprsOk(s, names, exprs, T).
 
-  varSpecOk(s, VarSpecNoInit(names, type)) :-
-    true.
+  // Variable specifications with a type but no initialization
+  varSpecOk(s, decl@VarSpecNoInit(names, type)) :- {T}
+    typeOfType(s, type) == T,
+    varSpecsDeclsOk(s, names, T).
 
+  // Variable specifications with initialization expressions but no type
   varSpecOk(s, VarSpecNoType(names, exprs)) :-
-    true.
+    varSpecExprsOk(s, names, exprs).
+
+rules varSpecDeclAndExprOk : scope * string * Expr * TYPE
+
+  varSpecsDeclsAndExprsOk maps varSpecDeclAndExprOk(*, list(*), list(*), *)
+
+  varSpecDeclAndExprOk(s, name, expr, T) :- {TEXP}
+    declareVar(s, name, T),
+    typeOfExpr(s, expr) == TEXP,
+    isAssignableTo(TEXP, T) | error $[Expression of type [TEXP] is not assignable to variable of [T].].
+
+rules varSpecDeclOk : scope * string * TYPE
+
+  varSpecsDeclsOk maps varSpecDeclOk(*, list(*), *)
+
+  varSpecDeclOk(s, name, T) :-
+    declareVar(s, name, T).
+
+rules varSpecExprOk : scope * string * Expr
+
+  varSpecExprsOk maps varSpecExprOk(*, list(*), list(*))
+
+  varSpecExprOk(s, name, expr) :- {T}
+    typeOfExpr(s, expr) == T,
+    declareVar(s, name, ensureTyped(T)).
+
+
+
+
 
 rules typeOfReceiver : scope * Receiver -> TYPE
 

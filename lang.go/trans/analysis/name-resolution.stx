@@ -1,21 +1,26 @@
 module analysis/name-resolution
 
+imports analysis/types
+
 signature
 
   sorts TYPE
 
   namespaces
+    Decl    : string
     Type    : string
     Pkg     : string
     Label   : string
 
   relations
     typeOfDecl  : occurrence -> TYPE
+    type    : occurrence -> TYPE
 //    lblOfStmt   : occurrence
 
   name-resolution
     labels
       P     // lexical parent
+      E     // embedded type in struct
       IMP
       PUB
       PRV
@@ -24,12 +29,13 @@ signature
     // TODO: Is this correct?
     resolve Type  filter P* (IMP? PUB? PUB? | PRV?) FM* min $ < P, P < PRV, P < PUB, P < FM
     resolve Label filter P*                             min $ < P
+    resolve Decl  filter P* E* min $ < P, $ < E
 
-rules lookupType : scope * string -> TYPE
+rules resolveType : scope * string -> TYPE
 
-  lookupType(s, x) = T :- {dx}
-    @x.ref := dx,
-    typeOfDecl of Type{x} in s |-> [(_, (Type{dx}, T))].
+  resolveType(s, x) = T :- {dx}
+    type of Decl{x} in s |-> [(_, (Decl{dx}, T))],
+    @x.ref := dx.
 
 rules declareLabel : scope * string
 
@@ -44,6 +50,46 @@ rules resolveLabel : scope * string
     @refName.ref := declName.
 
 
+
+// Declares a field of a struct
+rules declareStructFieldInst : scope * string * TYPE
+
+  declareStructFieldInsts maps declareStructFieldInst(*, list(*), *)
+
+  declareStructFieldInst(s_struct, name, T) :-
+    s_struct -> Decl{name} with type T,
+    @name.type := T.
+
+// An embedded field declares a struct member with the given name and type,
+// but also adds an E edge to the scope of the struct member, allowing
+// their fields and methods to be used directly as if they are part of the
+// struct in which the field is embedded.
+rules declareEmbeddedField : scope * string * TYPE
+
+  declareEmbeddedField(s_struct, name, T@STRUCT(s_embedded)) :-
+    declareStructFieldInst(s_struct, name, T),
+    s_struct -E-> s_embedded.
+
+
+/*************/
+/* Constants */
+/*************/
+rules declareConst : scope * string * TYPE
+
+  declareConst(s, name, T) :-
+    s -> Decl{name} with type T,
+    @name.type := T.
+
+
+/*********/
+/* Types */
+/*********/
+rules declareType : scope * string * TYPE
+
+  declareType(s, name, T) :-
+    s -> Decl{name} with type TYPE(T),
+    @name.type := TYPE(T).
+
 // Used to declare built-in types
 rules declareTypeRaw : scope * string * TYPE
 
@@ -51,3 +97,14 @@ rules declareTypeRaw : scope * string * TYPE
    s -> Type{x} with typeOfDecl T,
    // Assert that the declaration is distinct
    typeOfDecl of Type{x} in s |-> [(_, (_, T))] | error $[Multiple declarations of type [x] : [T]].
+
+
+/*************/
+/* Variables */
+/*************/
+rules declareVar : scope * string * TYPE
+
+  declareVar(s, name, T) :-
+    s -> Decl{name} with type T,
+    @name.type := T.
+

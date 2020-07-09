@@ -67,11 +67,11 @@ rules typeOfExpr : scope * Expr -> TYPE
 
   typesOfExprs maps typeOfExpr(*, list(*)) = list(*)
 
-  typeOfExpr(s, IntLit(_))       = UNTYPED_INT.
-  typeOfExpr(s, FloatLit(_))     = UNTYPED_FLOAT.
-  typeOfExpr(s, ImaginaryLit(_)) = UNTYPED_COMPLEX.
-  typeOfExpr(s, RuneLit(_))      = UNTYPED_RUNE.
-  typeOfExpr(s, StringLit(_))    = UNTYPED_STRING.
+  typeOfExpr(s, IntLit(_))       = UNTYPED_INT().
+  typeOfExpr(s, FloatLit(_))     = UNTYPED_FLOAT().
+  typeOfExpr(s, ImaginaryLit(_)) = UNTYPED_COMPLEX().
+  typeOfExpr(s, RuneLit(_))      = UNTYPED_RUNE().
+  typeOfExpr(s, StringLit(_))    = UNTYPED_STRING().
 
   typeOfExpr(s, FunctionLit(sig, body)) = T :-
     // TODO
@@ -109,6 +109,14 @@ rules typeOfExpr : scope * Expr -> TYPE
   // MethodExpr are now part of Selector
   // QualifiedOperandName are now part of Selector
   // MemberAccess are now part of Selector
+  // Given a selector `x.y`:
+  // - if x is a package name of an imported package, y denotes a member of that package
+  // - if x is a value of type T or *T, where T is not a pointer or interface type, y denotes a field or method of T or *T
+  // - if x is a value of type T, where T is an interface type, y denotes a method in the method set of T
+  // - if x is a value of type T, where T is a pointer type, y denotes a field of deref x (i.e., `(*x).y`)
+  // - if x is a type T, y denotes a method of T with an explicit receiver as the first argument
+
+  // A selector can select a field or method of a
   typeOfExpr(s, Selector(expr, name)) = T :-
     // TODO
     true.
@@ -118,7 +126,7 @@ rules typeOfExpr : scope * Expr -> TYPE
 //    true.
 
   typeOfExpr(s, OperandName(name)) = T :-
-    lookupType(s, name) == T.
+    resolveType(s, name) == T.
 
 //  typeOfExpr(s, QualifiedOperandName(x, y)) = T :-
 //    // TODO
@@ -128,6 +136,11 @@ rules typeOfExpr : scope * Expr -> TYPE
 //    // TODO
 //    true.
 
+  typeOfExpr(s, True()) = UNTYPED_BOOL().
+  typeOfExpr(s, False()) = UNTYPED_BOOL().
+  typeOfExpr(s, Iota()) = UNTYPED_INT().
+  typeOfExpr(s, Nill()) = _ :-
+    false | error $[Nil is not yet supported.].
 
 rules
 
@@ -466,6 +479,8 @@ rules typeOfMethodOrFunctionExpr : scope * Expr -> TYPE
     // TODO
     true.
 
+
+
 rules typeOfExprOrType : scope * ExprOrType -> TYPE
 
   typesOfExprOrTypes maps typeOfExprOrType(*, list(*)) = list(*)
@@ -473,8 +488,8 @@ rules typeOfExprOrType : scope * ExprOrType -> TYPE
   typeOfExprOrType(s, Expr2ExprOrType(expr)) = T :-
     typeOfExpr(s, expr) == T.
 
-  typeOfExprOrType(s, Type2ExprOrType(expr)) = _ :-
-    false.
+  typeOfExprOrType(s, Type2ExprOrType(type)) = TYPE(T) :-
+    typeOfType(s, type) == T.
 
   typeOfExprOrType(s, ExprOrTypeSelector(exprOrType, member)) = T :-
     // TODO

@@ -50,6 +50,18 @@ context-free syntax
   // Primary expressions -- https://golang.org/ref/spec#Primary_expressions
   Expr.Selector                             = <<ExprOrType>.<ID>> {left}
 
+  Expr.True                                 = <true>
+  Expr.False                                = <false>
+  Expr.Iota                                 = <iota>
+  Expr.Nill                                 = <nil>
+
+lexical syntax
+
+  ID                                        = "true" {reject}
+  ID                                        = "false" {reject}
+  ID                                        = "iota" {reject}
+  ID                                        = "nil" {reject}
+
 context-free syntax
 
   // Primary expressions -- https://golang.org/ref/spec#Primary_expressions

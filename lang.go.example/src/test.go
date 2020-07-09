@@ -1,8 +1,7 @@
 package main;
 
-func test();
-
-func main() {
-  f(3.1415, true);
+func (p *Point) Length() float64 {
+  p.x;
+  p.x * p.x;
+  p.x * p.x + p.y * p.y;
 };
-
