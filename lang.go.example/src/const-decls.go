@@ -49,7 +49,8 @@ const (
   r  rune = 'x';
 );
 
-const (v = r;);
+// assigning values untyped
+const v = ur;
 
 // assigning values
 const (
@@ -71,6 +72,28 @@ const (
   ac1 complex64 = v;
   ac2 complex128 = v;
   ar  rune = v;
+);
+
+// assigning values coerced types
+var (
+  cb = true;
+  cs = "xyz";
+  ci0 = 42;
+  ci1 = 42;
+  ci2 = 42;
+  ci4 = 42;
+  ci8 = 42;
+  cu0 = 42;
+  cu1 = 42;
+  cu2 = 42;
+  cu4 = 42;
+  cu8 = 42;
+  cup = 42;
+  cf1 = 1.337;
+  cf2 = 1.337;
+  cc1 = 1+.337i;
+  cc2 = 1+.337i;
+  cr  = 'x';
 );
 
 

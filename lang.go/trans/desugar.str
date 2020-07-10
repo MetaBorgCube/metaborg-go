@@ -16,26 +16,27 @@ signature
 rules
 
   desugar-all = topdown(try(
-    desugar-sourcefile // <+
+//    desugar-sourcefile <+
 //    desugar-disamb <+
 //    desugar-alt <+
-//    desugar-single-decl
+    desugar-single-decl
   ))
 
 rules
 
+  // NOTE: Incompatible with explication
   desugar-sourcefile:
       file@SourceFile(name, imports, decls) -> SourceFile2(pkg-path, name, imports, decls)
     with file-path := <origin-file> file;
          pkg-path  := <current-language-relative-source-or-include-path;dirname> file-path
 
-//rules
-//
-//  desugar-single-decl: SingleImportDecl(i)              -> ImportDecl([i])
-//  desugar-single-decl: SingleConstDecl(c)               -> ConstDecl([c])
-//  desugar-single-decl: SingleTypeDecl(t)                -> TypeDecl([t])
-//  desugar-single-decl: SingleVarDecl(v)                 -> VarDecl([v])
-//
+rules
+
+  desugar-single-decl: SingleImportDecl(i)              -> ImportDecl([i])
+  desugar-single-decl: SingleConstDecl(c)               -> ConstDecl([c])
+  desugar-single-decl: SingleTypeDecl(t)                -> TypeDecl([t])
+  desugar-single-decl: SingleVarDecl(v)                 -> VarDecl([v])
+
 //rules
 //
 //  desugar-disamb: QualifiedIdent-DISAMB(p, i)           -> QualifiedIdent(p, i)
