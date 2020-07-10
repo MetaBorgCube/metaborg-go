@@ -3,9 +3,6 @@ module analysis/name-resolution
 imports analysis/types
 
 signature
-
-  sorts TYPE
-
   namespaces
     Decl    : string
     Type    : string

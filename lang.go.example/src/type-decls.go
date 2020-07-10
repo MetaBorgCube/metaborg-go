@@ -16,8 +16,8 @@ type (
 var s = "1";
 
 var (
-  a1 A1 = s;
-  a2 A2 = s;
+  a1 A1;// = s;
+  a2 A2;// = s;
   a3 A3 = s;
   a4 A4 = s;
 );

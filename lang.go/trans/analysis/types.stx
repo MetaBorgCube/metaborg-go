@@ -63,61 +63,62 @@ rules familyOfType : TYPE -> FAMILY
 
 
 signature
-// Special types
-constructors
-  NAMED       : occurrence -> TYPE
-  FUN         : list(TYPE) * TYPE -> TYPE
-  ARRAY       : int * TYPE -> TYPE
-  SLICE       : TYPE -> TYPE
-  STRUCT      : scope -> TYPE
-  PTR         : TYPE -> TYPE
-  MAP         : TYPE * TYPE -> TYPE
-  // A TUPLE type, to model Go functions with multiple return values.
-  // Note that tuples don't have first-class support in Go. For example,
-  // you cannot nest tuples. But this way we can distinguish between the case
-  // of a function with zero, one, and multiple return values.
-  // Invariants: empty and singleton tuples are not allowed; nested tuples are not allowed.
-  TUPLE       : list(TYPE) -> TYPE
-  // A VOID type, to model Go functions with no return value.
-  VOID        : TYPE
+  sorts TYPE
+  // Special types
+  constructors
+    NAMED       : occurrence -> TYPE
+    FUN         : list(TYPE) * TYPE -> TYPE
+    ARRAY       : int * TYPE -> TYPE
+    SLICE       : TYPE -> TYPE
+    STRUCT      : scope -> TYPE
+    PTR         : TYPE -> TYPE
+    MAP         : TYPE * TYPE -> TYPE
+    // A TUPLE type, to model Go functions with multiple return values.
+    // Note that tuples don't have first-class support in Go. For example,
+    // you cannot nest tuples. But this way we can distinguish between the case
+    // of a function with zero, one, and multiple return values.
+    // Invariants: empty and singleton tuples are not allowed; nested tuples are not allowed.
+    TUPLE       : list(TYPE) -> TYPE
+    // A VOID type, to model Go functions with no return value.
+    VOID        : TYPE
 
-  CHANNEL     : TYPE -> TYPE
-  // A type, which is the type of a TYPE
-  TYPE        : TYPE -> TYPE
+    CHANNEL     : TYPE -> TYPE
+    // A type, which is the type of a TYPE
+    TYPE        : TYPE -> TYPE
 
-// Untyped constant types
-constructors
-  UNTYPED_BOOL      : TYPE
-  UNTYPED_STRING    : TYPE
-  UNTYPED_RUNE      : TYPE
-  UNTYPED_INT       : TYPE
-  UNTYPED_FLOAT     : TYPE
-  UNTYPED_COMPLEX   : TYPE
+  // Untyped constant types
+  constructors
+    UNTYPED_BOOL      : TYPE
+    UNTYPED_STRING    : TYPE
+    UNTYPED_RUNE      : TYPE
+    UNTYPED_INT       : TYPE
+    UNTYPED_FLOAT     : TYPE
+    UNTYPED_COMPLEX   : TYPE
 
-// Built-in types
-constructors
-  BOOL        : TYPE
-  STRING      : TYPE
-  ERROR       : TYPE
+  // Built-in types
+  constructors
+    BOOL        : TYPE
+    STRING      : TYPE
+    ERROR       : TYPE
 
-  INT         : TYPE
-  INT8        : TYPE
-  INT16       : TYPE
-  INT32       : TYPE    // RUNE
-  INT64       : TYPE
+    INT         : TYPE
+    INT8        : TYPE
+    INT16       : TYPE
+    INT32       : TYPE    // RUNE
+    INT64       : TYPE
 
-  UINT        : TYPE
-  UINT8       : TYPE    // BYTE
-  UINT16      : TYPE
-  UINT32      : TYPE
-  UINT64      : TYPE
-  UINTPTR     : TYPE
+    UINT        : TYPE
+    UINT8       : TYPE    // BYTE
+    UINT16      : TYPE
+    UINT32      : TYPE
+    UINT64      : TYPE
+    UINTPTR     : TYPE
 
-  FLOAT32     : TYPE
-  FLOAT64     : TYPE
+    FLOAT32     : TYPE
+    FLOAT64     : TYPE
 
-  COMPLEX64   : TYPE
-  COMPLEX128  : TYPE
+    COMPLEX64   : TYPE
+    COMPLEX128  : TYPE
 
 
 rules typeOfType : scope * Type -> TYPE
