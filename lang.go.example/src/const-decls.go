@@ -54,8 +54,8 @@ const v = ur;
 
 // assigning values
 const (
-  ab bool = v;
-  as string = v;
+  //ab bool = v;
+  //as string = v;
   ai0 int = v;
   ai1 int8 = v;
   ai2 int16 = v;
