@@ -26,142 +26,193 @@ signature
     COMPLEX_FAMILY  : FAMILY
     BOOL_FAMILY     : FAMILY
     STRING_FAMILY   : FAMILY
-    OTHER_FAMILY    : TYPE -> FAMILY
+    OTHER_FAMILY    : KIND -> FAMILY
 
-rules familyOfType : TYPE -> FAMILY
+rules familyOfKind : KIND -> FAMILY
 
-  familyOfType(UNTYPED_BOOL())    = BOOL_FAMILY().
-  familyOfType(BOOL())            = BOOL_FAMILY().
+  familyOfKind(UNTYPED_BOOL())    = BOOL_FAMILY().
+  familyOfKind(BOOL())            = BOOL_FAMILY().
 
-  familyOfType(UNTYPED_STRING())  = STRING_FAMILY().
-  familyOfType(STRING())          = STRING_FAMILY().
+  familyOfKind(UNTYPED_STRING())  = STRING_FAMILY().
+  familyOfKind(STRING())          = STRING_FAMILY().
 
   // UNTYPED_RUNE?
-  familyOfType(UNTYPED_INT())     = INT_FAMILY().
+  familyOfKind(UNTYPED_INT())     = INT_FAMILY().
 
-  familyOfType(INT())             = INT_FAMILY().
-  familyOfType(INT8())            = INT_FAMILY().
-  familyOfType(INT16())           = INT_FAMILY().
-  familyOfType(INT32())           = INT_FAMILY().
-  familyOfType(INT64())           = INT_FAMILY().
+  familyOfKind(INT())             = INT_FAMILY().
+  familyOfKind(INT8())            = INT_FAMILY().
+  familyOfKind(INT16())           = INT_FAMILY().
+  familyOfKind(INT32())           = INT_FAMILY().
+  familyOfKind(INT64())           = INT_FAMILY().
 
-  familyOfType(UINT())            = INT_FAMILY().
-  familyOfType(UINT8())           = INT_FAMILY().
-  familyOfType(UINT16())          = INT_FAMILY().
-  familyOfType(UINT32())          = INT_FAMILY().
-  familyOfType(UINT64())          = INT_FAMILY().
+  familyOfKind(UINT())            = INT_FAMILY().
+  familyOfKind(UINT8())           = INT_FAMILY().
+  familyOfKind(UINT16())          = INT_FAMILY().
+  familyOfKind(UINT32())          = INT_FAMILY().
+  familyOfKind(UINT64())          = INT_FAMILY().
 
-  familyOfType(UNTYPED_FLOAT())   = FLOAT_FAMILY().
-  familyOfType(FLOAT32())         = FLOAT_FAMILY().
-  familyOfType(FLOAT64())         = FLOAT_FAMILY().
+  familyOfKind(UNTYPED_FLOAT())   = FLOAT_FAMILY().
+  familyOfKind(FLOAT32())         = FLOAT_FAMILY().
+  familyOfKind(FLOAT64())         = FLOAT_FAMILY().
 
-  familyOfType(UNTYPED_COMPLEX()) = COMPLEX_FAMILY().
-  familyOfType(COMPLEX64())       = COMPLEX_FAMILY().
-  familyOfType(COMPLEX128())      = COMPLEX_FAMILY().
+  familyOfKind(UNTYPED_COMPLEX()) = COMPLEX_FAMILY().
+  familyOfKind(COMPLEX64())       = COMPLEX_FAMILY().
+  familyOfKind(COMPLEX128())      = COMPLEX_FAMILY().
 
-  familyOfType(T)                 = OTHER_FAMILY(T).
+  familyOfKind(K)                 = OTHER_FAMILY(K).
 
 
 signature
-// Special types
-constructors
-  NAMED       : occurrence -> TYPE
-  FUN         : list(TYPE) * TYPE -> TYPE
-  ARRAY       : int * TYPE -> TYPE
-  SLICE       : TYPE -> TYPE
-  STRUCT      : scope -> TYPE
-  PTR         : TYPE -> TYPE
-  MAP         : TYPE * TYPE -> TYPE
-  // A TUPLE type, to model Go functions with multiple return values.
-  // Note that tuples don't have first-class support in Go. For example,
-  // you cannot nest tuples. But this way we can distinguish between the case
-  // of a function with zero, one, and multiple return values.
-  // Invariants: empty and singleton tuples are not allowed; nested tuples are not allowed.
-  TUPLE       : list(TYPE) -> TYPE
-  // A VOID type, to model Go functions with no return value.
-  VOID        : TYPE
+  sorts KIND
+  constructors
+    NAMED       : occurrence -> KIND
+    FUN         : list(TYPE) * TYPE -> KIND
+    ARRAY       : int * TYPE -> KIND
+    SLICE       : TYPE -> KIND
+    STRUCT      : scope -> KIND
+    PTR         : TYPE -> KIND
+    MAP         : TYPE * TYPE -> KIND
+    // A TUPLE type, to model Go functions with multiple return values.
+    // Note that tuples don't have first-class support in Go. For example,
+    // you cannot nest tuples. But this way we can distinguish between the case
+    // of a function with zero, one, and multiple return values.
+    // Invariants: empty and singleton tuples are not allowed; nested tuples are not allowed.
+    TUPLE       : list(TYPE) -> KIND
+    // A VOID type, to model Go functions with no return value.
+    VOID        : KIND
 
-  CHANNEL     : TYPE -> TYPE
-  // A type, which is the type of a TYPE
-  TYPE        : TYPE -> TYPE
+    CHANNEL     : TYPE -> KIND
 
-// Untyped constant types
-constructors
-  UNTYPED_BOOL      : TYPE
-  UNTYPED_STRING    : TYPE
-  UNTYPED_RUNE      : TYPE
-  UNTYPED_INT       : TYPE
-  UNTYPED_FLOAT     : TYPE
-  UNTYPED_COMPLEX   : TYPE
+  // Untyped constant types
+  constructors
+    UNTYPED_BOOL      : KIND
+    UNTYPED_STRING    : KIND
+    UNTYPED_RUNE      : KIND
+    UNTYPED_INT       : KIND
+    UNTYPED_FLOAT     : KIND
+    UNTYPED_COMPLEX   : KIND
 
-// Built-in types
-constructors
-  BOOL        : TYPE
-  STRING      : TYPE
-  ERROR       : TYPE
+  // Built-in types
+  constructors
+    BOOL        : KIND
+    STRING      : KIND
+    ERROR       : KIND
 
-  INT         : TYPE
-  INT8        : TYPE
-  INT16       : TYPE
-  INT32       : TYPE    // RUNE
-  INT64       : TYPE
+    INT         : KIND
+    INT8        : KIND
+    INT16       : KIND
+    INT32       : KIND    // RUNE
+    INT64       : KIND
 
-  UINT        : TYPE
-  UINT8       : TYPE    // BYTE
-  UINT16      : TYPE
-  UINT32      : TYPE
-  UINT64      : TYPE
-  UINTPTR     : TYPE
+    UINT        : KIND
+    UINT8       : KIND    // BYTE
+    UINT16      : KIND
+    UINT32      : KIND
+    UINT64      : KIND
+    UINTPTR     : KIND
 
-  FLOAT32     : TYPE
-  FLOAT64     : TYPE
+    FLOAT32     : KIND
+    FLOAT64     : KIND
 
-  COMPLEX64   : TYPE
-  COMPLEX128  : TYPE
+    COMPLEX64   : KIND
+    COMPLEX128  : KIND
 
 
+
+/********************/
+/* Underlying types */
+/********************/
+// Two type declarations `type T1 string` and `type T2 string` are different,
+// but their underlying types are the same, `string`.
+signature
+  sorts TYPE
+  constructors
+    TYPE : string * KIND -> TYPE
+
+//rules kindOfType : scope * Type -> KIND
+//
+//  kindOfType(s, type) = K :-
+//    typeDeclOfType(s, type) == TYPE(_, K).
+
+
+
+/*******************/
+/* Type references */
+/*******************/
 rules typeOfType : scope * Type -> TYPE
 
   typeOfType(s, TypeName2Type(typeName)) = T :-
     typeOfTypeName(s, typeName) == T.
 
-  typeOfType(s, PointerType(type)) = PTR(T) :-
+  // Anonymous type
+  typeOfType(s, type) = TYPE("", K) :-
+    kindOfType(s, type) == K.
+
+rules typeOfTypeName : scope * TypeName -> TYPE
+
+  typeOfTypeName(s, TypeName(name)) = T :-
+    // FIXME: should be resolveType
+    //resolveVar(s, name) == T.
+    true.
+
+  typeOfTypeName(s, QualifiedTypeName(x, y)) = T :-
+    // TODO
+    false | error $[typeOfType(QualifiedTypeName) not implemented.].
+
+  // Anonymous type
+  // FIXME: Is this correct, or should we use the keyword as the name?
+  typeOfTypeName(s, typeName) = TYPE("", K) :-
+    kindOfTypeName(s, typeName) == K.
+
+
+
+
+
+
+// --- //
+
+rules kindOfType : scope * Type -> KIND
+
+  kindOfType(s, TypeName2Type(typeName)) = K :-
+    kindOfTypeName(s, typeName) == K.
+
+  kindOfType(s, PointerType(type)) = PTR(T) :-
     typeOfType(s, type) == T.
 
-  typeOfType(s, ArrayType(lengthExpr, type)) = ARRAY(/* dummy size */ 42, T) :-
+  kindOfType(s, ArrayType(lengthExpr, type)) = ARRAY(/* dummy size */ 42, T) :-
     // TODO: Evaluate constant expression lengthExpr to an int?
     typeOfType(s, type) == T.
 
-  typeOfType(s, SliceType(type)) = SLICE(T) :-
+  kindOfType(s, SliceType(type)) = SLICE(T) :-
     typeOfType(s, type) == T.
 
-  typeOfType(s, StructType(elements)) = STRUCT(s_struct) :- {T_ELEMENTS}
+  kindOfType(s, StructType(elements)) = STRUCT(s_struct) :- {T_ELEMENTS}
     new s_struct,
 //    typesOfStructElements(s_struct, elements) == T_ELEMENTS.
-    false | error $[typeOfType(StructType) not implemented.].
+    false | error $[kindOfType(StructType) not implemented.].
 
-  typeOfType(s, FunctionType(sig)) = TFUN :-
-    typeOfSignature(s, sig) == TFUN.
+  kindOfType(s, FunctionType(sig)) = TFUN :-
+    kindOfSignature(s, sig) == TFUN.
 
-  typeOfType(s, InterfaceType(members)) = T :-
+  kindOfType(s, InterfaceType(members)) = T :-
     // TODO
-    false | error $[typeOfType(InterfaceType) not implemented.].
+    false | error $[kindOfType(InterfaceType) not implemented.].
 
-  typeOfType(s, MapType(keyType, elementType)) = MAP(TKEY, TELEMENT) :-
+  kindOfType(s, MapType(keyType, elementType)) = MAP(TKEY, TELEMENT) :-
     typeOfType(s, keyType) == TKEY,
     typeOfType(s, elementType) == TELEMENT.
 
-  typeOfType(s, BidirectionalChannelType(type)) = T :-
+  kindOfType(s, BidirectionalChannelType(type)) = T :-
     // TODO
-    false | error $[typeOfType(BidirectionalChannelType) not implemented.].
+    false | error $[kindOfType(BidirectionalChannelType) not implemented.].
 
-  typeOfType(s, SendingChannelType(type)) = T :-
+  kindOfType(s, SendingChannelType(type)) = T :-
     // TODO
-    false | error $[typeOfType(SendingChannelType) not implemented.].
+    false | error $[kindOfType(SendingChannelType) not implemented.].
 
-  typeOfType(s, ReceivingChannelType(type)) = T :-
+  kindOfType(s, ReceivingChannelType(type)) = T :-
     // TODO
-    false | error $[typeOfType(ReceivingChannelType) not implemented.].
+    false | error $[kindOfType(ReceivingChannelType) not implemented.].
 
 
 //rules typeOfStructElement : scope * StructElement -> TYPE
@@ -176,46 +227,47 @@ rules typeOfType : scope * Type -> TYPE
 ////
 ////  typeOfStructElement(s_struct, StructElementTagged(field, _)) = T :-
 ////    typeOfField(s_struct, field) == T.
-rules typeOfTypeName : scope * TypeName -> TYPE
+rules kindOfTypeName : scope * TypeName -> KIND
 
-  typeOfTypeName(s, TypeName(name)) = T :-
-    // FIXME:
-    resolveType(s, name) == T.
+  kindOfTypeName(s, TypeName(name)) = T :-
+    // FIXME: should be resolveType
+    //resolveVar(s, name) == T.
+    true.
 
-  typeOfTypeName(s, QualifiedTypeName(x, y)) = T :-
+  kindOfTypeName(s, QualifiedTypeName(x, y)) = T :-
     // TODO
-    false | error $[typeOfType(QualifiedTypeName) not implemented.].
+    false | error $[kindOfTypeName(QualifiedTypeName) not implemented.].
 
-  typeOfTypeName(s, Bool()) = BOOL().
-  typeOfTypeName(s, String()) = STRING().
-  typeOfTypeName(s, Error()) = ERROR().
+  kindOfTypeName(s, Bool()) = BOOL().
+  kindOfTypeName(s, String()) = STRING().
+  kindOfTypeName(s, Error()) = ERROR().
 
-  typeOfTypeName(s, Int()) = INT().
-  typeOfTypeName(s, Int8()) = INT8().
-  typeOfTypeName(s, Int16()) = INT16().
-  typeOfTypeName(s, Int32()) = INT32().
-  typeOfTypeName(s, Int64()) = INT64().
+  kindOfTypeName(s, Int()) = INT().
+  kindOfTypeName(s, Int8()) = INT8().
+  kindOfTypeName(s, Int16()) = INT16().
+  kindOfTypeName(s, Int32()) = INT32().
+  kindOfTypeName(s, Int64()) = INT64().
 
-  typeOfTypeName(s, UInt()) = UINT().
-  typeOfTypeName(s, UInt8()) = UINT8().
-  typeOfTypeName(s, UInt16()) = UINT16().
-  typeOfTypeName(s, UInt32()) = UINT32().
-  typeOfTypeName(s, UInt64()) = UINT64().
-  typeOfTypeName(s, UIntPtr()) = UINTPTR().
+  kindOfTypeName(s, UInt()) = UINT().
+  kindOfTypeName(s, UInt8()) = UINT8().
+  kindOfTypeName(s, UInt16()) = UINT16().
+  kindOfTypeName(s, UInt32()) = UINT32().
+  kindOfTypeName(s, UInt64()) = UINT64().
+  kindOfTypeName(s, UIntPtr()) = UINTPTR().
 
-  typeOfTypeName(s, Float32()) = FLOAT32().
-  typeOfTypeName(s, Float64()) = FLOAT64().
+  kindOfTypeName(s, Float32()) = FLOAT32().
+  kindOfTypeName(s, Float64()) = FLOAT64().
 
-  typeOfTypeName(s, Complex64()) = COMPLEX64().
-  typeOfTypeName(s, Complex128()) = COMPLEX128().
+  kindOfTypeName(s, Complex64()) = COMPLEX64().
+  kindOfTypeName(s, Complex128()) = COMPLEX128().
 
-  typeOfTypeName(s, Byte()) = UINT8().
-  typeOfTypeName(s, Rune()) = INT32().
+  kindOfTypeName(s, Byte()) = UINT8().
+  kindOfTypeName(s, Rune()) = INT32().
 
 
-rules typeOfSignature : scope * Signature -> TYPE
+rules kindOfSignature : scope * Signature -> KIND
 
-  typeOfSignature(s, Signature(parameters, result)) = FUN(TPARAMS, TRES) :-
+  kindOfSignature(s, Signature(parameters, result)) = FUN(TPARAMS, TRES) :-
     typesOfParameters(s, parameters) == TPARAMS,
     typeOfResult(s, result) == TRES.
 
@@ -224,7 +276,7 @@ rules typeOfResult : scope * Result -> TYPE
 
   typeOfResult(s, NoResult()) = VOID.
 
-  typeOfResult(s, Parameters2Result(parameters)) = TUPLE(TRES) :-
+  typeOfResult(s, Parameters2Result(parameters)) = TYPE("", TUPLE(TRES)) :-
     typesOfParameters(s, parameters) == TRES.
 
   typeOfResult(s, Type2Result(type)) = T :-
@@ -261,18 +313,18 @@ rules typeOfInterfaceTypeMember : scope * InterfaceTypeMember -> TYPE
 
 rules isIntType : TYPE
 
-  isIntType(T) :-
-    familyOfType(T) == INT_FAMILY().
+  isIntType(TYPE("", K)) :-
+    familyOfKind(K) == INT_FAMILY().
 
 rules isBoolType : TYPE
 
-  isBoolType(T) :-
-    familyOfType(T) == BOOL_FAMILY().
+  isBoolType(TYPE("", K)) :-
+    familyOfKind(K) == BOOL_FAMILY().
 
 rules isArithmeticType : TYPE
 
-  isArithmeticType(T) :- {F}
-    familyOfType(T) == F,
+  isArithmeticType(TYPE("", K)) :- {F}
+    familyOfKind(K) == F,
     isArithmeticTypeFamily(F).
 
 rules isArithmeticTypeFamily : FAMILY
@@ -283,8 +335,8 @@ rules isArithmeticTypeFamily : FAMILY
 
 rules isArithmeticOrStringType : TYPE
 
-  isArithmeticOrStringType(T) :- {F}
-    familyOfType(T) == F,
+  isArithmeticOrStringType(TYPE("", K)) :- {F}
+    familyOfKind(K) == F,
     isArithmeticOrStringTypeFamily(F).
 
 rules isArithmeticOrStringTypeFamily : FAMILY
@@ -296,13 +348,13 @@ rules isArithmeticOrStringTypeFamily : FAMILY
 // or returns the given type when it was already typed.
 rules ensureTyped : TYPE -> TYPE
 
-  ensureTyped(UNTYPED_BOOL())    = BOOL().
-  ensureTyped(UNTYPED_STRING())  = STRING().
-  ensureTyped(UNTYPED_RUNE())    = INT32().
-  ensureTyped(UNTYPED_INT())     = INT().
-  ensureTyped(UNTYPED_FLOAT())   = FLOAT64().
-  ensureTyped(UNTYPED_COMPLEX()) = COMPLEX128().
-  ensureTyped(T)                 = T.
+  ensureTyped(TYPE("", UNTYPED_BOOL()))     = TYPE("", BOOL()).
+  ensureTyped(TYPE("", UNTYPED_STRING()))   = TYPE("", STRING()).
+  ensureTyped(TYPE("", UNTYPED_RUNE()))     = TYPE("", INT32()).
+  ensureTyped(TYPE("", UNTYPED_INT()))      = TYPE("", INT()).
+  ensureTyped(TYPE("", UNTYPED_FLOAT()))    = TYPE("", FLOAT64()).
+  ensureTyped(TYPE("", UNTYPED_COMPLEX()))  = TYPE("", COMPLEX128()).
+  ensureTyped(T)                            = T.
 
 //// Fails when the given type is not an untyped (constant) type
 //rules isUntyped : TYPE
@@ -360,60 +412,120 @@ rules ensureTyped : TYPE -> TYPE
 //    typeOfPkg of Pkg{x} in s |-> [(_, (Pkg{dx}, T))].
 
 // Whether the left type is assignable to a variable of the right type
-rules isAssignableTo : TYPE * TYPE
+rules isTypeAssignableTo : TYPE * TYPE
 
-  isAssignableTo(T, T).
+  // Types are assignable to the same type
+  isTypeAssignableTo(T, T).
 
-  isAssignableTo(UNTYPED_BOOL(),    BOOL()).
-  isAssignableTo(UNTYPED_STRING(),  STRING()).
+  // NOTE: This is an inlining of:
+  //     isTypeAssignableTo(TYPE("", T1),  TYPE(_, T2)) :-
+  //       isKindAssignableTo(T1, T2).
+  // which is required becuase isKindAssignableTo() cannot act as a guard for isTypeAssignableTo
 
-  isAssignableTo(UNTYPED_RUNE(),    INT()).
-  isAssignableTo(UNTYPED_RUNE(),    INT8()).
-  isAssignableTo(UNTYPED_RUNE(),    INT16()).
-  isAssignableTo(UNTYPED_RUNE(),    INT32()).
-  isAssignableTo(UNTYPED_RUNE(),    INT64()).
-  isAssignableTo(UNTYPED_RUNE(),    UINT()).
-  isAssignableTo(UNTYPED_RUNE(),    UINT8()).
-  isAssignableTo(UNTYPED_RUNE(),    UINT16()).
-  isAssignableTo(UNTYPED_RUNE(),    UINT32()).
-  isAssignableTo(UNTYPED_RUNE(),    UINT64()).
-  isAssignableTo(UNTYPED_RUNE(),    UINTPTR()).
-  isAssignableTo(UNTYPED_RUNE(),    FLOAT32()).
-  isAssignableTo(UNTYPED_RUNE(),    FLOAT64()).
-  isAssignableTo(UNTYPED_RUNE(),    COMPLEX64()).
-  isAssignableTo(UNTYPED_RUNE(),    COMPLEX128()).
+  // Untyped values are assignable to anything that has a compatible type, regardless of the name:
+  isTypeAssignableTo(TYPE("", UNTYPED_STRING()),  TYPE(_, STRING())).
 
-  isAssignableTo(UNTYPED_INT(),     INT()).
-  isAssignableTo(UNTYPED_INT(),     INT8()).
-  isAssignableTo(UNTYPED_INT(),     INT16()).
-  isAssignableTo(UNTYPED_INT(),     INT32()).
-  isAssignableTo(UNTYPED_INT(),     INT64()).
-  isAssignableTo(UNTYPED_INT(),     UINT()).
-  isAssignableTo(UNTYPED_INT(),     UINT8()).
-  isAssignableTo(UNTYPED_INT(),     UINT16()).
-  isAssignableTo(UNTYPED_INT(),     UINT32()).
-  isAssignableTo(UNTYPED_INT(),     UINT64()).
-  isAssignableTo(UNTYPED_INT(),     UINTPTR()).
-  isAssignableTo(UNTYPED_INT(),     FLOAT32()).
-  isAssignableTo(UNTYPED_INT(),     FLOAT64()).
-  isAssignableTo(UNTYPED_INT(),     COMPLEX64()).
-  isAssignableTo(UNTYPED_INT(),     COMPLEX128()).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, INT())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, INT8())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, INT16())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, INT32())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, INT64())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, UINT())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, UINT8())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, UINT16())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, UINT32())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, UINT64())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, UINTPTR())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, FLOAT32())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, FLOAT64())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, COMPLEX64())).
+  isTypeAssignableTo(TYPE("", UNTYPED_RUNE()),    TYPE(_, COMPLEX128())).
 
-  isAssignableTo(UNTYPED_FLOAT(),   FLOAT32()).
-  isAssignableTo(UNTYPED_FLOAT(),   FLOAT64()).
-  isAssignableTo(UNTYPED_FLOAT(),   COMPLEX64()).
-  isAssignableTo(UNTYPED_FLOAT(),   COMPLEX128()).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, INT())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, INT8())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, INT16())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, INT32())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, INT64())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, UINT())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, UINT8())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, UINT16())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, UINT32())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, UINT64())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, UINTPTR())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, FLOAT32())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, FLOAT64())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, COMPLEX64())).
+  isTypeAssignableTo(TYPE("", UNTYPED_INT()),     TYPE(_, COMPLEX128())).
 
-  isAssignableTo(UNTYPED_COMPLEX(), COMPLEX64()).
-  isAssignableTo(UNTYPED_COMPLEX(), COMPLEX128()).
+  isTypeAssignableTo(TYPE("", UNTYPED_FLOAT()),   TYPE(_, FLOAT32())).
+  isTypeAssignableTo(TYPE("", UNTYPED_FLOAT()),   TYPE(_, FLOAT64())).
+  isTypeAssignableTo(TYPE("", UNTYPED_FLOAT()),   TYPE(_, COMPLEX64())).
+  isTypeAssignableTo(TYPE("", UNTYPED_FLOAT()),   TYPE(_, COMPLEX128())).
+
+  isTypeAssignableTo(TYPE("", UNTYPED_COMPLEX()), TYPE(_, COMPLEX64())).
+  isTypeAssignableTo(TYPE("", UNTYPED_COMPLEX()), TYPE(_, COMPLEX128())).
+
+// Whether the left kind is assignable to a variable of the right kind
+rules isKindAssignableTo : KIND * KIND
+
+  isKindAssignableTo(T, T).
+
+  isKindAssignableTo(UNTYPED_BOOL(),    BOOL()).
+  isKindAssignableTo(UNTYPED_STRING(),  STRING()).
+
+  isKindAssignableTo(UNTYPED_RUNE(),    INT()).
+  isKindAssignableTo(UNTYPED_RUNE(),    INT8()).
+  isKindAssignableTo(UNTYPED_RUNE(),    INT16()).
+  isKindAssignableTo(UNTYPED_RUNE(),    INT32()).
+  isKindAssignableTo(UNTYPED_RUNE(),    INT64()).
+  isKindAssignableTo(UNTYPED_RUNE(),    UINT()).
+  isKindAssignableTo(UNTYPED_RUNE(),    UINT8()).
+  isKindAssignableTo(UNTYPED_RUNE(),    UINT16()).
+  isKindAssignableTo(UNTYPED_RUNE(),    UINT32()).
+  isKindAssignableTo(UNTYPED_RUNE(),    UINT64()).
+  isKindAssignableTo(UNTYPED_RUNE(),    UINTPTR()).
+  isKindAssignableTo(UNTYPED_RUNE(),    FLOAT32()).
+  isKindAssignableTo(UNTYPED_RUNE(),    FLOAT64()).
+  isKindAssignableTo(UNTYPED_RUNE(),    COMPLEX64()).
+  isKindAssignableTo(UNTYPED_RUNE(),    COMPLEX128()).
+
+  isKindAssignableTo(UNTYPED_INT(),     INT()).
+  isKindAssignableTo(UNTYPED_INT(),     INT8()).
+  isKindAssignableTo(UNTYPED_INT(),     INT16()).
+  isKindAssignableTo(UNTYPED_INT(),     INT32()).
+  isKindAssignableTo(UNTYPED_INT(),     INT64()).
+  isKindAssignableTo(UNTYPED_INT(),     UINT()).
+  isKindAssignableTo(UNTYPED_INT(),     UINT8()).
+  isKindAssignableTo(UNTYPED_INT(),     UINT16()).
+  isKindAssignableTo(UNTYPED_INT(),     UINT32()).
+  isKindAssignableTo(UNTYPED_INT(),     UINT64()).
+  isKindAssignableTo(UNTYPED_INT(),     UINTPTR()).
+  isKindAssignableTo(UNTYPED_INT(),     FLOAT32()).
+  isKindAssignableTo(UNTYPED_INT(),     FLOAT64()).
+  isKindAssignableTo(UNTYPED_INT(),     COMPLEX64()).
+  isKindAssignableTo(UNTYPED_INT(),     COMPLEX128()).
+
+  isKindAssignableTo(UNTYPED_FLOAT(),   FLOAT32()).
+  isKindAssignableTo(UNTYPED_FLOAT(),   FLOAT64()).
+  isKindAssignableTo(UNTYPED_FLOAT(),   COMPLEX64()).
+  isKindAssignableTo(UNTYPED_FLOAT(),   COMPLEX128()).
+
+  isKindAssignableTo(UNTYPED_COMPLEX(), COMPLEX64()).
+  isKindAssignableTo(UNTYPED_COMPLEX(), COMPLEX128()).
 
 
 // Families of types that can be compared for equality
-rules isEquatable : TYPE * TYPE
+rules isTypeEquatable : TYPE * TYPE
 
-  isEquatable(T1, T2) :- {F1 F2}
-    familyOfType(T1) == F1,
-    familyOfType(T2) == F2,
+  isTypeEquatable(TYPE("", K1), TYPE("", K2)) :-
+    isKindEquatable(K1, K2).
+
+// Families of kinds that can be compared for equality
+rules isKindEquatable : KIND * KIND
+
+  isKindEquatable(K1, K2) :- {F1 F2}
+    familyOfKind(K1) == F1,
+    familyOfKind(K2) == F2,
     isFamilyEquatable(F1, F2).
 
 rules isFamilyEquatable : FAMILY * FAMILY
@@ -431,13 +543,18 @@ rules isFamilyEquatable : FAMILY * FAMILY
   // TODO: structs iff all their fields are comparable
 
   isFamilyEquatable(OTHER_FAMILY(ARRAY(_, T1)), OTHER_FAMILY(ARRAY(_, T2))) :-
-    isEquatable(T1, T2).
+    isTypeEquatable(T1, T2).
 
-rules isComparable : TYPE * TYPE
+rules isTypeComparable : TYPE * TYPE
 
-  isComparable(T1, T2) :- {F1 F2}
-    familyOfType(T1) == F1,
-    familyOfType(T2) == F2,
+  isTypeComparable(TYPE("", K1), TYPE("", K2)) :-
+    isKindComparable(K1, K2).
+
+rules isKindComparable : KIND * KIND
+
+  isKindComparable(K1, K2) :- {F1 F2}
+    familyOfKind(K1) == F1,
+    familyOfKind(K2) == F2,
     isFamilyComparable(F1, F2).
 
 // Families of types that can be compared for order

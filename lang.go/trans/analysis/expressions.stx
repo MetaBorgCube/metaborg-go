@@ -99,7 +99,7 @@ rules typeOfExpr : scope * Expr -> TYPE
 
   typeOfExpr(s, Call(member, arguments)) = TRETS :- {TARGS}
     typesOfExprOrTypes(s, arguments) == TARGS,
-    typeOfExprOrType(s, member) == FUN(TARGS, TRETS) | error $[[member] is not a method or function, or not found.].
+    typeOfExprOrType(s, member) == TYPE(_, FUN(TARGS, TRETS)) | error $[[member] is not a method or function, or not found.].
 
   // Conversions are now part of Call()
 //  typeOfExpr(s, Conversion(type, expr)) = T :-
@@ -126,7 +126,7 @@ rules typeOfExpr : scope * Expr -> TYPE
 //    true.
 
   typeOfExpr(s, OperandName(name)) = T :-
-    resolveType(s, name) == T.
+    resolveVar(s, name) == T.
 
 //  typeOfExpr(s, QualifiedOperandName(x, y)) = T :-
 //    // TODO
@@ -161,9 +161,9 @@ rules
     isIntType(T) | error $[Cannot do bitwise operations on non-bool type [T]].
 
   typeOfExpr(s, Deref(e)) = T :-
-    typeOfExpr(s, e) == PTR(T) | error $[Cannot dereference non-pointer type [T]].
+    typeOfExpr(s, e) == TYPE(_, PTR(T)) | error $[Cannot dereference non-pointer type [T]].
 
-  typeOfExpr(s, Ref(e)) = PTR(T) :-
+  typeOfExpr(s, Ref(e)) = TYPE("", PTR(T)) :-
     typeOfExpr(s, e) == T.
     // TODO: Verify that e is addressable: a variable, pointer indirection, slice indexing operation,
     // field selector of an addressable struct operand, or array indexing operation of an addressable array,
@@ -172,41 +172,41 @@ rules
 
   typeOfExpr(s, Receive(e)) = TE :- {T}
     typeOfExpr(s, e) == T,
-    T == CHANNEL(TE) | error $[Cannot receive from non-channel type [T]].
+    T == TYPE(_, CHANNEL(TE)) | error $[Cannot receive from non-channel type [T]].
 
 
 
   typeOfExpr(s, Equal(e1, e2)) = UNTYPED_BOOL :- {T1 T2}
     typeOfExpr(s, e1) == T1,
     typeOfExpr(s, e2) == T2,
-    isEquatable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
+    isTypeEquatable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
 
   typeOfExpr(s, NotEqual(e1, e2)) = UNTYPED_BOOL :- {T1 T2}
     typeOfExpr(s, e1) == T1,
     typeOfExpr(s, e2) == T2,
-    isEquatable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
+    isTypeEquatable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
 
 
 
   typeOfExpr(s, Less(e1, e2)) = UNTYPED_BOOL :- {T1 T2}
     typeOfExpr(s, e1) == T1,
     typeOfExpr(s, e2) == T2,
-    isComparable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
+    isTypeComparable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
 
   typeOfExpr(s, LessOrEqual(e1, e2)) = UNTYPED_BOOL :- {T1 T2}
     typeOfExpr(s, e1) == T1,
     typeOfExpr(s, e2) == T2,
-    isComparable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
+    isTypeComparable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
 
   typeOfExpr(s, Greater(e1, e2)) = UNTYPED_BOOL :- {T1 T2}
     typeOfExpr(s, e1) == T1,
     typeOfExpr(s, e2) == T2,
-    isComparable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
+    isTypeComparable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
 
   typeOfExpr(s, GreaterOrEqual(e1, e2)) = UNTYPED_BOOL :- {T1 T2}
     typeOfExpr(s, e1) == T1,
     typeOfExpr(s, e2) == T2,
-    isComparable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
+    isTypeComparable(T1, T2) | error $[Cannot compare expressions of types [T1] and [T2].].
 
 
 
@@ -282,123 +282,128 @@ rules
 
 
 
-// int > rune > float > complex
 rules typeOfBinOp : TYPE * TYPE -> TYPE
 
-  typeOfBinOp(T1, T2)                               = T :-
-    // TODO: Can the types be different, e.g. subtypes of a common type?
-    T1 == T2 | error $[Invalid binary operation on values of type [T1] and [T2].],
-    T == T1.
+  typeOfBinOp(TYPE("", K1), TYPE("", K2)) = TYPE("", K) :-
+    kindOfBinOp(K1, K2) == K.
 
-  typeOfBinOp(UNTYPED_COMPLEX(), T)                 = T :-
-    familyOfType(T) == COMPLEX_FAMILY() | error $[Invalid binary operation on complex constant and value of type [T].].
+// int > rune > float > complex
+rules kindOfBinOp : KIND * KIND -> KIND
 
-  typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_COMPLEX()) = UNTYPED_COMPLEX().
+  kindOfBinOp(K1, K2)                               = K :-
+    // TODO: Can the kinds be different, e.g. subtypes of a common kind?
+    K1 == K2 | error $[Invalid binary operation on values of kinds [K1] and [K2].],
+    K == K1.
 
-  typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_FLOAT())   = UNTYPED_COMPLEX().
+  kindOfBinOp(UNTYPED_COMPLEX(), K)                 = T :-
+    familyOfKind(K) == COMPLEX_FAMILY() | error $[Invalid binary operation on complex constant and value of kind [K].].
 
-  typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_RUNE())    = UNTYPED_COMPLEX().
+  kindOfBinOp(UNTYPED_COMPLEX(), UNTYPED_COMPLEX()) = UNTYPED_COMPLEX().
 
-  typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_INT())     = UNTYPED_COMPLEX().
+  kindOfBinOp(UNTYPED_COMPLEX(), UNTYPED_FLOAT())   = UNTYPED_COMPLEX().
 
-  typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_BOOL())    = _ :-
+  kindOfBinOp(UNTYPED_COMPLEX(), UNTYPED_RUNE())    = UNTYPED_COMPLEX().
+
+  kindOfBinOp(UNTYPED_COMPLEX(), UNTYPED_INT())     = UNTYPED_COMPLEX().
+
+  kindOfBinOp(UNTYPED_COMPLEX(), UNTYPED_BOOL())    = _ :-
     false | error $[Invalid binary operation on complex and bool constants.].
 
-  typeOfBinOp(UNTYPED_COMPLEX(), UNTYPED_STRING())  = _ :-
+  kindOfBinOp(UNTYPED_COMPLEX(), UNTYPED_STRING())  = _ :-
     false | error $[Invalid binary operation on complex and string constants.].
 
-  typeOfBinOp(UNTYPED_FLOAT(), T)                   = T :-
-    familyOfType(T) == FLOAT_FAMILY() | error $[Invalid binary operation on float constant and value of type [T].].
+  kindOfBinOp(UNTYPED_FLOAT(), K)                   = K :-
+    familyOfKind(K) == FLOAT_FAMILY() | error $[Invalid binary operation on float constant and value of kind [K].].
 
-  typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_COMPLEX())   = UNTYPED_COMPLEX().
+  kindOfBinOp(UNTYPED_FLOAT(), UNTYPED_COMPLEX())   = UNTYPED_COMPLEX().
 
-  typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_FLOAT())     = UNTYPED_FLOAT().
+  kindOfBinOp(UNTYPED_FLOAT(), UNTYPED_FLOAT())     = UNTYPED_FLOAT().
 
-  typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_RUNE())      = UNTYPED_FLOAT().
+  kindOfBinOp(UNTYPED_FLOAT(), UNTYPED_RUNE())      = UNTYPED_FLOAT().
 
-  typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_INT())       = UNTYPED_FLOAT().
+  kindOfBinOp(UNTYPED_FLOAT(), UNTYPED_INT())       = UNTYPED_FLOAT().
 
-  typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_BOOL())      = _ :-
+  kindOfBinOp(UNTYPED_FLOAT(), UNTYPED_BOOL())      = _ :-
     false | error $[Invalid binary operation on float and bool constants.].
 
-  typeOfBinOp(UNTYPED_FLOAT(), UNTYPED_STRING())    = _ :-
+  kindOfBinOp(UNTYPED_FLOAT(), UNTYPED_STRING())    = _ :-
     false | error $[Invalid binary operation on float and string constants.].
 
-  typeOfBinOp(UNTYPED_RUNE(), T)                    = T :-
-    familyOfType(T) == INT_FAMILY() | error $[Invalid binary operation on rune constant and value of type [T].].
+  kindOfBinOp(UNTYPED_RUNE(), K)                    = T :-
+    familyOfKind(K) == INT_FAMILY() | error $[Invalid binary operation on rune constant and value of kind [K].].
 
-  typeOfBinOp(UNTYPED_RUNE(), UNTYPED_COMPLEX())    = UNTYPED_COMPLEX().
+  kindOfBinOp(UNTYPED_RUNE(), UNTYPED_COMPLEX())    = UNTYPED_COMPLEX().
 
-  typeOfBinOp(UNTYPED_RUNE(), UNTYPED_FLOAT())      = UNTYPED_FLOAT().
+  kindOfBinOp(UNTYPED_RUNE(), UNTYPED_FLOAT())      = UNTYPED_FLOAT().
 
-  typeOfBinOp(UNTYPED_RUNE(), UNTYPED_RUNE())       = UNTYPED_RUNE().
+  kindOfBinOp(UNTYPED_RUNE(), UNTYPED_RUNE())       = UNTYPED_RUNE().
 
-  typeOfBinOp(UNTYPED_RUNE(), UNTYPED_INT())        = UNTYPED_RUNE().
+  kindOfBinOp(UNTYPED_RUNE(), UNTYPED_INT())        = UNTYPED_RUNE().
 
-  typeOfBinOp(UNTYPED_RUNE(), UNTYPED_BOOL())       = _ :-
+  kindOfBinOp(UNTYPED_RUNE(), UNTYPED_BOOL())       = _ :-
     false | error $[Invalid binary operation on rune and bool constants.].
 
-  typeOfBinOp(UNTYPED_RUNE(), UNTYPED_STRING())     = _ :-
+  kindOfBinOp(UNTYPED_RUNE(), UNTYPED_STRING())     = _ :-
     false | error $[Invalid binary operation on rune and string constants.].
 
 
-  typeOfBinOp(UNTYPED_INT(), T)                     = T :-
-    familyOfType(T) == INT_FAMILY() | error $[Invalid binary operation on int constant and value of type [T].].
+  kindOfBinOp(UNTYPED_INT(), K)                     = K :-
+    familyOfKind(K) == INT_FAMILY() | error $[Invalid binary operation on int constant and value of kind [K].].
 
-  typeOfBinOp(UNTYPED_INT(), UNTYPED_COMPLEX())     = UNTYPED_COMPLEX().
+  kindOfBinOp(UNTYPED_INT(), UNTYPED_COMPLEX())     = UNTYPED_COMPLEX().
 
-  typeOfBinOp(UNTYPED_INT(), UNTYPED_FLOAT())       = UNTYPED_FLOAT().
+  kindOfBinOp(UNTYPED_INT(), UNTYPED_FLOAT())       = UNTYPED_FLOAT().
 
-  typeOfBinOp(UNTYPED_INT(), UNTYPED_RUNE())        = UNTYPED_RUNE().
+  kindOfBinOp(UNTYPED_INT(), UNTYPED_RUNE())        = UNTYPED_RUNE().
 
-  typeOfBinOp(UNTYPED_INT(), UNTYPED_INT())         = UNTYPED_INT().
+  kindOfBinOp(UNTYPED_INT(), UNTYPED_INT())         = UNTYPED_INT().
 
-  typeOfBinOp(UNTYPED_INT(), UNTYPED_BOOL())        = _ :-
+  kindOfBinOp(UNTYPED_INT(), UNTYPED_BOOL())        = _ :-
     false | error $[Invalid binary operation on int and bool constants.].
 
-  typeOfBinOp(UNTYPED_INT(), UNTYPED_STRING())      = _ :-
+  kindOfBinOp(UNTYPED_INT(), UNTYPED_STRING())      = _ :-
     false | error $[Invalid binary operation on int and string constants.].
 
 
-  typeOfBinOp(UNTYPED_BOOL(), T)                    = T :-
-    T == BOOL() | error $[Invalid binary operation on bool constant and value of type [T].].
+  kindOfBinOp(UNTYPED_BOOL(), K)                    = T :-
+    K == BOOL() | error $[Invalid binary operation on bool constant and value of kind [K].].
 
-  typeOfBinOp(UNTYPED_BOOL(), UNTYPED_COMPLEX())    = _ :-
+  kindOfBinOp(UNTYPED_BOOL(), UNTYPED_COMPLEX())    = _ :-
     false | error $[Invalid binary operation on bool and complex constants.].
 
-  typeOfBinOp(UNTYPED_BOOL(), UNTYPED_FLOAT())      = _ :-
+  kindOfBinOp(UNTYPED_BOOL(), UNTYPED_FLOAT())      = _ :-
     false | error $[Invalid binary operation on bool and float constants.].
 
-  typeOfBinOp(UNTYPED_BOOL(), UNTYPED_RUNE())       = _ :-
+  kindOfBinOp(UNTYPED_BOOL(), UNTYPED_RUNE())       = _ :-
     false | error $[Invalid binary operation on bool and rune constants.].
 
-  typeOfBinOp(UNTYPED_BOOL(), UNTYPED_INT())        = _ :-
+  kindOfBinOp(UNTYPED_BOOL(), UNTYPED_INT())        = _ :-
     false | error $[Invalid binary operation on bool and int constants.].
 
-  typeOfBinOp(UNTYPED_BOOL(), UNTYPED_BOOL())       = UNTYPED_BOOL().
+  kindOfBinOp(UNTYPED_BOOL(), UNTYPED_BOOL())       = UNTYPED_BOOL().
 
-  typeOfBinOp(UNTYPED_BOOL(), UNTYPED_STRING())     = _ :-
+  kindOfBinOp(UNTYPED_BOOL(), UNTYPED_STRING())     = _ :-
     false | error $[Invalid binary operation on bool and string constants.].
 
-  typeOfBinOp(UNTYPED_STRING(), T)                    = T :-
-    T == STRING() | error $[Invalid binary operation on string constant and value of type [T].].
+  kindOfBinOp(UNTYPED_STRING(), K)                    = K :-
+    K == STRING() | error $[Invalid binary operation on string constant and value of kind [K].].
 
-  typeOfBinOp(UNTYPED_STRING(), UNTYPED_COMPLEX())    = _ :-
+  kindOfBinOp(UNTYPED_STRING(), UNTYPED_COMPLEX())    = _ :-
     false | error $[Invalid binary operation on string and complex constants.].
 
-  typeOfBinOp(UNTYPED_STRING(), UNTYPED_FLOAT())      = _ :-
+  kindOfBinOp(UNTYPED_STRING(), UNTYPED_FLOAT())      = _ :-
     false | error $[Invalid binary operation on string and float constants.].
 
-  typeOfBinOp(UNTYPED_STRING(), UNTYPED_RUNE())       = _ :-
+  kindOfBinOp(UNTYPED_STRING(), UNTYPED_RUNE())       = _ :-
     false | error $[Invalid binary operation on string and rune constants.].
 
-  typeOfBinOp(UNTYPED_STRING(), UNTYPED_INT())        = _ :-
+  kindOfBinOp(UNTYPED_STRING(), UNTYPED_INT())        = _ :-
     false | error $[Invalid binary operation on string and int constants.].
 
-  typeOfBinOp(UNTYPED_STRING(), UNTYPED_BOOL())       = _ :-
+  kindOfBinOp(UNTYPED_STRING(), UNTYPED_BOOL())       = _ :-
     false | error $[Invalid binary operation on string and bool constants.].
 
-  typeOfBinOp(UNTYPED_STRING(), UNTYPED_STRING())     = UNTYPED_STRING().
+  kindOfBinOp(UNTYPED_STRING(), UNTYPED_STRING())     = UNTYPED_STRING().
 
 
 
@@ -488,8 +493,9 @@ rules typeOfExprOrType : scope * ExprOrType -> TYPE
   typeOfExprOrType(s, Expr2ExprOrType(expr)) = T :-
     typeOfExpr(s, expr) == T.
 
-  typeOfExprOrType(s, Type2ExprOrType(type)) = TYPE(T) :-
-    typeOfType(s, type) == T.
+  typeOfExprOrType(s, Type2ExprOrType(type)) = T :- //TYPE(T) :-
+    true.
+    //typeOfType(s, type) == T.
 
   typeOfExprOrType(s, ExprOrTypeSelector(exprOrType, member)) = T :-
     // TODO

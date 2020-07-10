@@ -4,8 +4,6 @@ imports analysis/types
 
 signature
 
-  sorts TYPE
-
   namespaces
     Decl    : string
     Type    : string
@@ -31,11 +29,6 @@ signature
     resolve Label filter P*                             min $ < P
     resolve Decl  filter P* E* min $ < P, $ < E
 
-rules resolveType : scope * string -> TYPE
-
-  resolveType(s, x) = T :- {dx}
-    type of Decl{x} in s |-> [(_, (Decl{dx}, T))],
-    @x.ref := dx.
 
 rules declareLabel : scope * string
 
@@ -66,9 +59,13 @@ rules declareStructFieldInst : scope * string * TYPE
 // struct in which the field is embedded.
 rules declareEmbeddedField : scope * string * TYPE
 
-  declareEmbeddedField(s_struct, name, T@STRUCT(s_embedded)) :-
-    declareStructFieldInst(s_struct, name, T),
-    s_struct -E-> s_embedded.
+  declareEmbeddedField(s_struct, name, T) :-
+    // TODO
+    true.
+
+//  declareEmbeddedField(s_struct, name, T@STRUCT(s_embedded)) :-
+//    declareStructFieldInst(s_struct, name, T),
+//    s_struct -E-> s_embedded.
 
 
 /*************/
@@ -87,16 +84,16 @@ rules declareConst : scope * string * TYPE
 rules declareType : scope * string * TYPE
 
   declareType(s, name, T) :-
-    s -> Decl{name} with type TYPE(T),
-    @name.type := TYPE(T).
+    s -> Decl{name} with type T,
+    @name.type := T.
 
-// Used to declare built-in types
-rules declareTypeRaw : scope * string * TYPE
-
- declareTypeRaw(s, x, T) :-
-   s -> Type{x} with typeOfDecl T,
-   // Assert that the declaration is distinct
-   typeOfDecl of Type{x} in s |-> [(_, (_, T))] | error $[Multiple declarations of type [x] : [T]].
+//// Used to declare built-in types
+//rules declareTypeRaw : scope * string * TYPE
+//
+// declareTypeRaw(s, x, T) :-
+//   s -> Type{x} with typeOfDecl T,
+//   // Assert that the declaration is distinct
+//   typeOfDecl of Type{x} in s |-> [(_, (_, T))] | error $[Multiple declarations of type [x] : [T]].
 
 
 /*************/
@@ -104,7 +101,14 @@ rules declareTypeRaw : scope * string * TYPE
 /*************/
 rules declareVar : scope * string * TYPE
 
-  declareVar(s, name, T) :-
-    s -> Decl{name} with type T,
-    @name.type := T.
+  declareVar(s, declName, T) :-
+    s -> Decl{declName} with type T,
+    @declName.type := T.
 
+
+rules resolveVar : scope * string -> TYPE
+
+  resolveVar(s, refName) = T :- {declName}
+    type of Decl{refName} in s |-> [(_, (Decl{declName}, T))],
+    @refName.ref := declName,
+    @refName.type := T.
