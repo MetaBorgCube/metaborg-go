@@ -51,6 +51,9 @@ context-free syntax
 // Pre-declared types
 context-free syntax
 
+  // 'nil' is an invalid type in most places, except in a type switch case clause.
+  TypeName.NilType                          = <nil>
+
   TypeName.Bool                             = <bool>
   TypeName.String                           = <string>
   TypeName.Error                            = <error>
@@ -79,6 +82,8 @@ context-free syntax
 
 lexical syntax
 
+  ID                                        = "nil" {reject}
+  
   ID                                        = "bool" {reject}
   ID                                        = "string" {reject}
   ID                                        = "error" {reject}
