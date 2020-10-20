@@ -42,11 +42,11 @@ parse to
   )
 test composite literal 4 [[ [10]string{}]]
 parse to
-  CompositeLit(ArrayTypeLiteral(IntLit("10"), TypeName("string")), LiteralValue([]))
+  CompositeLit(ArrayTypeLiteral(IntLit("10"), String()), LiteralValue([]))
 test composite literal 5 [[ [6]int{1, 2, 3, 5}]]
 parse to
   CompositeLit(
-    ArrayTypeLiteral(IntLit("6"), TypeName("int"))
+    ArrayTypeLiteral(IntLit("6"), Int())
   , LiteralValue(
       [ KeyedElement(NoKey(), IntLit("1"))
       , KeyedElement(NoKey(), IntLit("2"))
@@ -58,7 +58,7 @@ parse to
 test composite literal 6 [[ [...]string{"Sat", "Sun"}]]
 parse to
   CompositeLit(
-    AutoArrayTypeLiteral(TypeName("string"))
+    AutoArrayTypeLiteral(String())
   , LiteralValue(
       [KeyedElement(NoKey(), StringLit("\"Sat\"")), KeyedElement(NoKey(), StringLit("\"Sun\""))]
     )
@@ -87,7 +87,7 @@ parse to
 test shorthand composite literal 2 [[ [][]int{{1, 2, 3}, {4, 5}}]]
 parse to
   CompositeLit(
-    SliceTypeLiteral(SliceType(TypeName("int")))
+    SliceTypeLiteral(SliceType(Int()))
   , LiteralValue(
       [ KeyedElement(
           NoKey()
@@ -136,7 +136,7 @@ parse to
 test shorthand composite literal 4 [[map[string]Point{"orig": {0, 0}}]]
 parse to
   CompositeLit(
-    MapTypeLiteral(TypeName("string"), TypeName("Point"))
+    MapTypeLiteral(String(), TypeName("Point"))
   , LiteralValue(
       [ KeyedElement(
           ExprKey(StringLit("\"orig\""))
@@ -150,7 +150,7 @@ parse to
 test shorthand composite literal 5 [[map[Point]string{{0, 0}: "orig"}]]
 parse to
   CompositeLit(
-    MapTypeLiteral(TypeName("Point"), TypeName("string"))
+    MapTypeLiteral(TypeName("Point"), String())
   , LiteralValue(
       [ KeyedElement(
           LiteralKey(
@@ -198,7 +198,7 @@ CompositeLit(
 test slice literal [[ []int{2, 3, 5, 7, 9, 2147483647}]]
 parse to
   CompositeLit(
-    SliceTypeLiteral(TypeName("int"))
+    SliceTypeLiteral(Int())
   , LiteralValue(
       [ KeyedElement(NoKey(), IntLit("2"))
       , KeyedElement(NoKey(), IntLit("3"))
@@ -212,21 +212,21 @@ parse to
 test array literal 1 [[ [128]bool{'a': true, 'e': true, 'i': true, 'o': true, 'u': true, 'y': true}]]
 parse to
   CompositeLit(
-    ArrayTypeLiteral(IntLit("128"), TypeName("bool"))
+    ArrayTypeLiteral(IntLit("128"), Bool())
   , LiteralValue(
-      [ KeyedElement(ExprKey(RuneLit("'a'")), OperandName("true"))
-      , KeyedElement(ExprKey(RuneLit("'e'")), OperandName("true"))
-      , KeyedElement(ExprKey(RuneLit("'i'")), OperandName("true"))
-      , KeyedElement(ExprKey(RuneLit("'o'")), OperandName("true"))
-      , KeyedElement(ExprKey(RuneLit("'u'")), OperandName("true"))
-      , KeyedElement(ExprKey(RuneLit("'y'")), OperandName("true"))
+      [ KeyedElement(ExprKey(RuneLit("'a'")), True())
+      , KeyedElement(ExprKey(RuneLit("'e'")), True())
+      , KeyedElement(ExprKey(RuneLit("'i'")), True())
+      , KeyedElement(ExprKey(RuneLit("'o'")), True())
+      , KeyedElement(ExprKey(RuneLit("'u'")), True())
+      , KeyedElement(ExprKey(RuneLit("'y'")), True())
       ]
     )
   )
 test array literal 2 [[ [10]float32{-1, 4: -0.1, -0.1, 9: -1}]]
 parse to
   CompositeLit(
-    ArrayTypeLiteral(IntLit("10"), TypeName("float32"))
+    ArrayTypeLiteral(IntLit("10"), Float32())
   , LiteralValue(
       [ KeyedElement(NoKey(), Negation(IntLit("1")))
       , KeyedElement(ExprKey(IntLit("4")), Negation(FloatLit("0.1")))
@@ -243,7 +243,7 @@ parse to
 //}]]
 //parse to
 //  CompositeLit(
-//    MapTypeLiteral(TypeName("string"), TypeName("float32"))
+//    MapTypeLiteral(String(), Float32())
 //  , LiteralValue-ALT(
 //      [ KeyedElement(ExprKey(StringLit("\"C0\"")), FloatLit("16.35"))
 //      , KeyedElement(ExprKey(StringLit("\"D0\"")), FloatLit("18.35"))
@@ -261,17 +261,17 @@ parse to
   FunctionLit(
     Signature(
       Parameters(
-        [ ParameterDecl(["a", "b"], TypeName("int"))
-        , ParameterDecl(["z"], TypeName("float64"))
+        [ ParameterDecl(["a", "b"], Int())
+        , ParameterDecl(["z"], Float64())
         ]
       )
-    , TypeName("bool")
+    , Bool()
     )
   , Block(
       [ ReturnStmt(
           [ Less(
               Product(OperandName("a"), OperandName("b"))
-            , Call(ExprOrTypeName("int"), [ExprOrTypeName("z")])
+            , Call(Int(), [ExprOrTypeName("z")])
             )
           ]
         )
@@ -282,8 +282,8 @@ test function literal 2 [[func(x, y int) int { return x + y; }]]
 parse to
   FunctionLit(
     Signature(
-      Parameters([ParameterDecl(["x", "y"], TypeName("int"))])
-    , TypeName("int")
+      Parameters([ParameterDecl(["x", "y"], Int())])
+    , Int()
     )
   , Block(
       [ReturnStmt([Sum(OperandName("x"), OperandName("y"))])]
@@ -293,7 +293,7 @@ test function literal 3 [[func(ch chan int) { ch <- ACK; }]]
 parse to
   FunctionLit(
     Signature(
-      Parameters([ParameterDecl(["ch"], BidirectionalChannelType(TypeName("int")))])
+      Parameters([ParameterDecl(["ch"], BidirectionalChannelType(Int()))])
     , NoResult()
     )
   , Block([SendStmt(OperandName("ch"), OperandName("ACK"))])
@@ -306,7 +306,7 @@ test primary expression 4.1 [[f()]] parse to Call(ExprOrTypeName("f"), [])
 test primary expression 4.2 [[f(3.1415)]] parse to Call(ExprOrTypeName("f"), [FloatLit("3.1415")])
 test primary expression 4.3 [[f(3.1415, true)]]
 parse to
-  Call(ExprOrTypeName("f"), [FloatLit("3.1415"), ExprOrTypeName("true")])
+  Call(ExprOrTypeName("f"), [FloatLit("3.1415"), True()])
 test primary expression 5 [[Point{1, 2}]]
 parse to
   CompositeLit(
@@ -392,9 +392,9 @@ test deref call [[*Point(p)]] parse to Deref(Call(ExprOrTypeName("Point"), [Expr
 test call deref [[(*Point)()]] parse to Call(PointerType(TypeName("Point")), [])
 
 test conversion 1 [[(*Point)(p)]] parse to Call(PointerType(TypeName("Point")), [ExprOrTypeName("p")])
-test conversion 2 [[<-chan int(c)]] parse to Call(ReceivingChannelType(TypeName("int")), [ExprOrTypeName("c")])
-test conversion 3 [[(<-chan int)(c)]] parse to Call(ReceivingChannelType(TypeName("int")), [ExprOrTypeName("c")])
+test conversion 2 [[<-chan int(c)]] parse to Call(ReceivingChannelType(Int()), [ExprOrTypeName("c")])
+test conversion 3 [[(<-chan int)(c)]] parse to Call(ReceivingChannelType(Int()), [ExprOrTypeName("c")])
 test conversion 4 [[func()(x)]] parse to Call(FunctionType(Signature(Parameters([]), NoResult())), [ExprOrTypeName("x")])
 test conversion 5 [[(func())(x)]] parse to Call(FunctionType(Signature(Parameters([]), NoResult())), [ExprOrTypeName("x")])
-test conversion 6 [[(func() int)(x)]] parse to Call(FunctionType(Signature(Parameters([]), TypeName("int"))), [ExprOrTypeName("x")])
-test conversion 7 [[func() int(x)]] parse to Call(FunctionType(Signature(Parameters([]), TypeName("int"))), [ExprOrTypeName("x")])
+test conversion 6 [[(func() int)(x)]] parse to Call(FunctionType(Signature(Parameters([]), Int())), [ExprOrTypeName("x")])
+test conversion 7 [[func() int(x)]] parse to Call(FunctionType(Signature(Parameters([]), Int())), [ExprOrTypeName("x")])

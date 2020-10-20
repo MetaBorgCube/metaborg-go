@@ -7,7 +7,7 @@ start symbol TopLevelDecl
 test const decl 1 [[
   const Pi float64 = 3.14159265358979323846;
 ]] parse to
-  SingleConstDecl(ConstSpec(["Pi"], TypeName("float64"), [FloatLit("3.14159265358979323846")]))
+  SingleConstDecl(ConstSpec(["Pi"], Float64(), [FloatLit("3.14159265358979323846")]))
 
 test const decl 2 [[
   const zero = 0.0;
@@ -21,7 +21,7 @@ test const decl 3 [[
   );
 ]] parse to
   ConstDecl(
-    [ ConstSpec(["size"], TypeName("int64"), [IntLit("1024")])
+    [ ConstSpec(["size"], Int64(), [IntLit("1024")])
     , ConstSpecNoType(["eof"], [Negation(IntLit("1"))])
     ]
   )
@@ -42,7 +42,7 @@ test const decl 5 [[
   SingleConstDecl(
     ConstSpec(
       ["u", "v"]
-    , TypeName("float32")
+    , Float32()
     , [IntLit("0"), IntLit("3")]
     )
   )
@@ -65,7 +65,7 @@ test const decl: id [[
 test const decl: id type [[
   const (N int;);
 ]] parse to
-  ConstDecl([ConstSpecNoExpr(["N"], TypeName("int"))])
+  ConstDecl([ConstSpecNoExpr(["N"], Int())])
 
 test const decl: id type expr [[
   const (N int = 11 + 1;);
@@ -73,7 +73,7 @@ test const decl: id type expr [[
   ConstDecl(
     [ ConstSpec(
         ["N"]
-      , TypeName("int")
+      , Int()
       , [Sum(IntLit("11"), IntLit("1"))]
       )
     ]
@@ -102,7 +102,7 @@ test const decl: simple id [[
 test const decl: simple id type [[
   const N int;
 ]] parse to
-  SingleConstDecl(ConstSpecNoExpr(["N"], TypeName("int")))
+  SingleConstDecl(ConstSpecNoExpr(["N"], Int()))
 
 test const decl: simple id type expr [[
   const N int = 11 + 1;
@@ -110,7 +110,7 @@ test const decl: simple id type expr [[
   SingleConstDecl(
     ConstSpec(
       ["N"]
-    , TypeName("int")
+    , Int()
     , [Sum(IntLit("11"), IntLit("1"))]
     )
   )
@@ -135,7 +135,7 @@ test const decl 6 [[
   );
 ]] parse to
   ConstDecl(
-    [ ConstSpecNoType(["c0"], [OperandName("iota")])
+    [ ConstSpecNoType(["c0"], [Iota()])
     , ConstSpecNoTypeNoExpr(["_"])
     , ConstSpecNoTypeNoExpr(["_"])
     , ConstSpecNoTypeNoExpr(["_"])
@@ -147,7 +147,7 @@ test const decl 6 [[
 test type decl 1 [[
   type IntArray [16]int;
 ]] parse to
-  SingleTypeDecl(TypeDef("IntArray", ArrayType(IntLit("16"), TypeName("int"))))
+  SingleTypeDecl(TypeDef("IntArray", ArrayType(IntLit("16"), Int())))
 
 test type decl 2 [[
   type (
@@ -159,7 +159,7 @@ test type decl 2 [[
     [ TypeDef(
         "Point"
       , StructType(
-          [StructElement(Field(["x", "y"], TypeName("float64")))]
+          [StructElement(Field(["x", "y"], Float64()))]
         )
       )
     , TypeDef("Polar", TypeName("Point"))
@@ -194,12 +194,12 @@ test type decl 4 [[
     TypeDef(
       "Block"
     , InterfaceType(
-        [ MethodSpec("BlockSize", Signature(Parameters([]), TypeName("int")))
+        [ MethodSpec("BlockSize", Signature(Parameters([]), Int()))
         , MethodSpec(
             "Encrypt"
           , Signature(
               Parameters(
-                [ParameterDecl(["src", "dst"], SliceType(TypeName("byte")))]
+                [ParameterDecl(["src", "dst"], SliceType(Byte()))]
               )
             , NoResult()
             )
@@ -208,7 +208,7 @@ test type decl 4 [[
             "Decrypt"
           , Signature(
               Parameters(
-                [ParameterDecl(["src", "dst"], SliceType(TypeName("byte")))]
+                [ParameterDecl(["src", "dst"], SliceType(Byte()))]
               )
             , NoResult()
             )
@@ -231,7 +231,7 @@ test type decl 5 [[
             Field(
               ["_"]
             , StructType(
-                [StructElement(Field(["a", "b", "c"], TypeName("int")))]
+                [StructElement(Field(["a", "b", "c"], Int()))]
               )
             )
           )
@@ -253,14 +253,14 @@ test type decl: tags [[
     TypeDef(
       "Person"
     , StructType(
-        [ StructElementTagged(Field(["Name"], TypeName("string")), "`json:\"name\"`")
+        [ StructElementTagged(Field(["Name"], String()), "`json:\"name\"`")
         , StructElementTagged(
             Field(
               ["Address"]
             , PointerType(
                 StructType(
-                  [ StructElementTagged(Field(["Street"], TypeName("string")), "`json:\"street\"`")
-                  , StructElementTagged(Field(["City"], TypeName("string")), "`json:\"city\"`")
+                  [ StructElementTagged(Field(["Street"], String()), "`json:\"street\"`")
+                  , StructElementTagged(Field(["City"], String()), "`json:\"city\"`")
                   ]
                 )
               )
@@ -277,12 +277,12 @@ test type decl: tags [[
 test var decl 1 [[
   var i int;
 ]] parse to
-  SingleVarDecl(VarSpecNoInit(["i"], TypeName("int")))
+  SingleVarDecl(VarSpecNoInit(["i"], Int()))
 
 test var decl 2 [[
   var U, V, W float64;
 ]] parse to
-  SingleVarDecl(VarSpecNoInit(["U", "V", "W"], TypeName("float64")))
+  SingleVarDecl(VarSpecNoInit(["U", "V", "W"], Float64()))
 
 test var decl 3 [[
   var k = 0;
@@ -295,7 +295,7 @@ test var decl 4 [[
   SingleVarDecl(
     VarSpec(
       ["x", "y"]
-    , TypeName("float32")
+    , Float32()
     , [Negation(IntLit("1")), Negation(IntLit("2"))]
     )
   )
@@ -307,7 +307,7 @@ test var decl 5 [[
   );
 ]] parse to
   VarDecl(
-    [ VarSpecNoInit(["i"], TypeName("int"))
+    [ VarSpecNoInit(["i"], Int())
     , VarSpecNoType(
         ["u", "v", "s"]
       , [FloatLit("2.0"), FloatLit("3.0"), StringLit("\"bar\"")]
@@ -349,11 +349,11 @@ test function decl 1 [[
     "min"
   , Signature(
       Parameters(
-        [ ParameterDecl(["x"], TypeName("int"))
-        , ParameterDecl(["y"], TypeName("int"))
+        [ ParameterDecl(["x"], Int())
+        , ParameterDecl(["y"], Int())
         ]
       )
-    , TypeName("int")
+    , Int()
     )
   , Block(
       [ IfStmt(
@@ -373,7 +373,7 @@ test function decl 2 [[
   FunctionDecl(
     "flushICache"
   , Signature(
-      Parameters([ParameterDecl(["begin", "end"], TypeName("uintptr"))])
+      Parameters([ParameterDecl(["begin", "end"], UIntPtr())])
     , NoResult()
     )
   )
@@ -388,7 +388,7 @@ test method decl 1 [[
   MethodDef(
     Receiver("p", ReceiverPtrType(TypeName("Point")))
   , "Length"
-  , Signature(Parameters([]), TypeName("float64"))
+  , Signature(Parameters([]), Float64())
   , Block(
       [ ReturnStmt(
           [ Call(
@@ -421,7 +421,7 @@ test method decl 2 [[
     Receiver("p", ReceiverPtrType(TypeName("Point")))
   , "Scale"
   , Signature(
-      Parameters([ParameterDecl(["factor"], TypeName("float64"))])
+      Parameters([ParameterDecl(["factor"], Float64())])
     , NoResult()
     )
   , Block(
