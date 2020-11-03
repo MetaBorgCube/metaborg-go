@@ -5,13 +5,12 @@ imports analysis/types
 signature
   namespaces
     Decl    : string
-    Type    : string
+    //Type    : string
     Pkg     : string
     Label   : string
 
   relations
-    typeOfDecl  : occurrence -> TYPE
-    type    : occurrence -> TYPE
+    type        : occurrence -> TYPE
 //    lblOfStmt   : occurrence
 
   name-resolution
@@ -24,28 +23,83 @@ signature
       FM
 
     // TODO: Is this correct?
-    resolve Type  filter P* (IMP? PUB? PUB? | PRV?) FM* min $ < P, P < PRV, P < PUB, P < FM
+    //resolve Type  filter P* (IMP? PUB? PUB? | PRV?) FM* min $ < P, P < PRV, P < PUB, P < FM
     resolve Label filter P*                             min $ < P
     resolve Decl  filter P* E* min $ < P, $ < E
 
 rules resolveType : scope * string -> TYPE
 
   resolveType(s, x) = T :- {dx}
-    type of Decl{x} in s |-> [(_, (Decl{dx}, T))],
+    type of Decl{x} in s |-> [(_, (Decl{dx}, T))] | error $[Type [x] is not declared or not in scope [s]],
     @x.ref := dx.
 
 rules declareLabel : scope * string
 
   declareLabel(s, name) :-
     s -> Label{name},
-    Label{name} in s |-> [(_, (Label{name}))] | error $[Multiple declarations of label [name]].
+    Label{name} in s |-> [(_, (Label{name}))] | error $[Multiple declarations of label [name] in scope [s]].
 
 rules resolveLabel : scope * string
 
   resolveLabel(s, refName) :- {declName}
-    Label{refName} in s |-> [(_, (Label{declName}))] | error $[Label [refName] is not declared or not in scope],
+    Label{refName} in s |-> [(_, (Label{declName}))] | error $[Label [refName] is not declared or not in scope [s]],
     @refName.ref := declName.
 
+
+
+/*****************/
+/* Struct fields */
+/*****************/
+
+// Declares struct elements
+rules declareStructElement : scope * StructElement
+
+  declareStructElements maps declareStructElement(*, list(*))
+
+  declareStructElement(s_struct, StructElement(field)) :-
+    declareStructField(s_struct, field).
+
+  declareStructElement(s_struct, StructElementTagged(field, _)) :-
+    declareStructField(s_struct, field).
+
+
+// Declares struct fields
+rules declareStructField : scope * Field
+
+  // A field declares one or more fields with the same type
+  declareStructField(s_struct, Field(ids, type)) :- {T}
+    typeOfType(s_struct, type) == T,
+    declareStructFieldInsts(s_struct, ids, T).
+
+  // A field declared with a type but no explicit field name is called an embedded field.
+  // An embedded field must be specified as a type name T or as a pointer to a non-interface
+  // type name *T, and T itself may not be a pointer type. The unqualified type name acts as
+  // the field name.
+  declareStructField(s_struct, EmbeddedTypeField(type@TypeName(typeName))) :- {T}
+    typeOfType(s_struct, TypeName2Type(type)) == T,
+    @type.type := T,
+    declareEmbeddedField(s_struct, typeName, T).
+
+  declareStructField(s_struct, EmbeddedTypeField(type@QualifiedTypeName(_, typeName))) :- {T}
+    typeOfType(s_struct, TypeName2Type(type)) == T,
+    @type.type := T,
+    declareEmbeddedField(s_struct, typeName, T),
+    // TODO: Remove this:
+    false | error $[declareStructField(EmbeddedTypeField(QualifiedTypeName)) not implemented.].
+
+  declareStructField(s_struct, EmbeddedPtrTypeField(type@TypeName(typeName))) :- {T}
+    typeOfType(s_struct, PointerType(TypeName2Type(type))) == T,
+    @type.type := T,
+    declareEmbeddedField(s_struct, typeName, T),
+    // TODO: Remove this:
+    false | error $[declareStructField(EmbeddedPtrTypeField(TypeName)) not implemented.].
+
+  declareStructField(s_struct, EmbeddedPtrTypeField(type@QualifiedTypeName(_, typeName))) :- {T}
+    typeOfType(s_struct, PointerType(TypeName2Type(type))) == T,
+    @type.type := T,
+    declareEmbeddedField(s_struct, typeName, T),
+    // TODO: Remove this:
+    false | error $[declareStructField(EmbeddedPtrTypeField(QualifiedTypeName)) not implemented.].
 
 
 // Declares a field of a struct
@@ -57,6 +111,7 @@ rules declareStructFieldInst : scope * string * TYPE
     s_struct -> Decl{name} with type T,
     @name.type := T.
 
+
 // An embedded field declares a struct member with the given name and type,
 // but also adds an E edge to the scope of the struct member, allowing
 // their fields and methods to be used directly as if they are part of the
@@ -64,8 +119,21 @@ rules declareStructFieldInst : scope * string * TYPE
 rules declareEmbeddedField : scope * string * TYPE
 
   declareEmbeddedField(s_struct, name, T@STRUCT(s_embedded)) :-
-    declareStructFieldInst(s_struct, name, T),
-    s_struct -E-> s_embedded.
+    true.
+   // TODO: declare embedded field T of type STRUCT
+//    declareStructFieldInst(s_struct, name, T),
+   // TODO: Make E edge
+//    s_struct -E-> s_embedded.
+
+
+  declareEmbeddedField(s_struct, name, T) :-
+    false | error $[[name] : [T] is not a struct].
+
+//rules resolveField : scope * string -> TYPE
+//
+//  resolveType(s, x) = T :- {dx}
+//    type of Decl{x} in s |-> [(_, (Decl{dx}, T))],
+//    @x.ref := dx.
 
 
 /*************/
@@ -90,10 +158,10 @@ rules declareType : scope * string * TYPE
 // Used to declare built-in types
 rules declareTypeRaw : scope * string * TYPE
 
- declareTypeRaw(s, x, T) :-
-   s -> Type{x} with typeOfDecl T,
-   // Assert that the declaration is distinct
-   typeOfDecl of Type{x} in s |-> [(_, (_, T))] | error $[Multiple declarations of type [x] : [T]].
+  declareTypeRaw(s, x, T) :-
+    s -> Decl{x} with type T,
+    // Assert that the declaration is distinct
+    type of Decl{x} in s |-> [(_, (_, T))] | error $[Multiple declarations of type [x] : [T]].
 
 
 /*************/

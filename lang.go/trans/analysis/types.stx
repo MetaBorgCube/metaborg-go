@@ -124,10 +124,10 @@ rules typeOfType : scope * Type -> TYPE
   typeOfType(s, SliceType(type)) = SLICE(T) :-
     typeOfType(s, type) == T.
 
-  typeOfType(s, StructType(elements)) = STRUCT(s_struct) :- {T_ELEMENTS}
+  typeOfType(s, StructType(elements)) = STRUCT(s_struct) :-
     new s_struct,
-//    typesOfStructElements(s_struct, elements) == T_ELEMENTS.
-    false | error $[typeOfType(StructType) not implemented.].
+    s_struct -P-> s,
+    declareStructElements(s_struct, elements).
 
   typeOfType(s, FunctionType(sig)) = TFUN :-
     typeOfSignature(s, sig) == TFUN.
@@ -153,23 +153,12 @@ rules typeOfType : scope * Type -> TYPE
     false | error $[typeOfType(ReceivingChannelType) not implemented.].
 
 
-//rules typeOfStructElement : scope * StructElement -> TYPE
-//
-//  typesOfStructElements maps typeOfStructElement(*, list(*)) = list(*)
-//
-//  typeOfStructElement(_, _) = T :-
-//    true.
-//
-////  typeOfStructElement(s_struct, StructElement(field)) = T :-
-////    typeOfField(s_struct, field) == T.
-////
-////  typeOfStructElement(s_struct, StructElementTagged(field, _)) = T :-
-////    typeOfField(s_struct, field) == T.
+
+
 rules typeOfTypeName : scope * TypeName -> TYPE
 
   typeOfTypeName(s, TypeName(name)) = T :-
-    // FIXME:
-    resolveType(s, name) == T.
+    resolveType(s, name) == TYPE(T).
 
   typeOfTypeName(s, QualifiedTypeName(x, y)) = T :-
     // TODO

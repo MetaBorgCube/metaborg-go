@@ -20,12 +20,12 @@ rules topLevelDeclOk : scope * TopLevelDecl
 
   topLevelDeclOk(s, decl@FunctionDecl(name, sig)) :- {TFUN}
     typeOfSignature(s, sig) == TFUN,
-    s -> Type{name} with typeOfDecl TFUN,
+    s -> Decl{name} with type TFUN,
     @decl.type := TFUN.
 
   topLevelDeclOk(s, decl@FunctionDef(name, sig, body)) :- {TFUN TRES}
     typeOfSignature(s, sig) == TFUN@FUN(_, TRES),
-    s -> Type{name} with typeOfDecl TFUN,
+    s -> Decl{name} with type TFUN,
     @decl.type := TFUN,
     // TODO: Ensure that the block returns a value of TRES
     blockOk(s, body).
@@ -122,35 +122,6 @@ rules typeSpecOk : scope * TypeSpec
   typeSpecOk(s, TypeDef(name, type)) :- {T}
     typeOfType(s, type) == T,
     declareType(s, name, T).
-
-
-//rules declareStructField : scope * Field
-//
-//  // A field declares one or more fields with the same type
-//  declareStructField(s_struct, Field(ids, type)) :- {T}
-//    typeOfType(s_struct, type) == T,
-//    declareStructFieldInsts(s_struct, ids, T).
-//
-//  // A field declared with a type but no explicit field name is called an embedded field.
-//  // An embedded field must be specified as a type name T or as a pointer to a non-interface
-//  // type name *T, and T itself may not be a pointer type. The unqualified type name acts as
-//  // the field name.
-//  declareStructField(s_struct, EmbeddedTypeField(type@TypeName(typeName))) :- {T}
-//    typeOfType(s_struct, TypeName2Type(type)) == T,
-//    declareEmbeddedField(s_struct, typeName, T).
-//
-//  declareStructField(s_struct, EmbeddedTypeField(type@QualifiedTypeName(_, typeName))) :- {T}
-//    typeOfType(s_struct, TypeName2Type(type)) == T,
-//    declareEmbeddedField(s_struct, typeName, T).
-//
-//  declareStructField(s_struct, EmbeddedPtrTypeField(type@TypeName(typeName))) :- {T}
-//    typeOfType(s_struct, PointerType(TypeName2Type(type))) == T,
-//    declareEmbeddedField(s_struct, typeName, T).
-//
-//  declareStructField(s_struct, EmbeddedPtrTypeField(type@QualifiedTypeName(_, typeName))) :- {T}
-//    typeOfType(s_struct, PointerType(TypeName2Type(type))) == T,
-//    declareEmbeddedField(s_struct, typeName, T).
-
 
 
 
