@@ -1,12 +1,12 @@
 module packages
 
 language GoLang
-start symbol TestSources
+start symbol Sources
 
 test package in multiple files [[
   ["test"]
   package test;
-  
+
   type [[Point]] struct{
       X, Y int;
   };
