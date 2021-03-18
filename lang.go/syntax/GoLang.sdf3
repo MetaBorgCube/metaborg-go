@@ -31,20 +31,31 @@ imports
 
 context-free start-symbols
 
-  TestSources
+  Sources
+  //TestSources
 
 /**
  * Source files for testing
  */
-context-free sorts TestSources TestSource
+context-free sorts Sources TestSource //TestSources
 context-free syntax
 
-  TestSources.TestSources = <<TestSource*>>
+  Sources.Source = <<SourceFile>>
+  Sources.TestSources = <<TestSource*>>
 
-  TestSource.TestSourceFile = <
+//  TestSources.TestSources = <<TestSource*>>
+
+  TestSource.TestSource = <
     [<STRING_LIT>]
-    package <ID>;
-
-    <ImportDecl*>
-    <TopLevelDecl*>
+    <SourceFile>
   >
+
+//  TestSources.TestSources = <<TestSourceFile*>>
+//
+//  TestSourceFile.TestSourceFile = <
+//    [<STRING_LIT>]
+//    package <ID>;
+//
+//    <ImportDecl*>
+//    <TopLevelDecl*>
+//  >

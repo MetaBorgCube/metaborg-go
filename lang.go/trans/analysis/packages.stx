@@ -4,41 +4,44 @@ imports
   analysis/signatures
   analysis/declarations
 
-rules
-
-  sourceFileOk : scope * SourceFile
+rules sourceFileOk : scope * SourceFile
 
   sourceFileOk(s, SourceFile(pkg, imports, topLevelDecls)) :-
     topLevelDeclsOk(s, topLevelDecls).
 //  sourceFileOk(_, _).
 
 
-//rules
-//  testSourceOk : scope * TestSource
-//  testSourcesOk maps testSourceOk(*, list(*))
+rules testSourceOk : scope * TestSource
+  testSourcesOk maps testSourceOk(*, list(*))
+
+  testSourceOk(s, TestSource(pkg_path, SourceFile(pkg, imports, topLevelDecls))) :-
+    true.
+
+//rules testSourceFileOk : scope * TestSourceFile
+//  testSourceFilesOk maps testSourceFileOk(*, list(*))
 //
-//  testSourceOk(s_univ, TestSourceFile(pkg_path, PackageClause(ID2PackageName(pkg_name)), imports, decls)) :-
-//    // // define package public and private, and file scopes
-//    // new s_pkg_pub s_pkg_prv s_file,
-//    // s_pkg_pub ---> s_univ,
-//    // s_pkg_prv ---> s_pkg_pub,
-//    // s_file ---> s_pkg_prv,
-//    // PkgPath{pkg_path} <- s_univ,
-//    // PkgPath{pkg_path} =PUB=> s_pkg_pub,
-//    // PkgPath{pkg_path} =PRV=> s_pkg_pub,
-//
-//    // // implicitly import other files from the same package
-//    // PkgPath{pkg_path} -> s_univ,
-//    // PkgPath{pkg_path} <=PRV= s_pkg_prv,
-//
-//    // // define scope for default imports
-//    // new s_pkg_imp,
-//    // PkgPath{pkg_path} =IMP=> s_pkg_imp,
-//    // Pkg{pkg_name} <- s_pkg_imp,
-//    // Pkg{pkg_name} =PUB=> s_pkg_pub,
-//
-//    // Map2[[ imports ^ (s_univ, s_file) ]],
-//    // Map2[[ decls ^ (s_pkg_pub, s_file) ]].
+//  testSourceFileOk(s_univ, TestSourceFile(pkg_path, pkg, imports, topLevelDecls)) :-
+    // // define package public and private, and file scopes
+    // new s_pkg_pub s_pkg_prv s_file,
+    // s_pkg_pub ---> s_univ,
+    // s_pkg_prv ---> s_pkg_pub,
+    // s_file ---> s_pkg_prv,
+    // PkgPath{pkg_path} <- s_univ,
+    // PkgPath{pkg_path} =PUB=> s_pkg_pub,
+    // PkgPath{pkg_path} =PRV=> s_pkg_pub,
+
+    // // implicitly import other files from the same package
+    // PkgPath{pkg_path} -> s_univ,
+    // PkgPath{pkg_path} <=PRV= s_pkg_prv,
+
+    // // define scope for default imports
+    // new s_pkg_imp,
+    // PkgPath{pkg_path} =IMP=> s_pkg_imp,
+    // Pkg{pkg_name} <- s_pkg_imp,
+    // Pkg{pkg_name} =PUB=> s_pkg_pub,
+
+    // Map2[[ imports ^ (s_univ, s_file) ]],
+    // Map2[[ decls ^ (s_pkg_pub, s_file) ]].
 //    true.
 //
 //rules

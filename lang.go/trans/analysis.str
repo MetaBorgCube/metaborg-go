@@ -27,7 +27,7 @@ rules // Analysis
   with x' := <implicate-injections-GoLang-SourceFile> x
 //  with x' := <id> x
 
-  desugar-testsource: TestSources([TestSourceFile(_, pkg, imports, decls)]) -> SourceFile(pkg, imports, decls)
+  desugar-testsource: TestSources([TestSource(_, SourceFile(pkg, imports, decls))]) -> SourceFile(pkg, imports, decls)
 
 //  desugar-and-explicate = explicate-injections;desugar-all
 //

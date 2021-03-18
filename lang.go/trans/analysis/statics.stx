@@ -9,11 +9,15 @@ imports
 
 rules // single-file entry point
 
-  programOk : SourceFile
+  programOk : Sources
 
-  programOk(sourceFile) :- {s}
+  programOk(Source(sourceFile)) :- {s}
     new s, init(s),
     sourceFileOk(s, sourceFile).
+
+  programOk(TestSources(testSources)) :- {s}
+    new s, init(s),
+    testSourcesOk(s, testSources).
 
 rules // multi-file entry point
 
