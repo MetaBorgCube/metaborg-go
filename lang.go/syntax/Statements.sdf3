@@ -9,8 +9,8 @@ imports
   Declarations
   Expressions
   Lexical
-  Types
   SortNames
+  Types
 
 context-free start-symbols
 

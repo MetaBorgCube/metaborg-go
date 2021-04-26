@@ -9,8 +9,8 @@ imports
   Lexical
   Expressions
   Types
-  Statements
   SortNames
+  Statements
 
 context-free start-symbols
 

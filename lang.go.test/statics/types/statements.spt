@@ -1,7 +1,7 @@
 module statements
 
 language GoLang
-start symbol TestSources
+start symbol TestSourceFiles
 
 test assign to untyped variable [[
   ["."]

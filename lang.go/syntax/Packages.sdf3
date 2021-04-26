@@ -9,18 +9,6 @@ imports
   Lexical
   SortNames
 
-context-free start-symbols
-
-  SourceFile
-
-/**
- * Source file organization -- https://golang.org/ref/spec#Source_file_organization
- */
-context-free sorts SourceFile
-context-free syntax
-
-  SourceFile.SourceFile                     = <package <ID>; <ImportDecl*> <TopLevelDecl*>>
-
 
 /**
  * Import declarations -- https://golang.org/ref/spec#Import_declarations

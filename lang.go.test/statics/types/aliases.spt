@@ -1,7 +1,7 @@
 module aliases
 
 language GoLang
-start symbol TestSources
+start symbol TestSourceFiles
 
 test type alias [[
   ["."]

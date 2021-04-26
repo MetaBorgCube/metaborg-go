@@ -26,26 +26,33 @@ imports
   Lexical
   Packages
   Representation
+  SortNames
   Statements
   Types
 
 context-free start-symbols
 
+
+context-free start-symbols
+
   Sources
-  //TestSources
+  SourceFile
+  TestSourceFiles
 
 /**
- * Source files for testing
+ * Source file organization -- https://golang.org/ref/spec#Source_file_organization
  */
-context-free sorts Sources TestSource //TestSources
+context-free sorts Sources TestSourceFiles SourceFile TestSourceFile
 context-free syntax
 
   Sources.Source = <<SourceFile>>
-  Sources.TestSources = <<TestSource*>>
+  Sources.TestSources = <<TestSourceFiles>>
+  
+  SourceFile.SourceFile                     = <package <ID>; <ImportDecl*> <TopLevelDecl*>>
+  
+  TestSourceFiles.TestSourceFiles = <<TestSourceFile*>>
 
-//  TestSources.TestSources = <<TestSource*>>
-
-  TestSource.TestSource = <
+  TestSourceFile.TestSourceFile = <
     [<STRING_LIT>]
     <SourceFile>
   >

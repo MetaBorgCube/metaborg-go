@@ -1,7 +1,7 @@
 module underlying
 
 language GoLang
-start symbol TestSources
+start symbol TestSourceFiles
 
 fixture [[
   ["."]

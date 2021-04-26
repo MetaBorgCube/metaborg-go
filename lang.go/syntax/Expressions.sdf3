@@ -9,8 +9,8 @@ imports
   Lexical
   Packages
   Representation
-  Types
   SortNames
+  Types
 
 context-free start-symbols
 

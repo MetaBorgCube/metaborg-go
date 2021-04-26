@@ -1,7 +1,7 @@
 module selector
 
 language GoLang
-start symbol TestSources
+start symbol TestSourceFiles
 
 fixture [[
   ["."]
@@ -22,7 +22,7 @@ test select field [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = t.s#[[z]];
+  var _ = t.[[z]];
 ]] resolve #2 to #1
 
 test select field via anonymous field [[
@@ -37,7 +37,7 @@ test select field via anonymous field [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = t.s#[[y]];
+  var _ = t.[[y]];
 ]] resolve #2 to #1
 
 test select field via anonymous pointer field [[
@@ -52,7 +52,7 @@ test select field via anonymous pointer field [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = t.s#[[x]];
+  var _ = t.[[x]];
 ]] resolve #2 to #1
 
 test select field via pointer [[
@@ -67,7 +67,7 @@ test select field via pointer [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = p.s#[[z]];
+  var _ = p.[[z]];
 ]] resolve #2 to #1
 
 test selectfield via pointer and anonymous field [[
@@ -82,7 +82,7 @@ test selectfield via pointer and anonymous field [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = p.s#[[y]];
+  var _ = p.[[y]];
 ]] resolve #2 to #1
 
 test select field via pointer and anonymous pointer field [[
@@ -97,7 +97,7 @@ test select field via pointer and anonymous pointer field [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = p.s#[[x]];
+  var _ = p.[[x]];
 ]] resolve #2 to #1
 
 test select field via pointer [[
@@ -112,7 +112,7 @@ test select field via pointer [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = q.s#[[x]];
+  var _ = q.[[x]];
 ]] resolve #2 to #1
 
 test select method via anonymous pointer field [[
@@ -127,7 +127,7 @@ test select method via anonymous pointer field [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = p.s#[[M0]]();
+  var _ = p.[[M0]]();
 ]] resolve #2 to #1
 
 test select method via anonymous field [[
@@ -142,7 +142,7 @@ test select method via anonymous field [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = p.s#[[M1]]();
+  var _ = p.[[M1]]();
 ]] resolve #2 to #1
 
 test select pointer method via pointer [[
@@ -157,7 +157,7 @@ test select pointer method via pointer [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = p.s#[[M2]]();
+  var _ = p.[[M2]]();
 ]] resolve #2 to #1
 
 test select pointer method via value [[
@@ -172,7 +172,7 @@ test select pointer method via value [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = t.s#[[M2]]();
+  var _ = t.[[M2]]();
 ]] resolve #2 to #1
 
 test select method via pointer dereference [[
@@ -187,7 +187,7 @@ test select method via pointer dereference [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = (*q).s#[[M0]]();
+  var _ = (*q).[[M0]]();
 ]] resolve #2 to #1
 
 test select method via pointer fails [[
@@ -202,5 +202,5 @@ test select method via pointer fails [[
   var p *T2;    // with p != nil and (*p).T0 != nil
   var q Q = p;
 
-  var _ = q.s#[[M0]]();
+  var _ = q.[[M0]]();
 ]] > 0 errors

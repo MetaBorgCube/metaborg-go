@@ -15,9 +15,9 @@ rules // single-file entry point
     new s, init(s),
     sourceFileOk(s, sourceFile).
 
-  programOk(TestSources(testSources)) :- {s}
+  programOk(TestSources(testSourceFiles)) :- {s}
     new s, init(s),
-    testSourcesOk(s, testSources).
+    testSourceFilesOk(s, testSourceFiles).
 
 rules // multi-file entry point
 

@@ -20,14 +20,15 @@ rules // Analysis
   editor-analyze = stx-editor-analyze(pre-analyze, post-analyze|"analysis/statics", "programOk")
   pre-analyze: x -> x'
   //desugar-all Should be desugared, but this changes the SourceFile term
-  with x' := <try(desugar-testsource); desugar-all; explicate-injections-GoLang-SourceFile> x
+  with x' := <try(desugar-testsource); desugar-all; (explicate-injections-GoLang-SourceFile + explicate-injections-GoLang-TestSourceFiles)> x
 //  with x' := <try(desugar-testsource); id> x
 
   post-analyze: x -> x'
-  with x' := <implicate-injections-GoLang-SourceFile> x
+  with x' := <(implicate-injections-GoLang-SourceFile + implicate-injections-GoLang-TestSourceFiles)> x
 //  with x' := <id> x
 
-  desugar-testsource: TestSources([TestSource(_, SourceFile(pkg, imports, decls))]) -> SourceFile(pkg, imports, decls)
+  desugar-testsource = fail
+  //desugar-testsource: TestSources(TestSourceFiles([TestSourceFile(_, SourceFile(pkg, imports, decls))])) -> SourceFile(pkg, imports, decls)
 
 //  desugar-and-explicate = explicate-injections;desugar-all
 //

@@ -10,11 +10,22 @@ rules sourceFileOk : scope * SourceFile
     topLevelDeclsOk(s, topLevelDecls).
 //  sourceFileOk(_, _).
 
+rules testSourceFilesOk : scope * TestSourceFiles
+//  testSourceFilesOk(s, [testSourceFile|rest]) :-
+//    testSourceFileOk(s, testSourceFile),
+//    testSourceFilesOk(s, rest).
+//  testSourceFilesOk(s, []).
+  testSourceFilesOk(_, TestSourceFiles([ ])) :-
+    true.
 
-rules testSourceOk : scope * TestSource
-  testSourcesOk maps testSourceOk(*, list(*))
+  testSourceFilesOk(s, TestSourceFiles([x|xs])) :-
+    testSourceFileOk(s, x),
+    testSourceFilesOk(s, TestSourceFiles(xs)).
 
-  testSourceOk(s, TestSource(pkg_path, SourceFile(pkg, imports, topLevelDecls))) :-
+rules testSourceFileOk : scope * TestSourceFile
+//  testSourceFilesOk maps testSourceFileOk(*, list(*))
+
+  testSourceFileOk(s, TestSourceFile(pkg_path, SourceFile(pkg, imports, topLevelDecls))) :-
     true.
 
 //rules testSourceFileOk : scope * TestSourceFile
